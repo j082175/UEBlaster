@@ -532,7 +532,7 @@ void ABlasterCharacter::InitializeCollisionStates()
 {
 	Super::InitializeCollisionStates();
 
-	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
+	//GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 }
 
 void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)

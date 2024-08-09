@@ -48,7 +48,7 @@ AProjectile::AProjectile()
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Block);
 
-	CollisionBox->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Block);
+	CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Block);
 
 
 	//CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -57,6 +57,7 @@ AProjectile::AProjectile()
 	ensure(FieldSystemComponent);
 	FieldSystemComponent->SetupAttachment(RootComponent);
 
+	CollisionBox->SetCollisionProfileName(PROFILE_BlockAllDynamic);
 }
 
 void AProjectile::Destroyed()

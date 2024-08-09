@@ -1295,19 +1295,19 @@ void ACharacterBase::EnableHitCapsulesCollision()
 {
 	HitCollisionCapsules[TEXT("weapon_r")]->SetGenerateOverlapEvents(true);
 	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Overlap);
+	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Overlap);
 
 	HitCollisionCapsules[TEXT("weapon_l")]->SetGenerateOverlapEvents(true);
 	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Overlap);
+	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Overlap);
 }
 
 void ACharacterBase::DisableHitCapsulesCollision()
 {
-	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Ignore);
-	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Ignore);
+	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
 	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Ignore);
 	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Ignore);
@@ -1330,8 +1330,11 @@ void ACharacterBase::AttachToSocket(AItem* Item, USkeletalMeshComponent* Skeleta
 
 void ACharacterBase::InitializeCollisionStates()
 {
+	GetCapsuleComponent()->SetCollisionProfileName(PROFILE_Pawn);
+	GetMesh()->SetCollisionProfileName(PROFILE_CharacterMesh);
+
 	GetMesh()->SetGenerateOverlapEvents(true);
-	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
+	//GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_CanDamagedByWeapon, ECollisionResponse::ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_CanMorV, ECollisionResponse::ECR_Ignore);
