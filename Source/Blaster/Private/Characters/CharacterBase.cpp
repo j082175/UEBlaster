@@ -984,10 +984,12 @@ void ACharacterBase::GroundAttack(FName OpponentTag)
 
 	TSet<AActor*> CheckActors;
 	CheckActors.Reserve(OutHitResults.Num());
-
+	
 	for (size_t i = 0; i < OutHitResults.Num(); i++)
 	{
-		if (OutHitResults[i].bBlockingHit && !OutHitResults[i].GetActor()->Tags.IsEmpty() && OutHitResults[i].GetActor()->Tags[0].IsValid() && OutHitResults[i].GetActor()->Tags[0] == OpponentTag)
+		//if (OutHitResults[i].bBlockingHit && !OutHitResults[i].GetActor()->Tags.IsEmpty() && OutHitResults[i].GetActor()->Tags[0].IsValid() && OutHitResults[i].GetActor()->Tags[0] == OpponentTag)
+
+		if (OutHitResults[i].bBlockingHit && OutHitResults[i].GetActor()->GetInstigatorController() && !OutHitResults[i].GetActor()->GetInstigatorController()->Tags.IsEmpty() && OutHitResults[i].GetActor()->GetInstigatorController()->Tags[0] == OpponentTag)
 		{
 			if (CheckActors.Contains(OutHitResults[i].GetActor())) continue;
 			CheckActors.Add(OutHitResults[i].GetActor());
