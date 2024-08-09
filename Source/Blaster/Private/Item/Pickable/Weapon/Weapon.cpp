@@ -65,8 +65,8 @@ void AWeapon::Tick(float DeltaTime)
 void AWeapon::OnRep_Owner()
 {
 	Super::OnRep_Owner();
-
-
+	
+	
 }
 
 void AWeapon::ItemAttachToComponent(USceneComponent* SceneComponent, FAttachmentTransformRules& AttachmentRules, FName InSocketName)
