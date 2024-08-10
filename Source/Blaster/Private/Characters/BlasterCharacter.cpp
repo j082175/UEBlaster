@@ -117,7 +117,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
+	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
 
 	//UE_LOG(LogTemp, Display, TEXT("bDisableGameplay : %d"), bDisableGameplay);
@@ -237,7 +237,7 @@ void ABlasterCharacter::BeginPlay()
 	OverheadWidget->ShowPlayerNetRole(this);
 	//UE_LOG(LogTemp, Display, TEXT("CurrentHealth : %f, MaxHealth : %f"), CurrentHealth, MaxHealth);
 
-	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
+	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
 	if (BlasterPlayerController)
 	{
@@ -403,7 +403,7 @@ void ABlasterCharacter::PollInit()
 		}
 	}
 
-	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
+	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
 	if (IsLocallyControlled())
 	{

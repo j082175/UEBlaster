@@ -164,7 +164,7 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		//	bUseFABRIK = !CharacterOwner->IsLocallyReloading();
 		//}
 
-		bUseFABRIK = CharacterOwner->GetCombatState() == ECombatState::ECS_Unoccupied && CharacterOwner->GetAnimState() != EAnimState::EAS_UnEquipped;
+		bUseFABRIK = (int)CharacterOwner->GetCombatState() <= (int)ECombatState::ECS_Attacking;
 
 		//if (CharacterOwner->HasAuthority())
 		//PRINT_DEBUG_LOCALROLE(CharacterOwner);

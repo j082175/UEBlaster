@@ -80,7 +80,7 @@ void ABlasterHUD::BeginPlay()
 
 	//AddCharacterOverlay();
 	APlayerController* PlayerController = GetOwningPlayerController();
-	if (PlayerController)
+	if (!PlayerController)
 	{
 		UE_LOG(LogTemp, Error, TEXT("BlasterHUD's PlayerController is NULL!"));
 	}

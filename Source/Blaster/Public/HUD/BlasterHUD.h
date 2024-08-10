@@ -11,6 +11,9 @@ struct FHUDPackage
 {
 	GENERATED_BODY()
 public:
+	FHUDPackage()
+		: CrosshairSpread(0.f), CrosshairsColor(FLinearColor::Black)
+	{}
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UTexture2D> CrosshairCenter;
 	UPROPERTY(EditAnywhere)

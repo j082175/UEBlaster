@@ -69,7 +69,7 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 
 }
 
-void ABlasterPlayerController::Tick(float DeltaTime)
+/*void ABlasterPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -196,6 +196,7 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 	}
 
 }
+*/
 
 void ABlasterPlayerController::SetupInputComponent()
 {

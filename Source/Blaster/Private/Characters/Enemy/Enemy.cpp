@@ -184,10 +184,6 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 	{
 		EnemyAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), PawnDamageCauser);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("EnemyAIController is NULL"));
-	}
 
 
 }

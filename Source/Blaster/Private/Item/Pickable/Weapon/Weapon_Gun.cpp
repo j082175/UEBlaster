@@ -169,6 +169,8 @@ void AWeapon_Gun::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedE
 		DefaultRecoilPitch = -DefaultRecoilYaw;
 	}
 }
+#endif // WITH_EDITOR
+
 void AWeapon_Gun::ItemAttachToComponent(USceneComponent* SceneComponent, FAttachmentTransformRules& AttachmentRules, FName InSocketName)
 {
 	Super::ItemAttachToComponent(SceneComponent, AttachmentRules, InSocketName);
@@ -180,15 +182,14 @@ void AWeapon_Gun::ItemAttachToComponent(USceneComponent* SceneComponent, FAttach
 			UE_LOG(LogTemp, Error, TEXT("AttachToComponent Failed"));
 		}
 	}
-
 }
+
 void AWeapon_Gun::ItemDetachToComponent(FDetachmentTransformRules& DetachmentRules)
 {
 	Super::ItemDetachToComponent(DetachmentRules);
 
 	if (WeaponSKMesh) WeaponSKMesh->DetachFromComponent(DetachmentRules);
 }
-#endif // WITH_EDITOR
 
 float AWeapon_Gun::GetRandomRecoilPitch() const
 {

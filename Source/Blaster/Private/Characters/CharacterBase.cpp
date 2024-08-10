@@ -442,7 +442,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 	if (Cast<UDamageType_Rumbling>(DamageType))
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Rumbling!"));
-		//ExecuteRagdoll();
+		ExecuteRagdoll();
 	}
 }
 

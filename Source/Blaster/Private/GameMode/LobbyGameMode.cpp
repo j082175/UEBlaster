@@ -3,7 +3,7 @@
 
 #include "GameMode/LobbyGameMode.h"
 #include "GameFramework/GameStateBase.h"
-//#include "MultiplayerSessionsSubsystem.h"
+#include "MultiplayerSessionsSubsystem.h"
 
 ALobbyGameMode::ALobbyGameMode()
 {
@@ -63,7 +63,7 @@ void ALobbyGameMode::PostLogin(APlayerController* PlayerController)
 	UGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance)
 	{
-		/*UMultiplayerSessionsSubsystem* SubSystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
+		UMultiplayerSessionsSubsystem* SubSystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 
 
 		if (NumberOfPlayers == SubSystem->DesiredNumPublicConnections)
@@ -75,7 +75,10 @@ void ALobbyGameMode::PostLogin(APlayerController* PlayerController)
 				FString MatchType = SubSystem->DesiredMatchType;
 				if (MatchType == TEXT("FreeForAll"))
 				{
-					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
+					//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
+					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
+
+					
 
 				}
 				else if (MatchType == TEXT("Teams"))
@@ -89,7 +92,7 @@ void ALobbyGameMode::PostLogin(APlayerController* PlayerController)
 
 				}
 			}
-		}*/
+		}
 	}
 
 

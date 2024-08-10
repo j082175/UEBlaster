@@ -13,5 +13,6 @@
 #define PROFILE_Pawn TEXT("Pawn")
 #define PROFILE_CharacterMesh TEXT("CharacterMesh")
 #define PROFILE_BlockAllDynamic TEXT("BlockAllDynamic")
+#define PROFILE_Projectile TEXT("Projectile")
 
 #define PRINT_DEBUG_LOCALROLE(Actor) UE_LOG(LogTemp, Display, TEXT("Actor's LocalRole : %s"), *UEnum::GetDisplayValueAsText(Actor->GetLocalRole()).ToString())

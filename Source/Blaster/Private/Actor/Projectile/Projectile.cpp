@@ -57,7 +57,7 @@ AProjectile::AProjectile()
 	ensure(FieldSystemComponent);
 	FieldSystemComponent->SetupAttachment(RootComponent);
 
-	CollisionBox->SetCollisionProfileName(PROFILE_BlockAllDynamic);
+	CollisionBox->SetCollisionProfileName(PROFILE_Projectile);
 }
 
 void AProjectile::Destroyed()

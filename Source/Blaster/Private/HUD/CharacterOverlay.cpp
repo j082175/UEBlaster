@@ -13,6 +13,5 @@ void UCharacterOverlay::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 
 void UCharacterOverlay::Test(float DeltaTime)
 {
-	ScoreAmount->SetText(FText::FromString(FString::Printf(TEXT("%f"), DeltaTime)));
-
+	if (ScoreAmount) ScoreAmount->SetText(FText::FromString(FString::Printf(TEXT("%f"), DeltaTime)));
 }

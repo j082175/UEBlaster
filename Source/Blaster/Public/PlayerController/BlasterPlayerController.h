@@ -26,7 +26,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
-	virtual void Tick(float DeltaTime) override;
+	//virtual void Tick(float DeltaTime) override;
 
 	FORCEINLINE class ABlasterHUD* GetBlasterHUD() const { return BlasterHUD; }
 
