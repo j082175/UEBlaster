@@ -38,4 +38,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class USoundCue> ShellSound;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	float DestroyTime = 1.5f;
 };

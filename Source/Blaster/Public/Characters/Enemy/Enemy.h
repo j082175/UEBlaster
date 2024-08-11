@@ -66,7 +66,8 @@ protected:
 	virtual void IAttack(FAttackEndedDelegate Delegate, const FString& AttackType) override;
 	virtual void ISetAIState(EAIState InAIState) override;
 
-	FAttackEndedDelegate OnAttackEnded;
+
+	//FAttackEndedDelegate OnAttackEnded;
 
 	// Animation
 protected:

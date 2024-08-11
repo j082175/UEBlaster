@@ -241,6 +241,7 @@ void AEnemy::IGetHit(const FVector& InHitPoint)
 void AEnemy::IAttack(FAttackEndedDelegate Delegate, const FString& AttackType)
 {
 	if (!IsValid(AttackMontage)) return;
+	if (bDisableGameplay) return;
 
 	OnAttackEnded = Delegate;
 	//Attack();
@@ -298,6 +299,7 @@ void AEnemy::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)
 			}
 
 			//UE_LOG(LogTemp, Display, TEXT("OnAttackEnded ExecuteIfBound"));
+
 			OnAttackEnded.ExecuteIfBound();
 		}
 

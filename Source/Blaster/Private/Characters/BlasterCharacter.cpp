@@ -107,15 +107,15 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//	UE_LOG(LogTemp, Display, TEXT("Velocity : %f, %f"), GetCharacterMovement()->Velocity.X, GetCharacterMovement()->Velocity.Y);
 	//}
 
-	BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
-	if (BlasterGameMode)
-	{
-		FName MatchState = BlasterGameMode->GetMatchState();
-		if (MatchState == MatchState::Cooldown)
-		{
-			bDisableGameplay = bDisableGameplay == false ? true : bDisableGameplay;
-		}
-	}
+	//BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
+	//if (BlasterGameMode)
+	//{
+	//	FName MatchState = BlasterGameMode->GetMatchState();
+	//	if (MatchState == MatchState::Cooldown)
+	//	{
+	//		bDisableGameplay = bDisableGameplay == false ? true : bDisableGameplay;
+	//	}
+	//}
 
 	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
@@ -237,7 +237,7 @@ void ABlasterCharacter::BeginPlay()
 	OverheadWidget->ShowPlayerNetRole(this);
 	//UE_LOG(LogTemp, Display, TEXT("CurrentHealth : %f, MaxHealth : %f"), CurrentHealth, MaxHealth);
 
-	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
+	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
 	if (BlasterPlayerController)
 	{
@@ -403,7 +403,7 @@ void ABlasterCharacter::PollInit()
 		}
 	}
 
-	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
+	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
 	if (IsLocallyControlled())
 	{
@@ -1297,10 +1297,10 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 
 
 	bLeftGame = bPlayerLeftGame;
-	if (BlasterPlayerController)
-	{
-		BlasterPlayerController->SetHUDWeaponAmmo(0);
-	}
+	//if (BlasterPlayerController)
+	//{
+	//	BlasterPlayerController->SetHUDWeaponAmmo(0);
+	//}
 
 	//bIsElimmed = true;
 
@@ -1321,7 +1321,7 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 	//{
 	//	DisableInput(BlasterPlayerController);
 	//}
-	bDisableGameplay = true;
+	//bDisableGameplay = true;
 	//if ()
 	//{
 	//	->FireButtonPressed(false);
@@ -1472,11 +1472,11 @@ void ABlasterCharacter::FinishSwapAttachWeapons()
 
 	if (IsLocallyControlled())
 	{
-		ABlasterPlayerController* PC = Cast<ABlasterPlayerController>(GetController());
-		if (PC)
-		{
-			PC->SetHUDWeaponType(EquippedWeapon->GetWeaponName());
-		}
+		//ABlasterPlayerController* PC = Cast<ABlasterPlayerController>(GetController());
+		//if (PC)
+		//{
+		//	PC->SetHUDWeaponType(EquippedWeapon->GetWeaponName());
+		//}
 	}
 }
 
@@ -1595,16 +1595,6 @@ void ABlasterCharacter::SetHUDCrosshairs(float DeltaTime)
 				Gun->SetAdditionalSphereRadius(OriginRadius + TotalFactors);
 
 				HUDPackage.CrosshairSpread = Gun->GetAdditionalSphereRadius();
-			}
-
-
-			if (EquippedWeapon && IsLocallyControlled())
-			{
-
-				//HUDPackage.CrosshairSpread = EquippedWeapon->GetAdditionalSphereRadius();
-
-				//UE_LOG(LogTemp, Display, TEXT("CrosshairSpread : %f, AdditionalRadius : %f"), HUDPackage.CrosshairSpread, EquippedWeapon->GetAdditionalSphereRadius());
-
 			}
 
 			HUD->SetHUDPackage(HUDPackage);

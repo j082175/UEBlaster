@@ -84,7 +84,7 @@ void ABlasterHUD::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("BlasterHUD's PlayerController is NULL!"));
 	}
-
+	
 	if (CharacterOverlayClass)
 	{
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);

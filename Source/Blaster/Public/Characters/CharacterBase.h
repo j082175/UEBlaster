@@ -427,7 +427,7 @@ protected:
 protected:
 
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, BlueprintReadOnly)
 	uint8 bDisableGameplay : 1;
 
 

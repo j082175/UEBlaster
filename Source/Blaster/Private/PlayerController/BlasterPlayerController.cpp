@@ -69,54 +69,18 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 
 }
 
-/*void ABlasterPlayerController::Tick(float DeltaTime)
+void ABlasterPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Display, TEXT("Pitch : %f"), GetControlRotation().Pitch);
-
-
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-
-
-	if (BlasterHUD && BlasterHUD->CharacterOverlay) BlasterHUD->CharacterOverlay->Test(DeltaTime);
-	if (BlasterHUD == nullptr)
+	/* 여기도 에러뜸 */
+	if (IsLocalController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
 	{
-		//if (GEngine)
-		//{
-		//	GEngine->AddOnScreenDebugMessage(3, 5, FColor::Magenta, FString::Printf(TEXT("BlasterHUD is NULL : %s, IsLocalPlayerController : %d"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
-		//}
-		//UE_LOG(LogTemp, Display, TEXT("BlasterHUD is NULL!!!!!"));
+		SetHUDTime();
+		CheckTimeSync(DeltaTime);
+		CheckPing(DeltaTime);
 	}
-
-	if (GEngine)
-	{
-		if (HasAuthority() && IsLocalController())
-			GEngine->AddOnScreenDebugMessage(0, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD : %x : %s, IsLocalPlayerController : %d"), BlasterHUD, *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
-
-		if (HasAuthority() && !IsLocalController())
-			GEngine->AddOnScreenDebugMessage(1, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD : %x : %s, IsLocalPlayerController : %d"), BlasterHUD, *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
-
-		if (!HasAuthority() && IsLocalController())
-			GEngine->AddOnScreenDebugMessage(2, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD : %x : %s, IsLocalPlayerController : %d"), BlasterHUD, *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
-
-		if (!HasAuthority() && !IsLocalController())
-			GEngine->AddOnScreenDebugMessage(3, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD : %x : %s, IsLocalPlayerController : %d"), BlasterHUD, *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
-	}
-
-	if (BlasterHUD && BlasterHUD->CharacterOverlay == nullptr)
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(3, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD->CharacterOverlay is NULL : %s"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString()));
-		}
-		UE_LOG(LogTemp, Display, TEXT("BlasterHUD->CharacterOverlay is NULL!!!!!"));
-
-	}
-
-
-
-	//if (GetLocalRole() == ENetRole::ROLE_SimulatedProxy) UE_LOG(LogTemp, Display, TEXT("Controller: Simulated Proxy"));
+		/*  */
 
 	if (BlasterGameMode == nullptr)
 	{
@@ -127,14 +91,56 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 		}
 	}
 
-	if (IsLocalController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
-	{
-		SetHUDTime();
-		CheckTimeSync(DeltaTime);
-	}
 
-	BlasterCharacter = BlasterCharacter == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : BlasterCharacter.Get();
-	if (BlasterCharacter && BlasterCharacter->GetCombatComponent())
+	//UE_LOG(LogTemp, Display, TEXT("Pitch : %f"), GetControlRotation().Pitch);
+
+
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+
+	//if (BlasterHUD == nullptr)
+	//{
+	//	if (GEngine)
+	//	{
+	//		GEngine->AddOnScreenDebugMessage(3, 5, FColor::Magenta, FString::Printf(TEXT("BlasterHUD is NULL : %s, IsLocalPlayerController : %d"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
+	//	}
+	//	UE_LOG(LogTemp, Display, TEXT("BlasterHUD is NULL!!!!!"));
+	//}
+
+	//if (GEngine)
+	//{
+	//	if (HasAuthority() && IsLocalController())
+	//		GEngine->AddOnScreenDebugMessage(0, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD : %x : %s, IsLocalPlayerController : %d"), BlasterHUD, *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
+
+	//	if (HasAuthority() && !IsLocalController())
+	//		GEngine->AddOnScreenDebugMessage(1, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD : %x : %s, IsLocalPlayerController : %d"), BlasterHUD, *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
+
+	//	if (!HasAuthority() && IsLocalController())
+	//		GEngine->AddOnScreenDebugMessage(2, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD : %x : %s, IsLocalPlayerController : %d"), BlasterHUD, *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
+
+	//	if (!HasAuthority() && !IsLocalController())
+	//		GEngine->AddOnScreenDebugMessage(3, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD : %x : %s, IsLocalPlayerController : %d"), BlasterHUD, *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController()));
+	//}
+
+	//if (BlasterHUD && BlasterHUD->CharacterOverlay == nullptr)
+	//{
+	//	if (GEngine)
+	//	{
+	//		GEngine->AddOnScreenDebugMessage(3, 1, FColor::Magenta, FString::Printf(TEXT("BlasterHUD->CharacterOverlay is NULL : %s"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString()));
+	//	}
+	//	UE_LOG(LogTemp, Display, TEXT("BlasterHUD->CharacterOverlay is NULL!!!!!"));
+
+	//}
+
+
+
+	//if (GetLocalRole() == ENetRole::ROLE_SimulatedProxy) UE_LOG(LogTemp, Display, TEXT("Controller: Simulated Proxy"));
+
+
+
+
+
+	//BlasterCharacter = BlasterCharacter == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : BlasterCharacter.Get();
+	//if (BlasterCharacter && BlasterCharacter->GetCombatComponent())
 	{
 		//if (!bInitializedGrenades)
 		//{
@@ -154,7 +160,6 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 
 	}
 
-	CheckPing(DeltaTime);
 
 	//if (PlayerState)
 	//{
@@ -174,29 +179,27 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 	//if (!bInitializedHealth) UpdateHUDHealth();
 	//if (!bInitializedShield) UpdateHUDShield();
 
-	if (IsLocalController())
-	{
-		BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-		if (BlasterHUD == nullptr)
-		{
-			UE_LOG(LogTemp, Display, TEXT("%s, IsLocalController : %d, Get BlasterHUD Failed"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController());
-			if (GEngine)
-			{
-				FString str = FString::Printf(TEXT("%s, IsLocalController : %d, Get BlasterHUD Failed"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController());
-				GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Red, str);
-			}
-		}
+	//if (IsLocalController())
+	//{
+	//	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//	if (BlasterHUD == nullptr)
+	//	{
+	//		UE_LOG(LogTemp, Display, TEXT("%s, IsLocalController : %d, Get BlasterHUD Failed"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController());
+	//		if (GEngine)
+	//		{
+	//			FString str = FString::Printf(TEXT("%s, IsLocalController : %d, Get BlasterHUD Failed"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), IsLocalController());
+	//			GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Red, str);
+	//		}
+	//	}
 
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(2, 1, FColor::Red, FString::Printf(TEXT("Tick : %f"), DeltaTime));
-		}
-
-
-	}
+	//	if (GEngine)
+	//	{
+	//		GEngine->AddOnScreenDebugMessage(2, 1, FColor::Red, FString::Printf(TEXT("Tick : %f"), DeltaTime));
+	//	}
+	//}
 
 }
-*/
+
 
 void ABlasterPlayerController::SetupInputComponent()
 {
@@ -254,7 +257,7 @@ void ABlasterPlayerController::UpdateHUDAmmo()
 
 void ABlasterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HealthBar && BlasterHUD->CharacterOverlay->HealthText;
 
 	if (bHUDValid)
@@ -280,7 +283,7 @@ void ABlasterPlayerController::SetHUDShield(float Shield, float MaxShield)
 {
 	//UE_LOG(LogTemp, Display, TEXT("SetHUDShield, LocalRole : %s"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
 
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->ShieldBar && BlasterHUD->CharacterOverlay->ShieldText;
 
 	if (bHUDValid)
@@ -302,7 +305,7 @@ void ABlasterPlayerController::SetHUDShield(float Shield, float MaxShield)
 void ABlasterPlayerController::SetHUDSp(float InSp, float InMaxSp)
 {
 
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->StaminaBar && BlasterHUD->CharacterOverlay->StaminaText;
 
 	if (bHUDValid)
@@ -316,7 +319,7 @@ void ABlasterPlayerController::SetHUDSp(float InSp, float InMaxSp)
 
 void ABlasterPlayerController::SetHUDParryGauge(float InP, float InMaxP)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->ParryBar;
 
 	if (bHUDValid)
@@ -328,7 +331,7 @@ void ABlasterPlayerController::SetHUDParryGauge(float InP, float InMaxP)
 
 void ABlasterPlayerController::SetHUDScore(float Score)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->ScoreAmount;
 	if (bHUDValid)
 	{
@@ -339,7 +342,7 @@ void ABlasterPlayerController::SetHUDScore(float Score)
 
 void ABlasterPlayerController::SetHUDDefeats(int32 Defeats)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->DefeatsAmount;
 	if (bHUDValid)
 	{
@@ -350,7 +353,7 @@ void ABlasterPlayerController::SetHUDDefeats(int32 Defeats)
 
 void ABlasterPlayerController::SetHUDWeaponAmmo(int32 CurrentAmmo)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->WeaponAmmoAmount;
 	if (bHUDValid)
 	{
@@ -367,7 +370,7 @@ void ABlasterPlayerController::SetHUDWeaponAmmo(int32 CurrentAmmo)
 
 void ABlasterPlayerController::SetHUDCarriedAmmo(int32 CarriedAmmo)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->CarriedAmmoAmount;
 	if (bHUDValid)
 	{
@@ -380,7 +383,7 @@ void ABlasterPlayerController::SetHUDCarriedAmmo(int32 CarriedAmmo)
 
 void ABlasterPlayerController::SetHUDWeaponType(EWeaponName InWeaponType)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->WeaponType;
 	if (bHUDValid)
 	{
@@ -392,7 +395,7 @@ void ABlasterPlayerController::SetHUDWeaponType(EWeaponName InWeaponType)
 
 void ABlasterPlayerController::SetHUDMatchCountdown(float CountdownTime)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->MatchCountdownText;
 	if (bHUDValid)
 	{
@@ -417,7 +420,7 @@ void ABlasterPlayerController::SetHUDMatchCountdown(float CountdownTime)
 
 void ABlasterPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->Announcement && BlasterHUD->Announcement->WarmupTime;
 	if (bHUDValid)
 	{
@@ -438,7 +441,7 @@ void ABlasterPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
 void ABlasterPlayerController::SetHUDGrenades(int32 Grenades)
 {
 
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->GrenadesText;
 	if (bHUDValid)
 	{
@@ -453,7 +456,7 @@ void ABlasterPlayerController::SetHUDGrenades(int32 Grenades)
 
 void ABlasterPlayerController::SetHUDRedTeamScore(int32 RedScore)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->RedTeamScore;
 	if (bHUDValid)
 	{
@@ -465,7 +468,7 @@ void ABlasterPlayerController::SetHUDRedTeamScore(int32 RedScore)
 
 void ABlasterPlayerController::SetHUDBlueTeamScore(int32 BlueScore)
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->BlueTeamScore;
 	if (bHUDValid)
 	{
@@ -477,7 +480,7 @@ void ABlasterPlayerController::SetHUDBlueTeamScore(int32 BlueScore)
 
 void ABlasterPlayerController::HideTeamScores()
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->RedTeamScore && BlasterHUD->CharacterOverlay->ScoreSpacerText && BlasterHUD->CharacterOverlay->BlueTeamScore;
 	if (bHUDValid)
 	{
@@ -489,7 +492,7 @@ void ABlasterPlayerController::HideTeamScores()
 
 void ABlasterPlayerController::InitTeamScores()
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->RedTeamScore && BlasterHUD->CharacterOverlay->ScoreSpacerText && BlasterHUD->CharacterOverlay->BlueTeamScore;
 	if (bHUDValid)
 	{
@@ -571,6 +574,10 @@ void ABlasterPlayerController::SetHUDTime()
 			//{
 			//	GEngine->AddOnScreenDebugMessage(5, 2.f, FColor::Red, FString::Printf(TEXT("MatchState::InProgress\n ServerTime : %f\n TimeLeft : %f\n WarmupTime : %f\n, MatchTime : %f\n, LevelStartingTime : %f"), GetServerTime(), TimeLeft, WarmupTime, MatchTime, LevelStartingTime));
 			//}
+
+
+
+
 			SetHUDMatchCountdown(TimeLeft);
 		}
 
@@ -658,7 +665,7 @@ void ABlasterPlayerController::ServerReportPingStatus_Implementation(bool bHighP
 
 void ABlasterPlayerController::HighPingWarning()
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HighPingImage && BlasterHUD->CharacterOverlay->HighPingAnimation;
 	if (bHUDValid)
 	{
@@ -669,7 +676,7 @@ void ABlasterPlayerController::HighPingWarning()
 
 void ABlasterPlayerController::StopHighPingWarning()
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HighPingImage && BlasterHUD->CharacterOverlay->HighPingAnimation;
 	if (bHUDValid)
 	{
@@ -704,7 +711,7 @@ void ABlasterPlayerController::OnMatchStateSet(FName State, bool bTeamsMatch)
 void ABlasterPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 {
 	if (HasAuthority()) bShowTeamScores = bTeamsMatch;
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	if (BlasterHUD)
 	{
 		BlasterHUD->AddCharacterOverlay();
@@ -729,7 +736,7 @@ void ABlasterPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 
 void ABlasterPlayerController::HandleCooldown()
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	if (BlasterHUD)
 	{
 		BlasterHUD->CharacterOverlay->RemoveFromParent();
@@ -767,7 +774,7 @@ void ABlasterPlayerController::OnMatchStateSetFunc(bool bTeamsMatch)
 {
 	if (MatchState == MatchState::WaitingToStart)
 	{
-		BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+		//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 		if (BlasterHUD)
 		{
 			BlasterHUD->AddAnnouncement();
@@ -1003,7 +1010,7 @@ void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerStat
 	APlayerState* Self = GetPlayerState<APlayerState>();
 	if (Attacker && Victim && Self)
 	{
-		BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+		//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 		if (BlasterHUD)
 		{
 			if (Attacker == Self && Victim != Self)

@@ -261,6 +261,16 @@ void ACharacterBase::Tick(float DeltaTime)
 			if (!bIsElimmed) ExecutePhysicsRecover();
 		}
 	}
+
+	BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
+	if (BlasterGameMode)
+	{
+		FName MatchState = BlasterGameMode->GetMatchState();
+		if (MatchState == MatchState::Cooldown)
+		{
+			bDisableGameplay = bDisableGameplay == false ? true : bDisableGameplay;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -1838,7 +1848,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	//{
 	//	DisableInput(BlasterPlayerController);
 	//}
-	//bDisableGameplay = true;
+	bDisableGameplay = true;
 	FireButtonPressed(false);
 
 	if (DeadMontage)

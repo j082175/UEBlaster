@@ -51,7 +51,7 @@ void ACasing::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitive
 			UGameplayStatics::PlaySoundAtLocation(this, ShellSound, GetActorLocation());
 		}
 
-		SetLifeSpan(5.f);
+		SetLifeSpan(DestroyTime);
 		bIsHit = true;
 		CasingMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		CasingMesh->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Ignore);
