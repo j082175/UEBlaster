@@ -100,6 +100,8 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//}
 
 
+
+
 	HideCameraIfCharacterClose();
 
 	//if (HasAuthority() && IsLocallyControlled())
@@ -157,7 +159,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 	//if (HasAuthority() && IsLocallyControlled())
 	//{
-	//	UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
+		//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	//}
 
 }
@@ -398,7 +400,7 @@ void ABlasterCharacter::PollInit()
 			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 			if (BlasterGameState && BlasterGameState->TopScoringPlayers.Contains(BlasterPlayerState))
 			{
-				MulticastGainedTheLead();
+				//MulticastGainedTheLead();
 			}
 		}
 	}

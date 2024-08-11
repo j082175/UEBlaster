@@ -350,7 +350,7 @@ protected:
 	float AO_Pitch;
 	FRotator StartingAimRotation;
 
-	ETurningInPlace TurningInPlace;
+	ETurningInPlace TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	// 
 public:
 	UFUNCTION(NetMulticast, Reliable)
@@ -432,7 +432,7 @@ protected:
 
 
 	UPROPERTY(Replicated)
-	EAnimState AnimState;
+	EAnimState AnimState = EAnimState::EAS_UnEquipped;
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsSprint : 1;

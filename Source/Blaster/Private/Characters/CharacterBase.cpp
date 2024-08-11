@@ -147,7 +147,7 @@ void ACharacterBase::PostInitializeComponents()
 		}
 
 	}
-
+	
 	if (LagCompensation)
 	{
 		LagCompensation->Character = this;
@@ -1050,6 +1050,8 @@ void ACharacterBase::CalculateMeshLocation()
 
 void ACharacterBase::SetRagdollCollision()
 {
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetConstraintProfileForAll(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);

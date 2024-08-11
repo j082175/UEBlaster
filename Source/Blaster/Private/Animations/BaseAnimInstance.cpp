@@ -164,7 +164,11 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		//	bUseFABRIK = !CharacterOwner->IsLocallyReloading();
 		//}
 
-		bUseFABRIK = (int)CharacterOwner->GetCombatState() <= (int)ECombatState::ECS_Attacking;
+		bUseFABRIK = (int)CharacterOwner->GetCombatState() <= (int)ECombatState::ECS_Attacking && AnimState == EAnimState::EAS_Combat || AnimState == EAnimState::EAS_Equipped;
+
+		//UE_LOG(LogTemp, Display, TEXT("AnimState : %s"), *UEnum::GetDisplayValueAsText(AnimState).ToString());
+		//UE_LOG(LogTemp, Display, TEXT("TurningInPlace : %s"), *UEnum::GetDisplayValueAsText(TurningInPlace).ToString());
+
 
 		//if (CharacterOwner->HasAuthority())
 		//PRINT_DEBUG_LOCALROLE(CharacterOwner);

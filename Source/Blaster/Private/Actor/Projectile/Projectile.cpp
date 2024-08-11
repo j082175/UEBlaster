@@ -58,6 +58,7 @@ AProjectile::AProjectile()
 	FieldSystemComponent->SetupAttachment(RootComponent);
 
 	CollisionBox->SetCollisionProfileName(PROFILE_Projectile);
+	CollisionBox->SetCollisionObjectType(ECC_Projectile);
 }
 
 void AProjectile::Destroyed()
@@ -107,10 +108,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	//	BlasterCharacter->MulticastHit();
 	//}
 
+	//UE_LOG(LogTemp, Display, TEXT("%s"), *OtherComp->GetName());
+
+
 	IHitInterface* HitActor = Cast<IHitInterface>(OtherActor);
 	if (HitActor)
 	{
-
 		HitActor->IGetHit(GetActorLocation());
 		ApplyForce(FieldSystemComponent, Hit);
 

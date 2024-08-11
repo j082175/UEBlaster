@@ -3,9 +3,11 @@
 UENUM(BlueprintType)
 enum class EAnimState : uint8
 {
-	EAS_UnEquipped = 0 UMETA(DisplayName = "UnEquipped"),
+	EAS_Combat = 0 UMETA(DisplayName = "Combat"),
+	EAS_UnEquipped UMETA(DisplayName = "UnEquipped"),
 	EAS_Equipped UMETA(DisplayName = "Equipped"),
-	EAS_Combat UMETA(DisplayName = "Combat"),
+
+
 	EAS_MAX UMETA(DisplayName = "Default_MAX")
 };
 

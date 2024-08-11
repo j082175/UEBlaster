@@ -3,6 +3,7 @@
 
 #include "HUD/ElimAnnouncement.h"
 #include "Components/TextBlock.h"
+#include "Components/HorizontalBox.h"
 
 void UElimAnnouncement::SetElimAnnouncementText(FString AttackerName, FString VictimName)
 {

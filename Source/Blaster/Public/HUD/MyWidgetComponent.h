@@ -14,4 +14,6 @@ class BLASTER_API UMyWidgetComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void InitWidget() override;
 };

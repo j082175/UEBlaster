@@ -34,7 +34,6 @@ void UAttributeComponent::BeginPlay()
 	Owner = Cast<ACharacterBase>(GetOwner());
 
 	OnParryGaugeChanged.Broadcast(0.f, MaxParryGauge);
-
 }
 
 
