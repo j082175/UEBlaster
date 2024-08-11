@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+//#include "Blueprint/UserWidget.h"
+#include "HUD/MyUserWidget.h"
 #include "HpBarWidget.generated.h"
 
 /**
  *
  */
 UCLASS()
-class BLASTER_API UHpBarWidget : public UUserWidget
+class BLASTER_API UHpBarWidget : public UMyUserWidget
 {
 	GENERATED_BODY()
 public:
@@ -22,7 +23,7 @@ public:
 
 	void SetHpBar(float Percentage);
 	void SetShieldBar(float Percentage);
-	void SetParryBar(float Percentage);
+	void SetParryBar(float InCurrent, float InMax);
 
 	void ParryGaugeAnimStart(bool InCheck);
 

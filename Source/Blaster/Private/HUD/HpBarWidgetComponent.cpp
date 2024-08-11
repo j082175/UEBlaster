@@ -6,7 +6,7 @@
 
 #include "Net/UnrealNetwork.h"
 
-#include "Interfaces/WidgetBindDelegateInterface.h"
+//#include "Interfaces/WidgetBindDelegateInterface.h"
 
 UHpBarWidgetComponent::UHpBarWidgetComponent()
 {
@@ -38,11 +38,11 @@ void UHpBarWidgetComponent::InitWidget()
 
 
 
-	IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwner());
-	if (WidgetOwner)
-	{
-		WidgetOwner->IBindOverheadWidget(this);
-	}
+	//IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwner());
+	//if (WidgetOwner)
+	//{
+	//	WidgetOwner->IBindOverheadWidget(this);
+	//}
 }
 
 void UHpBarWidgetComponent::BeginPlay()

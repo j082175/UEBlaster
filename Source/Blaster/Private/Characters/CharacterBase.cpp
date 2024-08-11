@@ -313,7 +313,7 @@ void ACharacterBase::IGetHit(const FVector& InHitPoint)
 
 }
 
-void ACharacterBase::IBindOverheadWidget(UWidgetComponent* InWidgetComponent)
+void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 {
 	if (AttributeComponent == nullptr) return;
 
@@ -321,12 +321,12 @@ void ACharacterBase::IBindOverheadWidget(UWidgetComponent* InWidgetComponent)
 	//AttributeComponent->OnShieldChanged.AddDynamic(InHpBarWidgetComponent, &UHpBarWidgetComponent::SetShieldBar);
 
 
-	if (UHpBarWidgetComponent* Hp = Cast<UHpBarWidgetComponent>(InWidgetComponent))
+	if (UHpBarWidget* Hp = Cast<UHpBarWidget>(InUserWidget))
 	{
-		AttributeComponent->OnHpChanged.AddUObject(Hp, &UHpBarWidgetComponent::SetHpBar);
-		AttributeComponent->OnShieldChanged.AddUObject(Hp, &UHpBarWidgetComponent::SetShieldBar);
-		AttributeComponent->OnParryGaugeChanged.AddUObject(Hp, &UHpBarWidgetComponent::SetParryBar);
-		AttributeComponent->OnParryGaugeAnim.AddUObject(Hp, &UHpBarWidgetComponent::ParryGaugeAnimStart);
+		AttributeComponent->OnHpChanged.AddUObject(Hp, &UHpBarWidget::SetHpBar);
+		AttributeComponent->OnShieldChanged.AddUObject(Hp, &UHpBarWidget::SetShieldBar);
+		AttributeComponent->OnParryGaugeChanged.AddUObject(Hp, &UHpBarWidget::SetParryBar);
+		AttributeComponent->OnParryGaugeAnim.AddUObject(Hp, &UHpBarWidget::ParryGaugeAnimStart);
 	}
 
 

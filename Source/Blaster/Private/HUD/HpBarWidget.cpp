@@ -4,11 +4,18 @@
 #include "HUD/HpBarWidget.h"
 #include "Components/ProgressBar.h"
 #include "Animation/WidgetAnimation.h"
+#include "Interfaces/WidgetBindDelegateInterface.h"
 
 
 void UHpBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(OwingActor);
+	if (WidgetOwner)
+	{
+		WidgetOwner->IBindOverheadWidget(this);
+	}
 }
 
 void UHpBarWidget::SetHpBar(float Percentage)
@@ -21,9 +28,9 @@ void UHpBarWidget::SetShieldBar(float Percentage)
 	ShieldBar->SetPercent(Percentage);
 }
 
-void UHpBarWidget::SetParryBar(float Percentage)
+void UHpBarWidget::SetParryBar(float InCurrent, float InMax)
 {
-	ParryGauge->SetPercent(Percentage);
+	ParryGauge->SetPercent(InCurrent / InMax);
 }
 
 void UHpBarWidget::ParryGaugeAnimStart(bool InCheck)

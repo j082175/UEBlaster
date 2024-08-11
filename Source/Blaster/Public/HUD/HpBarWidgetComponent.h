@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/WidgetComponent.h"
+//#include "Components/WidgetComponent.h"
+#include "HUD/MyWidgetComponent.h"
 #include "HpBarWidgetComponent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BLASTER_API UHpBarWidgetComponent : public UWidgetComponent
+class BLASTER_API UHpBarWidgetComponent : public UMyWidgetComponent
 {
 	GENERATED_BODY()
 public:

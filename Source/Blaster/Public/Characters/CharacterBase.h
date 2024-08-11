@@ -128,7 +128,7 @@ protected:
 protected:
 	// IHitInterface
 	virtual void IGetHit(const FVector& HitPoint) override;
-	virtual void IBindOverheadWidget(class UWidgetComponent* InHpBarWidgetComponent) override;
+	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
 	virtual bool IIsParring() override;
 	virtual bool ICheckParry(AActor* OtherActor) override;
 
