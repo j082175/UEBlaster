@@ -177,3 +177,13 @@ void UCharacterOverlay::HighPingWarning()
 	HighPingImage->SetOpacity(1.f);
 	PlayAnimation(HighPingAnimation, 0.f, 10);
 }
+
+void UCharacterOverlay::StopHighPingWarning()
+{
+	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	HighPingImage->SetOpacity(0.f);
+	if (IsAnimationPlaying(HighPingAnimation))
+	{
+		StopAnimation(HighPingAnimation);
+	}
+}

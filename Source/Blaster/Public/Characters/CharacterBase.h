@@ -346,8 +346,12 @@ protected:
 	float ProxyYawDelta;
 	float TimeSinceLastMovementReplication;
 
+	UPROPERTY(Replicated)
 	float AO_Yaw;
+
+	UPROPERTY(Replicated)
 	float AO_Pitch;
+
 	FRotator StartingAimRotation;
 
 	ETurningInPlace TurningInPlace = ETurningInPlace::ETIP_NotTurning;

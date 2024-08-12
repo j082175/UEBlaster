@@ -176,6 +176,11 @@ void AWeapon::OnEquipped()
 		{
 			BlasterOwnerController->HighPingDelegate.AddDynamic(this, &ThisClass::OnPingTooHigh);
 		}
+
+		//if (BlasterOwnerController && HasAuthority() && !BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.IsBound())
+		//{
+		//	BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.AddDynamic(this, &ThisClass::OnPingTooHigh);
+		//}
 	}
 
 }
@@ -198,6 +203,11 @@ void AWeapon::OnDropped()
 		{
 			BlasterOwnerController->HighPingDelegate.RemoveDynamic(this, &ThisClass::OnPingTooHigh);
 		}
+
+		//if (BlasterOwnerController && HasAuthority() && BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.IsBound())
+		//{
+		//	BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.RemoveDynamic(this, &ThisClass::OnPingTooHigh);
+		//}
 	}
 }
 
@@ -216,6 +226,11 @@ void AWeapon::OnEquippedSecondary()
 		{
 			BlasterOwnerController->HighPingDelegate.RemoveDynamic(this, &ThisClass::OnPingTooHigh);
 		}
+
+		//if (BlasterOwnerController && HasAuthority() && BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.IsBound())
+		//{
+		//	BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.RemoveDynamic(this, &ThisClass::OnPingTooHigh);
+		//}
 	}
 }
 

@@ -312,4 +312,5 @@ protected:
 	void MulticastTest();
 
 
+	uint8 Check : 1 = false;
 };

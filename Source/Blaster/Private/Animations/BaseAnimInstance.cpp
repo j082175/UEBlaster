@@ -70,6 +70,8 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		AO_Yaw = CharacterOwner->GetAO_Yaw();
 		AO_Pitch = CharacterOwner->GetAO_Pitch();
 
+		//UE_LOG(LogTemp, Display, TEXT("AOPITCH : %f"), AO_Pitch);
+
 		/*------------------------------------*/
 
 

@@ -21,7 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHig
  *
  */
 UCLASS()
-class BLASTER_API ABlasterPlayerController : public APlayerController/*, public IWidgetBindDelegateInterface*/
+class BLASTER_API ABlasterPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
@@ -32,6 +32,7 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 	virtual void Tick(float DeltaTime) override;
+
 
 	//virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
 
@@ -67,6 +68,10 @@ public:
 	void HideTeamScores();
 	void InitTeamScores();
 	virtual float GetServerTime(); // Synced with server world clock
+
+	void SetHUDTime();
+	void CheckTimeSync(float DeltaTime);
+
 private:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	//TObjectPtr<class UCharacterOverlay> CharacterOverlay;
@@ -78,8 +83,8 @@ private:
 	TObjectPtr<class ABlasterCharacter> BlasterCharacter;
 
 
+
 protected:
-	void SetHUDTime();
 
 	// Requests the current server time, passing in the client's time when the request was sent
 	UFUNCTION(Server, Reliable)
@@ -92,7 +97,6 @@ protected:
 
 	virtual void ReceivedPlayer() override; // Sync with server clock as soon as possible
 
-	void CheckTimeSync(float DeltaTime);
 
 
 
@@ -105,8 +109,9 @@ protected:
 public:
 	FHighPingDelegate HighPingDelegate;
 
-protected:
 	void CheckPing(float DeltaTime);
+
+protected:
 	UFUNCTION(Server, Reliable)
 	void ServerReportPingStatus(bool bHighPing);
 	void HighPingWarning();
@@ -137,13 +142,15 @@ public:
 	void OnMatchStateSet(FName State, bool bTeamsMatch = false);
 	void HandleMatchHasStarted(bool bTeamsMatch = false);
 	void HandleCooldown();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheckMatchState();
 private:
 	void OnMatchStateSetFunc(bool bTeamsMatch = false);
 	UFUNCTION()
 	void OnRep_MatchState();
 
-	UFUNCTION(Server, Reliable)
-	void ServerCheckMatchState();
+
 
 	UFUNCTION(Client, Reliable)
 	void ClientJoinMidgame(FName StateOfMatch, float InWarmupTime, float InMatchTime, float StartingTime, float Cooldown);
@@ -217,6 +224,8 @@ protected:
 	TObjectPtr<class UChatBox> ChatBox;
 
 
+	void CheckBindWidget();
+	void CheckBindWidgetTick();
 	uint8 CheckWidgetDelegateIsBound : 1 = false;
 
 };

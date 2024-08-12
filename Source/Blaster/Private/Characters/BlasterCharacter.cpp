@@ -21,6 +21,7 @@
 
 // Widget
 #include "HUD/OverheadWidget.h"
+#include "HUD/CharacterOverlay.h"
 
 // Network
 #include "Net/UnrealNetwork.h"
@@ -86,7 +87,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//if (!HasAuthority() && IsLocallyControlled()) UE_LOG(LogTemp, Display, TEXT("BlasterCharacter : Crouch : %d"), bIsCrouched);
-
 
 
 	//if (!CheckWidgetDelegateIsBound)
@@ -265,6 +265,7 @@ void ABlasterCharacter::BeginPlay()
 
 		BlasterPlayerController->PollInit(this);
 	}
+	AttributeComponent->OnHpChanged.Broadcast(AttributeComponent->GetCurrentHp(), AttributeComponent->GetMaxHp());
 
 
 	if (AttachedGrenade)

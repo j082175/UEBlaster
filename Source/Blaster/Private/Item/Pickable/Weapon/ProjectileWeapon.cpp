@@ -42,6 +42,8 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 			{
 				if (InstigatorPawn->IsLocallyControlled()) // server, host - use replicated projectile
 				{
+					//UE_LOG(LogTemp, Display, TEXT("server, host"));
+
 					SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 					SpawnedProjectile->bUseServerSideRewind = false;
 					SpawnedProjectile->Damage = Damage;
@@ -49,6 +51,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 				}
 				else // server, not locally controlled  - spawn non-replicated projectile, SSR
 				{
+					//UE_LOG(LogTemp, Display, TEXT("server, not locally controlled"));
 					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 					SpawnedProjectile->bUseServerSideRewind = true;
 
@@ -58,7 +61,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 			{
 				if (InstigatorPawn->IsLocallyControlled()) // client, locally controlled - spawn non-replicated projectile, use SSR
 				{
-					//UE_LOG(LogTemp, Display, TEXT("Autonomous"));
+					//UE_LOG(LogTemp, Display, TEXT("client, locally controlled"));
 					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 					SpawnedProjectile->bUseServerSideRewind = true;
 					SpawnedProjectile->TraceStart = SocketTransform.GetLocation();
@@ -66,8 +69,10 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 				}
 				else // client, not locally controlled - spawn non-replicated projectile, no SSR
 				{
-					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
-					SpawnedProjectile->bUseServerSideRewind = false;
+					//UE_LOG(LogTemp, Display, TEXT("client, not locally controlled"));
+
+					//SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
+					//SpawnedProjectile->bUseServerSideRewind = false;
 				}
 			}
 		}

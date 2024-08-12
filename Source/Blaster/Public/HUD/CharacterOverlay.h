@@ -43,7 +43,8 @@ public:
 		
 
 	void HighPingWarning();
-	
+	void StopHighPingWarning();
+
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UProgressBar> HealthBar;

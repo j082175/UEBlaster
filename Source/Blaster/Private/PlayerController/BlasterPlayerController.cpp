@@ -31,7 +31,6 @@
 
 
 ABlasterPlayerController::ABlasterPlayerController()
-	:CheckWidgetDelegateIsBound(false)
 {
 }
 
@@ -64,6 +63,9 @@ void ABlasterPlayerController::BeginPlay()
 
 	//PrimaryActorTick.TickInterval = 0.1f;
 
+
+	CheckBindWidget();
+
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
@@ -81,8 +83,6 @@ void ABlasterPlayerController::OnUnPossess()
 	Super::OnUnPossess();
 
 	CheckWidgetDelegateIsBound = false;
-
-	RemoveFromRoot();
 }
 
 void ABlasterPlayerController::Tick(float DeltaTime)
@@ -90,13 +90,13 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	/* 여기도 에러뜸 */
-	if (IsLocalController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
-	{
-		SetHUDTime();
-		CheckTimeSync(DeltaTime);
-		CheckPing(DeltaTime);
-	}
-	/*  */
+	//if (IsLocalController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
+	//{
+	//	SetHUDTime();
+	//	CheckTimeSync(DeltaTime);
+	//	CheckPing(DeltaTime);
+	//}
+	///*  */
 
 
 	if (BlasterGameMode == nullptr)
@@ -112,20 +112,19 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 	// Bind UI
 	if (IsLocalController())
 	{
-		//UE_LOG(LogTemp, Display, TEXT("GetOwner() : %x"), GetPawn());
+		CheckBindWidgetTick();
 
-		BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-		if (BlasterHUD && GetPawn() && !CheckWidgetDelegateIsBound)
-		{
-			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
-			if (WBDI)
-			{
-				WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
-			}
-
-			UE_LOG(LogTemp, Error, TEXT("OnPossess CharacterOverlay"));
-			CheckWidgetDelegateIsBound = true;
-		}
+		//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+		//if (BlasterHUD && GetPawn() && !CheckWidgetDelegateIsBound)
+		//{
+		//	IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
+		//	if (WBDI)
+		//	{
+		//		WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
+		//		UE_LOG(LogTemp, Error, TEXT("OnPossess CharacterOverlay"));
+		//		CheckWidgetDelegateIsBound = true;
+		//	}
+		//}
 	}
 
 	//UE_LOG(LogTemp, Display, TEXT("Pitch : %f"), GetControlRotation().Pitch);
@@ -457,12 +456,12 @@ void ABlasterPlayerController::SetHUDMatchCountdown(float CountdownTime)
 void ABlasterPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
 {
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->AnnouncementTypes && BlasterHUD->AnnouncementTypes->WarmupTime;
+	bool bHUDValid = BlasterHUD && BlasterHUD->Announcement && BlasterHUD->Announcement->WarmupTime;
 	if (bHUDValid)
 	{
 		if (CountdownTime < 0.f)
 		{
-			BlasterHUD->AnnouncementTypes->WarmupTime->SetText(FText());
+			BlasterHUD->Announcement->WarmupTime->SetText(FText());
 			return;
 		}
 
@@ -470,7 +469,7 @@ void ABlasterPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
 		int32 Seconds = CountdownTime - Minutes * 60;
 
 		FString CountdownText = FString::Printf(TEXT("%02d : %02d"), Minutes, Seconds);
-		BlasterHUD->AnnouncementTypes->WarmupTime->SetText(FText::FromString(CountdownText));
+		BlasterHUD->Announcement->WarmupTime->SetText(FText::FromString(CountdownText));
 	}
 }
 
@@ -753,9 +752,9 @@ void ABlasterPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 	{
 		BlasterHUD->AddCharacterOverlay();
 
-		if (BlasterHUD->AnnouncementTypes)
+		if (BlasterHUD->Announcement)
 		{
-			BlasterHUD->AnnouncementTypes->SetVisibility(ESlateVisibility::Hidden);
+			BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
 		}
 
 		if (!HasAuthority()) return;
@@ -778,12 +777,12 @@ void ABlasterPlayerController::HandleCooldown()
 	{
 		BlasterHUD->CharacterOverlay->RemoveFromParent();
 
-		bool bHUDValid = BlasterHUD->AnnouncementTypes && BlasterHUD->AnnouncementTypes->AnnouncementText && BlasterHUD->AnnouncementTypes->InfoText;
+		bool bHUDValid = BlasterHUD->Announcement && BlasterHUD->Announcement->AnnouncementText && BlasterHUD->Announcement->InfoText;
 		if (bHUDValid)
 		{
-			BlasterHUD->AnnouncementTypes->SetVisibility(ESlateVisibility::Visible);
+			BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
 			FText AnnouncementText = FText::FromString(AnnouncementTypes::NewMatchStartsIn);
-			BlasterHUD->AnnouncementTypes->AnnouncementText->SetText(AnnouncementText);
+			BlasterHUD->Announcement->AnnouncementText->SetText(AnnouncementText);
 
 			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 			ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
@@ -792,7 +791,7 @@ void ABlasterPlayerController::HandleCooldown()
 				TArray<ABlasterPlayerState*> TopPlayers = BlasterGameState->TopScoringPlayers;
 				FString InfoTextString = bShowTeamScores ? GetTeamsInfoText(BlasterGameState) : GetInfoText(TopPlayers);
 
-				BlasterHUD->AnnouncementTypes->InfoText->SetText(FText::FromString(InfoTextString));
+				BlasterHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
 			}
 
 
@@ -1127,6 +1126,37 @@ void ABlasterPlayerController::OnChatCommittedFunc(const FText& Text, ETextCommi
 	}
 
 	ServerChatCommitted(Text, PlayerName); //TODO: Add a delay so that some absolute cucumber can't spam the chat.
+}
+
+void ABlasterPlayerController::CheckBindWidget()
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	if (BlasterHUD && GetPawn())
+	{
+		IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
+
+		if (WBDI)
+		{
+			WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
+			UE_LOG(LogTemp, Error, TEXT("Beginplay : OnPossess CharacterOverlay"));
+		}
+	}
+}
+
+void ABlasterPlayerController::CheckBindWidgetTick()
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	if (BlasterHUD && GetPawn() && !CheckWidgetDelegateIsBound)
+	{
+		IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
+
+		if (WBDI)
+		{
+			WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
+			UE_LOG(LogTemp, Error, TEXT("Beginplay : OnPossess CharacterOverlay"));
+		}
+		CheckWidgetDelegateIsBound = true;
+	}
 }
 
 void ABlasterPlayerController::ServerChatCommitted_Implementation(const FText& Text, const FString& PlayerName)
