@@ -17,5 +17,5 @@ static void AddOnScreenDebugMessage(UPrimitiveComponent * OverlappedComponent = 
 
 static void NullChecker(UObject * InObject, const FString& ObjectName, const FString & Name)
 {
-	if (!InObject) UE_LOG(LogTemp, Error, TEXT("NullChecker : %s's %s is NULL"), *Name, *ObjectName);
+	//if (!InObject) UE_LOG(LogTemp, Error, TEXT("NullChecker : %s's %s is NULL"), *Name, *ObjectName);
 }

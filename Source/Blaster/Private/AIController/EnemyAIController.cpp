@@ -151,30 +151,30 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 
 	if (Result == AISense_Sight)
 	{ 
-		UE_LOG(LogTemp, Display, TEXT("AISense_Sight Detected"));
+		//UE_LOG(LogTemp, Display, TEXT("AISense_Sight Detected"));
 		if (GetBlackboardComponent()) GetBlackboardComponent()->SetValueAsObject(TARGET_ACTOR, Actor);
 	}
 	else if (Result == AISense_Hearing)
 	{
-		UE_LOG(LogTemp, Display, TEXT("AISense_Hearing Detected"));
+		//UE_LOG(LogTemp, Display, TEXT("AISense_Hearing Detected"));
 		if (GetBlackboardComponent()) GetBlackboardComponent()->SetValueAsVector(DETECTED_LOCATION, Stimulus.StimulusLocation);
 	}
 	else if (Result == AISense_Damage)
 	{
-		UE_LOG(LogTemp, Display, TEXT("AISense_Damage Detected"));
+		//UE_LOG(LogTemp, Display, TEXT("AISense_Damage Detected"));
 
 	}
 	else if (Result == AISense_Prediction)
 	{
-		UE_LOG(LogTemp, Display, TEXT("AISense_Prediction Detected"));
+		//UE_LOG(LogTemp, Display, TEXT("AISense_Prediction Detected"));
 	}
 	else if (Result == AISense_Team)
 	{
-		UE_LOG(LogTemp, Display, TEXT("AISense_Team Detected"));
+		//UE_LOG(LogTemp, Display, TEXT("AISense_Team Detected"));
 	}
 	else if (Result == AISense_Touch)
 	{
-		UE_LOG(LogTemp, Display, TEXT("AISense_Touch Detected"));
+		//UE_LOG(LogTemp, Display, TEXT("AISense_Touch Detected"));
 	}
 	else if (Result != nullptr)
 	{
@@ -183,7 +183,7 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("No Sensing"));
+		//UE_LOG(LogTemp, Display, TEXT("No Sensing"));
 	}
 }
 
@@ -203,7 +203,7 @@ void AEnemyAIController::OnTargetPerceptionInfoUpdated(const FActorPerceptionUpd
 
 void AEnemyAIController::OnTargetPerceptionForgotten(AActor* Actor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnTargetPerceptionForgotten : %s"), *Actor->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("OnTargetPerceptionForgotten : %s"), *Actor->GetName());
 	
 	AActor* TargetActor = Cast<AActor>(GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
 	if (TargetActor == Actor && GetBlackboardComponent())

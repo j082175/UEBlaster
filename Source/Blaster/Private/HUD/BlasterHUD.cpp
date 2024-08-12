@@ -9,6 +9,15 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/HorizontalBox.h"
 #include "Components/CanvasPanelSlot.h"
+#include "HUD/MyWidgetComponent.h"
+#include "Characters/CharacterBase.h"
+
+
+ABlasterHUD::ABlasterHUD()
+{
+
+}
+
 
 void ABlasterHUD::DrawHUD()
 {
@@ -77,6 +86,9 @@ void ABlasterHUD::AddCharacterOverlay()
 void ABlasterHUD::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Display, TEXT("ABlasterHUD::BeginPlay"));
+
 
 	//AddCharacterOverlay();
 	APlayerController* PlayerController = GetOwningPlayerController();

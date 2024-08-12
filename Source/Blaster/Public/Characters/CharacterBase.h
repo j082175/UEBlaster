@@ -125,7 +125,7 @@ protected:
 	class ABlasterPlayerState* BlasterPlayerState;
 
 	// Interface Functions
-protected:
+public:
 	// IHitInterface
 	virtual void IGetHit(const FVector& HitPoint) override;
 	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
@@ -869,7 +869,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> UpMontage;
-
 
 
 };

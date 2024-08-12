@@ -34,6 +34,8 @@
 #include "HUD/OverheadWidget.h"
 #include "HUD/HpBarWidgetComponent.h"
 #include "HUD/HpBarWidget.h"
+#include "HUD/CharacterOverlay.h"
+#include "HUD/Announcement.h"
 
 // Network
 #include "Net/UnrealNetwork.h"
@@ -99,7 +101,7 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 
-	UE_LOG(LogTemp, Display, TEXT("Super getname : %s"), *GetName());
+	//UE_LOG(LogTemp, Display, TEXT("Super getname : %s"), *GetName());
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -147,7 +149,7 @@ void ACharacterBase::PostInitializeComponents()
 		}
 
 	}
-	
+
 	if (LagCompensation)
 	{
 		LagCompensation->Character = this;
@@ -176,6 +178,7 @@ void ACharacterBase::BeginPlay()
 	InitializeDelegates();
 	InitializeWidgets();
 
+	AttributeComponent->OnHpChanged.Broadcast(AttributeComponent->GetCurrentHp(), AttributeComponent->GetMaxHp());
 
 
 
@@ -229,7 +232,6 @@ void ACharacterBase::Tick(float DeltaTime)
 	//UE_LOG(LogTemp, Display, TEXT("%s"), *GetFName().ToString());
 
 	PollInit();
-
 
 
 	RotateInPlace(DeltaTime);
@@ -317,17 +319,28 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 {
 	if (AttributeComponent == nullptr) return;
 
+	UE_LOG(LogTemp, Display, TEXT("ACharacterBase::IBindOverheadWidget"));
+
 	//AttributeComponent->OnHpChanged.AddDynamic(InHpBarWidgetComponent, &UHpBarWidgetComponent::SetHpBar);
 	//AttributeComponent->OnShieldChanged.AddDynamic(InHpBarWidgetComponent, &UHpBarWidgetComponent::SetShieldBar);
 
-
 	if (UHpBarWidget* Hp = Cast<UHpBarWidget>(InUserWidget))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget HpBar"));
+
 		AttributeComponent->OnHpChanged.AddUObject(Hp, &UHpBarWidget::SetHpBar);
 		AttributeComponent->OnShieldChanged.AddUObject(Hp, &UHpBarWidget::SetShieldBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(Hp, &UHpBarWidget::SetParryBar);
 		AttributeComponent->OnParryGaugeAnim.AddUObject(Hp, &UHpBarWidget::ParryGaugeAnimStart);
 	}
+	else if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget CharacterOverlay : %s"), *InUserWidget->GetName());
+		AttributeComponent->OnHpChanged.AddUObject(CO, &UCharacterOverlay::SetHpBar);
+		AttributeComponent->OnHpChanged.Broadcast(AttributeComponent->GetCurrentHp(), AttributeComponent->GetMaxHp());
+	}
+
+
 
 
 
@@ -444,7 +457,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 	}
 
 	//HpBarWidgetComponent->SetHpBar(CurrentHealth / AttributeComponent->GetMaxHp());
-	AttributeComponent->OnHpChanged.Broadcast(CurrentHealth / MaxHealth);
+	AttributeComponent->OnHpChanged.Broadcast(CurrentHealth , MaxHealth);
 	AttributeComponent->OnShieldChanged.Broadcast(CurrentShield / MaxShield);
 	AttributeComponent->OnParryGaugeChanged.Broadcast(AttributeComponent->GetCurrentParryGauge(), AttributeComponent->GetMaxParryGauge());
 
@@ -994,7 +1007,7 @@ void ACharacterBase::GroundAttack(FName OpponentTag)
 
 	TSet<AActor*> CheckActors;
 	CheckActors.Reserve(OutHitResults.Num());
-	
+
 	for (size_t i = 0; i < OutHitResults.Num(); i++)
 	{
 		//if (OutHitResults[i].bBlockingHit && !OutHitResults[i].GetActor()->Tags.IsEmpty() && OutHitResults[i].GetActor()->Tags[0].IsValid() && OutHitResults[i].GetActor()->Tags[0] == OpponentTag)

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Interfaces/WidgetBindDelegateInterface.h"
+
 #include "Item/Pickable/Weapon/WeaponTypes.h"
 
 // Enums
@@ -19,14 +21,20 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHig
  *
  */
 UCLASS()
-class BLASTER_API ABlasterPlayerController : public APlayerController
+class BLASTER_API ABlasterPlayerController : public APlayerController/*, public IWidgetBindDelegateInterface*/
 {
 	GENERATED_BODY()
 public:
+	ABlasterPlayerController();
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 	virtual void Tick(float DeltaTime) override;
+
+	//virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
+
 
 	FORCEINLINE class ABlasterHUD* GetBlasterHUD() const { return BlasterHUD; }
 
@@ -68,7 +76,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class ABlasterCharacter> BlasterCharacter;
-
 
 
 protected:
@@ -209,5 +216,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UChatBox> ChatBox;
 
+
+	uint8 CheckWidgetDelegateIsBound : 1 = false;
 
 };

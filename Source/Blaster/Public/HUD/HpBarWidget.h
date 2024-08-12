@@ -21,7 +21,7 @@ public:
 	FORCEINLINE class UProgressBar* GetParryBar() const { return ParryGauge; }
 
 
-	void SetHpBar(float Percentage);
+	void SetHpBar(float InCurrent, float InMax);
 	void SetShieldBar(float Percentage);
 	void SetParryBar(float InCurrent, float InMax);
 

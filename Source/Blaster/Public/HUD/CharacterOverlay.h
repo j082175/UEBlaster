@@ -3,20 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+//#include "Blueprint/UserWidget.h"
+#include "HUD/MyUserWidget.h"
 #include "CharacterOverlay.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BLASTER_API UCharacterOverlay : public UUserWidget
+class BLASTER_API UCharacterOverlay : public UMyUserWidget
 {
 	GENERATED_BODY()
 public:
+	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	void Test(float DeltaTime);
+
+
+public:
+	void SetHpBar(float InCurrent, float InMax);
+	
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UProgressBar> HealthBar;

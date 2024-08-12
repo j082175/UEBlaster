@@ -310,4 +310,6 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastTest();
+
+
 };

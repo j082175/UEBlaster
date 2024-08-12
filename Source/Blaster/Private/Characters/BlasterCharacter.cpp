@@ -87,6 +87,15 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	//if (!HasAuthority() && IsLocallyControlled()) UE_LOG(LogTemp, Display, TEXT("BlasterCharacter : Crouch : %d"), bIsCrouched);
 
+
+
+	//if (!CheckWidgetDelegateIsBound)
+	//{
+	//	UE_LOG(LogTemp, Display, TEXT("CheckWidgetDelegateIsBound"));
+	//	CheckWidgetDelegateIsBound = AttributeComponent->OnHpChanged.IsBound() ? true : false;
+	//	AttributeComponent->OnHpChanged.Broadcast(1.f, 1.f);
+	//}
+
 	if (IsLocallyControlled())
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
@@ -98,7 +107,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//{
 	//	OverheadWidget->ShowPlayerName(GetPlayerState());
 	//}
-
 
 
 
@@ -208,7 +216,12 @@ void ABlasterCharacter::PostInitializeComponents()
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Display, TEXT("ABlasterCharacter::BeginPlay()"));
+
 	SpawnDefaultWeapon();
+
+
 
 	//UE_LOG(LogTemp, Display, TEXT("BeginPlay"));
 	//BlasterPlayerController = BlasterPlayerController.Get() == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController.Get();
@@ -411,6 +424,7 @@ void ABlasterCharacter::PollInit()
 	{
 		AttributeComponent->OnSpChanged.AddUObject(BlasterPlayerController, &ABlasterPlayerController::SetHUDSp);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(BlasterPlayerController, &ABlasterPlayerController::SetHUDParryGauge);
+		AttributeComponent->OnHpChanged.AddUObject(BlasterPlayerController, &ABlasterPlayerController::SetHUDHealth);
 
 	}
 

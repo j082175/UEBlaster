@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AttributeComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, float/*, Percentage*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHpChangedDelegate, float/*, Percentage*/, float);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShieldChangedDelegate, float/*, Percentage*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSpChangedDelegate, float/*, Percentage*/, float);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnParryGaugeChangedDelegate, float/*, Percentage*/, float);

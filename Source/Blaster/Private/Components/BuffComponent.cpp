@@ -110,7 +110,7 @@ void UBuffComponent::HealRampUp(float DeltaTime)
 
 
 	if (BlasterPlayerController) BlasterPlayerController->UpdateHUDHealth();
-	OwnerAttribute->OnHpChanged.Broadcast(OwnerAttribute->GetCurrentHp() / OwnerAttribute->GetMaxHp());
+	OwnerAttribute->OnHpChanged.Broadcast(OwnerAttribute->GetCurrentHp() , OwnerAttribute->GetMaxHp());
 
 	AmountToHeal -= HealThisFrame;
 

@@ -30,6 +30,11 @@
 
 
 
+ABlasterPlayerController::ABlasterPlayerController()
+	:CheckWidgetDelegateIsBound(false)
+{
+}
+
 void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -41,6 +46,9 @@ void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 void ABlasterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::BeginPlay"));
+
 
 	//if (GEngine)
 	//{
@@ -61,12 +69,17 @@ void ABlasterPlayerController::BeginPlay()
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	UE_LOG(LogTemp, Display, TEXT("OnPossess"));
+	UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess, BlasterHUD : %x"), BlasterHUD);
 
 	PollInit(InPawn);
 
+}
 
+void ABlasterPlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
 
+	CheckWidgetDelegateIsBound = false;
 }
 
 void ABlasterPlayerController::Tick(float DeltaTime)
@@ -80,7 +93,7 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 		CheckTimeSync(DeltaTime);
 		CheckPing(DeltaTime);
 	}
-		/*  */
+	/*  */
 
 	if (BlasterGameMode == nullptr)
 	{
@@ -91,6 +104,25 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 		}
 	}
 
+
+	// Bind UI
+	if (IsLocalController())
+	{
+		//UE_LOG(LogTemp, Display, TEXT("GetOwner() : %x"), GetPawn());
+
+		BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+		if (BlasterHUD && GetPawn() && !CheckWidgetDelegateIsBound)
+		{
+			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
+			if (WBDI)
+			{
+				WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
+			}
+
+			UE_LOG(LogTemp, Error, TEXT("OnPossess CharacterOverlay"));
+			CheckWidgetDelegateIsBound = true;
+		}
+	}
 
 	//UE_LOG(LogTemp, Display, TEXT("Pitch : %f"), GetControlRotation().Pitch);
 
@@ -200,6 +232,16 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 
 }
 
+//void ABlasterPlayerController::IBindOverheadWidget(UUserWidget* InUserWidget)
+//{
+//	UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindOverheadWidget"));
+//	if (BlasterCharacter && !CheckWidgetDelegateIsBound)
+//	{
+//		CheckWidgetDelegateIsBound = true;
+//		BlasterCharacter->IBindOverheadWidget(InUserWidget);
+//	}
+//}
+
 
 void ABlasterPlayerController::SetupInputComponent()
 {
@@ -257,26 +299,16 @@ void ABlasterPlayerController::UpdateHUDAmmo()
 
 void ABlasterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
-	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HealthBar && BlasterHUD->CharacterOverlay->HealthText;
+	////BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	//bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HealthBar && BlasterHUD->CharacterOverlay->HealthText;
 
-	if (bHUDValid)
-	{
-		//UE_LOG(LogTemp, Display, TEXT("SetHUDHealth"));
-		const float HealthPercent = Health / MaxHealth;
-		BlasterHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
-		FString HealthText = FString::Printf(TEXT("%d / %d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
-		BlasterHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
-	}
-	else
-	{
-		//UE_LOG(LogTemp, Error, TEXT("SetHUDHealth Failed!"));
-		//UE_LOG(LogTemp, Error, TEXT("BlasterHUD : %x"), BlasterHUD);
-		//if (BlasterHUD) UE_LOG(LogTemp, Error, TEXT("BlasterHUD->CharacterOverlay : %x"), BlasterHUD->CharacterOverlay);
-
-
-	}
-
+	//if (bHUDValid)
+	//{
+	//	const float HealthPercent = Health / MaxHealth;
+	//	BlasterHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
+	//	FString HealthText = FString::Printf(TEXT("%d / %d"), FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
+	//	BlasterHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
+	//}
 }
 
 void ABlasterPlayerController::SetHUDShield(float Shield, float MaxShield)
@@ -514,6 +546,7 @@ void ABlasterPlayerController::PollInit(APawn* InPawn)
 
 		if (Att == nullptr) return;
 
+		Att->OnHpChanged.Broadcast(Att->GetCurrentHp(), Att->GetMaxHp());
 		SetHUDHealth(Att->GetCurrentHp(), Att->GetMaxHp());
 		SetHUDShield(Att->GetCurrentShield(), Att->GetMaxShield());
 		SetHUDSp(Att->GetCurrentSp(), Att->GetMaxSp());

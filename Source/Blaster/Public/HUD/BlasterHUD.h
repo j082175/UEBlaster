@@ -37,8 +37,12 @@ UCLASS()
 class BLASTER_API ABlasterHUD : public AHUD
 {
 	GENERATED_BODY()
+public:
+	ABlasterHUD();
+
 protected:
 	virtual void BeginPlay() override;
+
 
 public:
 	virtual void DrawHUD() override;

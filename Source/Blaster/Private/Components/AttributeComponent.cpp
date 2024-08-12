@@ -125,7 +125,7 @@ void UAttributeComponent::OnRep_Health(float LastHealth)
 	if (CurrentHp != LastHealth)
 	{
 		//HpBarWidgetComponent->SetHpBar(CurrentHp / MaxHp);
-		OnHpChanged.Broadcast(CurrentHp / MaxHp);
+		OnHpChanged.Broadcast(CurrentHp , MaxHp);
 		//PlayerController->UpdateHUDHealth();
 		//Owner->PlayHitReactMontage();
 
@@ -135,6 +135,7 @@ void UAttributeComponent::OnRep_Health(float LastHealth)
 			if (PlayerController)
 			{
 				PlayerController->SetHUDHealth(CurrentHp, MaxHp);
+				OnHpChanged.Broadcast(CurrentHp , MaxHp);
 			}
 		}
 

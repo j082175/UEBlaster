@@ -18,9 +18,9 @@ void UHpBarWidget::NativeConstruct()
 	}
 }
 
-void UHpBarWidget::SetHpBar(float Percentage)
+void UHpBarWidget::SetHpBar(float InCurrent, float InMax)
 {
-	HpBar->SetPercent(Percentage);
+	HpBar->SetPercent(InCurrent / InMax);
 }
 
 void UHpBarWidget::SetShieldBar(float Percentage)
