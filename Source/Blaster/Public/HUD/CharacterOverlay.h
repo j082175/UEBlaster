@@ -33,7 +33,6 @@ public:
 	void SetHUDCarriedAmmo(int32 CarriedAmmo);
 	void SetHUDWeaponType(EWeaponName InWeaponType);
 	void SetHUDMatchCountdown(float CountdownTime);
-	void SetHUDAnnouncementCountdown(float CountdownTime);
 	void SetHUDGrenades(int32 Grenades);
 
 	void SetHUDRedTeamScore(int32 RedScore);

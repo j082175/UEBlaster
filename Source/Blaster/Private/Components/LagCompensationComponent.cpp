@@ -65,6 +65,7 @@ void ULagCompensationComponent::ServerScoreRequest_Implementation(AActor* InHitC
 		//UE_LOG(LogTemp, Display, TEXT("HitCharacter : %s"), *HitCharacter->GetName());
 		const float Damage = Confirm.bHeadShot ? Character->GetEquippedWeapon()->GetHeadShotDamage() : Character->GetEquippedWeapon()->GetDamage();
 
+		//UE_LOG(LogTemp, Display, TEXT("Damage : %f"), Character->GetEquippedWeapon()->GetDamage());
 		UGameplayStatics::ApplyDamage(HitCharacter, Damage, Character->GetController(), Character->GetEquippedWeapon(), UDamageType::StaticClass());
 	}
 }
@@ -533,6 +534,8 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 	HeadCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	HeadCapsule->SetCollisionResponseToChannel(ECC_HitCapsule, ECollisionResponse::ECR_Block);
 
+	UE_LOG(LogTemp, Display, TEXT("ProjectileConfirmHit Getowner : %s"), *GetOwner()->GetName());
+
 	FPredictProjectilePathParams PathParams;
 	PathParams.bTraceWithCollision = true;
 	PathParams.MaxSimTime = MaxRecordTime;
@@ -542,7 +545,7 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 	PathParams.ProjectileRadius = 5.f;
 	PathParams.TraceChannel = ECC_HitCapsule;
 	PathParams.ActorsToIgnore.Add(GetOwner());
-	PathParams.DrawDebugType = EDrawDebugTrace::ForDuration;
+	PathParams.DrawDebugType = EDrawDebugTrace::None;
 	PathParams.DrawDebugTime = 5.f;
 
 
@@ -576,6 +579,9 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 		}
 
 		UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
+
+		//UE_LOG(LogTemp, Display, TEXT("ProjectileConfirmHit : %s"), *PathResult.HitResult.GetActor()->GetName());
+
 		if (PathResult.HitResult.bBlockingHit) // we hit the head, return early
 		{
 			if (PathResult.HitResult.GetComponent())
