@@ -36,9 +36,9 @@ void ABlasterHUD::DrawHUD()
 
 void ABlasterHUD::AddAnnouncement()
 {
-	if (Announcement)
+	if (AnnouncementTypes)
 	{
-		Announcement->AddToViewport();
+		AnnouncementTypes->AddToViewport();
 	}
 }
 
@@ -104,7 +104,7 @@ void ABlasterHUD::BeginPlay()
 
 	if (AnnouncementClass)
 	{
-		Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
+		AnnouncementTypes = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
 	}
 
 }
@@ -175,3 +175,4 @@ void ABlasterHUD::ElimAnnouncementTimerFinished(UElimAnnouncement* MsgToRemove)
 		MsgToRemove->RemoveFromParent();
 	}
 }
+

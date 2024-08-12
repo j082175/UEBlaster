@@ -52,7 +52,7 @@ public:
 	class UCharacterOverlay* CharacterOverlay;
 
 	UPROPERTY()
-	class UAnnouncement* Announcement;
+	class UAnnouncement* AnnouncementTypes;
 
 	void AddAnnouncement();
 	void AddElimAnnouncement(FString Attacker, FString Victim);
@@ -97,4 +97,6 @@ private:
 	TArray<TObjectPtr<UElimAnnouncement>> ElimMessages;
 
 	
+
+
 };

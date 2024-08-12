@@ -17,6 +17,9 @@ class BLASTER_API UAnnouncement : public UMyUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	void SetHUDAnnouncementCountdown(float CountdownTime);
+
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> WarmupTime;
 

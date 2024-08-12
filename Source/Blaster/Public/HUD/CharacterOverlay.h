@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 //#include "Blueprint/UserWidget.h"
 #include "HUD/MyUserWidget.h"
+#include "Item/Pickable/Weapon/Weapon.h"
 #include "CharacterOverlay.generated.h"
 
 /**
@@ -23,6 +24,26 @@ public:
 
 public:
 	void SetHpBar(float InCurrent, float InMax);
+	void SetShieldBar(float InCurrent, float InMax);
+	void SetSpBar(float InCurrent, float InMax);
+	void SetParryGaugeBar(float InCurrent, float InMax);
+	void SetHUDScore(float Score);
+	void SetHUDDefeats(int32 Defeats);
+	void SetHUDWeaponAmmo(int32 CurrentAmmo);
+	void SetHUDCarriedAmmo(int32 CarriedAmmo);
+	void SetHUDWeaponType(EWeaponName InWeaponType);
+	void SetHUDMatchCountdown(float CountdownTime);
+	void SetHUDAnnouncementCountdown(float CountdownTime);
+	void SetHUDGrenades(int32 Grenades);
+
+	void SetHUDRedTeamScore(int32 RedScore);
+	void SetHUDBlueTeamScore(int32 BlueScore);
+
+	void HideTeamScores();
+	void InitTeamScores();
+		
+
+	void HighPingWarning();
 	
 
 	UPROPERTY(meta = (BindWidget))

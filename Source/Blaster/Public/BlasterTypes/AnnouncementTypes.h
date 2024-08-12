@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Announcement
+namespace AnnouncementTypes
 {
 	const FString NewMatchStartsIn(TEXT("New Match Starts In:"));
 	const FString ThereIsNoWinner(TEXT("There is no winner.."));
