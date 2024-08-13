@@ -86,27 +86,11 @@ ABlasterCharacter::ABlasterCharacter()
 void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//if (!HasAuthority() && IsLocallyControlled()) UE_LOG(LogTemp, Display, TEXT("BlasterCharacter : Crouch : %d"), bIsCrouched);
-
-
-	//if (!CheckWidgetDelegateIsBound)
-	//{
-	//	UE_LOG(LogTemp, Display, TEXT("CheckWidgetDelegateIsBound"));
-	//	CheckWidgetDelegateIsBound = AttributeComponent->OnHpChanged.IsBound() ? true : false;
-	//	AttributeComponent->OnHpChanged.Broadcast(1.f, 1.f);
-	//}
 
 	//if (IsLocallyControlled())
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
-	//if (IsLocallyControlled()) UE_LOG(LogTemp, Display, TEXT("%s : bUseControllerRotationYaw : %d"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), bUseControllerRotationYaw);
 
-	//UE_LOG(LogTemp, Display, TEXT("Tick"));
-
-	//if (OverheadWidget && GetPlayerState())
-	//{
-	//	OverheadWidget->ShowPlayerName(GetPlayerState());
-	//}
 
 	//if (IsLocallyControlled())
 	//UE_LOG(LogTemp, Display, TEXT("BlasterPlayerController : %d"), IsValid(BlasterPlayerController));
@@ -224,6 +208,16 @@ void ABlasterCharacter::BeginPlay()
 
 	SpawnDefaultWeapon();
 
+	FTimerHandle H;
+	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+		{
+			if (OverheadWidget && GetPlayerState())
+			{
+				OverheadWidget->ShowPlayerName(GetPlayerState());
+			}
+		}), 0.2f, false);
+
+
 
 
 	//UE_LOG(LogTemp, Display, TEXT("BeginPlay"));
@@ -290,6 +284,9 @@ void ABlasterCharacter::BeginPlay()
 	}
 
 	Grenades = MaxGrenades;
+
+
+	PollInit();
 }
 
 void ABlasterCharacter::Destroyed()

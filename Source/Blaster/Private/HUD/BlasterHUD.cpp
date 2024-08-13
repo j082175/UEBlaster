@@ -106,7 +106,7 @@ void ABlasterHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Display, TEXT("ABlasterHUD::BeginPlay"));
+	//UE_LOG(LogTemp, Display, TEXT("ABlasterHUD::BeginPlay"));
 
 
 	//AddCharacterOverlay();

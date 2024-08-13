@@ -53,6 +53,7 @@ public:
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 	FORCEINLINE bool GetDisableGameplay() const { return bDisableGameplay; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
+	FORCEINLINE class UOverheadWidget* GetOverheadWidget() const { return OverheadWidget; }
 
 	FORCEINLINE float GetGrenades() const { return Grenades; }
 	FORCEINLINE float GetCarriedAmmo() const { return CarriedAmmo; }

@@ -5,53 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
-#include "Interfaces/WidgetBindDelegateInterface.h"
 
-void UCharacterOverlay::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-
-	if (GetOwningPlayerPawn())
-	{
-		//if (OwingActor) UE_LOG(LogTemp, Warning, TEXT("HUD : %s"), *OwingActor->GetOwner()->GetName());
-		if (OwingActor) UE_LOG(LogTemp, Warning, TEXT("HUD : %s"), *GetOwningPlayerPawn()->GetName());
-
-		//IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor->GetOwner());
-		IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer());
-
-		if (WBDI)
-		{
-			WBDI->IBindOverheadWidget(this);
-		}
-	}
-
-	//if (OwingActor)
-	//{
-	//	if (OwingActor) UE_LOG(LogTemp, Warning, TEXT("HUD : %s"), *OwingActor->GetName());
-
-	//	IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
-	//	if (WBDI)
-	//	{
-	//		WBDI->IBindOverheadWidget(this);
-	//	}
-	//}
-
-}
-
-void UCharacterOverlay::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	//UE_LOG(LogTemp, Display, TEXT("GetOwningPlayerPawn : %x"), GetOwningPlayerPawn());
-
-	//ScoreAmount->SetText(FText::FromString(FString::Printf(TEXT("%f"), InDeltaTime)));
-}
-
-void UCharacterOverlay::Test(float DeltaTime)
-{
-	if (ScoreAmount) ScoreAmount->SetText(FText::FromString(FString::Printf(TEXT("%f"), DeltaTime)));
-}
 
 void UCharacterOverlay::SetHpBar(float InCurrent, float InMax)
 {

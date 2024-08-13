@@ -5,6 +5,12 @@
 #include "Characters/BlasterCharacter.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "Net/UnrealNetwork.h"
+#include "HUD/OverheadWidget.h"
+
+void ABlasterPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+}
 
 void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

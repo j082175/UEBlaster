@@ -13,8 +13,9 @@ UCLASS()
 class BLASTER_API UMyUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
 public:
+	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	FORCEINLINE void SetOwingActor(AActor* NewOwner) { OwingActor = NewOwner; }
 
@@ -22,4 +23,8 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<AActor> OwingActor;
+
+private:
+	void PollInit();
+	TWeakObjectPtr<APawn> OPawn;
 };

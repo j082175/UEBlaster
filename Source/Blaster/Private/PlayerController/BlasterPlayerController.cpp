@@ -46,9 +46,6 @@ void ABlasterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::BeginPlay"));
-
-
 	//if (GEngine)
 	//{
 	//	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("ABlasterPlayerController::BeginPlay")));
@@ -64,24 +61,20 @@ void ABlasterPlayerController::BeginPlay()
 	//PrimaryActorTick.TickInterval = 0.1f;
 
 
-	CheckBindWidget();
+	//CheckBindWidget();
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess, BlasterHUD : %x"), BlasterHUD);
+	//UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess, BlasterHUD : %x"), BlasterHUD);
 
 	PollInit(InPawn);
-
-
 }
 
 void ABlasterPlayerController::OnUnPossess()
 {
 	Super::OnUnPossess();
-
-	CheckWidgetDelegateIsBound = false;
 }
 
 void ABlasterPlayerController::Tick(float DeltaTime)
@@ -111,7 +104,7 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 	// Bind UI
 	if (IsLocalController())
 	{
-		CheckBindWidgetTick();
+		//CheckBindWidgetTick();
 
 		//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 		//if (BlasterHUD && GetPawn() && !CheckWidgetDelegateIsBound)
@@ -780,8 +773,9 @@ void ABlasterPlayerController::HandleCooldown()
 		if (bHUDValid)
 		{
 			BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
-			FText AnnouncementText = FText::FromString(AnnouncementTypes::NewMatchStartsIn);
-			BlasterHUD->Announcement->AnnouncementText->SetText(AnnouncementText);
+			//FText AnnouncementText = FText::FromString(AnnouncementTypes::NewMatchStartsIn);
+			//BlasterHUD->Announcement->AnnouncementText->SetText(AnnouncementText);
+			BlasterHUD->Announcement->SetAnnouncementText(AnnouncementTypes::NewMatchStartsIn);
 
 			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 			ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
@@ -790,7 +784,8 @@ void ABlasterPlayerController::HandleCooldown()
 				TArray<ABlasterPlayerState*> TopPlayers = BlasterGameState->TopScoringPlayers;
 				FString InfoTextString = bShowTeamScores ? GetTeamsInfoText(BlasterGameState) : GetInfoText(TopPlayers);
 
-				BlasterHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
+				//BlasterHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
+				BlasterHUD->Announcement->SetInfoText(InfoTextString);
 			}
 
 
@@ -1133,33 +1128,21 @@ void ABlasterPlayerController::OnChatCommittedFunc(const FText& Text, ETextCommi
 
 void ABlasterPlayerController::CheckBindWidget()
 {
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	if (BlasterHUD && GetPawn())
-	{
-		IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
-
-		if (WBDI)
+	FTimerHandle H;
+	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
 		{
-			WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
-			UE_LOG(LogTemp, Error, TEXT("Beginplay : OnPossess CharacterOverlay"));
-		}
-	}
-}
+			BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+			if (BlasterHUD && GetPawn())
+			{
+				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
 
-void ABlasterPlayerController::CheckBindWidgetTick()
-{
-	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	if (BlasterHUD && GetPawn() && !CheckWidgetDelegateIsBound)
-	{
-		IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
-
-		if (WBDI)
-		{
-			WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
-			UE_LOG(LogTemp, Error, TEXT("Beginplay : OnPossess CharacterOverlay"));
-		}
-		CheckWidgetDelegateIsBound = true;
-	}
+				if (WBDI)
+				{
+					WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
+					UE_LOG(LogTemp, Error, TEXT("Beginplay : OnPossess CharacterOverlay"));
+				}
+			}
+		}), 0.01f, false);
 }
 
 void ABlasterPlayerController::ServerChatCommitted_Implementation(const FText& Text, const FString& PlayerName)

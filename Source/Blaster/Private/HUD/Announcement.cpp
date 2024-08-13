@@ -3,20 +3,6 @@
 
 #include "HUD/Announcement.h"
 #include "Components/TextBlock.h"
-#include "Interfaces/WidgetBindDelegateInterface.h"
-
-
-void UAnnouncement::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
-
-	if (WBDI)
-	{
-		WBDI->IBindOverheadWidget(this);
-	}
-}
 
 void UAnnouncement::SetHUDAnnouncementCountdown(float CountdownTime)
 {
@@ -31,4 +17,14 @@ void UAnnouncement::SetHUDAnnouncementCountdown(float CountdownTime)
 
 	FString CountdownText = FString::Printf(TEXT("%02d : %02d"), Minutes, Seconds);
 	WarmupTime->SetText(FText::FromString(CountdownText));
+}
+
+void UAnnouncement::SetAnnouncementText(const FString& InString)
+{
+	AnnouncementText->SetText(FText::FromString(InString));
+}
+
+void UAnnouncement::SetInfoText(const FString& InString)
+{
+	InfoText->SetText(FText::FromString(InString));
 }

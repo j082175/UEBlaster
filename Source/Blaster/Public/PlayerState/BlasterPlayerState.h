@@ -15,6 +15,7 @@ class BLASTER_API ABlasterPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 public:
+	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void OnRep_Score() override;
 

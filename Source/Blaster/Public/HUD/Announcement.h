@@ -15,10 +15,11 @@ class BLASTER_API UAnnouncement : public UMyUserWidget
 {
 	GENERATED_BODY()
 public:
-	virtual void NativeConstruct() override;
 
 	void SetHUDAnnouncementCountdown(float CountdownTime);
 
+	void SetAnnouncementText(const FString& InString);
+	void SetInfoText(const FString& InString);
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> WarmupTime;
@@ -28,4 +29,5 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> InfoText;
+
 };

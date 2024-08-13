@@ -225,7 +225,4 @@ protected:
 
 
 	void CheckBindWidget();
-	void CheckBindWidgetTick();
-	uint8 CheckWidgetDelegateIsBound : 1 = false;
-
 };

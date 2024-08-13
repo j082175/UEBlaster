@@ -15,12 +15,6 @@ UCLASS()
 class BLASTER_API UCharacterOverlay : public UMyUserWidget
 {
 	GENERATED_BODY()
-public:
-	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
-	void Test(float DeltaTime);
-
 
 public:
 	void SetHpBar(float InCurrent, float InMax);
