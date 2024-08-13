@@ -6,6 +6,14 @@
 #include "CaptureTheFlag/FlagZone.h"
 #include "GameState/BlasterGameState.h"
 
+void ACaptureTheFlagGameMode::PostLogin(APlayerController* PlayerController)
+{
+	Super::PostLogin(PlayerController);
+
+	//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
+
+}
+
 void ACaptureTheFlagGameMode::PlayerEliminated(ACharacterBase* ElimmedCharacter, ABlasterPlayerController* VictimController, ABlasterPlayerController* AttackerController)
 {
 	ABlasterGameMode::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);

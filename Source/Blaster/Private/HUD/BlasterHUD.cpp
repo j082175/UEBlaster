@@ -57,7 +57,7 @@ void ABlasterHUD::AddAnnouncement()
 {
 	if (Announcement)
 	{
-		Announcement->AddToViewport();
+		if (!Announcement->IsInViewport()) Announcement->AddToViewport();
 	}
 }
 
@@ -134,13 +134,13 @@ void ABlasterHUD::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetOwningPlayerController()) : BlasterPlayerController;
-	if (BlasterPlayerController)
-	{
-		BlasterPlayerController->SetHUDTime();
-		BlasterPlayerController->CheckTimeSync(DeltaTime);
-		BlasterPlayerController->CheckPing(DeltaTime);
-	}
+	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetOwningPlayerController()) : BlasterPlayerController;
+	//if (BlasterPlayerController)
+	//{
+	//	BlasterPlayerController->SetHUDTime();
+	//	BlasterPlayerController->CheckTimeSync(DeltaTime);
+	//	BlasterPlayerController->CheckPing(DeltaTime);
+	//}
 
 
 	//if (BlasterGameMode == nullptr)

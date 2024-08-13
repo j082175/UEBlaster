@@ -76,7 +76,13 @@ void ALobbyGameMode::PostLogin(APlayerController* PlayerController)
 				if (MatchType == TEXT("FreeForAll"))
 				{
 					//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
-					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
+
+					FTimerHandle H;
+					GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+						{
+							GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
+
+						}), 10.f, false);
 
 					
 

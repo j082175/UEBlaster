@@ -96,7 +96,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//	AttributeComponent->OnHpChanged.Broadcast(1.f, 1.f);
 	//}
 
-	if (IsLocallyControlled())
+	//if (IsLocallyControlled())
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
 	//if (IsLocallyControlled()) UE_LOG(LogTemp, Display, TEXT("%s : bUseControllerRotationYaw : %d"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), bUseControllerRotationYaw);
@@ -107,6 +107,9 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//{
 	//	OverheadWidget->ShowPlayerName(GetPlayerState());
 	//}
+
+	//if (IsLocallyControlled())
+	//UE_LOG(LogTemp, Display, TEXT("BlasterPlayerController : %d"), IsValid(BlasterPlayerController));
 
 
 
@@ -446,7 +449,7 @@ void ABlasterCharacter::InitializeDefaults()
 	CameraBoom->AddRelativeLocation(FVector(0.f, 0.f, 80.f));
 	CameraBoom->TargetArmLength = 400.f;
 	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->SetupAttachment(GetMesh());
+	CameraBoom->SetupAttachment(GetCapsuleComponent());
 
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;

@@ -65,7 +65,6 @@ void ABlasterPlayerController::BeginPlay()
 
 
 	CheckBindWidget();
-
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
@@ -90,13 +89,13 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	/* 여기도 에러뜸 */
-	//if (IsLocalController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
-	//{
-	//	SetHUDTime();
-	//	CheckTimeSync(DeltaTime);
-	//	CheckPing(DeltaTime);
-	//}
-	///*  */
+	if (IsLocalController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
+	{
+		SetHUDTime();
+		CheckTimeSync(DeltaTime);
+		CheckPing(DeltaTime);
+	}
+	/*  */
 
 
 	if (BlasterGameMode == nullptr)
@@ -822,6 +821,10 @@ void ABlasterPlayerController::OnMatchStateSetFunc(bool bTeamsMatch)
 	}
 	else if (MatchState == MatchState::Cooldown)
 	{
+		//if (BlasterHUD)
+		//{
+		//	BlasterHUD->AddAnnouncement();
+		//}
 		HandleCooldown();
 	}
 }

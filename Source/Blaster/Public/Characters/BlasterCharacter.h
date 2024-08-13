@@ -72,7 +72,7 @@ private:
 	virtual void InitializeCollisionStates() override;
 
 
-
+	UPROPERTY()
 	class ABlasterPlayerController* BlasterPlayerController;
 
 protected:
