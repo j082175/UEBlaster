@@ -27,8 +27,8 @@ void UHpBarWidget::SetHpBar(float InCurrent, float InMax)
 
 void UHpBarWidget::SetShieldBar(float InCurrent, float InMax)
 {
-	UE_LOG(LogTemp, Display, TEXT("%s"), *UEnum::GetDisplayValueAsText(GetOwningPlayer()->GetLocalRole()).ToString());
-	UE_LOG(LogTemp, Display, TEXT("SetShieldBar : %s"), *GetOwningPlayer()->GetName());
+	//UE_LOG(LogTemp, Display, TEXT("%s"), *UEnum::GetDisplayValueAsText(GetOwningPlayer()->GetLocalRole()).ToString());
+	//UE_LOG(LogTemp, Display, TEXT("SetShieldBar : %s"), *GetOwningPlayer()->GetName());
 	ShieldBar->SetPercent(InCurrent / InMax);
 }
 

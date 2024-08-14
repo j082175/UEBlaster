@@ -87,6 +87,9 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//UE_LOG(LogTemp, Display, TEXT("Team : %s"), *UEnum::GetDisplayValueAsText(Team).ToString());
+
+
 	//if (IsLocallyControlled())
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
@@ -197,15 +200,18 @@ void ABlasterCharacter::BeginPlay()
 
 	SpawnDefaultWeapon();
 
-	FTimerHandle H;
-	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-		{
-			if (OverheadWidget && GetPlayerState())
-			{
-				OverheadWidget->ShowPlayerName(GetPlayerState());
-			}
-		}), 0.2f, false);
-
+	//FTimerHandle H;
+	//GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+	//	{
+	//		if (OverheadWidget && GetPlayerState())
+	//		{
+	//			OverheadWidget->ShowPlayerName(GetPlayerState());
+	//		}
+	//	}), 0.2f, false);
+	if (OverheadWidget && GetPlayerState())
+	{
+		OverheadWidget->ShowPlayerName(GetPlayerState());
+	}
 
 
 
@@ -277,6 +283,7 @@ void ABlasterCharacter::BeginPlay()
 
 
 	PollInit();
+
 }
 
 void ABlasterCharacter::Destroyed()

@@ -15,6 +15,9 @@
 #define PROFILE_CharacterMesh TEXT("CharacterMesh")
 #define PROFILE_BlockAllDynamic TEXT("BlockAllDynamic")
 #define PROFILE_Projectile TEXT("Projectile")
+#define PROFILE_Destructible TEXT("Destructible")
+#define PROFILE_BlockAllDynamic TEXT("BlockAllDynamic")
+#define PROFILE_IgnoreOnlyPawn TEXT("IgnoreOnlyPawn")
 
 
 #define PRINT_DEBUG_LOCALROLE(Actor) UE_LOG(LogTemp, Display, TEXT("Actor's LocalRole : %s"), *UEnum::GetDisplayValueAsText(Actor->GetLocalRole()).ToString())

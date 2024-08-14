@@ -18,7 +18,6 @@
 #include "BlasterTypes/TurningInPlace.h"
 #include "BlasterTypes/AnimState.h"
 #include "BlasterTypes/CombatState.h"
-#include "BlasterTypes/Team.h"
 #include "BlasterTypes/KeyType.h"
 
 #include "Components/TimelineComponent.h"

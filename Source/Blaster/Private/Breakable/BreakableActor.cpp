@@ -60,6 +60,9 @@ void ABreakableActor::InitializeCollisionStates()
 	CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	CapsuleComponent->SetCollisionObjectType(ECollisionChannel::ECC_Destructible);
 
+
+	CapsuleComponent->SetCollisionProfileName(PROFILE_BlockAllDynamic);
+	GeometryCollectionComponent->SetCollisionProfileName(PROFILE_Destructible);
 }
 
 void ABreakableActor::InitializeDelegates()

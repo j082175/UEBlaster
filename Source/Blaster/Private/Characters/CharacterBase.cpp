@@ -619,6 +619,7 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 	else if (RELOAD_FINISHED == NotifyName)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("ReloadFinished"));
+		if (!bDisableGameplay)
 		FinishReloading();
 		return;
 	}
@@ -1752,20 +1753,21 @@ void ACharacterBase::StartDissolve()
 
 void ACharacterBase::SetTeamColor(ETeam InTeam)
 {
-	if (!IsValid(GetMesh()) || !IsValid(OriginalMaterial)) return;
+	//if (!IsValid(GetMesh()) || !IsValid(OriginalMaterial)) return;
 	switch (InTeam)
 	{
 	case ETeam::ET_NoTeam:
-		GetMesh()->SetMaterial(1, OriginalMaterial);
-		DissolveMaterialInstance = BlueDissolveMatInst;
+		//GetMesh()->SetMaterial(1, OriginalMaterial);
+		//DissolveMaterialInstance = BlueDissolveMatInst;
 		break;
 	case ETeam::ET_RedTeam:
-		GetMesh()->SetMaterial(1, RedMaterial);
-		DissolveMaterialInstance = RedDissolveMatInst;
+		//GetMesh()->SetMaterial(1, RedMaterial);
+		//DissolveMaterialInstance = RedDissolveMatInst;
+		if (RedTeamSKMesh) GetMesh()->SetSkeletalMesh(RedTeamSKMesh);
 		break;
 	case ETeam::ET_BlueTeam:
-		GetMesh()->SetMaterial(1, BlueMaterial);
-		DissolveMaterialInstance = BlueDissolveMatInst;
+		//GetMesh()->SetMaterial(1, BlueMaterial);
+		//DissolveMaterialInstance = BlueDissolveMatInst;
 		break;
 	case ETeam::ET_MAX:
 		break;
@@ -1821,6 +1823,9 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	//{
 	//	BlasterPlayerController->SetHUDWeaponAmmo(0);
 	//}
+	
+	CombatState = ECombatState::ECS_Dead;
+
 
 	bIsElimmed = true;
 
@@ -1850,6 +1855,12 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		FTimerHandle Timerhandle;
+		GetWorldTimerManager().SetTimer(Timerhandle, FTimerDelegate::CreateLambda([&]()
+			{
+				PlayDeadMontage();
+			}), 0.01f, false);
 	}
 	else
 	{
@@ -1859,11 +1870,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 
 	}
 
-	FTimerHandle Timerhandle;
-	GetWorldTimerManager().SetTimer(Timerhandle, FTimerDelegate::CreateLambda([&]()
-		{
-			PlayDeadMontage();
-		}), 0.01f, false);
+
 
 	if (ElimBotEffect)
 	{
@@ -1956,15 +1963,8 @@ void ACharacterBase::FinishSwapAttachWeapons()
 		EquippedWeapon = SecondaryWeapon;
 		SecondaryWeapon = Temp;
 
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		AttachActorToRightHand(EquippedWeapon);
-
-		if (AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon)) Gun->SetHUDAmmo();
-		UpdateCarriedAmmo();
-		PlayEquipWeaponSound();
-
-		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
-		AttachActorToBackpack(SecondaryWeapon);
+		EquipWeaponFunc();
+		EquipSecondaryFunc();
 	}
 
 
@@ -2102,6 +2102,7 @@ void ACharacterBase::SwapWeapons()
 	PlaySwapMontage();
 	bFinishedSwapping = false;
 	bIsFiring = false;
+
 	//CombatState = ECombatState::ECS_SwappingWeapon;
 
 	//AWeapon* TempWeapon = EquippedWeapon;
@@ -2809,7 +2810,11 @@ void ACharacterBase::PlaySecondaryWeaponSound()
 
 void ACharacterBase::ReloadEmptyWeapon()
 {
-	if (EquippedWeapon && Cast<AWeapon_Gun>(EquippedWeapon)->IsEmpty())
+	if (bDisableGameplay) return;
+
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	if (!Gun) return;
+	if (EquippedWeapon && Gun->IsEmpty())
 	{
 		Reload();
 	}

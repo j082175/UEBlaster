@@ -18,5 +18,7 @@ enum class ECombatState : uint8
 	ECS_Dash UMETA(DisplayName = "Dash"),
 	ECS_Ragdoll UMETA(DisplayName = "Ragdoll"),
 	ECS_PhysicsRecover UMETA(DisplayName = "PhysicsRecover"),
+	ECS_Dead UMETA(DisplayName = "Dead"),
+
 	ECS_MAX UMETA(DisplayName = "MAX")
 };

@@ -20,6 +20,35 @@ ATeamsGameMode::ATeamsGameMode()
 	bTeamsMatch = true;
 }
 
+//void ATeamsGameMode::BeginPlay()
+//{
+//	Super::BeginPlay();
+//
+//	UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::BeginPlay"));
+//
+//	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
+//	if (BGameState)
+//	{
+//		for (const auto& PState : BGameState->PlayerArray)
+//		{
+//			ABlasterPlayerState* BPState = Cast<ABlasterPlayerState>(PState.Get());
+//			if (BPState && BPState->GetTeam() == ETeam::ET_NoTeam)
+//			{
+//				if (BGameState->BlueTeam.Num() >= BGameState->RedTeam.Num())
+//				{
+//					BGameState->RedTeam.AddUnique(BPState);
+//					BPState->SetTeam(ETeam::ET_RedTeam);
+//				}
+//				else
+//				{
+//					BGameState->BlueTeam.AddUnique(BPState);
+//					BPState->SetTeam(ETeam::ET_BlueTeam);
+//				}
+//			}
+//		}
+//	}
+//}
+
 void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 {
 	if (!IsValid(PlayerController))
@@ -29,6 +58,8 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 	}
 
 	Super::PostLogin(PlayerController);
+
+	UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::PostLogin"));
 
 	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	if (BGameState)
@@ -47,6 +78,15 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 				BPState->SetTeam(ETeam::ET_BlueTeam);
 			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::No PlayerState"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::No GameState"));
+
 	}
 }
 
@@ -119,31 +159,32 @@ void ATeamsGameMode::PlayerEliminated(ACharacterBase* ElimmedCharacter, ABlaster
 	}
 }
 
-//void ATeamsGameMode::HandleMatchHasStarted()
-//{
-//	Super::HandleMatchHasEnded();
-//	UE_LOG(LogTemp, Display, TEXT("HandleMatchHasStarted"));
-//
-//	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
-//	if (BGameState)
-//	{
-//		for (const auto& PState : BGameState->PlayerArray)
-//		{
-//			ABlasterPlayerState* BPState = Cast<ABlasterPlayerState>(PState.Get());
-//			if (BPState && BPState->GetTeam() == ETeam::ET_NoTeam)
-//			{
-//				if (BGameState->BlueTeam.Num() >= BGameState->RedTeam.Num())
-//				{
-//					BGameState->RedTeam.AddUnique(BPState);
-//					BPState->SetTeam(ETeam::ET_RedTeam);
-//				}
-//				else
-//				{
-//					BGameState->BlueTeam.AddUnique(BPState);
-//					BPState->SetTeam(ETeam::ET_BlueTeam);
-//				}
-//			}
-//		}
-//	}
-//}
-//
+void ATeamsGameMode::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
+	UE_LOG(LogTemp, Display, TEXT("HandleMatchHasStarted"));
+
+	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
+	if (BGameState)
+	{
+		//UE_LOG(LogTemp, Display, TEXT("BGameState->PlayerArray num : %d"), BGameState->PlayerArray.Num());
+		for (const auto& PState : BGameState->PlayerArray)
+		{
+			ABlasterPlayerState* BPState = Cast<ABlasterPlayerState>(PState.Get());
+			if (BPState && BPState->GetTeam() == ETeam::ET_NoTeam)
+			{
+				if (BGameState->BlueTeam.Num() >= BGameState->RedTeam.Num())
+				{
+					BGameState->RedTeam.AddUnique(BPState);
+					BPState->SetTeam(ETeam::ET_RedTeam);
+				}
+				else
+				{
+					BGameState->BlueTeam.AddUnique(BPState);
+					BPState->SetTeam(ETeam::ET_BlueTeam);
+				}
+			}
+		}
+	}
+}
+

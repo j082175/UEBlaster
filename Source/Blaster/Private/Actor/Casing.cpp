@@ -24,6 +24,8 @@ ACasing::ACasing()
 	CasingMesh->SetEnableGravity(true);
 	CasingMesh->SetNotifyRigidBodyCollision(true);
 	ShellEjectionImpulse = 10.f;
+
+	CasingMesh->SetCollisionProfileName(PROFILE_IgnoreOnlyPawn);
 }
 
 // Called when the game starts or when spawned

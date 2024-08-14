@@ -1043,6 +1043,9 @@ FString ABlasterPlayerController::GetTeamsInfoText(ABlasterGameState* BlasterGam
 void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)
 {
 	APlayerState* Self = GetPlayerState<APlayerState>();
+
+	//UE_LOG(LogTemp, Display, TEXT("Attacker : %s, Victim : %s"), *Attacker->GetPlayerName(), *Victim->GetPlayerName());
+
 	if (Attacker && Victim && Self)
 	{
 		//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
@@ -1055,7 +1058,7 @@ void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerStat
 			}
 			else if (Attacker != Self && Victim == Self)
 			{
-				BlasterHUD->AddElimAnnouncement(Victim->GetPlayerName(), TEXT("You"));
+				BlasterHUD->AddElimAnnouncement(Attacker->GetPlayerName(), TEXT("You"));
 				return;
 			}
 			else if (Attacker == Victim && Attacker == Self)

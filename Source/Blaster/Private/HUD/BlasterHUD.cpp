@@ -65,8 +65,8 @@ void ABlasterHUD::AddElimAnnouncement(FString Attacker, FString Victim)
 	OwingPlayer = OwingPlayer == nullptr ? GetOwningPlayerController() : OwingPlayer;
 	if (OwingPlayer && ElimAnnouncementClass)
 	{
-		UElimAnnouncement* ElimAnnouncementWidget = CreateWidget<UElimAnnouncement>(OwingPlayer, ElimAnnouncementClass);
-		if (ElimAnnouncementWidget)
+		ElimAnnouncementWidget = CreateWidget<UElimAnnouncement>(OwingPlayer, ElimAnnouncementClass);
+		if (ElimAnnouncementWidget.IsValid())
 		{
 			ElimAnnouncementWidget->SetElimAnnouncementText(Attacker, Victim);
 			ElimAnnouncementWidget->AddToViewport();
@@ -83,12 +83,18 @@ void ABlasterHUD::AddElimAnnouncement(FString Attacker, FString Victim)
 			}
 
 
-			ElimMessages.Add(ElimAnnouncementWidget);
+			ElimMessages.Add(ElimAnnouncementWidget.Get());
+
+			//FTimerHandle ElimMsgTimer;
+			//FTimerDelegate ElimMsgDelegate;
+			//ElimMsgDelegate.BindUFunction(this, TEXT("ElimAnnouncementTimerFinished"), ElimAnnouncementWidget);
+			//GetWorldTimerManager().SetTimer(ElimMsgTimer, ElimMsgDelegate, ElimAnnouncementTime, false);
 
 			FTimerHandle ElimMsgTimer;
-			FTimerDelegate ElimMsgDelegate;
-			ElimMsgDelegate.BindUFunction(this, TEXT("ElimAnnouncementTimerFinished"), ElimAnnouncementWidget);
-			GetWorldTimerManager().SetTimer(ElimMsgTimer, ElimMsgDelegate, ElimAnnouncementTime, false);
+			GetWorldTimerManager().SetTimer(ElimMsgTimer, FTimerDelegate::CreateLambda([&]()
+				{
+					ElimAnnouncementTimerFinished(ElimAnnouncementWidget.Get());
+				}), 2.f, false);
 		}
 	}
 }
