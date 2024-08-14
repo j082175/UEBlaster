@@ -23,10 +23,9 @@
 #include "GameState/BlasterGameState.h"
 #include "PlayerState/BlasterPlayerState.h"
 
-
 ABlasterHUD::ABlasterHUD()
 {
-
+	
 }
 
 //void ABlasterHUD::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

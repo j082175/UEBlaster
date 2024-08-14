@@ -3,7 +3,7 @@
 
 #include "GameMode/LobbyGameMode.h"
 #include "GameFramework/GameStateBase.h"
-#include "MultiplayerSessionsSubsystem.h"
+//#include "MultiplayerSessionsSubsystem.h"
 
 ALobbyGameMode::ALobbyGameMode()
 {
@@ -63,42 +63,42 @@ void ALobbyGameMode::PostLogin(APlayerController* PlayerController)
 	UGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance)
 	{
-		UMultiplayerSessionsSubsystem* SubSystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
+		//UMultiplayerSessionsSubsystem* SubSystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 
 
-		if (NumberOfPlayers == SubSystem->DesiredNumPublicConnections)
-		{
-			if (GetWorld())
-			{
-				bUseSeamlessTravel = true;
+		//if (NumberOfPlayers == SubSystem->DesiredNumPublicConnections)
+		//{
+		//	if (GetWorld())
+		//	{
+		//		bUseSeamlessTravel = true;
 
-				FString MatchType = SubSystem->DesiredMatchType;
-				if (MatchType == TEXT("FreeForAll"))
-				{
-					//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
+		//		FString MatchType = SubSystem->DesiredMatchType;
+		//		if (MatchType == TEXT("FreeForAll"))
+		//		{
+		//			//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
 
-					FTimerHandle H;
-					GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-						{
-							GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
+		//			FTimerHandle H;
+		//			GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+		//				{
+		//					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
 
-						}), 10.f, false);
+		//				}), 10.f, false);
 
-					
+		//			
 
-				}
-				else if (MatchType == TEXT("Teams"))
-				{
-					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
+		//		}
+		//		else if (MatchType == TEXT("Teams"))
+		//		{
+		//			GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
 
-				}
-				else if (MatchType == TEXT("CaptureTheFlag"))
-				{
-					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
+		//		}
+		//		else if (MatchType == TEXT("CaptureTheFlag"))
+		//		{
+		//			GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
 
-				}
-			}
-		}
+		//		}
+		//	}
+		//}
 	}
 
 

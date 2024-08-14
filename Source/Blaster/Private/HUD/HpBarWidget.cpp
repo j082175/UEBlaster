@@ -11,11 +11,13 @@ void UHpBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
-	if (WidgetOwner)
-	{
-		WidgetOwner->IBindOverheadWidget(this);
-	}
+	//IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
+	//if (WidgetOwner)
+	//{
+	//	WidgetOwner->IBindOverheadWidget(this);
+	//}
+
+
 }
 
 void UHpBarWidget::SetHpBar(float InCurrent, float InMax)

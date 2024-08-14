@@ -36,7 +36,7 @@ void UAttributeComponent::BeginPlay()
 	OnParryGaugeChanged.Broadcast(0.f, MaxParryGauge);
 
 
-	AttInit();
+	Init();
 }
 
 
@@ -80,14 +80,22 @@ void UAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 }
 
-void UAttributeComponent::AttInit()
+void UAttributeComponent::Init()
 {
-	FTimerHandle T1;
-	GetWorld()->GetTimerManager().SetTimer(T1, FTimerDelegate::CreateLambda([&]()
-		{
-			OnHpChanged.Broadcast(GetCurrentHp(), GetMaxHp());
-			//UE_LOG(LogTemp, Warning, TEXT("Attribute Initialized!"));
-		}), 0.5f, false);
+	//FTimerHandle T1;
+	//GetWorld()->GetTimerManager().SetTimer(T1, FTimerDelegate::CreateLambda([&]()
+	//	{
+	//		OnHpChanged.Broadcast(GetCurrentHp(), GetMaxHp());
+	//		OnShieldChanged.Broadcast(CurrentShield, MaxShield);
+	//		OnSpChanged.Broadcast(CurrentSp, MaxSp);
+	//		OnParryGaugeChanged.Broadcast(CurrentParryGauge, MaxParryGauge);
+	//		//UE_LOG(LogTemp, Warning, TEXT("Attribute Initialized!"));
+	//	}), 0.5f, false);
+
+	OnHpChanged.Broadcast(GetCurrentHp(), GetMaxHp());
+	OnShieldChanged.Broadcast(CurrentShield, MaxShield);
+	OnSpChanged.Broadcast(CurrentSp, MaxSp);
+	OnParryGaugeChanged.Broadcast(CurrentParryGauge, MaxParryGauge);
 }
 
 float UAttributeComponent::RecoveringResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime)

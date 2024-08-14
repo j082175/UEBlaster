@@ -28,7 +28,16 @@ void UMyUserWidget::PollInit()
 	FTimerHandle T;
 	GetWorld()->GetTimerManager().SetTimer(T, FTimerDelegate::CreateLambda([&]()
 		{
-			if (GetOwningPlayerPawn())
+			if (OwingActor)
+			{
+				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
+				if (WBDI)
+				{
+					WBDI->IBindOverheadWidget(this);
+				}
+				OPawn = OwingActor;
+			}
+			else if (GetOwningPlayerPawn())
 			{
 				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
 				if (WBDI)

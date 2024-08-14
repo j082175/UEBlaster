@@ -26,5 +26,5 @@ protected:
 
 private:
 	void PollInit();
-	TWeakObjectPtr<APawn> OPawn;
+	TWeakObjectPtr<AActor> OPawn;
 };

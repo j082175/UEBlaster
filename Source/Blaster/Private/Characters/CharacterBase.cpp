@@ -318,8 +318,11 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 		AttributeComponent->OnShieldChanged.AddUObject(CO, &UCharacterOverlay::SetShieldBar);
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
+
+
 	}
 
+	AttributeComponent->Init();
 }
 
 bool ACharacterBase::IIsParring()

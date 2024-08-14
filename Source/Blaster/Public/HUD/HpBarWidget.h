@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-//#include "HUD/MyUserWidget.h"
+#include "HUD/MyUserWidget.h"
 #include "HpBarWidget.generated.h"
 
 /**
  *
  */
 UCLASS()
-class BLASTER_API UHpBarWidget : public UUserWidget
+class BLASTER_API UHpBarWidget : public UMyUserWidget
 {
 	GENERATED_BODY()
 public:

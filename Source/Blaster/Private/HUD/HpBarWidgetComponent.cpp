@@ -32,12 +32,12 @@ void UHpBarWidgetComponent::InitWidget()
 
 	HpBarWidget = Cast<UHpBarWidget>(GetUserWidgetObject());
 	//NullChecker(HpBarWidget, TEXT("HpBarWidget"), *GetName());
-	SetHpBar(1.f);
-	SetShieldBar(1.f);
+	SetHpBar(1.f, 1.f);
+	SetShieldBar(1.f, 1.f);
 
 
 
-
+	
 	//IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwner());
 	//if (WidgetOwner)
 	//{
@@ -52,23 +52,23 @@ void UHpBarWidgetComponent::BeginPlay()
 
 }
 
-void UHpBarWidgetComponent::SetHpBar(float Percentage)
+void UHpBarWidgetComponent::SetHpBar(float InCurrent, float InMax)
 {
 	if (HpBarWidget)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("SetHpBar"));
 
-		HpBarWidget->GetHpBar()->SetPercent(Percentage);
+		HpBarWidget->GetHpBar()->SetPercent(InCurrent / InMax);
 	}
 }
 
-void UHpBarWidgetComponent::SetShieldBar(float Percentage)
+void UHpBarWidgetComponent::SetShieldBar(float InCurrent, float InMax)
 {
 	if (HpBarWidget == nullptr) return;
 
 	//if (!GetOwner()->HasAuthority()) UE_LOG(LogTemp, Display, TEXT("SetShieldBar"));
 
-	HpBarWidget->GetShieldBar()->SetPercent(Percentage);
+	HpBarWidget->GetShieldBar()->SetPercent(InCurrent / InMax);
 
 
 

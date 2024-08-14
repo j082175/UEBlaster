@@ -3,6 +3,7 @@
 
 #include "HUD/MyWidgetComponent.h"
 #include "HUD/MyUserWidget.h"
+//#include "Interfaces/WidgetBindDelegateInterface.h"
 
 void UMyWidgetComponent::InitWidget()
 {
@@ -13,4 +14,10 @@ void UMyWidgetComponent::InitWidget()
 	{
 		UserWidget->SetOwingActor(GetOwner());
 	}
+
+	//IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwner());
+	//if (WidgetOwner)
+	//{
+	//	WidgetOwner->IBindOverheadWidget(this);
+	//}
 }

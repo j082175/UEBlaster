@@ -23,8 +23,8 @@ public:
 	virtual void InitWidget() override;
 	virtual void BeginPlay() override;
 
-	void SetHpBar(float Percentage);
-	void SetShieldBar(float Percentage);
+	void SetHpBar(float InCurrent, float InMax);
+	void SetShieldBar(float InCurrent, float InMax);
 	void SetParryBar(float InCurrentP, float InMaxP);
 
 	void ParryGaugeAnimStart(bool InCheck);

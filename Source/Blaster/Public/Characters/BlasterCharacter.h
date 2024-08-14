@@ -84,7 +84,6 @@ protected:
 private:
 	virtual void IGetItem(class AItem* InItem) override;
 
-
 	// Inputs
 public:
 	void _Crouch();

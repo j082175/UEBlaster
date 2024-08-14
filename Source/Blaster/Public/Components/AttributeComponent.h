@@ -25,6 +25,8 @@ public:
 	friend class ABlasterCharacter;
 	class ACharacterBase* Owner;
 
+	void Init();
+
 	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
 	FORCEINLINE float GetMaxHp() const { return MaxHp; }
 	FORCEINLINE float GetCurrentShield() const { return CurrentShield; }
@@ -79,7 +81,7 @@ public:
 
 
 private:
-	void AttInit();
+
 
 	float RecoveringResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime);
 	float DecreaseResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime);
