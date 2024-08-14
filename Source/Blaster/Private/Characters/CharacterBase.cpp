@@ -138,7 +138,6 @@ void ACharacterBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	//UE_LOG(LogTemp, Warning, TEXT("Base Initialize"));
 
-
 	if (BuffComponent)
 	{
 		BuffComponent->Character = this;
@@ -153,18 +152,12 @@ void ACharacterBase::PostInitializeComponents()
 	if (LagCompensation)
 	{
 		LagCompensation->Character = this;
-		//if (Controller)
-		//{
-		//	LagCompensation->Controller = Cast<ABlasterPlayerController>(Controller);
-		//}
 	}
 
 	if (HasAuthority())
 	{
 		InitializeCarriedAmmo();
 	}
-
-	//CheckUObjectIsValid(GetMesh()->GetAnimInstance());
 }
 
 // Called when the game starts or when spawned
@@ -174,24 +167,8 @@ void ACharacterBase::BeginPlay()
 
 	//UE_LOG(LogTemp, Warning, TEXT("Base Beginplay"));
 
-	//InitializeCollisionStates();
 	InitializeDelegates();
 	InitializeWidgets();
-
-	AttributeComponent->OnHpChanged.Broadcast(AttributeComponent->GetCurrentHp(), AttributeComponent->GetMaxHp());
-
-
-
-	Grenades = MaxGrenades;
-
-
-	//if (GetCameraComponent())
-	//{
-	//	DefaultFOV = GetCameraComponent()->FieldOfView;
-	//	CurrentFOV = DefaultFOV;
-	//}
-
-
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -234,7 +211,6 @@ void ACharacterBase::Tick(float DeltaTime)
 	//UE_LOG(LogTemp, Display, TEXT("%s"), *GetFName().ToString());
 
 	PollInit();
-
 
 	RotateInPlace(DeltaTime);
 	UpdateMotionWarpingTransform();
@@ -321,14 +297,14 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 {
 	if (AttributeComponent == nullptr) return;
 
-	UE_LOG(LogTemp, Display, TEXT("ACharacterBase::IBindOverheadWidget"));
+	//UE_LOG(LogTemp, Display, TEXT("ACharacterBase::IBindOverheadWidget"));
 
 	//AttributeComponent->OnHpChanged.AddDynamic(InHpBarWidgetComponent, &UHpBarWidgetComponent::SetHpBar);
 	//AttributeComponent->OnShieldChanged.AddDynamic(InHpBarWidgetComponent, &UHpBarWidgetComponent::SetShieldBar);
 
 	if (UHpBarWidget* Hp = Cast<UHpBarWidget>(InUserWidget))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget HpBar"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget HpBar"));
 
 		AttributeComponent->OnHpChanged.AddUObject(Hp, &UHpBarWidget::SetHpBar);
 		AttributeComponent->OnShieldChanged.AddUObject(Hp, &UHpBarWidget::SetShieldBar);
@@ -337,17 +313,12 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 	}
 	else if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget CharacterOverlay : %s"), *InUserWidget->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget CharacterOverlay : %s"), *InUserWidget->GetName());
 		AttributeComponent->OnHpChanged.AddUObject(CO, &UCharacterOverlay::SetHpBar);
-		AttributeComponent->OnHpChanged.Broadcast(AttributeComponent->GetCurrentHp(), AttributeComponent->GetMaxHp());
+		AttributeComponent->OnShieldChanged.AddUObject(CO, &UCharacterOverlay::SetShieldBar);
+		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
+		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 	}
-
-
-
-
-
-
-
 
 }
 
@@ -462,7 +433,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	//HpBarWidgetComponent->SetHpBar(CurrentHealth / AttributeComponent->GetMaxHp());
 	AttributeComponent->OnHpChanged.Broadcast(CurrentHealth , MaxHealth);
-	AttributeComponent->OnShieldChanged.Broadcast(CurrentShield / MaxShield);
+	AttributeComponent->OnShieldChanged.Broadcast(CurrentShield , MaxShield);
 	AttributeComponent->OnParryGaugeChanged.Broadcast(AttributeComponent->GetCurrentParryGauge(), AttributeComponent->GetMaxParryGauge());
 
 

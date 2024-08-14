@@ -46,6 +46,9 @@ void ABlasterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//PrimaryActorTick.TickInterval = 0.1f;
+
+
 	//if (GEngine)
 	//{
 	//	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("ABlasterPlayerController::BeginPlay")));
@@ -58,10 +61,7 @@ void ABlasterPlayerController::BeginPlay()
 	//}
 	ServerCheckMatchState();
 
-	//PrimaryActorTick.TickInterval = 0.1f;
 
-
-	//CheckBindWidget();
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
@@ -294,6 +294,7 @@ void ABlasterPlayerController::UpdateHUDAmmo()
 
 void ABlasterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
+
 	////BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	//bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HealthBar && BlasterHUD->CharacterOverlay->HealthText;
 
@@ -1124,25 +1125,6 @@ void ABlasterPlayerController::OnChatCommittedFunc(const FText& Text, ETextCommi
 	}
 
 	ServerChatCommitted(Text, PlayerName); //TODO: Add a delay so that some absolute cucumber can't spam the chat.
-}
-
-void ABlasterPlayerController::CheckBindWidget()
-{
-	FTimerHandle H;
-	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-		{
-			BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-			if (BlasterHUD && GetPawn())
-			{
-				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
-
-				if (WBDI)
-				{
-					WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
-					UE_LOG(LogTemp, Error, TEXT("Beginplay : OnPossess CharacterOverlay"));
-				}
-			}
-		}), 0.01f, false);
 }
 
 void ABlasterPlayerController::ServerChatCommitted_Implementation(const FText& Text, const FString& PlayerName)

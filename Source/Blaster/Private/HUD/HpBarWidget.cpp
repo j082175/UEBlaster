@@ -11,7 +11,7 @@ void UHpBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(OwingActor);
+	IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
 	if (WidgetOwner)
 	{
 		WidgetOwner->IBindOverheadWidget(this);
@@ -23,9 +23,11 @@ void UHpBarWidget::SetHpBar(float InCurrent, float InMax)
 	HpBar->SetPercent(InCurrent / InMax);
 }
 
-void UHpBarWidget::SetShieldBar(float Percentage)
+void UHpBarWidget::SetShieldBar(float InCurrent, float InMax)
 {
-	ShieldBar->SetPercent(Percentage);
+	UE_LOG(LogTemp, Display, TEXT("%s"), *UEnum::GetDisplayValueAsText(GetOwningPlayer()->GetLocalRole()).ToString());
+	UE_LOG(LogTemp, Display, TEXT("SetShieldBar : %s"), *GetOwningPlayer()->GetName());
+	ShieldBar->SetPercent(InCurrent / InMax);
 }
 
 void UHpBarWidget::SetParryBar(float InCurrent, float InMax)

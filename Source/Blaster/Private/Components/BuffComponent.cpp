@@ -110,7 +110,7 @@ void UBuffComponent::HealRampUp(float DeltaTime)
 
 
 	if (BlasterPlayerController) BlasterPlayerController->UpdateHUDHealth();
-	OwnerAttribute->OnHpChanged.Broadcast(OwnerAttribute->GetCurrentHp() , OwnerAttribute->GetMaxHp());
+	OwnerAttribute->OnHpChanged.Broadcast(OwnerAttribute->GetCurrentHp(), OwnerAttribute->GetMaxHp());
 
 	AmountToHeal -= HealThisFrame;
 
@@ -148,7 +148,7 @@ void UBuffComponent::ShieldRampUp(float DeltaTime)
 	//	BC->UpdateHUDShield();
 	//}
 
-	OwnerAttribute->OnShieldChanged.Broadcast(OwnerAttribute->GetCurrentShield() / OwnerAttribute->GetMaxShield());
+	OwnerAttribute->OnShieldChanged.Broadcast(OwnerAttribute->GetCurrentShield(), OwnerAttribute->GetMaxShield());
 
 	//UE_LOG(LogTemp, Display, TEXT("FillAmount : %f"), FillAmount);
 	AmountToShield -= ReplenishThisFrame;

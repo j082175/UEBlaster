@@ -90,19 +90,8 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//if (IsLocallyControlled())
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
-
-
-	//if (IsLocallyControlled())
-	//UE_LOG(LogTemp, Display, TEXT("BlasterPlayerController : %d"), IsValid(BlasterPlayerController));
-
-
-
 	HideCameraIfCharacterClose();
 
-	//if (HasAuthority() && IsLocallyControlled())
-	//{
-	//	UE_LOG(LogTemp, Display, TEXT("Velocity : %f, %f"), GetCharacterMovement()->Velocity.X, GetCharacterMovement()->Velocity.Y);
-	//}
 
 	//BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
 	//if (BlasterGameMode)
@@ -262,6 +251,7 @@ void ABlasterCharacter::BeginPlay()
 
 		BlasterPlayerController->PollInit(this);
 	}
+
 	AttributeComponent->OnHpChanged.Broadcast(AttributeComponent->GetCurrentHp(), AttributeComponent->GetMaxHp());
 
 

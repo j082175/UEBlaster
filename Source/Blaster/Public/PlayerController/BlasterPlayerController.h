@@ -224,5 +224,4 @@ protected:
 	TObjectPtr<class UChatBox> ChatBox;
 
 
-	void CheckBindWidget();
 };

@@ -14,5 +14,7 @@ class BLASTER_API UMyCharacterMovementComponent : public UCharacterMovementCompo
 {
 	GENERATED_BODY()
 public:
+	FORCEINLINE void SetUseAccelerationForPaths(bool InParam) { bUseAccelerationForPaths = InParam; }
+
 	UMyCharacterMovementComponent();
 };

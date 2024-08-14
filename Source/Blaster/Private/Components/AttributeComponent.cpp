@@ -34,6 +34,9 @@ void UAttributeComponent::BeginPlay()
 	Owner = Cast<ACharacterBase>(GetOwner());
 
 	OnParryGaugeChanged.Broadcast(0.f, MaxParryGauge);
+
+
+	AttInit();
 }
 
 
@@ -64,6 +67,8 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	if (Owner->HasAuthority()) CheckParryGaugeMaximum(DeltaTime);
 
 	//UE_LOG(LogTemp, Display, TEXT("%s : bIsParryGaugeAnimPlaying : %d"), *UEnum::GetDisplayValueAsText(Owner->GetLocalRole()).ToString(),  bIsParryGaugeAnimPlaying);
+
+	
 }
 
 void UAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -73,6 +78,16 @@ void UAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ThisClass, CurrentParryGauge);
 	DOREPLIFETIME(ThisClass, bIsParryGaugeAnimPlaying);
 
+}
+
+void UAttributeComponent::AttInit()
+{
+	FTimerHandle T1;
+	GetWorld()->GetTimerManager().SetTimer(T1, FTimerDelegate::CreateLambda([&]()
+		{
+			OnHpChanged.Broadcast(GetCurrentHp(), GetMaxHp());
+			//UE_LOG(LogTemp, Warning, TEXT("Attribute Initialized!"));
+		}), 0.5f, false);
 }
 
 float UAttributeComponent::RecoveringResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime)
@@ -158,7 +173,7 @@ void UAttributeComponent::OnRep_Shield(float LastShield)
 		//UE_LOG(LogTemp, Display, TEXT("OnRep_Shield, LastShield : %f"), LastShield);
 		//Owner->PlayCombatHitReactMontage();
 
-		OnShieldChanged.Broadcast(CurrentShield / MaxShield);
+		OnShieldChanged.Broadcast(CurrentShield , MaxShield);
 
 		if (Owner)
 		{

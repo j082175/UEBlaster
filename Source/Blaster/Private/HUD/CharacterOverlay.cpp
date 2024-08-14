@@ -9,7 +9,7 @@
 
 void UCharacterOverlay::SetHpBar(float InCurrent, float InMax)
 {
-	UE_LOG(LogTemp, Display, TEXT("SetHpBar : %f"), InCurrent / InMax);
+	//UE_LOG(LogTemp, Display, TEXT("SetHpBar : %f"), InCurrent / InMax);
 	HealthBar->SetPercent(InCurrent / InMax);
 	HealthText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), FMath::CeilToInt(FMath::Clamp((InCurrent), 0.f, InMax)), (int)InMax)));
 }

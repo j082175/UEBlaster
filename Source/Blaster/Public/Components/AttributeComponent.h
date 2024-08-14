@@ -7,7 +7,7 @@
 #include "AttributeComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHpChangedDelegate, float/*, Percentage*/, float);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnShieldChangedDelegate, float/*, Percentage*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnShieldChangedDelegate, float/*, Percentage*/, float);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSpChangedDelegate, float/*, Percentage*/, float);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnParryGaugeChangedDelegate, float/*, Percentage*/, float);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnParryGaugeAnimDelegate, bool /*Start or End*/);
@@ -79,6 +79,8 @@ public:
 
 
 private:
+	void AttInit();
+
 	float RecoveringResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime);
 	float DecreaseResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime);
 	void CheckParryGaugeMaximum(float DeltaTime);
@@ -153,6 +155,8 @@ public:
 
 
 	uint8 bHasSpChanged : 1;
+
+
 
 
 };

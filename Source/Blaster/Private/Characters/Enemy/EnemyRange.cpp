@@ -9,6 +9,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BlasterTypes/BlackboardKeys.h"
 #include "Item/Pickable/Weapon/Shotgun.h"
+#include "Components/MyCharacterMovementComponent.h"
 
 AEnemyRange::AEnemyRange()
 {
@@ -54,6 +55,12 @@ void AEnemyRange::InitializeDefaults()
 	bIsAiming = true;
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	UMyCharacterMovementComponent* MC = Cast<UMyCharacterMovementComponent>(GetCharacterMovement());
+	if (MC)
+	{
+		MC->SetUseAccelerationForPaths(true);
+	}
 }
 
 void AEnemyRange::FireButtonPressed(bool bPressed)
