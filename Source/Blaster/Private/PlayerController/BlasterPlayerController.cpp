@@ -62,6 +62,7 @@ void ABlasterPlayerController::BeginPlay()
 	ServerCheckMatchState();
 
 
+
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
@@ -80,6 +81,26 @@ void ABlasterPlayerController::OnUnPossess()
 void ABlasterPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//if (IsLocalController())
+	//{
+	//	HUUD = GetHUD();
+
+	//	UE_LOG(LogTemp, Warning, TEXT("HUD : %d"), HUUD.IsValid());
+
+	//	BlasterHUUD = BlasterHUUD.Get() == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUUD.Get();
+	//	UE_LOG(LogTemp, Warning, TEXT("BlasterHUD : %d"), BlasterHUUD.IsValid());
+
+	//	if (BlasterHUUD.IsValid())
+	//	{
+	//		HUD_CO = BlasterHUUD->CharacterOverlay;
+	//		HUD_A = BlasterHUUD->Announcement;
+	//		UE_LOG(LogTemp, Display, TEXT("HUD_CO : %d, HUD_A : %d"), HUD_CO.IsValid(), HUD_A.IsValid());
+	//	}
+	//}
+
+	
+
 
 	/* 여기도 에러뜸 */
 	if (IsLocalController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
@@ -1043,6 +1064,9 @@ FString ABlasterPlayerController::GetTeamsInfoText(ABlasterGameState* BlasterGam
 void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)
 {
 	APlayerState* Self = GetPlayerState<APlayerState>();
+
+	//UE_LOG(LogTemp, Display, TEXT("Attacker : %s, Victim : %s"), *Attacker->GetPlayerName(), *Victim->GetPlayerName());
+
 	if (Attacker && Victim && Self)
 	{
 		//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
@@ -1055,7 +1079,7 @@ void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerStat
 			}
 			else if (Attacker != Self && Victim == Self)
 			{
-				BlasterHUD->AddElimAnnouncement(Victim->GetPlayerName(), TEXT("You"));
+				BlasterHUD->AddElimAnnouncement(Attacker->GetPlayerName(), TEXT("You"));
 				return;
 			}
 			else if (Attacker == Victim && Attacker == Self)

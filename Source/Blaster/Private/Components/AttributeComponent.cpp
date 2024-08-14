@@ -73,11 +73,12 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void UAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
 	DOREPLIFETIME(ThisClass, CurrentHp);
 	DOREPLIFETIME(ThisClass, CurrentShield);
 	DOREPLIFETIME(ThisClass, CurrentParryGauge);
 	DOREPLIFETIME(ThisClass, bIsParryGaugeAnimPlaying);
-
 }
 
 void UAttributeComponent::Init()

@@ -21,8 +21,7 @@ public:
 
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<AActor> OwingActor;
+	TWeakObjectPtr<AActor> OwingActor;
 
 private:
 	void PollInit();

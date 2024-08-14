@@ -18,7 +18,6 @@
 #include "BlasterTypes/TurningInPlace.h"
 #include "BlasterTypes/AnimState.h"
 #include "BlasterTypes/CombatState.h"
-#include "BlasterTypes/Team.h"
 #include "BlasterTypes/KeyType.h"
 
 #include "Components/TimelineComponent.h"
@@ -124,6 +123,9 @@ public:
 	uint8 bCheckIsSemi : 1;
 
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
+	TMap<FString, TObjectPtr<class UInputAction>> IA_Maps;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UInputAction> IA_Crouch;
 

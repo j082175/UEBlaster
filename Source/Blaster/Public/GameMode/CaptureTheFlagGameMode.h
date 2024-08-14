@@ -7,7 +7,7 @@
 #include "CaptureTheFlagGameMode.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class BLASTER_API ACaptureTheFlagGameMode : public ATeamsGameMode

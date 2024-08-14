@@ -409,6 +409,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Elim")
 	TObjectPtr<class UMaterialInstance> OriginalMaterial;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class USkeletalMesh> RedTeamSKMesh;
+
 
 	// Respawn
 protected:
@@ -442,9 +445,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsSprint : 1;
-
-	UPROPERTY(EditAnywhere)
-	ETeam Team;
 
 
 	virtual void CameraShake(const TSubclassOf<UCameraShakeBase>& CameraShake, bool bTrue);
@@ -773,7 +773,7 @@ protected:
 	void OnRep_SecondaryWeapon();
 	void ReloadEmptyWeapon();
 
-	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon, EditAnywhere)
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon, EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<class AWeapon> EquippedWeapon;
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon, EditAnywhere)
 	TObjectPtr<class AWeapon> SecondaryWeapon;

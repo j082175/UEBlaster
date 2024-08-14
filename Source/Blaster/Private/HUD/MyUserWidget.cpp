@@ -25,10 +25,12 @@ void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UMyUserWidget::PollInit()
 {
+	OPawn = GetOwningPlayerPawn();
+
 	FTimerHandle T;
 	GetWorld()->GetTimerManager().SetTimer(T, FTimerDelegate::CreateLambda([&]()
 		{
-			if (OwingActor)
+			if (OwingActor.IsValid())
 			{
 				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
 				if (WBDI)
@@ -37,7 +39,7 @@ void UMyUserWidget::PollInit()
 				}
 				OPawn = OwingActor;
 			}
-			else if (GetOwningPlayerPawn())
+			else if (OPawn.IsValid())
 			{
 				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
 				if (WBDI)

@@ -136,7 +136,7 @@ private:
 	void OnRep_ShowTeamScores();
 
 	UPROPERTY()
-	class ABlasterHUD* BlasterHUD;
+	TObjectPtr<ABlasterHUD> BlasterHUD;
 
 public:
 	void OnMatchStateSet(FName State, bool bTeamsMatch = false);
@@ -223,5 +223,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UChatBox> ChatBox;
 
+
+
+
+	// Test
+	TWeakObjectPtr<class UCharacterOverlay> HUD_CO;
+	TWeakObjectPtr<class UAnnouncement> HUD_A;
+	TWeakObjectPtr<AHUD> HUUD;
+	TWeakObjectPtr<class ABlasterHUD> BlasterHUUD;
 
 };

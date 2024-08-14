@@ -72,12 +72,13 @@ void AEnemy::BeginPlay()
 	if (WeaponClass)
 	{
 		Weapon = GetWorld()->SpawnActor<AWeapon_Melee>(WeaponClass);
+		Weapon->SetReplicates(false);
 		Weapon->ItemAttachToComponent(GetMesh(), Rules, TEXT("WeaponSocket"));
-
 		Weapon->SetOwner(this);
 		Weapon->SetInstigator(this);
-	}
 
+		EquipWeapon(Weapon);
+	}
 }
 
 // Called every frame

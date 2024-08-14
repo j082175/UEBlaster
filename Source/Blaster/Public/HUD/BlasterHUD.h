@@ -109,8 +109,8 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<UElimAnnouncement>> ElimMessages;
 
-
-
+	UPROPERTY()
+	TWeakObjectPtr<UElimAnnouncement> ElimAnnouncementWidget;
 //	void SetHUDTime();
 //	float LevelStartingTime = 0.f;
 //	float MatchTime = 0.f;

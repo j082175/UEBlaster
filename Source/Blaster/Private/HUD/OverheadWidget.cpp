@@ -43,16 +43,18 @@ void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
 
 void UOverheadWidget::ShowPlayerName(APlayerState* InPlayerState)
 {
-	if (InPlayerState)
-	{
-		FString PlayerName = InPlayerState->GetPlayerName();
+	TWeakObjectPtr<APlayerState> PS = InPlayerState;
 
+	if (PS.IsValid())
+	{
+		FString PlayerName = PS->GetPlayerName();
 		FString Result = FString::Printf(TEXT("Player name : %s"), *PlayerName);
 
 		if (DisplayText2)
 		{
 			DisplayText2->SetText(FText::FromString(Result));
 		}
+
 
 		//UE_LOG(LogTemp, Display, TEXT("PlayerState is : %s"), *InPlayerState->GetName());
 	}
