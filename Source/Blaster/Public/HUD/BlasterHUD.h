@@ -54,10 +54,10 @@ public:
 	virtual void DrawHUD() override;
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; }
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UCharacterOverlay* CharacterOverlay;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UAnnouncement* Announcement;
 
 	void AddAnnouncement();
@@ -92,7 +92,7 @@ private:
 	FHUDPackage HUDPackage;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	float CrosshairSpreadMax = 16.f;
+	float CrosshairSpreadMax = 1.f;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	TSubclassOf<class UUserWidget> AnnouncementClass;

@@ -25,6 +25,16 @@
 
 ABlasterHUD::ABlasterHUD()
 {
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> CORef(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/A_Blaster/Blueprints/HUD/WBP_CharacterOverlay.WBP_CharacterOverlay_C'"));
+	if (CORef.Succeeded()) CharacterOverlayClass = CORef.Class;
+	else UE_LOG(LogTemp, Error, TEXT("No CORef"));
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> CORef2(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/A_Blaster/Blueprints/HUD/WBP_Announcement.WBP_Announcement_C'"));
+	if (CORef2.Succeeded()) AnnouncementClass = CORef2.Class;
+	else UE_LOG(LogTemp, Error, TEXT("No CORef2"));
+
+
 	
 }
 
@@ -94,7 +104,7 @@ void ABlasterHUD::AddElimAnnouncement(FString Attacker, FString Victim)
 			GetWorldTimerManager().SetTimer(ElimMsgTimer, FTimerDelegate::CreateLambda([&]()
 				{
 					ElimAnnouncementTimerFinished(ElimAnnouncementWidget.Get());
-				}), 2.f, false);
+				}), ElimAnnouncementTime, false);
 		}
 	}
 }
@@ -124,6 +134,10 @@ void ABlasterHUD::BeginPlay()
 	if (CharacterOverlayClass)
 	{
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CharacterOverlayClass is null"));
 	}
 
 	if (AnnouncementClass)

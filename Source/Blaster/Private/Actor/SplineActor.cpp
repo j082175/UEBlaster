@@ -3,6 +3,7 @@
 
 #include "Actor/SplineActor.h"
 #include "Components/SplineComponent.h"
+#include "Dom/JsonObject.h"
 
 // Sets default values
 ASplineActor::ASplineActor()
