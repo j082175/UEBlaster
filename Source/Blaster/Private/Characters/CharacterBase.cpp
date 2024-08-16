@@ -251,6 +251,9 @@ void ACharacterBase::Tick(float DeltaTime)
 			bDisableGameplay = bDisableGameplay == false ? true : bDisableGameplay;
 		}
 	}
+
+
+	CheckHpBarWidget(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -288,7 +291,6 @@ void ACharacterBase::IGetHit(const FVector& InHitPoint)
 
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	PlayHitReactMontage(InHitPoint);
-
 
 
 }
@@ -354,6 +356,12 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 	//UE_LOG(LogTemp, Display, TEXT("Damage : %f"), Damage);
 
 	//UE_LOG(LogTemp, Display, TEXT("DamageType : bCausedByWorld :%d, bScaleMomentumByMass : %d, bRadialDamageVelChange : %d, DamageImpulse : %f, DestructibleImpulse : %f, DestructibleDamageSpreadScale : %f, DamageFalloff : %f"), DamageType->bCausedByWorld, DamageType->bScaleMomentumByMass, DamageType->bRadialDamageVelChange, DamageType->DamageImpulse, DamageType->DestructibleImpulse, DamageType->DestructibleDamageSpreadScale, DamageType->DamageFalloff);
+
+	if (HasAuthority())
+	{
+		HpCountdown = 0.f;
+		MulticastHpBarVisible(true);
+	}
 
 
 
@@ -1218,6 +1226,29 @@ void ACharacterBase::CheckCapsuleAndMeshEquals(float DeltaTime, float InAccuracy
 	return;
 }
 
+void ACharacterBase::CheckHpBarWidget(float DeltaTime)
+{
+	if (!HasAuthority()) return;
+
+	if (HpBarWidgetComponent->IsVisible())
+	{
+		HpCountdown += DeltaTime;
+
+		if (HpCountdown >= 3.f)
+		{
+			MulticastHpBarVisible(false);
+			HpCountdown = 0.f;
+
+		}
+
+	}
+}
+
+void ACharacterBase::MulticastHpBarVisible_Implementation(bool InIsVisible)
+{
+	HpBarWidgetComponent->SetVisibility(InIsVisible);
+}
+
 void ACharacterBase::MulticastRandomAttack_Implementation(int32 Index, const FString& AttackType)
 {
 	RandomAttack(Index, AttackType);
@@ -1392,6 +1423,7 @@ void ACharacterBase::InitializeDefaults()
 	// Ragdoll
 	CheckCapsuleAndMeshTimer = CheckCapsuleAndMeshThreshold;
 
+	HpBarWidgetComponent->SetVisibility(false);
 }
 
 FName ACharacterBase::CalculateHitDirection(const FVector& InHitPoint)

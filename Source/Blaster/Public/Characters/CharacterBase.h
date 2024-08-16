@@ -878,4 +878,11 @@ protected:
 	TObjectPtr<class UAnimMontage> UpMontage;
 
 
+	// HpBarVisibility
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastHpBarVisible(bool InIsVisible);
+
+	void CheckHpBarWidget(float DeltaTime);
+
+	float HpCountdown;
 };

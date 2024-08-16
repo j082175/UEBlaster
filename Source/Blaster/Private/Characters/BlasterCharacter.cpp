@@ -1477,7 +1477,7 @@ void ABlasterCharacter::MulticastLostTheLead()
 
 void ABlasterCharacter::SetAiming(bool InbIsAiming)
 {
-	UE_LOG(LogTemp, Display, TEXT("IsAiming : %d"), InbIsAiming);
+	//UE_LOG(LogTemp, Display, TEXT("IsAiming : %d"), InbIsAiming);
 	Super::SetAiming(InbIsAiming);
 
 	if (IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
