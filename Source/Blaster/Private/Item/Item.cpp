@@ -98,7 +98,7 @@ void AItem::BeginPlay()
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	Moving(DeltaTime);
+	//Moving(DeltaTime);
 }
 
 //// When this function called, it means that this class is going to be attached to another actor's mesh.

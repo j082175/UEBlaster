@@ -16,12 +16,14 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchCountdownDelegate, float);
+
 
 /**
  *
  */
 UCLASS()
-class BLASTER_API ABlasterPlayerController : public APlayerController
+class BLASTER_API ABlasterPlayerController : public APlayerController, public IWidgetBindDelegateInterface
 {
 	GENERATED_BODY()
 public:
@@ -105,9 +107,14 @@ protected:
 	float TimeSyncFrequency = 5.f;
 	float TimeSyncRunningTime = 0.f;
 
+	// Interfaces
+	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
+
+
 	// Pings
 public:
 	FHighPingDelegate HighPingDelegate;
+	FOnMatchCountdownDelegate MatchCountdown;
 
 	void CheckPing(float DeltaTime);
 
@@ -135,7 +142,7 @@ private:
 	UFUNCTION()
 	void OnRep_ShowTeamScores();
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<ABlasterHUD> BlasterHUD;
 
 public:

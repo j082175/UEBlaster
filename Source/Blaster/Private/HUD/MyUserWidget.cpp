@@ -9,6 +9,7 @@ void UMyUserWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	PollInit();
+
 }
 
 void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -16,9 +17,12 @@ void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	//UE_LOG(LogTemp, Display, TEXT("GetOwningPlayerPawn : %x"), OPawn.Get());
+	//UE_LOG(LogTemp, Display, TEXT("GetOwningPlayerPawn : %x"), GetOwningPlayerPawn());
+
 
 	if (!OPawn.Get())
 	{
+		//UE_LOG(LogTemp, Display, TEXT("Get PollInit"));
 		PollInit();
 	}
 }
@@ -39,14 +43,14 @@ void UMyUserWidget::PollInit()
 				}
 				OPawn = OwingActor;
 			}
-			else if (OPawn.IsValid())
+			else if (GetOwningPlayer())
 			{
-				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
+				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer());
 				if (WBDI)
 				{
 					WBDI->IBindOverheadWidget(this);
 				}
-				OPawn = GetOwningPlayerPawn();
+				//OPawn = GetOwningPlayer();
 			}
 		}), 0.01f, false);
 }

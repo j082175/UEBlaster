@@ -37,7 +37,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		}
 	);
-	AIPawn->IAttack(OnAttackFinished, *UEnum::GetDisplayValueAsText(BossAttackType).ToString());
+	AIPawn->IAttack(OnAttackFinished, *UEnum::GetDisplayValueAsText(AttackType).ToString());
 
 
 	//UE_LOG(LogTemp, Display, TEXT("InProgress"));

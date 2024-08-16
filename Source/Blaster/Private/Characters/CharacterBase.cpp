@@ -818,9 +818,8 @@ void ACharacterBase::PlayHitReactMontage(const FVector& InHitPoint)
 	//UE_LOG(LogTemp, Display, TEXT("PlayHitReactMontage Point : %s"), *Section.ToString());
 
 	PlayMontage(GetMesh()->GetAnimInstance(), HitReactMontage, Section, -1);
-	SetState(CharacterState, ECombatState::ECS_HitReact);
+	//SetState(CharacterState, ECombatState::ECS_HitReact);
 
-	//UE_LOG(LogTemp, Display, TEXT("HitStarted"));
 }
 
 void ACharacterBase::PlayMontage(UAnimInstance* AnimInstance, UAnimMontage* Montage, FName SectionName, int32 Rand)
@@ -1578,10 +1577,12 @@ void ACharacterBase::PlayDeadMontage()
 	if (DeadMontage)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("PlayDeadMontage"));
-		AnimInstance->Montage_Play(DeadMontage);
-		AnimInstance->Montage_JumpToSection(TEXT("Forward"), DeadMontage);
 
-		//DeadMontage->CompositeSections.Num();
+		DeadMontage->CompositeSections.Num();
+		int32 Rand = FMath::RandRange(0, DeadMontage->CompositeSections.Num() - 1);
+
+		AnimInstance->Montage_Play(DeadMontage);
+		AnimInstance->Montage_JumpToSection(*FString::Printf(TEXT("Dead%d"), Rand), DeadMontage);
 	}
 }
 
@@ -1825,6 +1826,8 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	//}
 	
 	CombatState = ECombatState::ECS_Dead;
+	HpBarWidgetComponent->SetVisibility(false);
+	AIPerceptionStimuliSource->UnregisterFromPerceptionSystem();
 
 
 	bIsElimmed = true;
@@ -1894,6 +1897,8 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	{
 		CrownNiagaraComponent->DestroyComponent();
 	}
+
+	
 
 	GetWorldTimerManager().SetTimer(ElimTimer, this, &ThisClass::ElimTimerFinished, ElimDelay);
 
@@ -2390,6 +2395,7 @@ void ACharacterBase::MulticastShotgunFire_Implementation(const TArray<FVector_Ne
 
 bool ACharacterBase::CanFire()
 {
+
 	//UE_LOG(LogTemp, Display, TEXT("bLocallyReloading : %d"), bLocallyReloading);
 	if (EquippedWeapon == nullptr) return false;
 	if (bLocallyReloading) return false;

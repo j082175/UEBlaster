@@ -22,6 +22,8 @@
 // Widget
 #include "HUD/OverheadWidget.h"
 #include "HUD/CharacterOverlay.h"
+#include "HUD/HpBarWidget.h"
+#include "HUD/HpBarWidgetComponent.h"
 
 // Network
 #include "Net/UnrealNetwork.h"
@@ -148,6 +150,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//{
 		//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	//}
+
 
 }
 
@@ -828,6 +831,7 @@ void ABlasterCharacter::AimButtonPressed(const FInputActionValue& isPressed)
 	//UE_LOG(LogTemp, Display, TEXT("Pressed : %d"), isPressed.Get<bool>());
 	if (bDisableGameplay) return;
 	if (bHoldingTheFlag) return;
+
 	if (EquippedWeapon)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Aiming"));
@@ -1310,6 +1314,7 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 
 
 	bLeftGame = bPlayerLeftGame;
+
 	//if (BlasterPlayerController)
 	//{
 	//	BlasterPlayerController->SetHUDWeaponAmmo(0);
@@ -1368,6 +1373,7 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 		ShowSniperScopeWidget(false);
 	}
 
+	OverheadWidget->SetVisibility(ESlateVisibility::Hidden);
 	//if (CrownNiagaraComponent)
 	//{
 	//	CrownNiagaraComponent->DestroyComponent();
@@ -1471,6 +1477,7 @@ void ABlasterCharacter::MulticastLostTheLead()
 
 void ABlasterCharacter::SetAiming(bool InbIsAiming)
 {
+	UE_LOG(LogTemp, Display, TEXT("IsAiming : %d"), InbIsAiming);
 	Super::SetAiming(InbIsAiming);
 
 	if (IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)

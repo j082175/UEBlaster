@@ -1,23 +1,23 @@
 #pragma once
 
 UENUM(BlueprintType)
-enum class EBossAttackType : uint8
+enum class EAttackType : uint8
 {
-	EBAT_Melee = 0 UMETA(DisplayName = "Melee"),
-	EBAT_Fireball UMETA(DisplayName = "Fireball"),
-	EBAT_Spawn UMETA(DisplayName = "Spawn"),
-	EBAT_Ground UMETA(DisplayName = "Ground"),
-	EBAT_Rush UMETA(DisplayName = "Rush"),
-	EBAT_Magic UMETA(DisplayName = "Magic"),
-	EBAT_Teleport UMETA(DisplayName = "Teleport"),
+	EAT_DefaultAttack = 0 UMETA(DisplayName = "DefaultAttack"),
+	EAT_Fireball UMETA(DisplayName = "Fireball"),
+	EAT_Spawn UMETA(DisplayName = "Spawn"),
+	EAT_Ground UMETA(DisplayName = "Ground"),
+	EAT_Rush UMETA(DisplayName = "Rush"),
+	EAT_Magic UMETA(DisplayName = "Magic"),
+	EAT_Teleport UMETA(DisplayName = "Teleport"),
 	 
-	EBAT_MAX UMETA(DisplayName = "Default_MAX")
+	EAT_MAX UMETA(DisplayName = "Default_MAX")
 };
 
 //UENUM(BlueprintType)
 //enum class EAttackType : uint8
 //{
-//	EAT_Melee = 0 UMETA(DisplayName = "Melee"),
+//	EAT_DefaultAttack = 0 UMETA(DisplayName = "Melee"),
 //	EAT_Magic UMETA(DisplayName = "Magic"),
 //	EAT_Guard UMETA(DisplayName = "Guard"),
 //

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "Blueprint/UserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "HUD/MyUserWidget.h"
 #include "Item/Pickable/Weapon/Weapon.h"
 #include "CharacterOverlay.generated.h"
@@ -16,6 +16,7 @@ class BLASTER_API UCharacterOverlay : public UMyUserWidget
 {
 	GENERATED_BODY()
 
+	virtual void NativeConstruct() override;
 public:
 	void SetHpBar(float InCurrent, float InMax);
 	void SetShieldBar(float InCurrent, float InMax);
@@ -38,7 +39,6 @@ public:
 
 	void HighPingWarning();
 	void StopHighPingWarning();
-
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UProgressBar> HealthBar;

@@ -18,7 +18,7 @@ AEnemyRange::AEnemyRange()
 
 void AEnemyRange::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)
 {
-	Super::OnMontageEndedFunc(Montage, bInterrupted);
+	ACharacterBase::OnMontageEndedFunc(Montage, bInterrupted);
 }
 
 void AEnemyRange::Tick(float DeltaTime)
@@ -71,8 +71,10 @@ void AEnemyRange::FireButtonPressed(bool bPressed)
 	bFireButtonPressed = bPressed;
 	if (!EquippedGun->IsAutomatic() && bIsFiring) return;
 
-	if (CanFire() && bFireButtonPressed)
+
+	if (bFireButtonPressed)
 	{
+		//UE_LOG(LogTemp, Display, TEXT("EE"));
 		bIsFiring = true;
 
 		if (EquippedGun && bPressed)
@@ -122,6 +124,7 @@ void AEnemyRange::IAttack(FAttackEndedDelegate Delegate, const FString& AttackTy
 	//MulticastFire(true, TargetPoint);
 	FireButtonPressed(true);
 	SetAiming(true);
+	EquippedGun->SetIsAutomatic(true);
 
 	FTimerHandle FireTimer1;
 	GetWorldTimerManager().SetTimer(FireTimer1, FTimerDelegate::CreateLambda([&]()
@@ -129,7 +132,7 @@ void AEnemyRange::IAttack(FAttackEndedDelegate Delegate, const FString& AttackTy
 			FireButtonPressed(false);
 			SetAiming(false);
 			OnAttackEnded.ExecuteIfBound();
-		}), 1.f, false);
+		}), 3.f, false);
 }
 
 void AEnemyRange::ISetAIState(EAIState InAIState)

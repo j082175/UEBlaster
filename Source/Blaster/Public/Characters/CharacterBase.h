@@ -129,6 +129,7 @@ public:
 	// IHitInterface
 	virtual void IGetHit(const FVector& HitPoint) override;
 	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
+
 	//virtual void IBindOverheadWidget(class UWidgetComponent* InWidgetComponent) override;
 
 	virtual bool IIsParring() override;

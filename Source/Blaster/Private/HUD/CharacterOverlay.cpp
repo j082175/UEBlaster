@@ -5,7 +5,14 @@
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
+#include "Interfaces/WidgetBindDelegateInterface.h"
 
+
+void UCharacterOverlay::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+}
 
 void UCharacterOverlay::SetHpBar(float InCurrent, float InMax)
 {

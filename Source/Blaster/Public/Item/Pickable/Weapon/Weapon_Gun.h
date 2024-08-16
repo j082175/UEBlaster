@@ -66,6 +66,8 @@ public:
 	FORCEINLINE void SetDistanceToSphere(float InDistanceToSphere) { DistanceToSphere = InDistanceToSphere; }
 	FORCEINLINE void SetAdditionalSphereRadius(float InRadius) { AdditionalSphereRadius = InRadius; }
 
+	FORCEINLINE void SetIsAutomatic(bool torf) { bAutomatic = torf; }
+
 
 	void SetHUDAmmo();
 	virtual void Dropped() override;

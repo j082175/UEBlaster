@@ -7,7 +7,7 @@
 #include "MyUserWidget.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class BLASTER_API UMyUserWidget : public UUserWidget
@@ -23,7 +23,8 @@ public:
 protected:
 	TWeakObjectPtr<AActor> OwingActor;
 
-private:
 	void PollInit();
+
 	TWeakObjectPtr<AActor> OPawn;
+private:
 };

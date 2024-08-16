@@ -628,7 +628,8 @@ void ABlasterPlayerController::SetHUDTime()
 
 
 
-			SetHUDMatchCountdown(TimeLeft);
+			//SetHUDMatchCountdown(TimeLeft);
+			MatchCountdown.Broadcast(TimeLeft);
 		}
 
 	}
@@ -670,6 +671,19 @@ void ABlasterPlayerController::CheckTimeSync(float DeltaTime)
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 		TimeSyncRunningTime = 0.f;
+	}
+}
+
+void ABlasterPlayerController::IBindOverheadWidget(UUserWidget* InUserWidget)
+{
+	if (BlasterCharacter) BlasterCharacter->IBindOverheadWidget(InUserWidget);
+
+	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindOverheadWidget Called"));
+
+	if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindOverheadWidget"));
+		MatchCountdown.AddUObject(CO, &UCharacterOverlay::SetHUDMatchCountdown);
 	}
 }
 

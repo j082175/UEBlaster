@@ -71,13 +71,13 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Move", meta = (AllowPrivateAccess = true))
-	float Amplitude = 1.f;
+	float Amplitude = 0.1f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Move", meta = (AllowPrivateAccess = true))
-	float Wavelength = 5.f;
+	float Wavelength = 0.1f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Move", meta = (AllowPrivateAccess = true))
-	float Speed = 1.f;
+	float Speed = 0.1f;
 
 	// State
 protected:

@@ -30,5 +30,5 @@ private:
 	float RotationRate = 50.f;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	EBossAttackType AttackType;
+	EAttackType AttackType;
 };
