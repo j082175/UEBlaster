@@ -16,6 +16,10 @@ class BLASTER_API AProjectileRocket : public AProjectile
 public:
 	AProjectileRocket();
 	virtual void Destroyed() override;
+
+	virtual void SetIsActive(bool InIsActive) override;
+	virtual void SetProjectileMovementVelocity(const FVector& InVelocity) override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;

@@ -200,6 +200,8 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 			L_OrientationAngle = Direction + 90.f;
 		}
 
+
+		//UE_LOG(LogTemp, Display, TEXT("Ao_yaw : %f"), Lean);
 	}
 }
 

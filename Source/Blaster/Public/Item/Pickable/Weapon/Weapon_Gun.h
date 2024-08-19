@@ -71,6 +71,8 @@ public:
 
 	void SetHUDAmmo();
 	virtual void Dropped() override;
+
+	UFUNCTION(BlueprintCallable)
 	void EjectCasing();
 
 protected:
@@ -84,7 +86,7 @@ protected:
 	// Else ETC.
 public:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ACasing> CasingClass;
+	TSubclassOf<class APooledObject> CasingClass;
 
 	UPROPERTY(EditAnywhere, Category = "Crosshair", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UTexture2D> CrosshairCenter;

@@ -17,6 +17,9 @@
 
 #include "Perception/AISense_Damage.h"
 
+#include "Subsystem/ObjectPoolSubsystem.h"
+
+
 void AHitScanWeapon::Fire(const FVector& HitTarget)
 {
 	Super::Fire(HitTarget);
@@ -138,6 +141,10 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& Hi
 			{
 				Beam->SetVectorParameter(TEXT("Target"), BeamEnd);
 			}
+
+			//APooledObject* PO = Cast<UObjectPoolSubsystem>(GetGameInstance())->GetSpawnedObject(FTransform(GetActorRotation(), OutHit.ImpactPoint), PoolTest);
+
+
 		}
 	}
 }

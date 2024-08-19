@@ -10,6 +10,8 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameState/BlasterGameState.h"
 #include "Characters/CharacterBase.h"
+#include "Actor/Casing.h"
+#include "Components/ObjectPoolComponent.h"
 
 namespace MatchState
 {
@@ -19,6 +21,8 @@ namespace MatchState
 ABlasterGameMode::ABlasterGameMode()
 {
 	bDelayedStart = true;
+
+	//ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));
 
 	//bUseSeamlessTravel = true;
 
@@ -120,7 +124,6 @@ void ABlasterGameMode::BeginPlay()
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
 	//LevelStartingTime = 0.f;
 	//UE_LOG(LogTemp, Warning, TEXT("LevelStartingTime : %f"), LevelStartingTime);
-
 
 }
 

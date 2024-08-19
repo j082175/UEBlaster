@@ -36,19 +36,20 @@ AProjectile::AProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	bReplicates = true;
+	bReplicates = false;
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	SetRootComponent(CollisionBox);
-	CollisionBox->SetGenerateOverlapEvents(true);
-	CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Block);
+	
+	//CollisionBox->SetGenerateOverlapEvents(true);
+	//CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	//CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	//CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	//CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	//CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Block);
 
-	CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Block);
+	//CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Block);
 
 
 	//CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -64,7 +65,7 @@ AProjectile::AProjectile()
 void AProjectile::Destroyed()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Destroyed"));
-	Super::Destroyed();
+	//Super::Destroyed();
 
 	if (ImpactParticles)
 	{
@@ -77,20 +78,43 @@ void AProjectile::Destroyed()
 	}
 }
 
+void AProjectile::SetIsActive(bool InIsActive)
+{
+	Super::SetIsActive(InIsActive);
+
+	if (InIsActive)
+	{
+		if (Tracer)
+		{
+			TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, TEXT(""), GetActorLocation(), GetActorRotation(), EAttachLocation::KeepWorldPosition);
+		}
+
+		if (HasAuthority())
+		{
+			CollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnHit);
+		}
+	}
+
+}
+
+void AProjectile::SetProjectileMovementVelocity(const FVector& InVelocity)
+{
+}
+
 // Called when the game starts or when spawned
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (Tracer)
-	{
-		TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, TEXT(""), GetActorLocation(), GetActorRotation(), EAttachLocation::KeepWorldPosition);
-	}
+	//if (Tracer)
+	//{
+	//	TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, TEXT(""), GetActorLocation(), GetActorRotation(), EAttachLocation::KeepWorldPosition);
+	//}
 
-	if (HasAuthority())
-	{
-		CollisionBox->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
-	}
+	//if (HasAuthority())
+	//{
+	//	CollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnHit);
+	//}
 
 
 
@@ -127,7 +151,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		}
 	}
 
-	Destroy();
+	//Destroy();
+	Destroyed();
+	Deactivate();
 }
 
 
@@ -165,7 +191,8 @@ void AProjectile::StartDestroyTimer()
 
 void AProjectile::DestroyTimerFinished()
 {
-	Destroy();
+	//Destroy();
+	Destroyed();
 }
 
 void AProjectile::ApplyForce(UFieldSystemComponent* InFieldSystemComponent, const FHitResult& InHitResult)

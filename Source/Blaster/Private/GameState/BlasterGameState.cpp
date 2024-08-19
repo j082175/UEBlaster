@@ -5,6 +5,12 @@
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/BlasterPlayerState.h"
 #include "PlayerController/BlasterPlayerController.h"
+#include "Components/ObjectPoolComponent.h"
+
+ABlasterGameState::ABlasterGameState()
+{
+	ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));
+}
 
 void ABlasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

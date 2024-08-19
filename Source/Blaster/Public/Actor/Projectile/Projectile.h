@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 //#include "Item/Pickable/Weapon/Weapon.h"
+#include "Actor/PooledObject.h"
 #include "Projectile.generated.h"
 
 UCLASS()
-class BLASTER_API AProjectile : public AActor
+class BLASTER_API AProjectile : public APooledObject
 {
 	GENERATED_BODY()
 	
@@ -16,6 +17,10 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 	virtual void Destroyed() override;
+
+	virtual void SetIsActive(bool InIsActive) override;
+
+	virtual void SetProjectileMovementVelocity(const FVector& InVelocity);
 
 
 	// Used with server-side rewind

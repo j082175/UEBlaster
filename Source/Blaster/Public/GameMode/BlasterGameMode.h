@@ -61,5 +61,6 @@ private:
 	float CooldownTime = 10.f;
 
 
-
+	//UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
+	//TObjectPtr<class UObjectPoolComponent> ObjectPoolComponent;
 };

@@ -22,6 +22,7 @@
 //#include "Components/PawnNoiseEmitterComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/MyAIPerceptionStimuliSource.h"
+#include "Components/ObjectPoolComponent.h"
 
 // Interfaces
 #include "Interfaces/InteractWithCrosshairsInterface.h"
@@ -351,6 +352,11 @@ bool ACharacterBase::ICheckParry(AActor* OtherActor)
 	return bParryResultCheck;
 }
 
+//void ACharacterBase::IBindDespawnFunc(UObjectPoolComponent* InActorComponent)
+//{
+//	//OnPooledObjectDespawn.AddDynamic(InActorComponent, &UObjectPoolComponent::OnPooledObjectDespawn);
+//}
+
 void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
 	//UE_LOG(LogTemp, Display, TEXT("Damage : %f"), Damage);
@@ -362,7 +368,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 		HpCountdown = 0.f;
 		MulticastHpBarVisible(true);
 	}
-
+	
 
 
 	LastDamageCauser = DamageCauser;
@@ -2530,6 +2536,7 @@ void ACharacterBase::UpdateShotgunAmmoValues()
 		// Jump to ShotgunEnd section
 		JumpToShotgunEnd();
 	}
+
 }
 
 void ACharacterBase::Reload()
@@ -3209,6 +3216,8 @@ void ACharacterBase::TurnInPlace(float DeltaTime)
 void ACharacterBase::AimOffset(float DeltaTime)
 {
 	if (EquippedWeapon == nullptr) return;
+
+	//UE_LOG(LogTemp, Display, TEXT("AimOffset"));
 
 	float Speed = CalculateSpeed();
 	bool bIsInAir = GetCharacterMovement()->IsFalling();

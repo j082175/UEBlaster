@@ -26,8 +26,9 @@ AProjectileGrenade::AProjectileGrenade()
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->bRotationFollowsVelocity = true; // 총알이 속도에 맞춰 회전을 유지함 중력으로 인한 FallOff 를 추가하면 경로 궤적에 따라 회전함.
-	ProjectileMovementComponent->SetIsReplicated(true);
+	ProjectileMovementComponent->SetIsReplicated(false);
 	ProjectileMovementComponent->bShouldBounce = true;
+	ProjectileMovementComponent->SetAutoActivate(false);
 }
 
 void AProjectileGrenade::BeginPlay()
@@ -36,12 +37,12 @@ void AProjectileGrenade::BeginPlay()
 
 	//UE_LOG(LogTemp, Display, TEXT("ProjectileGrenade BeginPlay"));
 
-	SpawnTrailSystem();
-	StartDestroyTimer();
+	//SpawnTrailSystem();
+	//StartDestroyTimer();
 
-	ProjectileMovementComponent->OnProjectileBounce.AddDynamic(this, &ThisClass::OnBounce);
+	//ProjectileMovementComponent->OnProjectileBounce.AddUniqueDynamic(this, &ThisClass::OnBounce);
 
-	CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+	//CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
 }
 
 void AProjectileGrenade::Destroyed()
@@ -53,10 +54,38 @@ void AProjectileGrenade::Destroyed()
 	Super::Destroyed();
 }
 
+void AProjectileGrenade::SetIsActive(bool InIsActive)
+{
+	Super::SetIsActive(InIsActive);
+
+	if (InIsActive)
+	{
+		SpawnTrailSystem();
+		StartDestroyTimer();
+
+		ProjectileMovementComponent->OnProjectileBounce.AddUniqueDynamic(this, &ThisClass::OnBounce);
+
+		CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+
+		ProjectileMovementComponent->SetUpdatedComponent(RootComponent);
+		ProjectileMovementComponent->Activate(true);
+	}
+	else
+	{
+		ProjectileMovementComponent->SetUpdatedComponent(nullptr);
+		ProjectileMovementComponent->Activate(false);
+	}
+}
+
 void AProjectileGrenade::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
 	if (BounceSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, BounceSound, GetActorLocation());
 	}
+}
+
+void AProjectileGrenade::SetProjectileMovementVelocity(const FVector& InVelocity)
+{
+	ProjectileMovementComponent->Velocity = InVelocity.GetSafeNormal() * ProjectileMovementComponent->MaxSpeed;
 }

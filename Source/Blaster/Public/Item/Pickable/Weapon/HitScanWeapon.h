@@ -40,4 +40,5 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class USoundCue> FireSound;
 
+
 };

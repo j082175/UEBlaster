@@ -20,6 +20,8 @@
 #include "Interfaces/HitInterface.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
 #include "Interfaces/CanParryInterface.h"
+//#include "Interfaces/ObjectPoolInterface.h"
+//#include "Actor/PooledObject.h"
 
 // Structs
 #include "Components/TimelineComponent.h"
@@ -134,6 +136,8 @@ public:
 
 	virtual bool IIsParring() override;
 	virtual bool ICheckParry(AActor* OtherActor) override;
+	//virtual void IBindDespawnFunc(class UObjectPoolComponent* InActorComponent) override;
+
 
 	// Components
 public:

@@ -15,6 +15,9 @@ class BLASTER_API AProjectileBullet : public AProjectile
 	GENERATED_BODY()
 public:
 	AProjectileBullet();
+	virtual void Destroyed() override;
+	virtual void SetIsActive(bool InIsActive) override;
+	virtual void SetProjectileMovementVelocity(const FVector& InVelocity) override;
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

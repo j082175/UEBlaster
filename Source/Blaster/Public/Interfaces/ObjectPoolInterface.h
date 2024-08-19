@@ -4,29 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "BlasterTypes/AIState.h"
-#include "AIInterface.generated.h"
+#include "ObjectPoolInterface.generated.h"
+
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPooledObjectDespawnDelegate, APooledObject*, PoolActor);
+
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UAIInterface : public UInterface
+class UObjectPoolInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-DECLARE_DELEGATE(FAttackEndedDelegate);
-
 /**
  * 
  */
-class BLASTER_API IAIInterface
+class BLASTER_API IObjectPoolInterface
 {
 	GENERATED_BODY()
-	
+
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void IAttack(FAttackEndedDelegate Delegate, const FString& AttackType) = 0;
-	virtual void ISetAIState(EAIState InAIState) = 0;
-	
-	FAttackEndedDelegate OnAttackEnded;
+	//virtual void IBindDespawnFunc(class UObjectPoolComponent* InActorComponent);
+
+	//FOnPooledObjectDespawnDelegate OnPooledObjectDespawn;
 };

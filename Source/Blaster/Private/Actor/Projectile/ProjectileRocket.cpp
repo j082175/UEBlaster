@@ -31,28 +31,57 @@ AProjectileRocket::AProjectileRocket()
 
 	RocketMovementComponent = CreateDefaultSubobject<URocketMovementComponent>(TEXT("RocketMovementComponent"));
 	RocketMovementComponent->bRotationFollowsVelocity = true;
-	RocketMovementComponent->SetIsReplicated(true);
+	RocketMovementComponent->SetIsReplicated(false);
+	RocketMovementComponent->SetAutoActivate(false);
 }
 
 void AProjectileRocket::Destroyed()
 { 
 }
 
+void AProjectileRocket::SetIsActive(bool InIsActive)
+{
+	Super::SetIsActive(InIsActive);
+
+	if (InIsActive)
+	{
+		if (!HasAuthority()) // 로켓탄두만큼은 클라도 OnHit Event 가 작동하도록 설정.
+		{
+			CollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnHit);
+		}
+
+		SpawnTrailSystem();
+
+		if (ProjectileLoop && LoopingSoundAttenuation)
+		{
+			ProjectileLoopComponent = UGameplayStatics::SpawnSoundAttached(ProjectileLoop, GetRootComponent(), FName(), GetActorLocation(), EAttachLocation::KeepWorldPosition, false, 1.f, 1.f, 0.f, LoopingSoundAttenuation, (USoundConcurrency*)nullptr, false);
+		}
+
+		RocketMovementComponent->SetUpdatedComponent(RootComponent);
+		RocketMovementComponent->Activate(true);
+	}
+	else
+	{
+		RocketMovementComponent->SetUpdatedComponent(nullptr);
+		RocketMovementComponent->Activate(false);
+	}
+}
+
 void AProjectileRocket::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HasAuthority()) // 로켓탄두만큼은 클라도 OnHit Event 가 작동하도록 설정.
-	{
-		CollisionBox->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
-	}
+	//if (!HasAuthority()) // 로켓탄두만큼은 클라도 OnHit Event 가 작동하도록 설정.
+	//{
+	//	CollisionBox->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
+	//}
 
-	SpawnTrailSystem();
+	//SpawnTrailSystem();
 
-	if (ProjectileLoop && LoopingSoundAttenuation)
-	{
-		ProjectileLoopComponent = UGameplayStatics::SpawnSoundAttached(ProjectileLoop, GetRootComponent(), FName(), GetActorLocation(), EAttachLocation::KeepWorldPosition, false, 1.f, 1.f, 0.f, LoopingSoundAttenuation, (USoundConcurrency*)nullptr, false);
-	}
+	//if (ProjectileLoop && LoopingSoundAttenuation)
+	//{
+	//	ProjectileLoopComponent = UGameplayStatics::SpawnSoundAttached(ProjectileLoop, GetRootComponent(), FName(), GetActorLocation(), EAttachLocation::KeepWorldPosition, false, 1.f, 1.f, 0.f, LoopingSoundAttenuation, (USoundConcurrency*)nullptr, false);
+	//}
 }
 
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -112,3 +141,7 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	//Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 }
 
+void AProjectileRocket::SetProjectileMovementVelocity(const FVector& InVelocity)
+{
+	RocketMovementComponent->Velocity = InVelocity.GetSafeNormal() * RocketMovementComponent->MaxSpeed;
+}

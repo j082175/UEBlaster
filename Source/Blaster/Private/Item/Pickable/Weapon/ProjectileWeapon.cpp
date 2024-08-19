@@ -5,6 +5,12 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Actor/Projectile/Projectile.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Subsystem/ObjectPoolSubsystem.h"
+//#include "GameMode/BlasterGameMode.h"
+#include "GameState/BlasterGameState.h"
+#include "Components/ObjectPoolComponent.h"
+//#include "GameFramework/ProjectileMovementComponent.h"
+#include "Actor/Projectile/ProjectileBullet.h"
 
 AProjectileWeapon::AProjectileWeapon()
 {
@@ -44,17 +50,43 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 				{
 					//UE_LOG(LogTemp, Display, TEXT("server, host"));
 
-					SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
-					SpawnedProjectile->bUseServerSideRewind = false;
-					SpawnedProjectile->Damage = Damage;
-					SpawnedProjectile->HeadShotDamage = HeadShotDamage;
+					//SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
+					//SpawnedProjectile->bUseServerSideRewind = false;
+					//SpawnedProjectile->Damage = Damage;
+					//SpawnedProjectile->HeadShotDamage = HeadShotDamage;
+
+					//APooledObject* PO = Cast<UObjectPoolSubsystem>(GetGameInstance())->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass);
+
+					//APooledObject* PO = GetWorld()->GetAuthGameMode<ABlasterGameMode>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass);
+					//if (PO)
+					//{
+					//	Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+					//	PO->SetOwner(GetOwner());
+					//	PO->SetInstigator(InstigatorPawn);
+					//}
+
+					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass);
+					if (PO)
+					{
+						Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+						PO->SetOwner(GetOwner());
+						PO->SetInstigator(InstigatorPawn);
+					}
+
 				}
 				else // server, not locally controlled  - spawn non-replicated projectile, SSR
 				{
 					//UE_LOG(LogTemp, Display, TEXT("server, not locally controlled"));
-					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
-					SpawnedProjectile->bUseServerSideRewind = true;
+					//SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
+					//SpawnedProjectile->bUseServerSideRewind = true;
 
+					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass);
+					if (PO)
+					{
+						Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+						PO->SetOwner(GetOwner());
+						PO->SetInstigator(InstigatorPawn);
+					}
 				}
 			}
 			else // client, using SSR
@@ -62,10 +94,19 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 				if (InstigatorPawn->IsLocallyControlled()) // client, locally controlled - spawn non-replicated projectile, use SSR
 				{
 					//UE_LOG(LogTemp, Display, TEXT("client, locally controlled"));
-					SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
-					SpawnedProjectile->bUseServerSideRewind = true;
-					SpawnedProjectile->TraceStart = SocketTransform.GetLocation();
-					SpawnedProjectile->InitialVelocity = SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->InitialSpeed;
+					//SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
+					//SpawnedProjectile->bUseServerSideRewind = true;
+					//SpawnedProjectile->TraceStart = SocketTransform.GetLocation();
+					//SpawnedProjectile->InitialVelocity = SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->InitialSpeed;
+
+
+					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass);
+					if (PO)
+					{
+						Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+						PO->SetOwner(GetOwner());
+						PO->SetInstigator(InstigatorPawn);
+					}
 				}
 				else // client, not locally controlled - spawn non-replicated projectile, no SSR
 				{
@@ -73,6 +114,14 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 
 					//SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 					//SpawnedProjectile->bUseServerSideRewind = false;
+
+					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass);
+					if (PO)
+					{
+						Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+						PO->SetOwner(GetOwner());
+						PO->SetInstigator(InstigatorPawn);
+					}
 				}
 			}
 		}
@@ -80,14 +129,23 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 		{
 			// client, locally controlled - spawn non-replicated projectile, use SSR
 			//if (InstigatorPawn->HasAuthority())
-			if (HasAuthority())
+
+			//if (HasAuthority())
 			{
 				//UE_LOG(LogTemp, Display, TEXT("Not SSR, Authority"));
-				SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
-				//SpawnedProjectile = World->SpawnActorDeferred<AProjectile>(ProjectileClass, SocketTransform);
+				//SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 
-				SpawnedProjectile->bUseServerSideRewind = false;
-				SpawnedProjectile->Damage = Damage;
+				//SpawnedProjectile->bUseServerSideRewind = false;
+				//SpawnedProjectile->Damage = Damage;
+
+
+				APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass);
+				if (PO)
+				{
+					Cast<AProjectile>(PO)->SetProjectileMovementVelocity(ToTarget);
+					PO->SetOwner(GetOwner());
+					PO->SetInstigator(InstigatorPawn);
+				}
 			}
 		}
 

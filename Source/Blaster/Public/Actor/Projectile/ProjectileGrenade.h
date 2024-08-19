@@ -17,6 +17,10 @@ public:
 	AProjectileGrenade();
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+
+	virtual void SetIsActive(bool InIsActive) override;
+	virtual void SetProjectileMovementVelocity(const FVector& InVelocity) override;
+
 	UFUNCTION()
 	void OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 

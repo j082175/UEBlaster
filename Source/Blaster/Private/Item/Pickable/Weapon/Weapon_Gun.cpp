@@ -24,6 +24,12 @@
 // FieldSystem
 #include "Field/FieldSystemComponent.h"
 
+#include "Subsystem/ObjectPoolSubsystem.h"
+#include "Kismet/GameplayStatics.h"
+//#include "GameMode/BlasterGameMode.h"
+#include "GameState/BlasterGameState.h"
+#include "Components/ObjectPoolComponent.h"
+
 #include "GameData/DataSingleton.h"
 
 
@@ -239,6 +245,7 @@ void AWeapon_Gun::Dropped()
 
 void AWeapon_Gun::EjectCasing()
 {
+	UE_LOG(LogTemp, Display, TEXT("Eject"));
 	if (CasingClass)
 	{
 		const USkeletalMeshSocket* AmmoEjectSocket = GetWeaponMesh()->GetSocketByName(TEXT("AmmoEject"));
@@ -250,7 +257,13 @@ void AWeapon_Gun::EjectCasing()
 				UWorld* World = GetWorld();
 				if (World)
 				{
-					World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
+					FTransform T(SocketTransform.GetRotation().Rotator(), SocketTransform.GetLocation());
+					//World->SpawnActor<ACasing>(CasingClass, T);
+					//APooledObject* PO = Cast<UObjectPoolSubsystem>(GetGameInstance())->GetSpawnedObject(T, CasingClass);
+					//CasingClass.GetDefaultObject()->Deactivate();
+
+					GetWorld()->GetGameStateChecked<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(T, CasingClass);
+					//GetWorld()->GetAuthGameMode<ABlasterGameMode>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(T, CasingClass);
 				}
 			}
 		}
@@ -390,7 +403,7 @@ void AWeapon_Gun::Fire(const FVector& HitTarget)
 		}
 	}
 
-	if (WeaponType != EWeaponType::EWT_SniperRifle) EjectCasing();
+	if (WeaponType != EWeaponType::EWT_SniperRifle && WeaponType != EWeaponType::EWT_Shotgun) EjectCasing();
 
 	if (true) // HasAutority 를 지움으로서 Client-Side Prediction 구현 하지만 Jitter 발생 => Replicated 가 아닌 RPC 로 해결
 	{

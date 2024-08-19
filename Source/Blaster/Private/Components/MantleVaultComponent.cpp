@@ -52,6 +52,8 @@ bool UMantleVaultComponent::GetInitialObjectLocation_C()
 
 	if (Owner == nullptr) return false;
 
+	ResetVector();
+
 	FVector Start = Owner->GetActorLocation();
 	Start.Z -= 10.f;
 
@@ -256,6 +258,7 @@ void UMantleVaultComponent::VaultOverObject()
 	int32 RandomSection = FMath::RandRange(0, 1);
 	FName Str = FName(FString::Printf(TEXT("IdleVault%d"), RandomSection));
 	Owner->PlayVaultMontage(Str);
+
 }
 
 void UMantleVaultComponent::MantleObject()
@@ -268,5 +271,13 @@ void UMantleVaultComponent::MantleObject()
 	int32 RandomSection = 0;
 	FName Str = FName(FString::Printf(TEXT("Mantle%d"), RandomSection));
 	Owner->PlayMantleMontage(Str);
+
+}
+
+void UMantleVaultComponent::ResetVector()
+{
+	ObjectHeightVector = FVector(0.f);
+	ObjectDepthVector = FVector(0.f);
+	LandingVector = FVector(0.f);
 }
 

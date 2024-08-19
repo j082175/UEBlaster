@@ -35,6 +35,7 @@ private:
 	void VaultOverObject();
 	void MantleObject();
 
+	void ResetVector();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class ACharacterBase* Owner;

@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Actor/PooledObject.h"
 #include "Casing.generated.h"
 
 UCLASS()
-class BLASTER_API ACasing : public AActor
+class BLASTER_API ACasing : public APooledObject
 {
 	GENERATED_BODY()
 	
@@ -22,6 +23,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetIsActive(bool InIsActive) override;
+
 
 private:
 	UFUNCTION()
