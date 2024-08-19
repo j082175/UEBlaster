@@ -24,7 +24,7 @@
 // FieldSystem
 #include "Field/FieldSystemComponent.h"
 
-#include "Subsystem/ObjectPoolSubsystem.h"
+
 #include "Kismet/GameplayStatics.h"
 //#include "GameMode/BlasterGameMode.h"
 #include "GameState/BlasterGameState.h"
@@ -245,7 +245,7 @@ void AWeapon_Gun::Dropped()
 
 void AWeapon_Gun::EjectCasing()
 {
-	UE_LOG(LogTemp, Display, TEXT("Eject"));
+	//UE_LOG(LogTemp, Display, TEXT("Eject"));
 	if (CasingClass)
 	{
 		const USkeletalMeshSocket* AmmoEjectSocket = GetWeaponMesh()->GetSocketByName(TEXT("AmmoEject"));

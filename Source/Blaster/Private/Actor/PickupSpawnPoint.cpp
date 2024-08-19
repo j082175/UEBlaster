@@ -3,6 +3,8 @@
 
 #include "Actor/PickupSpawnPoint.h"
 #include "Item/Pickups/Pickup.h"
+#include "GameState/BlasterGameState.h"
+#include "Components/ObjectPoolComponent.h"
 
 // Sets default values
 APickupSpawnPoint::APickupSpawnPoint()
@@ -31,14 +33,23 @@ void APickupSpawnPoint::SpawnPickup()
 	if (NumPickupClasses > 0)
 	{
 		int32 Selection = FMath::RandRange(0, NumPickupClasses - 1);
-		SpawnedPickup = GetWorld()->SpawnActorDeferred<APickup>(PickupClasses[Selection], GetActorTransform());
+
+		//SpawnedPickup = GetWorld()->SpawnActorDeferred<APickup>(PickupClasses[Selection], GetActorTransform());
+		SpawnedPickup = Cast<APickup>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(GetActorTransform(), PickupClasses[Selection]));
+
 
 		if (HasAuthority() && SpawnedPickup)
 		{
-			SpawnedPickup->OnDestroyed.AddDynamic(this, &ThisClass::StartSpawnPickupTimer);
+			//SpawnedPickup->OnDestroyed.AddUniqueDynamic(this, &ThisClass::StartSpawnPickupTimer);
+			// 
+			// 
+			if (!SpawnedPickup->OnSpawnedPickupDisabled.IsBound())
+			{
+				SpawnedPickup->OnSpawnedPickupDisabled.BindUObject(this, &ThisClass::StartSpawnPickupTimer);
+			}
 		}
 
-		SpawnedPickup->FinishSpawning(GetActorTransform());
+		//SpawnedPickup->FinishSpawning(GetActorTransform());
 	}
 }
 

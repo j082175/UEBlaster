@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
+#include "Actor/PooledObject.h"
 #include "Item.generated.h"
 
 UENUM(BlueprintType)
@@ -15,7 +15,7 @@ enum class EItemState : uint8
 };
 
 UCLASS()
-class BLASTER_API AItem : public AActor
+class BLASTER_API AItem : public APooledObject
 {
 	GENERATED_BODY()
 

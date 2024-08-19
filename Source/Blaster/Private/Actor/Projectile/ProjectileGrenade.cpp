@@ -52,6 +52,7 @@ void AProjectileGrenade::Destroyed()
 	Result.ImpactPoint = GetActorLocation();
 
 	Super::Destroyed();
+	
 }
 
 void AProjectileGrenade::SetIsActive(bool InIsActive)

@@ -15,7 +15,7 @@ void APooledObject::Deactivate()
 	//UE_LOG(LogTemp, Display, TEXT("Deactivate"));
 	SetIsActive(false);
 	GetWorldTimerManager().ClearAllTimersForObject(this);
-	//OnPooledObjectDespawn.Broadcast(this);
+	OnPooledObjectDespawn.Broadcast(this);
 }
 
 void APooledObject::SetIsActive(bool InIsActive)

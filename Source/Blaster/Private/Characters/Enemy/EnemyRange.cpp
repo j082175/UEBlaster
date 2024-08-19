@@ -10,7 +10,6 @@
 #include "BlasterTypes/BlackboardKeys.h"
 #include "Item/Pickable/Weapon/Shotgun.h"
 #include "Components/MyCharacterMovementComponent.h"
-#include "Subsystem/ObjectPoolSubsystem.h"
 
 AEnemyRange::AEnemyRange()
 {

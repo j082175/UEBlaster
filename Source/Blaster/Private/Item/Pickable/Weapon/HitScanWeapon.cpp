@@ -17,8 +17,6 @@
 
 #include "Perception/AISense_Damage.h"
 
-#include "Subsystem/ObjectPoolSubsystem.h"
-
 
 void AHitScanWeapon::Fire(const FVector& HitTarget)
 {

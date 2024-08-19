@@ -60,7 +60,7 @@ void ACasing::SetIsActive(bool InIsActive)
 
 	if (InIsActive)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Active"));
+		//UE_LOG(LogTemp, Display, TEXT("Active"));
 
 		CasingMesh->SetCollisionProfileName(PROFILE_IgnoreOnlyPawn);
 		CasingMesh->SetSimulatePhysics(true);

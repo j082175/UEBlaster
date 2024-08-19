@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PickupSpawnPoint.generated.h"
 
+
 UCLASS()
 class BLASTER_API APickupSpawnPoint : public AActor
 {
@@ -14,6 +15,7 @@ class BLASTER_API APickupSpawnPoint : public AActor
 public:	
 	APickupSpawnPoint();
 	virtual void Tick(float DeltaTime) override;
+
 protected:
 	virtual void BeginPlay() override;
 
