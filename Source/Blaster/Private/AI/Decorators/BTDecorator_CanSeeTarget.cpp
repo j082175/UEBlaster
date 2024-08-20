@@ -42,7 +42,7 @@ bool UBTDecorator_CanSeeTarget::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	ETraceTypeQuery CanDamagedByWeapon = UEngineTypes::ConvertToTraceType(ECC_CanDamagedByWeapon);
 
-	UKismetSystemLibrary::LineTraceSingle(this, AIPawn->GetActorLocation(), TargetActor->GetActorLocation(), CanDamagedByWeapon, false, ActorsToIgnore, EDrawDebugTrace::ForOneFrame, OutHitResult, true, FLinearColor::Green);
+	UKismetSystemLibrary::LineTraceSingle(this, AIPawn->GetActorLocation(), AIPawn->GetActorLocation() + AIPawn->GetActorForwardVector() * 80000.f, CanDamagedByWeapon, false, ActorsToIgnore, EDrawDebugTrace::ForOneFrame, OutHitResult, true, FLinearColor::Green);
 
 
 	//UE_LOG(LogTemp, Display, TEXT("OutHitResult : %x"), OutHitResult.GetActor());
@@ -56,7 +56,15 @@ bool UBTDecorator_CanSeeTarget::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	if (OutHitResult.bBlockingHit && OutHitResult.GetActor() == TargetActor)
 	{
-		return true;
+		UE_LOG(LogTemp, Display, TEXT("TimeToSee : %f"), TimeToSee);
+		TimeToSee += GetWorld()->GetDeltaSeconds() * 3.f;
+
+
+		if (TimeToSee > CanSeeThreshold)
+		{
+			TimeToSee = 0.f;
+			return true;
+		}
 	}
 
 	return false;

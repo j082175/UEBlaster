@@ -34,8 +34,41 @@ void AEnemyRange::Tick(float DeltaTime)
 		AActor* TargetActor = Cast<AActor>(AIController->GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
 		if (TargetActor)
 		{
+			AIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
+
 			TargetPoint = TargetActor->GetActorLocation();
 		}
+		else
+		{
+			if (TargetPoint != FVector(0.f))
+			{
+				if (TargetPointCheckCount > TargetPointCheckThreshold)
+				{
+					AIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
+					TargetPointCheckCount = 0.f;
+					TargetPoint = FVector(0.f);
+				}
+				else
+				{
+					//UE_LOG(LogTemp, Display, TEXT("TargetActor Set"));
+					AIController->GetBlackboardComponent()->SetValueAsVector(TARGET_ACTOR_LAST_POSITION, TargetPoint);
+					SetAiming(false);
+					FireButtonPressed(false);
+					OnAttackEnded.ExecuteIfBound();
+
+					TargetPointCheckCount += DeltaTime;
+				}
+			}
+
+
+
+
+
+
+
+		}
+
+
 	}
 
 	if (EquippedGun)
@@ -43,6 +76,8 @@ void AEnemyRange::Tick(float DeltaTime)
 		FTransform MuzzleTipTransform = EquippedGun->GetWeaponMesh()->GetSocketTransform(TEXT("MuzzleFlash"));
 		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), TargetPoint, FColor::Red, false);
 	}
+
+
 
 }
 
@@ -110,6 +145,8 @@ void AEnemyRange::BeginPlay()
 
 	SpawnDefaultWeapon();
 	
+	if (AIController && AIController->GetBlackboardComponent())
+	AIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
 }
 
 void AEnemyRange::IAttack(FAttackEndedDelegate Delegate, const FString& AttackType)
@@ -125,13 +162,15 @@ void AEnemyRange::IAttack(FAttackEndedDelegate Delegate, const FString& AttackTy
 	SetAiming(true);
 	EquippedGun->SetIsAutomatic(true);
 
-	FTimerHandle FireTimer1;
-	GetWorldTimerManager().SetTimer(FireTimer1, FTimerDelegate::CreateLambda([&]()
-		{
-			FireButtonPressed(false);
-			SetAiming(false);
-			OnAttackEnded.ExecuteIfBound();
-		}), 3.f, false);
+
+
+	//FTimerHandle FireTimer1;
+	//GetWorldTimerManager().SetTimer(FireTimer1, FTimerDelegate::CreateLambda([&]()
+	//	{
+	//		FireButtonPressed(false);
+	//		SetAiming(false);
+	//		OnAttackEnded.ExecuteIfBound();
+	//	}), 3.f, false);
 }
 
 void AEnemyRange::ISetAIState(EAIState InAIState)

@@ -6,3 +6,4 @@
 #define DETECTED_LOCATION TEXT("DetectedLocation")
 #define CAN_SEE TEXT("bCanSee")
 #define E_COMBAT_STATE TEXT("CombatState")
+#define TARGET_ACTOR_LAST_POSITION (TEXT("TargetActorLastPosition"))

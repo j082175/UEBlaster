@@ -43,4 +43,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class AWeapon_Gun* EquippedGun;
+
+
+	float TargetPointCheckCount = 0.f;
+	float TargetPointCheckThreshold = 2.f;
+	FVector TargetPointCheck;
 };

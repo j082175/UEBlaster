@@ -5,6 +5,8 @@
 #include "Characters/Enemy/Enemy.h"
 #include "Components/ObjectPoolComponent.h"
 #include "GameState/BlasterGameState.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 AEnemySpawnPoint::AEnemySpawnPoint()
@@ -80,7 +82,25 @@ void AEnemySpawnPoint::MustRandomSpawner()
 		Selection = FMath::RandRange(0, EnemyClass.Num() - 1);
 
 		//UE_LOG(LogTemp, Display, TEXT("Spawned"));
-		SpawnedEnemy = Cast<AEnemy>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedCharacter(GetActorTransform(), EnemyClass[Selection]));
+
+		FTransform SpawnT(GetActorRotation(), GetActorLocation() + FVector(0.f, 0.f, 85.f));
+
+		SpawnedEnemy = Cast<AEnemy>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedCharacter(SpawnT, EnemyClass[Selection]));
+
+		if (SpawnEffect)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnEffect, SpawnT);
+		}
+		else if (SpawnEffectNiagara)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, SpawnEffectNiagara, SpawnT.GetLocation());
+		}
+
+
+
+
+
+		//GetActorTransform().DebugPrint();
 
 		if (!SpawnedEnemy)
 		{

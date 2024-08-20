@@ -15,4 +15,11 @@ class BLASTER_API UBTDecorator_CanSeeTarget : public UBTDecorator
 	GENERATED_BODY()
 protected:
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
+
+
+private:
+	mutable float TimeToSee = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float CanSeeThreshold = 1.f;
 };

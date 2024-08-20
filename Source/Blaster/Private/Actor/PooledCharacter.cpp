@@ -26,6 +26,8 @@ void APooledCharacter::SetIsActive(bool InIsActive)
 	SetActorHiddenInGame(!InIsActive);
 	SetActorEnableCollision(InIsActive);
 	GetWorldTimerManager().SetTimer(LifeSpanTimer, this, &ThisClass::Deactivate, LifeSpan, false);
+
+
 }
 
 void APooledCharacter::SetLifeTime(float InLifeTime)

@@ -44,4 +44,11 @@ private:
 	float SpawnPickupTimeMin;
 	UPROPERTY(EditAnywhere)
 	float SpawnPickupTimeMax;
+
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UParticleSystem> SpawnEffect;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UNiagaraSystem> SpawnEffectNiagara;
 };

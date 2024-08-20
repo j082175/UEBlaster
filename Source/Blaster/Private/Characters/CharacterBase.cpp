@@ -1438,6 +1438,8 @@ void ACharacterBase::InitializeDefaults()
 	CheckCapsuleAndMeshTimer = CheckCapsuleAndMeshThreshold;
 
 	HpBarWidgetComponent->SetVisibility(false);
+
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 }
 
 FName ACharacterBase::CalculateHitDirection(const FVector& InHitPoint)
