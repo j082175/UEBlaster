@@ -26,6 +26,7 @@ public:
 	class ACharacterBase* Owner;
 
 	void Init();
+	void InitStatus();
 
 	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
 	FORCEINLINE float GetMaxHp() const { return MaxHp; }

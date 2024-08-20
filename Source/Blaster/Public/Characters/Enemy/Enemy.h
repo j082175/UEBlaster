@@ -14,6 +14,9 @@
 
 #include "Enemy.generated.h"
 
+DECLARE_DELEGATE_OneParam(FOnSpawnedEnemyDisabledDelegate, AActor* /*DestroyedActor*/);
+
+
 USTRUCT(BlueprintType)
 struct FAIConfig
 {
@@ -37,6 +40,8 @@ public:
 	FORCEINLINE FAIConfig GetAIConfig() const { return AIConfig; }
 	FORCEINLINE class AEnemyAIController* GetEnemyAIController() const { return EnemyAIController; }
 
+
+	FOnSpawnedEnemyDisabledDelegate OnSpawnedEnemyDisabled;
 protected:
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
@@ -44,6 +49,10 @@ protected:
 	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser) override;
+
+	virtual void Destroyed() override;
+	virtual void SetIsActive(bool InIsActive) override;
+
 
 	// Initialize
 protected:

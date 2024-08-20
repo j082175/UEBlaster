@@ -189,6 +189,43 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 
 }
 
+void AEnemy::Destroyed()
+{
+	if (Weapon)
+	{
+		Weapon->Destroy();
+	}
+
+
+
+	SetIsActive(false);
+}
+
+void AEnemy::SetIsActive(bool InIsActive)
+{
+	Super::SetIsActive(InIsActive);
+
+	if (EquippedWeapon)
+	{
+		//UE_LOG(LogTemp, Display, TEXT("hidden EquippedWeapon"));
+		EquippedWeapon->SetActorHiddenInGame(!InIsActive);
+	}
+
+	if (InIsActive)
+	{
+		if (EnemyAIController) EnemyAIController->RunAI();
+	}
+	else
+	{
+		if (EnemyAIController) EnemyAIController->StopAI();
+
+		UE_LOG(LogTemp, Display, TEXT("SetIsActive false"));
+		OnSpawnedEnemyDisabled.ExecuteIfBound(this);
+	}
+
+
+}
+
 void AEnemy::InitializeDelegates()
 {
 	Super::InitializeDelegates();

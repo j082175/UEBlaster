@@ -2,6 +2,8 @@
 
 
 #include "Components/ObjectPoolComponent.h"
+#include "Actor/PooledObject.h"
+#include "Actor//PooledCharacter.h"
 //#include "Interfaces/ObjectPoolInterface.h"
 
 // Sets default values for this component's properties
@@ -31,6 +33,16 @@ APooledObject* UObjectPoolComponent::GetSpawnedObject(const FTransform& SpawnTo,
 		return Get(SpawnTo, ClassInfo);
 	}
 
+
+	return nullptr;
+}
+
+APooledCharacter* UObjectPoolComponent::GetSpawnedCharacter(const FTransform& SpawnTo, UClass* ClassInfo)
+{
+	if (CharacterObjectPool.Contains(ClassInfo))
+	{
+		return GetCharacter(SpawnTo, ClassInfo);
+	}
 
 	return nullptr;
 }
@@ -77,16 +89,45 @@ void UObjectPoolComponent::GenerateObject()
 				APooledObject* Actor = World->SpawnActorDeferred<APooledObject>(PO, T);
 				if (Actor)
 				{
+					Actor->FinishSpawning(T);
 					Actor->SetIsActive(false);
 					Actor->SetPoolIndex(i);
 					Actor->OnPooledObjectDespawn.AddDynamic(this, &ThisClass::OnPooledObjectDespawn);
 
 					ObjectPool[PO].Add(Actor);
 
-					//SpawnedPoolIndexes[Count].Enqueue(i);
-					
+				}
+			}
 
+			++Count;
+		}
+
+		Count = 0;
+		for (TSubclassOf<APooledCharacter> PO : CharactersToSpawn)
+		{
+			CharacterObjectPool.Add(PO);
+			CharacterObjectPool[PO].Reserve(CharacterPoolSizeArr[Count]);
+
+			CharacterIndexPool.Add(PO, Count);
+
+			CharacterSpawnedPoolIndexes.Reserve(CharactersToSpawn.Num());
+
+			CharacterSpawnedPoolIndexes.Add(0);
+
+			for (size_t i = 0; i < CharacterPoolSizeArr[Count]; i++)
+			{
+				FTransform T(FRotator::ZeroRotator, FVector(0.f, 0.f, 100.f));
+				APooledCharacter* Actor = World->SpawnActorDeferred<APooledCharacter>(PO, T);
+				if (Actor)
+				{
+					Actor->SpawnDefaultController();
 					Actor->FinishSpawning(T);
+
+					Actor->SetIsActive(false);
+					Actor->SetPoolIndex(i);
+					//Actor->OnPooledObjectDespawn.AddDynamic(this, &ThisClass::OnPooledObjectDespawn);
+
+					CharacterObjectPool[PO].Add(Actor);
 				}
 			}
 
@@ -97,7 +138,11 @@ void UObjectPoolComponent::GenerateObject()
 
 APooledObject* UObjectPoolComponent::Get(const FTransform& SpawnTo, UClass* InName)
 {
-
+	if (!ObjectPool.Contains(InName))
+	{
+		UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::Get : No Objects inbound"));
+		return nullptr;
+	}
 
 	//UE_LOG(LogTemp, Display, TEXT("Get"));
 	int32 ObjectIndex = *ObjectIndexPool.Find(InName);
@@ -126,5 +171,42 @@ APooledObject* UObjectPoolComponent::Get(const FTransform& SpawnTo, UClass* InNa
 	O->SetLifeTime(PooledObjectLifeSpan[ObjectIndex]);
 	O->SetIsActive(true);
 	return O;
+}
+
+APooledCharacter* UObjectPoolComponent::GetCharacter(const FTransform& SpawnTo, UClass* InName)
+{
+	if (!CharacterObjectPool.Contains(InName))
+	{
+		UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::GetCharacter : No Characters inbound"));
+		return nullptr;
+	}
+
+	int32 ObjectIndex = *CharacterIndexPool.Find(InName);
+
+	int32 OutIndex = CharacterSpawnedPoolIndexes[ObjectIndex];
+	APooledCharacter* PooledCharacter = CharacterObjectPool[InName][OutIndex];
+
+	++OutIndex;
+	if (OutIndex >= CharacterObjectPool[InName].Num())
+	{
+		OutIndex = 0;
+	}
+
+	//UE_LOG(LogTemp, Display, TEXT("ObjectIndex : %d"), OutIndex);
+
+	CharacterSpawnedPoolIndexes[ObjectIndex] = OutIndex;
+
+	if (PooledCharacter->IsActive())
+	{
+		//PooledCharacter->Deactivate();
+		return nullptr;
+	}
+
+	if (!PooledCharacter->TeleportTo(SpawnTo.GetLocation(), SpawnTo.GetRotation().Rotator()))
+		UE_LOG(LogTemp, Error, TEXT("TeleportTo Error"));
+
+	PooledCharacter->SetLifeTime(CharacterPooledObjectLifeSpan[ObjectIndex]);
+	PooledCharacter->SetIsActive(true);
+	return PooledCharacter;
 }
 

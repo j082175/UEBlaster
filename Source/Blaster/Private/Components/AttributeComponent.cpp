@@ -19,6 +19,7 @@ UAttributeComponent::UAttributeComponent()
 
 	CurrentHp = MaxHp;
 	CurrentSp = MaxSp;
+	CurrentShield = MaxShield;
 	CurrentParryGauge = 0.f;
 }
 
@@ -34,7 +35,6 @@ void UAttributeComponent::BeginPlay()
 	Owner = Cast<ACharacterBase>(GetOwner());
 
 	OnParryGaugeChanged.Broadcast(0.f, MaxParryGauge);
-
 
 	Init();
 }
@@ -98,6 +98,17 @@ void UAttributeComponent::Init()
 	OnSpChanged.Broadcast(CurrentSp, MaxSp);
 	OnParryGaugeChanged.Broadcast(CurrentParryGauge, MaxParryGauge);
 }
+
+void UAttributeComponent::InitStatus()
+{
+	CurrentHp = MaxHp;
+	CurrentShield = MaxShield;
+	CurrentSp = MaxSp;
+	CurrentParryGauge = 0.f;
+
+	OnParryGaugeChanged.Broadcast(0.f, MaxParryGauge);
+}
+
 
 float UAttributeComponent::RecoveringResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime)
 {

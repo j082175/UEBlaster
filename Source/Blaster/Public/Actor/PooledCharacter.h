@@ -3,23 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-//#include "UObject/Object.h"
-
-#include "PooledObject.generated.h"
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPooledObjectDespawnDelegate, APooledObject*, PoolActor);
+#include "GameFramework/Character.h"
+#include "PooledCharacter.generated.h"
 
 UCLASS()
-class BLASTER_API APooledObject : public AActor
+class BLASTER_API APooledCharacter : public ACharacter
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	APooledObject();
 
-	FOnPooledObjectDespawnDelegate OnPooledObjectDespawn;
+public:
+	// Sets default values for this character's properties
+	APooledCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+
+
+	//FOnPooledObjectDespawnDelegate OnPooledObjectDespawn;
 
 	UFUNCTION(BlueprintCallable)
 	void Deactivate();

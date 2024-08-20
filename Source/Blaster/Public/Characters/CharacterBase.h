@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+//#include "GameFramework/Character.h"
+#include "Actor/PooledCharacter.h"
 
 // Enums
 #include "BlasterTypes/AnimState.h"
@@ -32,7 +33,7 @@ typedef int32 AmmoAmountInt;
 
 
 UCLASS()
-class BLASTER_API ACharacterBase : public ACharacter, public IHitInterface, public IWidgetBindDelegateInterface, public ICanParryInterface
+class BLASTER_API ACharacterBase : public APooledCharacter, public IHitInterface, public IWidgetBindDelegateInterface, public ICanParryInterface
 {
 	GENERATED_BODY()
 
@@ -420,6 +421,8 @@ protected:
 
 	// Respawn
 protected:
+	void Recover();
+
 	void SetSpawnPoint();
 
 	virtual void ElimTimerFinished();
@@ -819,6 +822,8 @@ protected:
 
 	// For Ragdoll
 protected:
+	void RagdollTick(float DeltaTime);
+
 	void DoRagdollImpulse();
 	void CalculateMeshLocation();
 	void SetRagdollCollision();

@@ -45,7 +45,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 			{
 				//if (HasAuthority()) UE_LOG(LogTemp, Error, TEXT("HitActor : %s"), *FireHit.GetActor()->GetName());
 				HitActor->IGetHit(HitTarget);
-				ApplyForce(FieldSystemComponent, FireHit);
+				//ApplyForce(FieldSystemComponent, FireHit);
 				//UAISense_Damage::ReportDamageEvent(this, FireHit.GetActor(), GetInstigator(), Damage, GetActorLocation(), HitTarget);
 			}
 

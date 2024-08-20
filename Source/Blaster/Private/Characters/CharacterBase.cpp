@@ -221,27 +221,8 @@ void ACharacterBase::Tick(float DeltaTime)
 
 	//UE_LOG(LogTemp, Display, TEXT("bRagdollInProgress : %d"), bRagdollInProgress);
 
-	// Set Ragdoll Settings
-	if (bRagdollInProgress || bIsElimmed)
-	{
-		CalculateMeshLocation();
-		GetCapsuleComponent()->SetWorldLocation(MeshLocation);
-	}
-	else
-	{
-		//MeshLocation = GetMesh()->GetSocketLocation(TEXT("pelvis")) - GetMesh()->GetRelativeLocation();
-		MeshLocation = GetCapsuleComponent()->GetComponentLocation();
-	}
+	//RagdollTick(DeltaTime);
 
-	// Ragdoll Recover
-	if (bRagdollInProgress && IsLocallyControlled())
-	{
-		CheckCapsuleAndMeshEquals(DeltaTime, 0.1f);
-		if (bIsRagdollComplete)
-		{
-			if (!bIsElimmed) ExecutePhysicsRecover();
-		}
-	}
 
 	BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
 	if (BlasterGameMode)
@@ -500,6 +481,7 @@ void ACharacterBase::SetDead()
 	//{
 	//	PlayRandomMontage(GetMesh()->GetAnimInstance(), DeadMontage, TEXT("Dead"));
 	//}
+
 
 	Elim(false);
 }
@@ -868,6 +850,30 @@ void ACharacterBase::PlayRandomMontage(UAnimInstance* AnimInstance, UAnimMontage
 	}
 }
 
+void ACharacterBase::RagdollTick(float DeltaTime)
+{
+	// Set Ragdoll Settings
+	if (bRagdollInProgress || bIsElimmed)
+	{
+		CalculateMeshLocation();
+		GetCapsuleComponent()->SetWorldLocation(MeshLocation);
+	}
+	else
+	{
+		MeshLocation = GetCapsuleComponent()->GetComponentLocation();
+	}
+
+	// Ragdoll Recover
+	if (bRagdollInProgress && IsLocallyControlled())
+	{
+		CheckCapsuleAndMeshEquals(DeltaTime, 0.1f);
+		if (bIsRagdollComplete)
+		{
+			if (!bIsElimmed) ExecutePhysicsRecover();
+		}
+	}
+}
+
 void ACharacterBase::DoRagdollImpulse()
 {
 	//충돌 방향 설정 (바라보는 방향 뒤로)
@@ -1060,6 +1066,8 @@ void ACharacterBase::SetRagdollCollision()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetConstraintProfileForAll(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
+	
+
 	//GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 }
 
@@ -1487,8 +1495,6 @@ void ACharacterBase::Destroyed()
 {
 	Super::Destroyed();
 
-	//UE_LOG(LogTemp, Display, TEXT("Destroyed"));
-
 	if (Weapon)
 	{
 		Weapon->Destroy();
@@ -1817,21 +1823,25 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 
 void ACharacterBase::Elim(bool bPlayerLeftGame)
 {
-	if (EquippedWeapon)
+	if (!Cast<AEnemy>(this))
 	{
-		DropOrDestroyWeapon(EquippedWeapon);
+		if (EquippedWeapon)
+		{
+			DropOrDestroyWeapon(EquippedWeapon);
+		}
+
+		if (SecondaryWeapon)
+		{
+			DropOrDestroyWeapon(SecondaryWeapon);
+		}
+
+		if (Flag)
+		{
+			bHoldingTheFlag = false;
+			Flag->Dropped();
+		}
 	}
 
-	if (SecondaryWeapon)
-	{
-		DropOrDestroyWeapon(SecondaryWeapon);
-	}
-
-	if (Flag)
-	{
-		bHoldingTheFlag = false;
-		Flag->Dropped();
-	}
 
 	MulticastElim(bPlayerLeftGame);
 }
@@ -1890,6 +1900,8 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	bDisableGameplay = true;
 	FireButtonPressed(false);
 
+
+
 	if (DeadMontage)
 	{
 		PlayDeadMontage();
@@ -1905,10 +1917,24 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	}
 	else
 	{
+		GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
 		SetRagdollCollision();
+
 		DoRagdollImpulse();
 		SetReplicateMovement(false);
 
+		// 버그잡기위해 이딴식으로짬 AnimationSnapShot 찍을때랑 비슷한?
+		FTimerHandle Timerhandle;
+		GetWorldTimerManager().SetTimer(Timerhandle, FTimerDelegate::CreateLambda([&]()
+			{
+				GetMesh()->SetSimulatePhysics(false);
+
+				FTimerHandle Timerhandle;
+				GetWorldTimerManager().SetTimer(Timerhandle, FTimerDelegate::CreateLambda([&]()
+					{
+						GetMesh()->SetSimulatePhysics(true);
+					}), 0.001f, false);
+			}), 0.001f, false);
 	}
 
 
@@ -1938,7 +1964,27 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 
 	
 
+
 	GetWorldTimerManager().SetTimer(ElimTimer, this, &ThisClass::ElimTimerFinished, ElimDelay);
+
+
+}
+
+void ACharacterBase::Recover()
+{
+	GetMesh()->SetSimulatePhysics(false);
+	//GetMesh()->SetAllBodiesSimulatePhysics(false);
+	//GetCapsuleComponent()->SetCollisionProfileName(PROFILE_Pawn);
+	//GetMesh()->SetCollisionProfileName(PROFILE_CharacterMesh);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	CombatState = ECombatState::ECS_Unoccupied;
+	bIsElimmed = false;
+	bDisableGameplay = false;
+	AIPerceptionStimuliSource->RegisterWithPerceptionSystem();
+	AttributeComponent->InitStatus();
 
 }
 
@@ -1969,10 +2015,18 @@ void ACharacterBase::SetSpawnPoint()
 
 void ACharacterBase::ElimTimerFinished()
 {
-	BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
-	if (BlasterGameMode)
+	if (!Cast<AEnemy>(this))
 	{
-		BlasterGameMode->RequestRespawn(this, GetController());
+		BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
+		if (BlasterGameMode)
+		{
+			BlasterGameMode->RequestRespawn(this, GetController());
+		}
+	}
+	else
+	{
+		SetIsActive(false);
+		Recover();
 	}
 }
 

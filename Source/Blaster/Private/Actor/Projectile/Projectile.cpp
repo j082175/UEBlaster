@@ -202,6 +202,8 @@ void AProjectile::ApplyForce(UFieldSystemComponent* InFieldSystemComponent, cons
 		//UE_LOG(LogTemp, Display, TEXT("%s : FieldSystem Actived"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
 
 		float ForceDamage = 1000'00000.f;
+		//float ForceDamage = 100.f;
+
 		float ForceRadius = 50.f;
 
 		//UE_LOG(LogTemp, Display, TEXT("Normal : %f, %f, %f"), -OutHitResult.Normal.X, -OutHitResult.Normal.Y, -OutHitResult.Normal.Z);

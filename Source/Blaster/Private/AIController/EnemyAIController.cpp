@@ -94,6 +94,9 @@ void AEnemyAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePawn
 	{
 		//Get pawn
 		APawn* const MyPawn = GetPawn();
+
+		if (!MyPawn) return;
+
 		//Get Pawn current rotation
 		const FRotator CurrentPawnRotation = MyPawn->GetActorRotation();
 
@@ -119,9 +122,13 @@ void AEnemyAIController::RunAI()
 
 void AEnemyAIController::StopAI()
 {
+	UE_LOG(LogTemp, Display, TEXT("StopAI"));
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(GetBrainComponent());
 	ensure(BehaviorTreeComponent);
 	BehaviorTreeComponent->StopTree();
+
+	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
+	//BlackboardComponent->SetValueAsObject(TARGET_ACTOR, nullptr);
 }
 
 void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
