@@ -35,7 +35,9 @@ public:
 	UPROPERTY()
 	TObjectPtr<class AEnemy> SpawnedEnemy;
 
+
 private:
+	void MustRandomSpawner();
 
 	FTimerHandle SpawnPickupTimer;
 	UPROPERTY(EditAnywhere)

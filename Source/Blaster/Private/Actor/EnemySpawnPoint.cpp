@@ -30,24 +30,11 @@ void AEnemySpawnPoint::Tick(float DeltaTime)
 
 void AEnemySpawnPoint::SpawnPickup()
 {
-	int32 NumPickupClasses = EnemyClass.Num();
-	if (NumPickupClasses > 0)
+	if (EnemyClass.Num() > 0)
 	{
-		int32 Selection = FMath::RandRange(0, NumPickupClasses - 1);
 
-		//SpawnedEnemy = GetWorld()->SpawnActorDeferred<AEnemy>(EnemyClass[Selection], GetActorTransform());
+		MustRandomSpawner();
 
-		UE_LOG(LogTemp, Display, TEXT("Spawned"));
-		SpawnedEnemy = Cast<AEnemy>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedCharacter(GetActorTransform(), EnemyClass[Selection]));
-
-		if (!SpawnedEnemy)
-		{
-			UE_LOG(LogTemp, Display, TEXT("SpawnFailed"));
-		}
-
-		//UE_LOG(LogTemp, Display, TEXT("SpawnEnemy : %x"), SpawnedEnemy.Get());
-
-		//SpawnedEnemy->SpawnDefaultController();
 
 		if (HasAuthority() && SpawnedEnemy)
 		{
@@ -76,5 +63,39 @@ void AEnemySpawnPoint::StartSpawnPickupTimer(AActor* DestroyedActor)
 {
 	const float SpawnTime = FMath::FRandRange(SpawnPickupTimeMin, SpawnPickupTimeMax);
 	GetWorldTimerManager().SetTimer(SpawnPickupTimer, this, &ThisClass::SpawnPickupTimerFinished, SpawnTime);
+}
+
+void AEnemySpawnPoint::MustRandomSpawner()
+{
+
+	TSet<int32> Checker;
+	int32 Selection = -1;
+	int32 LoopThreshold = 50;
+	int32 Count = 0;
+
+	Checker.Add(Selection);
+
+	while (Checker.Contains(Selection))
+	{
+		Selection = FMath::RandRange(0, EnemyClass.Num() - 1);
+
+		//UE_LOG(LogTemp, Display, TEXT("Spawned"));
+		SpawnedEnemy = Cast<AEnemy>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedCharacter(GetActorTransform(), EnemyClass[Selection]));
+
+		if (!SpawnedEnemy)
+		{
+			//UE_LOG(LogTemp, Display, TEXT("SpawnFailed"));
+			Checker.Add(Selection);
+		}
+		else
+		{
+			break;
+		}
+
+		if (Count++ > LoopThreshold)
+		{
+			break;
+		}
+	}
 }
 
