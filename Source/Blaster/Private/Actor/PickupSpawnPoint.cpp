@@ -29,14 +29,19 @@ void APickupSpawnPoint::BeginPlay()
 
 void APickupSpawnPoint::SpawnPickup()
 {
+	//UE_LOG(LogTemp, Display, TEXT("SpawnPickup"));
 	int32 NumPickupClasses = PickupClasses.Num();
 	if (NumPickupClasses > 0)
 	{
 		int32 Selection = FMath::RandRange(0, NumPickupClasses - 1);
 
 		//SpawnedPickup = GetWorld()->SpawnActorDeferred<APickup>(PickupClasses[Selection], GetActorTransform());
-		SpawnedPickup = Cast<APickup>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(GetActorTransform(), PickupClasses[Selection]));
+		SpawnedPickup = Cast<APickup>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(GetActorTransform(), PickupClasses[Selection]));
 
+		if (!SpawnedPickup)
+		{
+			UE_LOG(LogTemp, Error, TEXT("SpawnedPickup null"));
+		}
 
 		if (HasAuthority() && SpawnedPickup)
 		{
@@ -50,6 +55,7 @@ void APickupSpawnPoint::SpawnPickup()
 		}
 
 		//SpawnedPickup->FinishSpawning(GetActorTransform());
+		GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->FinishSpawning(GetActorTransform(), PickupClasses[Selection]);
 	}
 }
 
@@ -63,6 +69,7 @@ void APickupSpawnPoint::SpawnPickupTimerFinished()
 
 void APickupSpawnPoint::StartSpawnPickupTimer(AActor* DestroyedActor)
 {
+	//UE_LOG(LogTemp, Display, TEXT("StartSpawnPickupTimer"));
 	const float SpawnTime = FMath::FRandRange(SpawnPickupTimeMin, SpawnPickupTimeMax);
 	GetWorldTimerManager().SetTimer(SpawnPickupTimer, this, &ThisClass::SpawnPickupTimerFinished, SpawnTime);
 }

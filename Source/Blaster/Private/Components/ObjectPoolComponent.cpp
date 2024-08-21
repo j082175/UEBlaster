@@ -33,6 +33,17 @@ APooledObject* UObjectPoolComponent::GetSpawnedObject(const FTransform& SpawnTo,
 		return Get(SpawnTo, ClassInfo);
 	}
 
+	return nullptr;
+}
+
+APooledObject* UObjectPoolComponent::GetSpawnedObjectDeferred(const FTransform& SpawnTo, UClass* ClassInfo)
+{
+	if (ObjectPool.Contains(ClassInfo))
+	{
+		int32 ObjectIndex = *ObjectIndexPool.Find(ClassInfo);
+		int32 OutIndex = SpawnedPoolIndexes[ObjectIndex];
+		return ObjectPool[ClassInfo][OutIndex];
+	}
 
 	return nullptr;
 }
@@ -45,6 +56,43 @@ APooledCharacter* UObjectPoolComponent::GetSpawnedCharacter(const FTransform& Sp
 	}
 
 	return nullptr;
+}
+
+APooledObject* UObjectPoolComponent::FinishSpawning(const FTransform& SpawnTo, UClass* InName)
+{
+	if (!ObjectPool.Contains(InName))
+	{
+		UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::Get : No Objects inbound"));
+		return nullptr;
+	}
+
+	//UE_LOG(LogTemp, Display, TEXT("Get"));
+	int32 ObjectIndex = *ObjectIndexPool.Find(InName);
+
+	int32 OutIndex = SpawnedPoolIndexes[ObjectIndex];
+	APooledObject* O = ObjectPool[InName][OutIndex];
+
+	++OutIndex;
+	if (OutIndex >= ObjectPool[InName].Num())
+	{
+		OutIndex = 0;
+	}
+
+	//UE_LOG(LogTemp, Display, TEXT("ObjectIndex : %d"), OutIndex);
+
+	SpawnedPoolIndexes[ObjectIndex] = OutIndex;
+
+	if (O->IsActive())
+	{
+		O->Deactivate();
+	}
+
+	if (!O->TeleportTo(SpawnTo.GetLocation(), SpawnTo.GetRotation().Rotator()))
+		UE_LOG(LogTemp, Error, TEXT("TeleportTo Error"));
+
+	O->SetLifeTime(PooledObjectLifeSpan[ObjectIndex]);
+	O->SetIsActive(true);
+	return O;
 }
 
 void UObjectPoolComponent::OnPooledObjectDespawn(APooledObject* InPooledObject)

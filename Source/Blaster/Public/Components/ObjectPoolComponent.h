@@ -21,8 +21,13 @@ public:
 	class APooledObject* GetSpawnedObject(const FTransform& SpawnTo, UClass* ClassInfo);
 
 	UFUNCTION(BlueprintCallable)
+	class APooledObject* GetSpawnedObjectDeferred(const FTransform& SpawnTo, UClass* ClassInfo);
+
+	UFUNCTION(BlueprintCallable)
 	class APooledCharacter* GetSpawnedCharacter(const FTransform& SpawnTo, UClass* ClassInfo);
 
+
+	class APooledObject* FinishSpawning(const FTransform& SpawnTo, UClass* InName);
 protected:
 
 	virtual void BeginPlay() override;

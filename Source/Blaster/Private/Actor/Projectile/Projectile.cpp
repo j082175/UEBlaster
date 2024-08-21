@@ -86,7 +86,8 @@ void AProjectile::SetIsActive(bool InIsActive)
 	{
 		if (Tracer)
 		{
-			TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, TEXT(""), GetActorLocation(), GetActorRotation(), EAttachLocation::KeepWorldPosition);
+			TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, TEXT(""), GetActorLocation() + GetActorForwardVector() * 50.f, GetActorRotation(), EAttachLocation::KeepWorldPosition);
+			//TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, ProjectileMesh, TEXT("TracerSocket"), ProjectileMesh->GetComponentLocation(), GetActorRotation(), EAttachLocation::SnapToTarget);
 		}
 
 		if (HasAuthority())
