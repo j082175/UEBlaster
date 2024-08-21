@@ -11,6 +11,7 @@
 //#include "Perception/AISense.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISense_Hearing.h"
 #include "AISystem.h"
 
 #include "Interfaces/AIInterface.h"
@@ -153,7 +154,6 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 			return;
 		}
 	}
-
 
 	FActorPerceptionBlueprintInfo Info;
 	AIPerceptionComponent->GetActorsPerception(Actor, Info);

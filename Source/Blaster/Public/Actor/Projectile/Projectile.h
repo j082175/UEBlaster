@@ -18,6 +18,7 @@ public:
 	AProjectile();
 	virtual void Destroyed() override;
 
+	void SetIsNotPoolable(bool InIsNotPoolable);
 	virtual void SetIsActive(bool InIsActive) override;
 
 	virtual void SetProjectileMovementVelocity(const FVector& InVelocity);
@@ -85,11 +86,15 @@ private:
 protected:
 	void StartDestroyTimer();
 	void DestroyTimerFinished();
+
+	UPROPERTY(EditAnywhere)
+	uint8 bIsNotPoolable : 1;
 private:
 	FTimerHandle DestroyTimer;
 
 	UPROPERTY(EditAnywhere)
 	float DestroyTime = 3.f;
+
 
 
 protected:

@@ -20,6 +20,8 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Actor/Projectile/Projectile.h"
 #include "BlasterTypes/BlackboardKeys.h"
+#include "Components/ObjectPoolComponent.h"
+#include "GameState/BlasterGameState.h"
 
 
 // AI
@@ -528,9 +530,13 @@ void AEnemy::SpawnMagic(FName SocketToSpawn)
 
 		if (HasAuthority() && ProjectileMagicClass)
 		{
-			SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileMagicClass, SocketTransform.GetLocation() + ToTargetNormal * 50.f, TargetRotation, SpawnParams);
-			//SpawnedProjectile = World->SpawnActorDeferred<AProjectile>(ProjectileMagic, SocketTransform);
+			FTransform T(TargetRotation, SocketTransform.GetLocation() + ToTargetNormal * 50.f);
+			//SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileMagicClass, SocketTransform.GetLocation() + ToTargetNormal * 50.f, TargetRotation, SpawnParams);
 
+			SpawnedProjectile = Cast<AProjectile>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(T, ProjectileMagicClass));
+			SpawnedProjectile->SetProjectileMovementVelocity(ToTarget);
+			SpawnedProjectile->SetOwner(InstigatorPawn);
+			SpawnedProjectile->SetInstigator(InstigatorPawn);
 			SpawnedProjectile->bUseServerSideRewind = false;
 			SpawnedProjectile->Damage = ProjectileMagicDamage;
 

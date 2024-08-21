@@ -7,6 +7,7 @@
 #include "NavigationSystem.h"
 #include "AIController.h"
 #include "BlasterTypes/BlackboardKeys.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -29,7 +30,11 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 	UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
 
 	FNavLocation NavLocation;
-	NavigationSystemV1->GetRandomPointInNavigableRadius(ControllingPawn->GetActorLocation(), NavRadius, NavLocation);
+	//NavigationSystemV1->GetRandomPointInNavigableRadius(ControllingPawn->GetActorLocation(), NavRadius, NavLocation);
+	NavigationSystemV1->GetRandomReachablePointInRadius(ControllingPawn->GetActorLocation(), NavRadius, NavLocation);
+	//NavigationSystemV1->GetRandomPoint(NavLocation);
+
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(OwnerComp.GetAIOwner(), NavLocation);
 
 	BlackboardComponent->SetValueAsVector(PATROL_POS, NavLocation.Location);
 

@@ -73,13 +73,15 @@ void AParticleSpawner::Launch()
 	{
 
 		MulticastSpawnLaser();
-		AProjectile* Explosive = GetWorld()->SpawnActor<AProjectile>(ProjectileToSpawn, SkyLaserSpawnPoint);
+		AProjectile* Explosive = GetWorld()->SpawnActorDeferred<AProjectile>(ProjectileToSpawn, SkyLaserSpawnPoint);
 		if (Explosive)
 		{
+			Explosive->SetIsNotPoolable(true);
 			Explosive->SetOwner(this);
 			Explosive->SetInstigator(GetInstigator());
 			//UE_LOG(LogTemp, Display, TEXT("ParticleSpawner's instigator : %s"), *GetInstigator()->GetName());
 
+			Explosive->FinishSpawning(SkyLaserSpawnPoint);
 		}
 
 		Destroy();

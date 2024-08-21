@@ -29,6 +29,9 @@
 #include "Net/UnrealNetwork.h"
 #include "Blaster/Blaster.h"
 
+#include "Components/ObjectPoolComponent.h"
+#include "GameState/BlasterGameState.h"
+
 //#include "Interfaces/HitInterface.h"
 
 AMinion_Lane_Super_Dusk::AMinion_Lane_Super_Dusk()

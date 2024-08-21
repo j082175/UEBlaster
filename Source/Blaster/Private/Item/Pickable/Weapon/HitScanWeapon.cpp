@@ -16,6 +16,7 @@
 #include "Interfaces/HitInterface.h"
 
 #include "Perception/AISense_Damage.h"
+#include "Perception/AISense_Hearing.h"
 
 
 void AHitScanWeapon::Fire(const FVector& HitTarget)
@@ -87,6 +88,8 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, HitSound, FireHit.ImpactPoint);
 			}
+
+			UAISense_Hearing::ReportNoiseEvent(this, FireHit.ImpactPoint, 1.f, GetInstigator());
 		}
 
 		if (MuzzleFlash)

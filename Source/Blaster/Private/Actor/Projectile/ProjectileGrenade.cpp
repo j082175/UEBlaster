@@ -37,12 +37,16 @@ void AProjectileGrenade::BeginPlay()
 
 	//UE_LOG(LogTemp, Display, TEXT("ProjectileGrenade BeginPlay"));
 
-	//SpawnTrailSystem();
-	//StartDestroyTimer();
+	if (bIsNotPoolable)
+	{
+		SpawnTrailSystem();
+		StartDestroyTimer();
 
-	//ProjectileMovementComponent->OnProjectileBounce.AddUniqueDynamic(this, &ThisClass::OnBounce);
+		ProjectileMovementComponent->OnProjectileBounce.AddUniqueDynamic(this, &ThisClass::OnBounce);
 
-	//CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+		CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+	}
+
 }
 
 void AProjectileGrenade::Destroyed()
@@ -52,7 +56,7 @@ void AProjectileGrenade::Destroyed()
 	Result.ImpactPoint = GetActorLocation();
 
 	Super::Destroyed();
-	
+
 }
 
 void AProjectileGrenade::SetIsActive(bool InIsActive)

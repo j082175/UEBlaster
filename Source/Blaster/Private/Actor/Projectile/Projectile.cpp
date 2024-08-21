@@ -28,6 +28,7 @@
 
 #include "Blaster/Blaster.h"
 
+#include "Perception/AISense_Hearing.h"
 
 
 // Sets default values
@@ -65,7 +66,11 @@ AProjectile::AProjectile()
 void AProjectile::Destroyed()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Destroyed"));
-	//Super::Destroyed();
+	// 
+	if (bIsNotPoolable)
+	{
+		Super::Destroyed();
+	}
 
 	if (ImpactParticles)
 	{
@@ -76,6 +81,14 @@ void AProjectile::Destroyed()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
 	}
+
+	UAISense_Hearing::ReportNoiseEvent(this, GetActorLocation(), 1.f, GetInstigator());
+
+}
+
+void AProjectile::SetIsNotPoolable(bool InIsNotPoolable)
+{
+	bIsNotPoolable = InIsNotPoolable;
 }
 
 void AProjectile::SetIsActive(bool InIsActive)
@@ -107,20 +120,24 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//if (Tracer)
-	//{
-	//	TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, TEXT(""), GetActorLocation(), GetActorRotation(), EAttachLocation::KeepWorldPosition);
-	//}
+	if (bIsNotPoolable)
+	{
+		if (Tracer)
+		{
+			TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, TEXT(""), GetActorLocation(), GetActorRotation(), EAttachLocation::KeepWorldPosition);
+		}
 
-	//if (HasAuthority())
-	//{
-	//	CollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnHit);
-	//}
+		if (HasAuthority())
+		{
+			CollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnHit);
+		}
 
 
 
-	//UE_LOG(LogTemp, Error, TEXT("GetOwner : %s"), *GetOwner()->GetName());
-	//CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+		UE_LOG(LogTemp, Error, TEXT("GetOwner : %s"), *GetOwner()->GetName());
+		CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+	}
+
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -155,6 +172,8 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	//Destroy();
 	Destroyed();
 	Deactivate();
+
+
 }
 
 

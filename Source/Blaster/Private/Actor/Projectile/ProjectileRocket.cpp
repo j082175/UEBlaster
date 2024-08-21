@@ -21,6 +21,7 @@
 #include "Field/FieldSystemComponent.h"
 
 #include "Components/RocketMovementComponent.h"
+#include "Perception/AISense_Hearing.h"
 
 
 AProjectileRocket::AProjectileRocket()
@@ -36,7 +37,7 @@ AProjectileRocket::AProjectileRocket()
 }
 
 void AProjectileRocket::Destroyed()
-{ 
+{
 }
 
 void AProjectileRocket::SetIsActive(bool InIsActive)
@@ -71,17 +72,25 @@ void AProjectileRocket::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//if (!HasAuthority()) // 로켓탄두만큼은 클라도 OnHit Event 가 작동하도록 설정.
-	//{
-	//	CollisionBox->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
-	//}
+	if (bIsNotPoolable)
+	{
+		RocketMovementComponent->SetUpdatedComponent(RootComponent);
+		RocketMovementComponent->Activate(true);
 
-	//SpawnTrailSystem();
+		if (!HasAuthority()) // 로켓탄두만큼은 클라도 OnHit Event 가 작동하도록 설정.
+		{
+			CollisionBox->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
+		}
 
-	//if (ProjectileLoop && LoopingSoundAttenuation)
-	//{
-	//	ProjectileLoopComponent = UGameplayStatics::SpawnSoundAttached(ProjectileLoop, GetRootComponent(), FName(), GetActorLocation(), EAttachLocation::KeepWorldPosition, false, 1.f, 1.f, 0.f, LoopingSoundAttenuation, (USoundConcurrency*)nullptr, false);
-	//}
+		SpawnTrailSystem();
+
+		if (ProjectileLoop && LoopingSoundAttenuation)
+		{
+			ProjectileLoopComponent = UGameplayStatics::SpawnSoundAttached(ProjectileLoop, GetRootComponent(), FName(), GetActorLocation(), EAttachLocation::KeepWorldPosition, false, 1.f, 1.f, 0.f, LoopingSoundAttenuation, (USoundConcurrency*)nullptr, false);
+		}
+	}
+
+
 }
 
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -137,6 +146,9 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	{
 		ProjectileLoopComponent->Stop();
 	}
+
+	UAISense_Hearing::ReportNoiseEvent(this, GetActorLocation(), 5.f, GetInstigator());
+
 
 	//Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 }
