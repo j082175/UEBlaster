@@ -38,6 +38,7 @@ protected:
 
 	void AttackFunc();
 
+	virtual void SetIsActive(bool InIsActive) override;
 
 
 	UPROPERTY()

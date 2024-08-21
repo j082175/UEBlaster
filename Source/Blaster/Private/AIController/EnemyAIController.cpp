@@ -118,6 +118,9 @@ void AEnemyAIController::RunAI()
 	GetBlackboardComponent()->SetValueAsVector(TEXT("HomePos"), GetPawn()->GetActorLocation());
 	ensure(RunBehaviorTree(BT_Asset));
 
+	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(GetBrainComponent());
+	ensure(BehaviorTreeComponent);
+	BehaviorTreeComponent->RestartTree();
 }
 
 void AEnemyAIController::StopAI()
@@ -125,6 +128,7 @@ void AEnemyAIController::StopAI()
 	UE_LOG(LogTemp, Display, TEXT("StopAI"));
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(GetBrainComponent());
 	ensure(BehaviorTreeComponent);
+	BehaviorTreeComponent->RestartTree();
 	BehaviorTreeComponent->StopTree();
 
 	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();

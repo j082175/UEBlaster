@@ -10,6 +10,7 @@
 #include "BlasterTypes/BlackboardKeys.h"
 #include "Item/Pickable/Weapon/Shotgun.h"
 #include "Components/MyCharacterMovementComponent.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 
 AEnemyRange::AEnemyRange()
 {
@@ -116,6 +117,13 @@ void AEnemyRange::FireButtonPressed(bool bPressed)
 	bFireButtonPressed = bPressed;
 	if (!EquippedGun->IsAutomatic() && bIsFiring) return;
 
+	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(EnemyAIController->GetBrainComponent());
+	if (BehaviorTreeComponent && !BehaviorTreeComponent->IsRunning())
+	{
+		//UE_LOG(LogTemp, Display, TEXT("Shutdown"));
+		return;
+	}
+
 	if (bFireButtonPressed)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("EE"));
@@ -215,6 +223,8 @@ void AEnemyRange::AttackFunc()
 {
 	if (!IsValid(AttackMontage)) return;
 	if (!EquippedGun) return;
+	
+
 
 	//UE_LOG(LogTemp, Display, TEXT("IAttack"));
 
@@ -233,4 +243,16 @@ void AEnemyRange::AttackFunc()
 	//		SetAiming(false);
 	//		OnAttackEnded.ExecuteIfBound();
 	//	}), 3.f, false);
+}
+
+void AEnemyRange::SetIsActive(bool InIsActive)
+{
+	Super::SetIsActive(InIsActive);
+
+	if (!InIsActive)
+	{
+		SetAiming(false);
+		FireButtonPressed(false);
+		OnAttackEnded.ExecuteIfBound();
+	}
 }

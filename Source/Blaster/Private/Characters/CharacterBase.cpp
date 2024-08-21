@@ -94,6 +94,7 @@
 #include "Item/Pickable/Weapon/WeaponTypes.h"
 
 #include "Characters/Enemy/Enemy.h"
+#include "Characters/Enemy/EnemyRange.h"
 
 #include "BlasterTypes/KeyType.h"
 
@@ -2012,7 +2013,11 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 
 	GetWorldTimerManager().SetTimer(ElimTimer, this, &ThisClass::ElimTimerFinished, ElimDelay);
 
-
+	AEnemyAIController* EnemyAIController = Cast<AEnemyAIController>(GetController());
+	if (EnemyAIController)
+	{
+		EnemyAIController->StopAI();
+	}
 }
 
 void ACharacterBase::Recover()
@@ -2070,8 +2075,8 @@ void ACharacterBase::ElimTimerFinished()
 	}
 	else
 	{
-		SetIsActive(false);
 		Recover();
+		SetIsActive(false);
 	}
 }
 

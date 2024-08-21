@@ -206,6 +206,8 @@ void AEnemy::SetIsActive(bool InIsActive)
 {
 	Super::SetIsActive(InIsActive);
 
+	UE_LOG(LogTemp, Display, TEXT("SetIsActive : %d"), InIsActive);
+
 	if (EquippedWeapon)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("hidden EquippedWeapon"));
@@ -214,13 +216,20 @@ void AEnemy::SetIsActive(bool InIsActive)
 
 	if (InIsActive)
 	{
-		if (EnemyAIController) EnemyAIController->RunAI();
+		if (EnemyAIController)
+		{
+			UE_LOG(LogTemp, Display, TEXT("RunAI"));
+			EnemyAIController->RunAI();
+		}
 	}
 	else
 	{
-		if (EnemyAIController) EnemyAIController->StopAI();
+		if (EnemyAIController)
+		{
+			UE_LOG(LogTemp, Display, TEXT("StopAI"));
 
-		UE_LOG(LogTemp, Display, TEXT("SetIsActive false"));
+			EnemyAIController->StopAI();
+		}
 		OnSpawnedEnemyDisabled.ExecuteIfBound(this);
 	}
 

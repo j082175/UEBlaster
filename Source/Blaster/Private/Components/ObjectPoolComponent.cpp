@@ -238,6 +238,13 @@ APooledCharacter* UObjectPoolComponent::GetCharacter(const FTransform& SpawnTo, 
 	int32 ObjectIndex = *CharacterIndexPool.Find(InName);
 
 	int32 OutIndex = CharacterSpawnedPoolIndexes[ObjectIndex];
+
+	if (CharacterObjectPool[InName].Num() == 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::GetCharacter :Characters num is zero!"));
+		return nullptr;
+	}
+
 	APooledCharacter* PooledCharacter = CharacterObjectPool[InName][OutIndex];
 
 	++OutIndex;
