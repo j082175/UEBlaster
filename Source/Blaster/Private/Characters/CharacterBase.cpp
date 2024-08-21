@@ -437,8 +437,9 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	if (Cast<UDamageType_Rumbling>(DamageType))
 	{
-		//UE_LOG(LogTemp, Display, TEXT("Rumbling!"));
-		ExecuteRagdoll();
+		UE_LOG(LogTemp, Display, TEXT("Rumbling!"));
+		//ExecuteRagdoll();
+		ServerExecuteRagdollForMulti();
 	}
 }
 
@@ -515,6 +516,7 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 #define SLOMO_START TEXT("SlomoStart")
 #define SLOMO_END TEXT("SlomoEnd")
 #define STANDING TEXT("Standing")
+#define SWEEP_FALL_END TEXT("SweepFallEnd")
 
 
 	if (ENABLE_BOXCOLLISION == NotifyName)
@@ -711,6 +713,13 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 		bDisableGameplay = false;
 		GetMesh()->SetCollisionResponseToChannel(ECC_CanDamagedByWeapon, ECR_Block);
 
+		}
+	else if (SWEEP_FALL_END == NotifyName)
+	{
+		UE_LOG(LogTemp, Display, TEXT("SweepFallEnd"));
+		//GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
+		CombatState = ECombatState::ECS_PhysicsRecoverForMulti;
+		GetMesh()->GetAnimInstance()->Montage_Play(UpMontageForMultiplayer);
 	}
 }
 
@@ -1071,6 +1080,22 @@ void ACharacterBase::SetRagdollCollision()
 	//GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 }
 
+void ACharacterBase::ServerExecuteRagdollForMulti_Implementation()
+{
+	ExecuteRagdollForMulti();
+}
+
+void ACharacterBase::ExecuteRagdollForMulti()
+{
+	CombatState = ECombatState::ECS_RagdollForMulti;
+	bDisableGameplay = true;
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
+	GetMesh()->SetCollisionResponseToChannel(ECC_CanDamagedByWeapon, ECR_Ignore);
+
+	PlayAnimMontage(SweepFallMontage);
+}
+
 void ACharacterBase::ServerExecuteRagdoll_Implementation()
 {
 	ExecuteRagdollFunc();
@@ -1080,7 +1105,10 @@ void ACharacterBase::ServerExecuteRagdoll_Implementation()
 void ACharacterBase::ExecuteRagdoll()
 {
 	//if (!HasAuthority()) ExecuteRagdollFunc();
-	ServerExecuteRagdoll();
+
+	
+	 ServerExecuteRagdoll(); 
+
 }
 
 void ACharacterBase::ExecuteRagdollFunc()
@@ -1088,22 +1116,23 @@ void ACharacterBase::ExecuteRagdollFunc()
 	FireTimer.Invalidate();
 	bDisableGameplay = true;
 	bRagdollInProgress = true;
-
-	//bIsRagdollStateStopped = false;
+	CombatState = ECombatState::ECS_Ragdoll;
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector, true);
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
 	GetMesh()->SetCollisionResponseToChannel(ECC_CanDamagedByWeapon, ECR_Ignore);
 
+	//bIsRagdollStateStopped = false;
+
+	// For Server-Side
+
+	SetRagdollCollision();
+	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector, true);
 	FTimerHandle T;
 	GetWorldTimerManager().SetTimer(T, FTimerDelegate::CreateLambda([&]()
 		{
-			SetRagdollCollision();
 			GetMesh()->SetAllPhysicsPosition(GetActorLocation());
 			GetMesh()->SetAllPhysicsRotation(GetActorRotation());
-			CombatState = ECombatState::ECS_Ragdoll;
-
-		}), 0.1f, false);
+		}), 0.001f, false);
 }
 
 void ACharacterBase::ServerExecutePhysicsRecover_Implementation()
@@ -1121,8 +1150,8 @@ void ACharacterBase::ExecutePhysicsRecover()
 void ACharacterBase::ExecutePhysicsRecoverFunc()
 {
 	CombatState = ECombatState::ECS_PhysicsRecover;
-
 	bRagdollInProgress = false;
+
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 
@@ -1323,6 +1352,12 @@ void ACharacterBase::OnRep_CombatState()
 	case ECombatState::ECS_PhysicsRecover:
 		//if (!HasAuthority() && !IsLocallyControlled())
 		ExecutePhysicsRecoverFunc();
+		break;
+	case ECombatState::ECS_RagdollForMulti:
+		ExecuteRagdollForMulti();
+		break;
+	case ECombatState::ECS_PhysicsRecoverForMulti:
+		PlayAnimMontage(UpMontageForMultiplayer);
 		break;
 	case ECombatState::ECS_MAX:
 		break;

@@ -56,7 +56,7 @@ bool UBTDecorator_CanSeeTarget::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	if (OutHitResult.bBlockingHit && OutHitResult.GetActor() == TargetActor)
 	{
-		UE_LOG(LogTemp, Display, TEXT("TimeToSee : %f"), TimeToSee);
+		//UE_LOG(LogTemp, Display, TEXT("TimeToSee : %f"), TimeToSee);
 		TimeToSee += GetWorld()->GetDeltaSeconds() * 3.f;
 
 

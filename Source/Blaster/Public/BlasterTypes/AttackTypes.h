@@ -3,7 +3,7 @@
 UENUM(BlueprintType)
 enum class EAttackType : uint8
 {
-	EAT_DefaultAttack = 0 UMETA(DisplayName = "DefaultAttack"),
+	EAT_Default = 0 UMETA(DisplayName = "Default"),
 	EAT_Fireball UMETA(DisplayName = "Fireball"),
 	EAT_Spawn UMETA(DisplayName = "Spawn"),
 	EAT_Ground UMETA(DisplayName = "Ground"),
@@ -17,7 +17,7 @@ enum class EAttackType : uint8
 //UENUM(BlueprintType)
 //enum class EAttackType : uint8
 //{
-//	EAT_DefaultAttack = 0 UMETA(DisplayName = "Melee"),
+//	EAT_Default = 0 UMETA(DisplayName = "Melee"),
 //	EAT_Magic UMETA(DisplayName = "Magic"),
 //	EAT_Guard UMETA(DisplayName = "Guard"),
 //

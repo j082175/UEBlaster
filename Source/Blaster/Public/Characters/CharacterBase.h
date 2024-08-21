@@ -306,6 +306,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<class UAnimMontage> MeleeMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TObjectPtr<class UAnimMontage> SweepFallMontage;
+
 	// About Items
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -828,6 +831,10 @@ protected:
 	void CalculateMeshLocation();
 	void SetRagdollCollision();
 
+	UFUNCTION(Server, Reliable)
+	void ServerExecuteRagdollForMulti();
+
+	void ExecuteRagdollForMulti();
 
 	UFUNCTION(Server, Reliable)
 	void ServerExecuteRagdoll();
@@ -886,7 +893,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> UpMontage;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UAnimMontage> UpMontageForMultiplayer;
 	// HpBarVisibility
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHpBarVisible(bool InIsVisible);
