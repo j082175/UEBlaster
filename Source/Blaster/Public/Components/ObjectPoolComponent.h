@@ -35,6 +35,9 @@ protected:
 	UFUNCTION()
 	void OnPooledObjectDespawn(class APooledObject* PoolActor);
 
+	UPROPERTY(EditAnywhere)
+	uint8 bTurnOffGenerate : 1;
+
 private:
 	void GenerateObject();
 

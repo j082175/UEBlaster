@@ -29,11 +29,15 @@ protected:
 	virtual void IAttack(FAttackEndedDelegate Delegate, const FString& AttackType) override;
 	virtual void ISetAIState(EAIState InAIState) override;
 
+	virtual void FinishReloading() override;
 
 
 	virtual void FireProjectileWeapon(bool bPressed) override;
 	virtual void FireHitScanWeapon(bool bPressed) override;
 	virtual void FireShotgun(bool bPressed) override;
+
+	void AttackFunc();
+
 
 
 	UPROPERTY()

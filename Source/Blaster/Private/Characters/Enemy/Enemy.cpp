@@ -33,6 +33,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Perception/AISense_Damage.h"
+#include "Actor/SplineActor.h"
 
 
 // Sets default values
@@ -323,15 +324,17 @@ void AEnemy::ISetAIState(EAIState InAIState)
 	switch (InAIState)
 	{
 	case EAIState::EAI_Passive:
-		GetCharacterMovement()->MaxWalkSpeed = 150.f;
-		UE_LOG(LogTemp, Display, TEXT("ISetAIState : EAI_Passive"));
+		SetAiming(true);
+		//UE_LOG(LogTemp, Display, TEXT("ISetAIState : EAI_Passive"));
 		break;
 	case EAIState::EAI_Attacking:
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		SetAiming(true);
 		break;
 	case EAIState::EAI_Frozen:
 		break;
 	case EAIState::EAI_Investigating:
+		SetAiming(false);
+
 		break;
 	case EAIState::EAI_Dead:
 		break;
@@ -341,6 +344,16 @@ void AEnemy::ISetAIState(EAIState InAIState)
 		break;
 	}
 
+}
+
+ASplineActor* AEnemy::IGetPatrolRoute()
+{
+	return PatrolTarget;
+}
+
+void AEnemy::ISetPatrolRoute(ASplineActor* InSplineActor)
+{
+	PatrolTarget = InSplineActor;
 }
 
 void AEnemy::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)

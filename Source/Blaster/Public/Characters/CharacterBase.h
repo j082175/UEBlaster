@@ -548,7 +548,6 @@ protected:
 protected:
 	FVector HitTarget;
 
-	float BaseWalkSpeed = 600.f;
 
 
 
@@ -594,7 +593,7 @@ protected:
 
 	// Montage Notifies
 protected:
-	void FinishReloading();
+	virtual void FinishReloading();
 	void ShotgunShellReload();
 	virtual void ThrowGrenadeFinished();
 	void DisableAttachedGrenade();
@@ -753,11 +752,16 @@ protected:
 
 	virtual void OnRep_ReplicatedMovement() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float AimWalkSpeed = 450.f;
-	UPROPERTY(EditAnywhere)
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float AimCrouchSpeed = 200.f;
-	UPROPERTY(EditAnywhere)
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	float BaseWalkSpeed = 600.f;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float BaseCrouchSpeed = 300.f;
 
 

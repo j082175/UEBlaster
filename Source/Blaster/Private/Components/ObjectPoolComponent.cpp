@@ -109,6 +109,12 @@ void UObjectPoolComponent::OnPooledObjectDespawn(APooledObject* InPooledObject)
 
 void UObjectPoolComponent::GenerateObject()
 {
+	if (bTurnOffGenerate)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TurnOnGenerate false, GenerateObject Denied"));
+		return;
+	}
+
 	if (PoolSizeArr.Num() != ObjectsToSpawn.Num())
 	{
 		UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::GenerateObject : PoolSizeArr and ObjectsToSpawn Num Not Equals, Generate Denied"));

@@ -60,7 +60,7 @@ bool UBTDecorator_CanSeeTarget::CalculateRawConditionValue(UBehaviorTreeComponen
 		TimeToSee += GetWorld()->GetDeltaSeconds() * 3.f;
 
 
-		if (TimeToSee > CanSeeThreshold)
+		if (TimeToSee >= CanSeeThreshold)
 		{
 			TimeToSee = 0.f;
 			return true;

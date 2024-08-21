@@ -349,7 +349,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 		HpCountdown = 0.f;
 		MulticastHpBarVisible(true);
 	}
-	
+
 
 
 	LastDamageCauser = DamageCauser;
@@ -425,13 +425,21 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	if (CurrentHealth <= 0.f)
 	{
+		AEnemyAIController* EnemyAI = Cast<AEnemyAIController>(InstigatorController);
+		if (EnemyAI)
+		{
+			UE_LOG(LogTemp, Display, TEXT("TARGET_ACTOR"));
+			EnemyAI->GetBlackboardComponent()->SetValueAsObject(TARGET_ACTOR, nullptr);
+		}
+
 		bIsElimmed = true;
+
 		SetDead();
 	}
 
 	//HpBarWidgetComponent->SetHpBar(CurrentHealth / AttributeComponent->GetMaxHp());
-	AttributeComponent->OnHpChanged.Broadcast(CurrentHealth , MaxHealth);
-	AttributeComponent->OnShieldChanged.Broadcast(CurrentShield , MaxShield);
+	AttributeComponent->OnHpChanged.Broadcast(CurrentHealth, MaxHealth);
+	AttributeComponent->OnShieldChanged.Broadcast(CurrentShield, MaxShield);
 	AttributeComponent->OnParryGaugeChanged.Broadcast(AttributeComponent->GetCurrentParryGauge(), AttributeComponent->GetMaxParryGauge());
 
 
@@ -618,7 +626,7 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 	{
 		//UE_LOG(LogTemp, Display, TEXT("ReloadFinished"));
 		if (!bDisableGameplay)
-		FinishReloading();
+			FinishReloading();
 		return;
 	}
 	else if (SHELL == NotifyName)
@@ -713,7 +721,7 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 		bDisableGameplay = false;
 		GetMesh()->SetCollisionResponseToChannel(ECC_CanDamagedByWeapon, ECR_Block);
 
-		}
+	}
 	else if (SWEEP_FALL_END == NotifyName)
 	{
 		UE_LOG(LogTemp, Display, TEXT("SweepFallEnd"));
@@ -1075,7 +1083,7 @@ void ACharacterBase::SetRagdollCollision()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetConstraintProfileForAll(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
-	
+
 
 	//GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 }
@@ -1106,8 +1114,8 @@ void ACharacterBase::ExecuteRagdoll()
 {
 	//if (!HasAuthority()) ExecuteRagdollFunc();
 
-	
-	 ServerExecuteRagdoll(); 
+
+	ServerExecuteRagdoll();
 
 }
 
@@ -1909,10 +1917,10 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	//{
 	//	BlasterPlayerController->SetHUDWeaponAmmo(0);
 	//}
-	
+
 	CombatState = ECombatState::ECS_Dead;
 	HpBarWidgetComponent->SetVisibility(false);
-	AIPerceptionStimuliSource->UnregisterFromPerceptionSystem();
+	//AIPerceptionStimuliSource->UnregisterFromPerceptionSystem(); // This cause change blackboard key not work
 
 
 	bIsElimmed = true;
@@ -1999,7 +2007,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 		CrownNiagaraComponent->DestroyComponent();
 	}
 
-	
+
 
 
 	GetWorldTimerManager().SetTimer(ElimTimer, this, &ThisClass::ElimTimerFinished, ElimDelay);
@@ -2608,7 +2616,7 @@ void ACharacterBase::UpdateAmmoValues()
 
 void ACharacterBase::UpdateShotgunAmmoValues()
 {
-	UE_LOG(LogTemp, Display, TEXT("UpdateShotgunAmmoValues : %d"), bReloadStopCheck);
+	//UE_LOG(LogTemp, Display, TEXT("UpdateShotgunAmmoValues : %d"), bReloadStopCheck);
 	if (EquippedWeapon == nullptr) return;
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
@@ -2690,8 +2698,6 @@ void ACharacterBase::FinishReloading()
 
 	//FString Str = UEnum::GetDisplayValueAsText(GetLocalRole()).ToString();
 	//UE_LOG(LogTemp, Display, TEXT("FinishReloading %s : %d"), *Str, bLocallyReloading);
-
-
 
 	bLocallyReloading = false;
 	if (true)

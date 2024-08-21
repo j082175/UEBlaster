@@ -11,6 +11,7 @@
 //#include "Interfaces/HitInterface.h"
 #include "Interfaces/AIInterface.h"
 #include "Interfaces/InteractWithCrosshairsInterface.h"
+#include "Interfaces/GetPatrolRouteInterface.h"
 
 #include "Enemy.generated.h"
 
@@ -29,7 +30,7 @@ struct FAIConfig
 };
 
 UCLASS()
-class BLASTER_API AEnemy : public ACharacterBase , public IAIInterface, public IInteractWithCrosshairsInterface
+class BLASTER_API AEnemy : public ACharacterBase , public IAIInterface, public IInteractWithCrosshairsInterface, public IGetPatrolRouteInterface
 {
 	GENERATED_BODY()
 
@@ -74,7 +75,8 @@ protected:
 	//virtual bool IIsHit() override;
 	virtual void IAttack(FAttackEndedDelegate Delegate, const FString& AttackType) override;
 	virtual void ISetAIState(EAIState InAIState) override;
-
+	virtual class ASplineActor* IGetPatrolRoute() override;
+	virtual void ISetPatrolRoute(class ASplineActor* InSplineActor) override;
 
 	//FAttackEndedDelegate OnAttackEnded;
 
@@ -95,8 +97,8 @@ protected:
 
 
 protected:
-	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (AllowPrivateAccess = true))
-	TObjectPtr<class AActor> PatrolTarget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = true))
+	TObjectPtr<class ASplineActor> PatrolTarget;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class AEnemyAIController> EnemyAIController;

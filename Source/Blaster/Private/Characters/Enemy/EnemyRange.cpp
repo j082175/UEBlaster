@@ -14,6 +14,18 @@
 AEnemyRange::AEnemyRange()
 {
 	InitializeDefaults();
+
+	StartingARAmmo = 10000;
+	StartingRocketAmmo = 10000;
+	StartingPistolAmmo = 10000;
+	StartingSMGAmmo = 10000;
+	StartingShotgunAmmo = 10000;
+	StartingSniperAmmo = 10000;
+	StartingGrenadeLauncherAmmo = 10000;
+
+	BaseWalkSpeed = 300.f;
+	AimWalkSpeed = 200.f;
+
 }
 
 void AEnemyRange::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)
@@ -59,13 +71,6 @@ void AEnemyRange::Tick(float DeltaTime)
 					TargetPointCheckCount += DeltaTime;
 				}
 			}
-
-
-
-
-
-
-
 		}
 
 
@@ -78,6 +83,8 @@ void AEnemyRange::Tick(float DeltaTime)
 	}
 
 
+	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
+	//UE_LOG(LogTemp, Display, TEXT("AimWalkSpeed : %f"), AimWalkSpeed);
 
 }
 
@@ -101,11 +108,13 @@ void AEnemyRange::InitializeDefaults()
 void AEnemyRange::FireButtonPressed(bool bPressed)
 {
 	//UE_LOG(LogTemp, Display, TEXT("AI Firing"));
+	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
+
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
 	if (EquippedGun == nullptr) return;
 	bFireButtonPressed = bPressed;
 	if (!EquippedGun->IsAutomatic() && bIsFiring) return;
-
 
 	if (bFireButtonPressed)
 	{
@@ -147,37 +156,29 @@ void AEnemyRange::BeginPlay()
 	
 	if (AIController && AIController->GetBlackboardComponent())
 	AIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
+
+
 }
 
 void AEnemyRange::IAttack(FAttackEndedDelegate Delegate, const FString& AttackType)
 {
-	if (!IsValid(AttackMontage)) return;
-	if (!EquippedGun) return;
-
 	OnAttackEnded = Delegate;
 
-	TargetPoint = EquippedGun->bUseScatter ? EquippedGun->TraceEndWithScatter(TargetPoint) : TargetPoint;
-	//MulticastFire(true, TargetPoint);
-	FireButtonPressed(true);
-	SetAiming(true);
-	EquippedGun->SetIsAutomatic(true);
-
-
-
-	//FTimerHandle FireTimer1;
-	//GetWorldTimerManager().SetTimer(FireTimer1, FTimerDelegate::CreateLambda([&]()
-	//	{
-	//		FireButtonPressed(false);
-	//		SetAiming(false);
-	//		OnAttackEnded.ExecuteIfBound();
-	//	}), 3.f, false);
+	AttackFunc();
 }
 
 void AEnemyRange::ISetAIState(EAIState InAIState)
 {
-	//Super::ISetAIState(InAIState);
+	Super::ISetAIState(InAIState);
 
 	AIController->GetBlackboardComponent()->SetValueAsBool(CAN_SEE, false);
+}
+
+void AEnemyRange::FinishReloading()
+{
+	Super::FinishReloading();
+
+	AttackFunc();
 }
 
 void AEnemyRange::FireProjectileWeapon(bool bPressed)
@@ -208,4 +209,28 @@ void AEnemyRange::FireShotgun(bool bPressed)
 		Shotgun->ShotgunTraceEndWithScatter(TargetPoint, HitTargets);
 		MulticastShotgunFire(HitTargets);
 	}
+}
+
+void AEnemyRange::AttackFunc()
+{
+	if (!IsValid(AttackMontage)) return;
+	if (!EquippedGun) return;
+
+	//UE_LOG(LogTemp, Display, TEXT("IAttack"));
+
+	TargetPoint = EquippedGun->bUseScatter ? EquippedGun->TraceEndWithScatter(TargetPoint) : TargetPoint;
+	//MulticastFire(true, TargetPoint);
+	FireButtonPressed(true);
+	SetAiming(true);
+	EquippedGun->SetIsAutomatic(true);
+
+
+
+	//FTimerHandle FireTimer1;
+	//GetWorldTimerManager().SetTimer(FireTimer1, FTimerDelegate::CreateLambda([&]()
+	//	{
+	//		FireButtonPressed(false);
+	//		SetAiming(false);
+	//		OnAttackEnded.ExecuteIfBound();
+	//	}), 3.f, false);
 }
