@@ -27,7 +27,10 @@ AProjectileBullet::AProjectileBullet()
 	ProjectileMovementComponent->SetIsReplicated(false);
 	ProjectileMovementComponent->InitialSpeed = InitialSpeed;
 	ProjectileMovementComponent->MaxSpeed = InitialSpeed;
+
+
 	ProjectileMovementComponent->SetAutoActivate(false);
+	// 
 	//ProjectileMovementComponent->BounceVelocityStopSimulatingThreshold = 0.f;
 
 }

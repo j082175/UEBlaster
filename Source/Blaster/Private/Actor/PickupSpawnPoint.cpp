@@ -10,7 +10,7 @@
 APickupSpawnPoint::APickupSpawnPoint()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = true;
 }
@@ -36,7 +36,12 @@ void APickupSpawnPoint::SpawnPickup()
 		int32 Selection = FMath::RandRange(0, NumPickupClasses - 1);
 
 		//SpawnedPickup = GetWorld()->SpawnActorDeferred<APickup>(PickupClasses[Selection], GetActorTransform());
-		SpawnedPickup = Cast<APickup>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(GetActorTransform(), PickupClasses[Selection]));
+
+		if (GetWorld() && GetWorld()->GetGameState<ABlasterGameState>())
+		{
+			SpawnedPickup = Cast<APickup>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(GetActorTransform(), PickupClasses[Selection]));
+		}
+
 
 		if (!SpawnedPickup)
 		{

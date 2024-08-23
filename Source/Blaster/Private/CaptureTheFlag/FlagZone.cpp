@@ -47,7 +47,9 @@ void AFlagZone::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 			}
 
 			//OverlappingFlag->ResetFlag();
+
 			OverlappingFlag->MulticastResetFlag();
+
 		}
 	}
 }

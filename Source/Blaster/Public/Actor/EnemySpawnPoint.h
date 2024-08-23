@@ -39,6 +39,9 @@ public:
 private:
 	void MustRandomSpawner();
 
+	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = true))
+	uint8 bActive : 1 = true;
+
 	FTimerHandle SpawnPickupTimer;
 	UPROPERTY(EditAnywhere)
 	float SpawnPickupTimeMin;
@@ -51,4 +54,7 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UNiagaraSystem> SpawnEffectNiagara;
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsTurnOff : 1;
 };

@@ -7,6 +7,8 @@
 #include "BlasterTypes/BlackboardKeys.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Blaster/Blaster.h"
+#include "GameFramework/Character.h"
+//#include "Engine/SkeletalMeshSocket.h"
 
 bool UBTDecorator_CanSeeTarget::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
@@ -42,7 +44,10 @@ bool UBTDecorator_CanSeeTarget::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	ETraceTypeQuery CanDamagedByWeapon = UEngineTypes::ConvertToTraceType(ECC_CanDamagedByWeapon);
 
-	UKismetSystemLibrary::LineTraceSingle(this, AIPawn->GetActorLocation(), AIPawn->GetActorLocation() + AIPawn->GetActorForwardVector() * 80000.f, CanDamagedByWeapon, false, ActorsToIgnore, EDrawDebugTrace::ForOneFrame, OutHitResult, true, FLinearColor::Green);
+	FVector SocketLocation = Cast<ACharacter>(AIPawn)->GetMesh()->GetSocketLocation(TEXT("neck_01"));
+	
+
+	UKismetSystemLibrary::LineTraceSingle(this, SocketLocation, SocketLocation + AIPawn->GetActorForwardVector() * 80000.f, CanDamagedByWeapon, false, ActorsToIgnore, EDrawDebugTrace::ForOneFrame, OutHitResult, true, FLinearColor::Green);
 
 
 	//UE_LOG(LogTemp, Display, TEXT("OutHitResult : %x"), OutHitResult.GetActor());
@@ -66,6 +71,6 @@ bool UBTDecorator_CanSeeTarget::CalculateRawConditionValue(UBehaviorTreeComponen
 			return true;
 		}
 	}
-
 	return false;
+
 }

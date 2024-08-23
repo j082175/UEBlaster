@@ -46,12 +46,10 @@ void ACasing::BeginPlay()
 	//CasingMesh->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
 	//CasingMesh->AddImpulse(UKismetMathLibrary::RandomUnitVectorInConeInDegrees(GetActorForwardVector(), 20.f) * ShellEjectionImpulse);
 
-}
-
-// Called every frame
-void ACasing::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	if (bIsNotPoolable)
+	{
+		SetIsActive(true);
+	}
 }
 
 void ACasing::SetIsActive(bool InIsActive)
@@ -74,6 +72,7 @@ void ACasing::SetIsActive(bool InIsActive)
 	{
 		CasingMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		CasingMesh->SetSimulatePhysics(false);
+		bIsHit = false;
 	}
 
 }
@@ -87,11 +86,14 @@ void ACasing::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitive
 			UGameplayStatics::PlaySoundAtLocation(this, ShellSound, GetActorLocation());
 		}
 
-		//SetLifeSpan(DestroyTime);
 		bIsHit = true;
 		CasingMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		CasingMesh->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
+		if (bIsNotPoolable)
+		{
+			SetLifeSpan(DestroyTime);
+		}
 	}
 
 }

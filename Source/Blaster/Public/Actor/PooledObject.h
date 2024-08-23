@@ -33,10 +33,16 @@ public:
 	bool IsActive();
 	int GetPoolIndex();
 
+	void SetIsNotPoolable(bool InIsNotPoolable);
+
+
 protected:
 	uint8 bIsActive : 1;
 	float LifeSpan = 0.f;
 	int PoolIndex;
 
 	FTimerHandle LifeSpanTimer;
+
+	UPROPERTY(EditAnywhere)
+	uint8 bIsNotPoolable : 1;
 };

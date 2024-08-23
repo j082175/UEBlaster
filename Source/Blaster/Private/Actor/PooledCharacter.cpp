@@ -2,6 +2,7 @@
 
 
 #include "Actor/PooledCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 
@@ -9,7 +10,9 @@
 APooledCharacter::APooledCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	RootComponent->SetMobility(EComponentMobility::Static);
 }
 
 void APooledCharacter::Deactivate()
@@ -25,8 +28,23 @@ void APooledCharacter::SetIsActive(bool InIsActive)
 	bIsActive = InIsActive;
 	SetActorHiddenInGame(!InIsActive);
 	SetActorEnableCollision(InIsActive);
+	PrimaryActorTick.bCanEverTick = true;
+	
+	SetActorTickEnabled(InIsActive);
+	//SetActorTickInterval(0.1f);
+	//GetMesh()->SetComponentTickEnabled(InIsActive);
+	GetCharacterMovement()->SetComponentTickEnabled(InIsActive);
+
 	GetWorldTimerManager().SetTimer(LifeSpanTimer, this, &ThisClass::Deactivate, LifeSpan, false);
 
+	if (InIsActive)
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
+	else
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	}
 
 }
 

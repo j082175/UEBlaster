@@ -99,7 +99,7 @@ void ALobbyGameMode::PostLogin(APlayerController* PlayerController)
 	//			else if (MatchType == TEXT("CaptureTheFlag"))
 	//			{
 
-	//				GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
+	//				GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/SciFi_LevelInstances/GameMap_Space?listen"));
 	//				//GetWorld()->SetGameMode(TEXT("/Script/Engine.Blueprint'/Game/A_Blaster/Blueprints/GameModes/BP_CTFGameMode.BP_CTFGameMode'"));
 	//			}
 	//		}

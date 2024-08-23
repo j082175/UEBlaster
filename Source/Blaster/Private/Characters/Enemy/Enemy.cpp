@@ -222,6 +222,8 @@ void AEnemy::SetIsActive(bool InIsActive)
 		{
 			UE_LOG(LogTemp, Display, TEXT("RunAI"));
 			EnemyAIController->RunAI();
+			EnemyAIController->PrimaryActorTick.bCanEverTick = true;
+			EnemyAIController->SetActorTickEnabled(true);
 		}
 	}
 	else
@@ -231,6 +233,8 @@ void AEnemy::SetIsActive(bool InIsActive)
 			UE_LOG(LogTemp, Display, TEXT("StopAI"));
 
 			EnemyAIController->StopAI();
+			EnemyAIController->PrimaryActorTick.bCanEverTick = true;
+			EnemyAIController->SetActorTickEnabled(false);
 		}
 		OnSpawnedEnemyDisabled.ExecuteIfBound(this);
 	}

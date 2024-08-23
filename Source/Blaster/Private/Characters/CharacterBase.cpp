@@ -171,6 +171,8 @@ void ACharacterBase::BeginPlay()
 
 	InitializeDelegates();
 	InitializeWidgets();
+
+
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -210,7 +212,7 @@ void ACharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Display, TEXT("%s"), *GetFName().ToString());
+	//UE_LOG(LogTemp, Display, TEXT("Tick~ : %s"), *GetFName().ToString());
 
 	PollInit();
 
@@ -1462,6 +1464,8 @@ void ACharacterBase::InitializeDefaults()
 {
 	InitDashCurve();
 
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
 
@@ -1869,7 +1873,7 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 
 void ACharacterBase::Elim(bool bPlayerLeftGame)
 {
-	if (!Cast<AEnemy>(this))
+	if (!GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->IsTurnOff() && !Cast<AEnemy>(this))
 	{
 		if (EquippedWeapon)
 		{
@@ -2209,16 +2213,18 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 	if (InWeapon->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
 
-		Crouch();
-		bHoldingTheFlag = true;
-		InWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		//Crouch();
+		//bHoldingTheFlag = true;
+		//InWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 		InWeapon->SetOwner(this);
-		AttachFlagToLeftHand(InWeapon);
-		Flag = InWeapon;
+		//AttachFlagToLeftHand(InWeapon);
+		//Flag = InWeapon;
+
 		//GetCharacterMovement()->bOrientRotationToMovement = true;
 		//bUseControllerRotationYaw = false;
 	}
-	else
+	
+
 	{
 		if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr) // Only Equipped One Weapon
 		{
@@ -3006,7 +3012,17 @@ void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantiz
 		if (World)
 		{
 			DrawDebugLine(World, StartingLocation, Target, FColor::Magenta, false, 5.f);
+			FTransform T(ToTarget.Rotation(), StartingLocation);
 			AProjectileGrenade* Grenade = World->SpawnActor<AProjectileGrenade>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParams);
+			//AProjectileGrenade* Grenade = Cast<AProjectileGrenade>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(T, GrenadeClass));
+			//if (Grenade)
+			//{
+			//	Grenade->SetOwner(this);
+			//	Grenade->Owner = this;
+			//	Grenade->SetInstigator(this);
+			//	Grenade->SetProjectileMovementVelocity(ToTarget);
+			//	GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->FinishSpawning(T, GrenadeClass);
+			//}
 
 		}
 	}

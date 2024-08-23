@@ -46,3 +46,7 @@ int APooledObject::GetPoolIndex()
 	return PoolIndex;
 }
 
+void APooledObject::SetIsNotPoolable(bool InIsNotPoolable)
+{
+	bIsNotPoolable = InIsNotPoolable;
+}

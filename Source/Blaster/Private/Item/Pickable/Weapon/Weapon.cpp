@@ -59,7 +59,7 @@ void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Moving(DeltaTime);
+	//Moving(DeltaTime);
 }
 
 void AWeapon::OnRep_Owner()

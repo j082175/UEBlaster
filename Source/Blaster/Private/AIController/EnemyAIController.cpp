@@ -57,10 +57,7 @@ void AEnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AIPerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::OnTargetPerceptionUpdated);
-	AIPerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ThisClass::OnPerceptionUpdated);
-	AIPerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &ThisClass::OnTargetPerceptionForgotten);
-	AIPerceptionComponent->OnTargetPerceptionInfoUpdated.AddDynamic(this, &ThisClass::OnTargetPerceptionInfoUpdated);
+	BindPerceptionFunctions(true);
 
 	
 	if (AISense_Sight) AIPerceptionComponent->SetDominantSense(AISense_Sight);
@@ -122,6 +119,8 @@ void AEnemyAIController::RunAI()
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(GetBrainComponent());
 	ensure(BehaviorTreeComponent);
 	BehaviorTreeComponent->RestartTree();
+
+	BindPerceptionFunctions(true);
 }
 
 void AEnemyAIController::StopAI()
@@ -130,15 +129,55 @@ void AEnemyAIController::StopAI()
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(GetBrainComponent());
 	ensure(BehaviorTreeComponent);
 	BehaviorTreeComponent->RestartTree();
-	BehaviorTreeComponent->StopTree();
+	BehaviorTreeComponent->StopLogic(TEXT("Elimed"));
 
 	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
 	//BlackboardComponent->SetValueAsObject(TARGET_ACTOR, nullptr);
+
+	BindPerceptionFunctions(false);
+}
+
+void AEnemyAIController::BindPerceptionFunctions(bool InSet)
+{
+	if (InSet)
+	{
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::OnTargetPerceptionUpdated);
+		AIPerceptionComponent->OnPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::OnPerceptionUpdated);
+		AIPerceptionComponent->OnTargetPerceptionForgotten.AddUniqueDynamic(this, &ThisClass::OnTargetPerceptionForgotten);
+		AIPerceptionComponent->OnTargetPerceptionInfoUpdated.AddUniqueDynamic(this, &ThisClass::OnTargetPerceptionInfoUpdated);
+	}
+	else
+	{
+		AIPerceptionComponent->OnTargetPerceptionUpdated.RemoveDynamic(this, &ThisClass::OnTargetPerceptionUpdated);
+		AIPerceptionComponent->OnPerceptionUpdated.RemoveDynamic(this, &ThisClass::OnPerceptionUpdated);
+		AIPerceptionComponent->OnTargetPerceptionForgotten.RemoveDynamic(this, &ThisClass::OnTargetPerceptionForgotten);
+		AIPerceptionComponent->OnTargetPerceptionInfoUpdated.RemoveDynamic(this, &ThisClass::OnTargetPerceptionInfoUpdated);
+
+		if (!AIPerceptionComponent->OnTargetPerceptionUpdated.IsAlreadyBound(this, &ThisClass::OnTargetPerceptionUpdated))
+		{
+			UE_LOG(LogTemp, Display, TEXT("OnTargetPerceptionUpdated Unbound"));
+		}
+
+		if (!AIPerceptionComponent->OnPerceptionUpdated.IsAlreadyBound(this, &ThisClass::OnPerceptionUpdated))
+		{
+			UE_LOG(LogTemp, Display, TEXT("OnTargetPerceptionUpdated Unbound"));
+		}
+
+		if (!AIPerceptionComponent->OnTargetPerceptionForgotten.IsAlreadyBound(this, &ThisClass::OnTargetPerceptionForgotten))
+		{
+			UE_LOG(LogTemp, Display, TEXT("OnTargetPerceptionUpdated Unbound"));
+		}
+
+		if (!AIPerceptionComponent->OnTargetPerceptionInfoUpdated.IsAlreadyBound(this, &ThisClass::OnTargetPerceptionInfoUpdated))
+		{
+			UE_LOG(LogTemp, Display, TEXT("OnTargetPerceptionUpdated Unbound"));
+		}
+	}
 }
 
 void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	//UE_LOG(LogTemp, Display, TEXT("Percepted Actor : %s"), *Actor->GetName());
+	UE_LOG(LogTemp, Display, TEXT("Percepted Actor : %s"), *Actor->GetName());
 	//for (UAIPerceptionComponent::TAISenseConfigConstIterator iter = AIPerceptionComponent->GetSensesConfigIterator(); iter; iter++)
 	//{
 

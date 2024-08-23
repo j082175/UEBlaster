@@ -17,6 +17,8 @@ public:
 	// Sets default values for this component's properties
 	UObjectPoolComponent();
 
+	FORCEINLINE bool IsTurnOff() const { return bTurnOffGenerate; }
+
 	UFUNCTION(BlueprintCallable)
 	class APooledObject* GetSpawnedObject(const FTransform& SpawnTo, UClass* ClassInfo);
 
@@ -35,7 +37,7 @@ protected:
 	UFUNCTION()
 	void OnPooledObjectDespawn(class APooledObject* PoolActor);
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	uint8 bTurnOffGenerate : 1;
 
 private:
@@ -86,4 +88,8 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TArray<int32> CharacterPooledObjectLifeSpan;
+
+
+private:
+	class APooledCharacter* PooledCharacterTemp;
 };

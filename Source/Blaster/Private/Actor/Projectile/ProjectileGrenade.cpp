@@ -28,12 +28,12 @@ AProjectileGrenade::AProjectileGrenade()
 	ProjectileMovementComponent->bRotationFollowsVelocity = true; // 총알이 속도에 맞춰 회전을 유지함 중력으로 인한 FallOff 를 추가하면 경로 궤적에 따라 회전함.
 	ProjectileMovementComponent->SetIsReplicated(false);
 	ProjectileMovementComponent->bShouldBounce = true;
-	ProjectileMovementComponent->SetAutoActivate(false);
+	ProjectileMovementComponent->SetAutoActivate(true);
 }
 
 void AProjectileGrenade::BeginPlay()
 {
-	AActor::BeginPlay();
+	Super::BeginPlay();
 
 	//UE_LOG(LogTemp, Display, TEXT("ProjectileGrenade BeginPlay"));
 
@@ -45,6 +45,7 @@ void AProjectileGrenade::BeginPlay()
 		ProjectileMovementComponent->OnProjectileBounce.AddUniqueDynamic(this, &ThisClass::OnBounce);
 
 		CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+		SetIsActive(true);
 	}
 
 }
@@ -88,6 +89,10 @@ void AProjectileGrenade::OnBounce(const FHitResult& ImpactResult, const FVector&
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, BounceSound, GetActorLocation());
 	}
+}
+
+void AProjectileGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
 }
 
 void AProjectileGrenade::SetProjectileMovementVelocity(const FVector& InVelocity)

@@ -598,6 +598,11 @@ void ABlasterCharacter::IGetItem(AItem* InWeapon)
 	{
 		if (InWeapon)
 		{
+			//UE_LOG(LogTemp, Display, TEXT("ShowPickupWidget"));
+			if (OverlappingWeapon)
+			{
+				OverlappingWeapon->ShowPickupWidget(false);
+			}
 			InWeapon->ShowPickupWidget(true);
 			//OverlappingWeaponBackup = InWeapon;
 		}
@@ -611,7 +616,7 @@ void ABlasterCharacter::IGetItem(AItem* InWeapon)
 		}
 	}
 
-	OverlappingWeapon = Cast<AWeapon_Gun>(InWeapon);
+	OverlappingWeapon = Cast<AWeapon>(InWeapon);
 }
 
 // Called to bind functionality to input
@@ -1513,7 +1518,7 @@ void ABlasterCharacter::EquipWeaponFunc()
 
 void ABlasterCharacter::EquipButtonFunc(AWeapon* InWeapon)
 {
-	OverlappingWeapon = Cast<AWeapon_Gun>(InWeapon);
+	OverlappingWeapon = Cast<AWeapon>(InWeapon);
 
 	if (OverlappingWeapon)
 	{
@@ -1689,7 +1694,7 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		FHitResult OutHitResult;
 		UKismetSystemLibrary::LineTraceSingle(this, Start, Start + CrosshairWorldDirection * 200.f, IsPickable, false, IgnoreActors, EDrawDebugTrace::None, OutHitResult, true);
 
-		AWeapon_Gun* WeaponGun = Cast<AWeapon_Gun>(OutHitResult.GetActor());
+		AWeapon* WeaponGun = Cast<AWeapon>(OutHitResult.GetActor());
 
 		if (OutHitResult.bBlockingHit)
 		{

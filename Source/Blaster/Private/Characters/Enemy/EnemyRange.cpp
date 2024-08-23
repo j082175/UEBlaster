@@ -83,6 +83,7 @@ void AEnemyRange::Tick(float DeltaTime)
 		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), TargetPoint, FColor::Red, false);
 	}
 
+	//UE_LOG(LogTemp, Display, TEXT("EnemyRange Tick"));
 
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	//UE_LOG(LogTemp, Display, TEXT("AimWalkSpeed : %f"), AimWalkSpeed);
@@ -179,7 +180,7 @@ void AEnemyRange::ISetAIState(EAIState InAIState)
 {
 	Super::ISetAIState(InAIState);
 
-	AIController->GetBlackboardComponent()->SetValueAsBool(CAN_SEE, false);
+	if (AIController) AIController->GetBlackboardComponent()->SetValueAsBool(CAN_SEE, false);
 }
 
 void AEnemyRange::FinishReloading()

@@ -65,6 +65,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					//	PO->SetInstigator(InstigatorPawn);
 					//}
 
+
 					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass);
 					if (PO)
 					{

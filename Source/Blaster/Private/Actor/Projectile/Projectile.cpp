@@ -35,12 +35,14 @@
 AProjectile::AProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = false;
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	SetRootComponent(CollisionBox);
+
+
 	
 	//CollisionBox->SetGenerateOverlapEvents(true);
 	//CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
@@ -84,12 +86,9 @@ void AProjectile::Destroyed()
 
 	UAISense_Hearing::ReportNoiseEvent(this, GetActorLocation(), 1.f, GetInstigator());
 
+	Deactivate();
 }
 
-void AProjectile::SetIsNotPoolable(bool InIsNotPoolable)
-{
-	bIsNotPoolable = InIsNotPoolable;
-}
 
 void AProjectile::SetIsActive(bool InIsActive)
 {
@@ -119,23 +118,20 @@ void AProjectile::SetProjectileMovementVelocity(const FVector& InVelocity)
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//UE_LOG(LogTemp, Display, TEXT("Getowner : %x"), GetOwner());
+	//UE_LOG(LogTemp, Display, TEXT("getinstigator : %x"), GetInstigator());
+
+	CollisionBox->MoveIgnoreActors.Add(GetOwner());
+	CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
 	
 	if (bIsNotPoolable)
 	{
-		if (Tracer)
-		{
-			TracerComponent = UGameplayStatics::SpawnEmitterAttached(Tracer, CollisionBox, TEXT(""), GetActorLocation(), GetActorRotation(), EAttachLocation::KeepWorldPosition);
-		}
-
-		if (HasAuthority())
-		{
-			CollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnHit);
-		}
+		SetIsActive(true);
 
 
-
-		UE_LOG(LogTemp, Error, TEXT("GetOwner : %s"), *GetOwner()->GetName());
-		CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
+		//UE_LOG(LogTemp, Error, TEXT("GetOwner : %s"), *GetOwner()->GetName());
+		//CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
 	}
 
 }
@@ -169,11 +165,14 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		}
 	}
 
-	//Destroy();
-	Destroyed();
-	Deactivate();
-
-
+	if (bIsNotPoolable)
+	{
+		Destroy();
+	}
+	else
+	{
+		Destroyed();
+	}
 }
 
 

@@ -59,7 +59,6 @@ void ABlasterHUD::DrawHUD()
 	//}
 
 	DrawCrosshairs();
-
 }
 
 void ABlasterHUD::AddAnnouncement()

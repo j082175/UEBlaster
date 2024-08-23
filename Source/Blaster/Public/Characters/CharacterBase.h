@@ -77,6 +77,8 @@ public:
 
 	ECombatState GetCombatState() const;
 	class AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
+	class AWeapon* GetSecondaryEquippedWeapon() const { return SecondaryWeapon; }
+
 	ECharacterState GetCharacterState() const;
 	EAnimState GetAnimState() const { return AnimState; }
 	FVector GetHitTarget() const;
@@ -96,6 +98,8 @@ public:
 
 	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
 
+	void SetEquippedWeapon(class AWeapon* W) { EquippedWeapon = W; }
+	void SetSecondaryEquippedWeapon(class AWeapon* W) { SecondaryWeapon = W; }
 
 	// Initializes
 protected:

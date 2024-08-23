@@ -28,9 +28,19 @@ void UObjectPoolComponent::BeginPlay()
 
 APooledObject* UObjectPoolComponent::GetSpawnedObject(const FTransform& SpawnTo, UClass* ClassInfo)
 {
-	if (ObjectPool.Contains(ClassInfo))
+	if (!bTurnOffGenerate)
 	{
-		return Get(SpawnTo, ClassInfo);
+		if (ObjectPool.Contains(ClassInfo))
+		{
+			return Get(SpawnTo, ClassInfo);
+		}
+	}
+	else
+	{
+		APooledObject* PO = GetWorld()->SpawnActorDeferred<APooledObject>(ClassInfo, SpawnTo);
+		PO->SetIsNotPoolable(true);
+		PO->FinishSpawning(SpawnTo);
+		return PO;
 	}
 
 	return nullptr;
@@ -38,61 +48,86 @@ APooledObject* UObjectPoolComponent::GetSpawnedObject(const FTransform& SpawnTo,
 
 APooledObject* UObjectPoolComponent::GetSpawnedObjectDeferred(const FTransform& SpawnTo, UClass* ClassInfo)
 {
-	if (ObjectPool.Contains(ClassInfo))
+	if (!bTurnOffGenerate)
 	{
-		int32 ObjectIndex = *ObjectIndexPool.Find(ClassInfo);
-		int32 OutIndex = SpawnedPoolIndexes[ObjectIndex];
-		return ObjectPool[ClassInfo][OutIndex];
+		if (ObjectPool.Contains(ClassInfo))
+		{
+			int32 ObjectIndex = *ObjectIndexPool.Find(ClassInfo);
+			int32 OutIndex = SpawnedPoolIndexes[ObjectIndex];
+			return ObjectPool[ClassInfo][OutIndex];
+		}
 	}
+	else
+	{
+		APooledObject* PO = GetWorld()->SpawnActorDeferred<APooledObject>(ClassInfo, SpawnTo);
+		PO->SetIsNotPoolable(true);
+		PO->FinishSpawning(SpawnTo);
+		return PO;
+	}
+
 
 	return nullptr;
 }
 
 APooledCharacter* UObjectPoolComponent::GetSpawnedCharacter(const FTransform& SpawnTo, UClass* ClassInfo)
 {
-	if (CharacterObjectPool.Contains(ClassInfo))
+	if (!bTurnOffGenerate)
 	{
-		return GetCharacter(SpawnTo, ClassInfo);
+		if (CharacterObjectPool.Contains(ClassInfo))
+		{
+			return GetCharacter(SpawnTo, ClassInfo);
+		}
 	}
+	else
+	{
+		return GetWorld()->SpawnActor<APooledCharacter>(ClassInfo, SpawnTo);
+
+	}
+
 
 	return nullptr;
 }
 
 APooledObject* UObjectPoolComponent::FinishSpawning(const FTransform& SpawnTo, UClass* InName)
 {
-	if (!ObjectPool.Contains(InName))
+	if (!bTurnOffGenerate)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::Get : No Objects inbound"));
-		return nullptr;
+		if (!ObjectPool.Contains(InName))
+		{
+			UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::Get : No Objects inbound"));
+			return nullptr;
+		}
+
+		//UE_LOG(LogTemp, Display, TEXT("Get"));
+		int32 ObjectIndex = *ObjectIndexPool.Find(InName);
+
+		int32 OutIndex = SpawnedPoolIndexes[ObjectIndex];
+		APooledObject* O = ObjectPool[InName][OutIndex];
+
+		++OutIndex;
+		if (OutIndex >= ObjectPool[InName].Num())
+		{
+			OutIndex = 0;
+		}
+
+		//UE_LOG(LogTemp, Display, TEXT("ObjectIndex : %d"), OutIndex);
+
+		SpawnedPoolIndexes[ObjectIndex] = OutIndex;
+
+		if (O->IsActive())
+		{
+			O->Deactivate();
+		}
+
+		if (!O->TeleportTo(SpawnTo.GetLocation(), SpawnTo.GetRotation().Rotator()))
+			UE_LOG(LogTemp, Error, TEXT("TeleportTo Error"));
+
+		O->SetLifeTime(PooledObjectLifeSpan[ObjectIndex]);
+		O->SetIsActive(true);
+		return O;
 	}
-
-	//UE_LOG(LogTemp, Display, TEXT("Get"));
-	int32 ObjectIndex = *ObjectIndexPool.Find(InName);
-
-	int32 OutIndex = SpawnedPoolIndexes[ObjectIndex];
-	APooledObject* O = ObjectPool[InName][OutIndex];
-
-	++OutIndex;
-	if (OutIndex >= ObjectPool[InName].Num())
-	{
-		OutIndex = 0;
-	}
-
-	//UE_LOG(LogTemp, Display, TEXT("ObjectIndex : %d"), OutIndex);
-
-	SpawnedPoolIndexes[ObjectIndex] = OutIndex;
-
-	if (O->IsActive())
-	{
-		O->Deactivate();
-	}
-
-	if (!O->TeleportTo(SpawnTo.GetLocation(), SpawnTo.GetRotation().Rotator()))
-		UE_LOG(LogTemp, Error, TEXT("TeleportTo Error"));
-
-	O->SetLifeTime(PooledObjectLifeSpan[ObjectIndex]);
-	O->SetIsActive(true);
-	return O;
+	
+	return nullptr;
 }
 
 void UObjectPoolComponent::OnPooledObjectDespawn(APooledObject* InPooledObject)
@@ -125,6 +160,7 @@ void UObjectPoolComponent::GenerateObject()
 	if (World)
 	{
 
+		// Objects
 		int Count = 0;
 		for (TSubclassOf<APooledObject> PO : ObjectsToSpawn)
 		{
@@ -143,9 +179,9 @@ void UObjectPoolComponent::GenerateObject()
 				APooledObject* Actor = World->SpawnActorDeferred<APooledObject>(PO, T);
 				if (Actor)
 				{
-					Actor->FinishSpawning(T);
 					Actor->SetIsActive(false);
 					Actor->SetPoolIndex(i);
+					Actor->FinishSpawning(T);
 					Actor->OnPooledObjectDespawn.AddDynamic(this, &ThisClass::OnPooledObjectDespawn);
 
 					ObjectPool[PO].Add(Actor);
@@ -156,6 +192,7 @@ void UObjectPoolComponent::GenerateObject()
 			++Count;
 		}
 
+		// Characters
 		Count = 0;
 		for (TSubclassOf<APooledCharacter> PO : CharactersToSpawn)
 		{
@@ -171,17 +208,17 @@ void UObjectPoolComponent::GenerateObject()
 			for (size_t i = 0; i < CharacterPoolSizeArr[Count]; i++)
 			{
 				FTransform T(FRotator::ZeroRotator, FVector(0.f, 0.f, 100.f));
-				APooledCharacter* Actor = World->SpawnActorDeferred<APooledCharacter>(PO, T);
-				if (Actor)
+				APooledCharacter* PooledCharacter = World->SpawnActorDeferred<APooledCharacter>(PO, T);
+				if (PooledCharacter)
 				{
-					Actor->SpawnDefaultController();
-					Actor->FinishSpawning(T);
+					PooledCharacter->SpawnDefaultController();
+					PooledCharacter->FinishSpawning(T);
 
-					Actor->SetIsActive(false);
-					Actor->SetPoolIndex(i);
+					PooledCharacter->SetIsActive(false);
+					PooledCharacter->SetPoolIndex(i);
 					//Actor->OnPooledObjectDespawn.AddDynamic(this, &ThisClass::OnPooledObjectDespawn);
 
-					CharacterObjectPool[PO].Add(Actor);
+					CharacterObjectPool[PO].Add(PooledCharacter);
 				}
 			}
 
@@ -202,6 +239,13 @@ APooledObject* UObjectPoolComponent::Get(const FTransform& SpawnTo, UClass* InNa
 	int32 ObjectIndex = *ObjectIndexPool.Find(InName);
 	
 	int32 OutIndex = SpawnedPoolIndexes[ObjectIndex];
+
+	if (ObjectPool[InName].Num() == 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::Get :Objects num is zero!"));
+		return nullptr;
+	}
+
 	APooledObject* O = ObjectPool[InName][OutIndex];
 
 	++OutIndex;
@@ -265,9 +309,9 @@ APooledCharacter* UObjectPoolComponent::GetCharacter(const FTransform& SpawnTo, 
 
 	if (!PooledCharacter->TeleportTo(SpawnTo.GetLocation(), SpawnTo.GetRotation().Rotator()))
 		UE_LOG(LogTemp, Error, TEXT("TeleportTo Error"));
-
 	PooledCharacter->SetLifeTime(CharacterPooledObjectLifeSpan[ObjectIndex]);
 	PooledCharacter->SetIsActive(true);
+
 	return PooledCharacter;
 }
 

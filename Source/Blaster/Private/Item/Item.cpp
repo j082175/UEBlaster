@@ -27,7 +27,7 @@
 AItem::AItem()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = true;
 
@@ -175,7 +175,7 @@ void AItem::InitializeDelegates()
 
 void AItem::InitializeDefaults()
 {
-	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	OverlapCapsule->SetCapsuleRadius(50.f);
 	OverlapCapsule->SetCapsuleHalfHeight(50.f);

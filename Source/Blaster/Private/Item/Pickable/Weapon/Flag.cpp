@@ -22,6 +22,10 @@ AFlag::AFlag()
 	PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	PickupMesh->SetIsReplicated(true);
+
+	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidgetComponent"));
+	PickupWidget->SetupAttachment(RootComponent);
+
 }
 
 void AFlag::ResetFlag()
@@ -37,6 +41,18 @@ void AFlag::ResetFlag()
 
 
 	if (!HasAuthority()) return; // the code below only executed when has authority
+
+	AWeapon* W = Cast<AFlag>(BlasterOwnerCharacter->GetEquippedWeapon());
+	if (W)
+	{
+		BlasterOwnerCharacter->SetEquippedWeapon(nullptr);
+	}
+	W = Cast<AFlag>(BlasterOwnerCharacter->GetSecondaryEquippedWeapon());
+	if (W)
+	{
+		BlasterOwnerCharacter->SetSecondaryEquippedWeapon(nullptr);
+	}
+
 	SetWeaponState(EWeaponState::EWS_Dropped);
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	PickupMesh->DetachFromComponent(DetachRules);
@@ -44,7 +60,7 @@ void AFlag::ResetFlag()
 	SetWeaponState(EWeaponState::EWS_Initial);
 	OverlapCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapCapsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-
+	
 	SetOwner(nullptr);
 	BlasterOwnerCharacter = nullptr;
 	BlasterOwnerController = nullptr;
@@ -61,6 +77,17 @@ void AFlag::MulticastResetFlag_Implementation()
 		FlagBearer->SetHoldingTheFlag(false);
 		FlagBearer->SetOverlappingWeapon(nullptr);
 		FlagBearer->UnCrouch();
+	}
+
+	AWeapon* W = Cast<AFlag>(BlasterOwnerCharacter->GetEquippedWeapon());
+	if (W)
+	{
+		BlasterOwnerCharacter->SetEquippedWeapon(nullptr);
+	}
+	W = Cast<AFlag>(BlasterOwnerCharacter->GetSecondaryEquippedWeapon());
+	if (W)
+	{
+		BlasterOwnerCharacter->SetSecondaryEquippedWeapon(nullptr);
 	}
 
 
