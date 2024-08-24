@@ -20,6 +20,7 @@ namespace MatchState
 
 ABlasterGameMode::ABlasterGameMode()
 {
+
 	bDelayedStart = true;
 
 	//ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));

@@ -23,7 +23,8 @@ void APooledCharacter::BeginPlay()
 
 	SetActorTickEnabled(true);
 
-	GetController()->SetActorTickInterval(0.1f);
+	//if (GetController()) GetController()->SetActorTickInterval(0.1f);
+
 	GetMesh()->SetComponentTickInterval(0.01);
 	GetCharacterMovement()->SetComponentTickInterval(0.01f);
 }

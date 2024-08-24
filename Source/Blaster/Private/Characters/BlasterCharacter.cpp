@@ -89,7 +89,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GetController()->SetActorTickInterval(0.01f);
 	//GetMesh()->SetComponentTickInterval(0.001);
 	GetCharacterMovement()->SetComponentTickInterval(0.001f);
 

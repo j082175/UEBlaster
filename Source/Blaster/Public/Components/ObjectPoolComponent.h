@@ -16,6 +16,7 @@ class BLASTER_API UObjectPoolComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UObjectPoolComponent();
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	FORCEINLINE bool IsTurnOff() const { return bTurnOffGenerate; }
 

@@ -4,6 +4,20 @@
 #include "Components/RocketMovementComponent.h"
 
 
+URocketMovementComponent::URocketMovementComponent()
+{
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
+}
+
+void URocketMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	//UE_LOG(LogTemp, Warning, TEXT("URocketMovementComponent tick"));
+
+}
+
 URocketMovementComponent::EHandleBlockingHitResult URocketMovementComponent::HandleBlockingHit(const FHitResult& Hit, float TimeTick, const FVector& MoveDelta, float& SubTickTimeRemaining)
 {
 	Super::HandleBlockingHit(Hit, TimeTick, MoveDelta, SubTickTimeRemaining);

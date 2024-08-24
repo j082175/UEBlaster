@@ -11,6 +11,7 @@ UAttributeComponent::UAttributeComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 0.1f;
 
 	// ...
 	SetIsReplicatedByDefault(true);
@@ -45,7 +46,7 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName());
+	//if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName()); 
 
 	// ...
 	Owner = Owner == nullptr ? Cast<ACharacterBase>(GetOwner()) : Owner;

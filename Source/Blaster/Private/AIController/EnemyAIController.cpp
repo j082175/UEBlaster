@@ -20,6 +20,9 @@
 
 AEnemyAIController::AEnemyAIController()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.1f;
+
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
 
 
