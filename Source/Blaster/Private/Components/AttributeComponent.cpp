@@ -45,6 +45,8 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName());
+
 	// ...
 	Owner = Owner == nullptr ? Cast<ACharacterBase>(GetOwner()) : Owner;
 

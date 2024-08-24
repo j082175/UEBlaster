@@ -54,6 +54,8 @@ void AMinion_Lane_Super_Dusk::BeginPlay()
 
 	InitializeCollisionStates();
 	InitializeDelegates();
+
+	GetController()->SetActorTickInterval(0.01f);
 }
 
 void AMinion_Lane_Super_Dusk::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)

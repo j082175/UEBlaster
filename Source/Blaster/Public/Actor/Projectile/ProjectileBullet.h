@@ -16,6 +16,7 @@ class BLASTER_API AProjectileBullet : public AProjectile
 public:
 	AProjectileBullet();
 	virtual void Destroyed() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetIsActive(bool InIsActive) override;
 	virtual void SetProjectileMovementVelocity(const FVector& InVelocity) override;
 

@@ -9,6 +9,7 @@
 
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "KismetAnimationLibrary.h"
 #include "Item/Pickable/Weapon/Weapon_Gun.h"
 #include "BlasterTypes/CombatState.h"
 #include "Net/UnrealNetwork.h"
@@ -28,12 +29,16 @@ void UBaseAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 	
+	
+	
 	CharacterOwner = Cast<ACharacterBase>(TryGetPawnOwner());
 }
 
 void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
+
+	//if (CharacterOwner) UE_LOG(LogTemp, Warning, TEXT("BaseAnimInstance tick, owner : %s"), *CharacterOwner->GetName());
 
 	if (CharacterOwner == nullptr)
 	{
@@ -42,6 +47,8 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	}
 	else
 	{
+
+
 		if (CharacterOwner->GetCharacterMovement())
 		{
 			bIsInAir = CharacterOwner->GetCharacterMovement()->IsFalling();
@@ -191,7 +198,7 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		if (CharacterOwner->GetCharacterMovement())
 		{
 			const FVector Velocity2D = UKismetMathLibrary::MakeVector(CharacterOwner->GetCharacterMovement()->Velocity.X, CharacterOwner->GetCharacterMovement()->Velocity.Y, 0.f);
-			const float Angle = UAnimInstance::CalculateDirection(Velocity2D, CharacterOwner->GetActorRotation());
+			const float Angle = UKismetAnimationLibrary::CalculateDirection(Velocity2D, CharacterOwner->GetActorRotation());
 			Direction = UKismetMathLibrary::NormalizeAxis(Angle);
 
 			F_OrientationAngle = Direction;

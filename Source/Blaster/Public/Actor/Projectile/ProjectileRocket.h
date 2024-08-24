@@ -15,6 +15,7 @@ class BLASTER_API AProjectileRocket : public AProjectile
 	GENERATED_BODY()
 public:
 	AProjectileRocket();
+	virtual void Tick(float DeltaTime) override;
 	virtual void Destroyed() override;
 
 	virtual void SetIsActive(bool InIsActive) override;

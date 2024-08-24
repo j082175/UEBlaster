@@ -19,6 +19,7 @@ void APickupSpawnPoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UE_LOG(LogTemp, Warning, TEXT("PickupSpawnPoint tick"));
 }
 
 void APickupSpawnPoint::BeginPlay()

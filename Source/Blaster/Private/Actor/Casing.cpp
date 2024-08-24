@@ -11,7 +11,9 @@
 ACasing::ACasing()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+
 
 	CasingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CasingMeshComponent"));
 	SetRootComponent(CasingMesh);
@@ -36,12 +38,15 @@ ACasing::ACasing()
 
 	CasingMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+
 }
 
 // Called when the game starts or when spawned
 void ACasing::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetActorTickInterval(0.1f);
 
 	//CasingMesh->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
 	//CasingMesh->AddImpulse(UKismetMathLibrary::RandomUnitVectorInConeInDegrees(GetActorForwardVector(), 20.f) * ShellEjectionImpulse);
@@ -50,6 +55,14 @@ void ACasing::BeginPlay()
 	{
 		SetIsActive(true);
 	}
+
+}
+
+void ACasing::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Display, TEXT("Casing Tick"));
 }
 
 void ACasing::SetIsActive(bool InIsActive)

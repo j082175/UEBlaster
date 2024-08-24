@@ -12,7 +12,8 @@
 AEnemySpawnPoint::AEnemySpawnPoint()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 
 }
 
@@ -39,6 +40,7 @@ void AEnemySpawnPoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UE_LOG(LogTemp, Display, TEXT("EnemySpawnPoint tick"));
 }
 
 void AEnemySpawnPoint::SpawnPickup()
@@ -81,6 +83,8 @@ void AEnemySpawnPoint::StartSpawnPickupTimer(AActor* DestroyedActor)
 
 void AEnemySpawnPoint::MustRandomSpawner()
 {
+	FTransform SpawnTo(GetActorRotation(), GetActorLocation() + FVector(0.f, 0.f, 100.f));
+
 	if (!bIsTurnOff)
 	{
 		TSet<int32> Checker;
@@ -96,28 +100,10 @@ void AEnemySpawnPoint::MustRandomSpawner()
 
 			//UE_LOG(LogTemp, Display, TEXT("Spawned"));
 
-			FTransform SpawnT(GetActorRotation(), GetActorLocation() + FVector(0.f, 0.f, 85.f));
-
 			if (GetWorld() && GetWorld()->GetGameState<ABlasterGameState>())
 			{
-				SpawnedEnemy = Cast<AEnemy>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedCharacter(SpawnT, EnemyClass[Selection]));
+				SpawnedEnemy = Cast<AEnemy>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedCharacter(SpawnTo, EnemyClass[Selection]));
 			}
-
-
-
-			if (SpawnEffect)
-			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnEffect, SpawnT);
-			}
-			else if (SpawnEffectNiagara)
-			{
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, SpawnEffectNiagara, SpawnT.GetLocation());
-			}
-
-
-
-
-
 			//GetActorTransform().DebugPrint();
 
 			if (!SpawnedEnemy)
@@ -139,11 +125,19 @@ void AEnemySpawnPoint::MustRandomSpawner()
 	else
 	{
 		int32 Rand = FMath::RandRange(0, EnemyClass.Num() - 1);
-		SpawnedEnemy = GetWorld()->SpawnActorDeferred<AEnemy>(EnemyClass[Rand], GetActorTransform());
+		SpawnedEnemy = GetWorld()->SpawnActorDeferred<AEnemy>(EnemyClass[Rand], SpawnTo);
 		SpawnedEnemy->SpawnDefaultController();
-		SpawnedEnemy->FinishSpawning(GetActorTransform());
+		SpawnedEnemy->FinishSpawning(SpawnTo);
 	}
 
 	
+	if (SpawnEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnEffect, SpawnTo);
+	}
+	else if (SpawnEffectNiagara)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, SpawnEffectNiagara, SpawnTo.GetLocation());
+	}
 }
 

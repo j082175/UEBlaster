@@ -7,7 +7,15 @@
 // Sets default values
 APooledObject::APooledObject()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 	//ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));
+}
+
+void APooledObject::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	UE_LOG(LogTemp, Warning, TEXT("PooledObject Tick"));
 }
 
 void APooledObject::Deactivate()
@@ -23,6 +31,7 @@ void APooledObject::SetIsActive(bool InIsActive)
 	bIsActive = InIsActive;
 	SetActorHiddenInGame(!InIsActive);
 	SetActorEnableCollision(InIsActive);
+	//SetActorTickEnabled(InIsActive);
 	GetWorldTimerManager().SetTimer(LifeSpanTimer, this, &ThisClass::Deactivate, LifeSpan, false);
 }
 

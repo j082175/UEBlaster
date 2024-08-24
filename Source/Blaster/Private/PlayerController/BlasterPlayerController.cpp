@@ -1121,7 +1121,7 @@ void ABlasterPlayerController::AddChatBox()
 			ChatBox->AddToViewport();
 			ChatBox->ChatInput->SetHintText(FText(FText::FromString("-")));
 			ChatBox->SetVisibility(ESlateVisibility::Collapsed);
-			ChatBox->ChatInput->RevertTextOnEscape = true;
+			ChatBox->ChatInput->SetRevertTextOnEscape(true);
 			ChatBox->ChatInput->OnTextCommitted.AddDynamic(this, &ABlasterPlayerController::OnChatCommittedFunc);
 		}
 	}

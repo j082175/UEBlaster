@@ -5,6 +5,7 @@
 
 // Components
 #include "Components/BoxComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 // Kismets
 #include "Kismet/GameplayStatics.h"
@@ -35,7 +36,8 @@
 AProjectile::AProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 
 	bReplicates = false;
 
@@ -89,6 +91,13 @@ void AProjectile::Destroyed()
 	Deactivate();
 }
 
+void AProjectile::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Display, TEXT("Projectile Tick"));
+}
+
 
 void AProjectile::SetIsActive(bool InIsActive)
 {
@@ -119,6 +128,8 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetActorTickInterval(0.1f);
+
 	//UE_LOG(LogTemp, Display, TEXT("Getowner : %x"), GetOwner());
 	//UE_LOG(LogTemp, Display, TEXT("getinstigator : %x"), GetInstigator());
 
@@ -133,6 +144,8 @@ void AProjectile::BeginPlay()
 		//UE_LOG(LogTemp, Error, TEXT("GetOwner : %s"), *GetOwner()->GetName());
 		//CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
 	}
+
+
 
 }
 

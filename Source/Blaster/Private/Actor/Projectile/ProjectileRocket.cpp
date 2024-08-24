@@ -36,6 +36,13 @@ AProjectileRocket::AProjectileRocket()
 	RocketMovementComponent->SetAutoActivate(false);
 }
 
+void AProjectileRocket::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("ProjectileRocket tick"));
+}
+
 void AProjectileRocket::Destroyed()
 {
 }

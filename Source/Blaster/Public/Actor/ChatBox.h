@@ -15,6 +15,7 @@ class BLASTER_API UChatBox : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	void OnTextCommitted(const FText& Text, const FString& PlayerName);
 

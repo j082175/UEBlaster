@@ -51,6 +51,8 @@ void AParticleSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//UE_LOG(LogTemp, Display, TEXT("ParicleSpawner tick"));
+
 	if (GetOwner())
 	{
 		FRotator Rotation(-90.f, 0.f, 0.f);

@@ -53,4 +53,5 @@ protected:
 	float TargetPointCheckCount = 0.f;
 	float TargetPointCheckThreshold = 2.f;
 	FVector TargetPointCheck;
+
 };

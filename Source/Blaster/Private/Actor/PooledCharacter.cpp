@@ -10,9 +10,29 @@
 APooledCharacter::APooledCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.TickInterval = 0.2f;
 
 	RootComponent->SetMobility(EComponentMobility::Static);
+}
+
+void APooledCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetActorTickEnabled(true);
+
+	GetController()->SetActorTickInterval(0.1f);
+	GetMesh()->SetComponentTickInterval(0.01);
+	GetCharacterMovement()->SetComponentTickInterval(0.01f);
+}
+
+void APooledCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	//UE_LOG(LogTemp, Warning, TEXT("PooledCharacter Tick"));
 }
 
 void APooledCharacter::Deactivate()
@@ -28,8 +48,6 @@ void APooledCharacter::SetIsActive(bool InIsActive)
 	bIsActive = InIsActive;
 	SetActorHiddenInGame(!InIsActive);
 	SetActorEnableCollision(InIsActive);
-	PrimaryActorTick.bCanEverTick = true;
-	
 	SetActorTickEnabled(InIsActive);
 	//SetActorTickInterval(0.1f);
 	//GetMesh()->SetComponentTickEnabled(InIsActive);

@@ -44,6 +44,13 @@ void AProjectileBullet::Destroyed()
 
 }
 
+void AProjectileBullet::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("ProjectileBullet tick"));
+}
+
 void AProjectileBullet::SetIsActive(bool InIsActive)
 {
 	Super::SetIsActive(InIsActive);

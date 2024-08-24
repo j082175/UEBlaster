@@ -63,6 +63,8 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetActorTickInterval(0.1f);
+
 	EnemyAIController = Cast<AEnemyAIController>(GetController());
 	NullChecker(EnemyAIController, TEXT("EnemyAIController"), *GetName());
 	NullChecker(SoulToSpawn, TEXT("SoulToSpawn"), *GetName());
@@ -89,7 +91,7 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Display, TEXT("Tick"));
+	//UE_LOG(LogTemp, Display, TEXT("Enemy Tick"));
 
 	//static bool isGoal = false;
 
@@ -374,6 +376,8 @@ void AEnemy::ISetPatrolRoute(ASplineActor* InSplineActor)
 void AEnemy::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)
 {
 	Super::OnMontageEndedFunc(Montage, bInterrupted);
+
+
 
 	if (!bInterrupted)
 	{

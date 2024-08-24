@@ -75,6 +75,13 @@ void AEnemyAIController::BeginPlay()
 	//}
 }
 
+void AEnemyAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	//UE_LOG(LogTemp, Warning, TEXT("EnemyAIController Tick"));
+}
+
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
 	//UE_LOG(LogTemp, Display, TEXT("OnPossess"));
@@ -177,7 +184,7 @@ void AEnemyAIController::BindPerceptionFunctions(bool InSet)
 
 void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	UE_LOG(LogTemp, Display, TEXT("Percepted Actor : %s"), *Actor->GetName());
+	//UE_LOG(LogTemp, Display, TEXT("Percepted Actor : %s"), *Actor->GetName());
 	//for (UAIPerceptionComponent::TAISenseConfigConstIterator iter = AIPerceptionComponent->GetSensesConfigIterator(); iter; iter++)
 	//{
 

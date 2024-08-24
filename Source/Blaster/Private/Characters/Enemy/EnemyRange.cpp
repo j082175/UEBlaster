@@ -32,6 +32,11 @@ AEnemyRange::AEnemyRange()
 void AEnemyRange::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)
 {
 	ACharacterBase::OnMontageEndedFunc(Montage, bInterrupted);
+
+	if (Montage == MantleMontage || Montage == VaultMontage)
+	{
+		AttackFunc();
+	}
 }
 
 void AEnemyRange::Tick(float DeltaTime)
@@ -109,19 +114,33 @@ void AEnemyRange::InitializeDefaults()
 
 void AEnemyRange::FireButtonPressed(bool bPressed)
 {
+	//UE_LOG(LogTemp, Display, TEXT("bPressed : %d"), bPressed);
 	//UE_LOG(LogTemp, Display, TEXT("AI Firing"));
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Attacking)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("AEnemyRange::FireButtonPressed : CombatState is not unoccupied : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
+		return;
+	}
 
-	if (EquippedGun == nullptr) return;
+	if (EquippedGun == nullptr)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("AEnemyRange::FireButtonPressed : EquippedGun is null"));
+		return;
+	}
+
 	bFireButtonPressed = bPressed;
-	if (!EquippedGun->IsAutomatic() && bIsFiring) return;
+	if (!EquippedGun->IsAutomatic() && bIsFiring)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("AEnemyRange::FireButtonPressed : !EquippedGun->IsAutomatic() && bIsFiring"));
+		return;
+	}
 
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(EnemyAIController->GetBrainComponent());
 	if (BehaviorTreeComponent && !BehaviorTreeComponent->IsRunning())
 	{
-		//UE_LOG(LogTemp, Display, TEXT("Shutdown"));
+		//UE_LOG(LogTemp, Warning, TEXT("AEnemyRange::FireButtonPressed : Shutdown"));
 		return;
 	}
 
@@ -154,6 +173,11 @@ void AEnemyRange::FireButtonPressed(bool bPressed)
 
 		//FireTimer.Invalidate();
 		StartFireTimer();
+	}
+	else
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("AEnemyRange::FireButtonPressed : bFireButtonPressed is zero"));
+
 	}
 }
 
@@ -227,7 +251,7 @@ void AEnemyRange::AttackFunc()
 	
 
 
-	//UE_LOG(LogTemp, Display, TEXT("IAttack"));
+	UE_LOG(LogTemp, Display, TEXT("IAttack"));
 
 	TargetPoint = EquippedGun->bUseScatter ? EquippedGun->TraceEndWithScatter(TargetPoint) : TargetPoint;
 	//MulticastFire(true, TargetPoint);

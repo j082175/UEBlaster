@@ -50,6 +50,13 @@ void AProjectileGrenade::BeginPlay()
 
 }
 
+void AProjectileGrenade::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("ProjectileGrenade tick"));
+}
+
 void AProjectileGrenade::Destroyed()
 {
 	ExplodeDamage();

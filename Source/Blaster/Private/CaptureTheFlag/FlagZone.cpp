@@ -17,6 +17,13 @@ AFlagZone::AFlagZone()
 	//SetReplicateMovement(true);
 }
 
+void AFlagZone::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("FlagZone Tick"));
+}
+
 void AFlagZone::BeginPlay()
 {
 	Super::BeginPlay();

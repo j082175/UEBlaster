@@ -14,7 +14,8 @@ class BLASTER_API APooledCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	APooledCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 
 	//FOnPooledObjectDespawnDelegate OnPooledObjectDespawn;

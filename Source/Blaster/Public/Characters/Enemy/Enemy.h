@@ -138,4 +138,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float LongStunTime = 10.f;
+
+
+	// Attack
+	
 };

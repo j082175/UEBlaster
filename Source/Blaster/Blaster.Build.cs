@@ -12,7 +12,7 @@ public class Blaster : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Blaster", "Niagara", "OnlineSubsystem", "OnlineSubsystemSteam", "MotionWarping", "ControlRig", "GeometryCollectionEngine", "AIModule", "NavigationSystem", "UMG", "FieldSystemEngine" });
 
-		PublicDependencyModuleNames.AddRange(new string[] { "MultiplayerSessions", "GameplayCameras" });
+		PublicDependencyModuleNames.AddRange(new string[] { "MultiplayerSessions", "GameplayCameras", "AnimGraphRuntime" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 

@@ -16,6 +16,7 @@ class BLASTER_API AProjectileGrenade : public AProjectile
 public:
 	AProjectileGrenade();
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void Destroyed() override;
 
 	virtual void SetIsActive(bool InIsActive) override;

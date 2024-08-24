@@ -9,6 +9,13 @@
 
 #include "PlayerState/BlasterPlayerState.h"
 
+void UChatBox::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+    Super::NativeTick(MyGeometry, InDeltaTime);
+
+    UE_LOG(LogTemp, Warning, TEXT("Chatbox tick"));
+}
+
 void UChatBox::OnTextCommitted(const FText& Text, const FString& PlayerName)
 {
     OwningController = OwningController == nullptr ? GetOwningPlayer() : OwningController;

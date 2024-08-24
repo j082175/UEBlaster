@@ -13,7 +13,7 @@ class BLASTER_API AFlagZone : public AActor
 	GENERATED_BODY()
 public:
 	AFlagZone();
-
+	virtual void Tick(float DeltaTime) override;
 protected:
 	virtual void BeginPlay() override;
 

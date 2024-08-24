@@ -89,6 +89,10 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	GetController()->SetActorTickInterval(0.01f);
+	//GetMesh()->SetComponentTickInterval(0.001);
+	GetCharacterMovement()->SetComponentTickInterval(0.001f);
+
 	//UE_LOG(LogTemp, Display, TEXT("Team : %s"), *UEnum::GetDisplayValueAsText(Team).ToString());
 
 
@@ -200,6 +204,8 @@ void ABlasterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	UE_LOG(LogTemp, Display, TEXT("ABlasterCharacter::BeginPlay()"));
+
+	SetActorTickInterval(0.01f);
 
 	SpawnDefaultWeapon();
 

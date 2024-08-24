@@ -18,6 +18,7 @@ class BLASTER_API APooledObject : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APooledObject();
+	virtual void Tick(float DeltaTime) override;
 
 	FOnPooledObjectDespawnDelegate OnPooledObjectDespawn;
 

@@ -74,6 +74,8 @@ void ABreakableActor::InitializeDelegates()
 void ABreakableActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("BreakableActor tick"));
 }
 
 void ABreakableActor::IGetHit(const FVector& HitPoint)

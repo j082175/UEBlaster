@@ -53,13 +53,13 @@ private:
 	FVector ObjectDepthVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float DepthThreshold = 150.f;
+	float DepthThreshold = 200.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FVector LandingVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float DetectRange = 150.f;
+	float DetectRange = 200.f;
 
 
 	// for debugs

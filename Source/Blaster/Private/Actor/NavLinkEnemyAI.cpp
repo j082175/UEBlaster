@@ -11,6 +11,13 @@ void ANavLinkEnemyAI::BeginPlay()
 	OnSmartLinkReached.AddDynamic(this, &ThisClass::SmartLinkReached);
 }
 
+void ANavLinkEnemyAI::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("NavLinkProxy Tick"));
+}
+
 void ANavLinkEnemyAI::SmartLinkReached(AActor* MovingActor, const FVector& DestinationPoint)
 {
 	//UE_LOG(LogTemp, Display, TEXT("SmartLinkReached"));

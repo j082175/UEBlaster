@@ -32,10 +32,11 @@ APooledObject* UObjectPoolComponent::GetSpawnedObject(const FTransform& SpawnTo,
 	{
 		if (ObjectPool.Contains(ClassInfo))
 		{
-			return Get(SpawnTo, ClassInfo);
+			APooledObject* PO = Get(SpawnTo, ClassInfo);
+			if (PO) return PO;
 		}
 	}
-	else
+
 	{
 		APooledObject* PO = GetWorld()->SpawnActorDeferred<APooledObject>(ClassInfo, SpawnTo);
 		PO->SetIsNotPoolable(true);
@@ -43,7 +44,6 @@ APooledObject* UObjectPoolComponent::GetSpawnedObject(const FTransform& SpawnTo,
 		return PO;
 	}
 
-	return nullptr;
 }
 
 APooledObject* UObjectPoolComponent::GetSpawnedObjectDeferred(const FTransform& SpawnTo, UClass* ClassInfo)
@@ -54,10 +54,11 @@ APooledObject* UObjectPoolComponent::GetSpawnedObjectDeferred(const FTransform& 
 		{
 			int32 ObjectIndex = *ObjectIndexPool.Find(ClassInfo);
 			int32 OutIndex = SpawnedPoolIndexes[ObjectIndex];
-			return ObjectPool[ClassInfo][OutIndex];
+			APooledObject* PO = ObjectPool[ClassInfo][OutIndex];
+			if (PO) return PO;
 		}
 	}
-	else
+
 	{
 		APooledObject* PO = GetWorld()->SpawnActorDeferred<APooledObject>(ClassInfo, SpawnTo);
 		PO->SetIsNotPoolable(true);
@@ -65,8 +66,6 @@ APooledObject* UObjectPoolComponent::GetSpawnedObjectDeferred(const FTransform& 
 		return PO;
 	}
 
-
-	return nullptr;
 }
 
 APooledCharacter* UObjectPoolComponent::GetSpawnedCharacter(const FTransform& SpawnTo, UClass* ClassInfo)
@@ -75,17 +74,18 @@ APooledCharacter* UObjectPoolComponent::GetSpawnedCharacter(const FTransform& Sp
 	{
 		if (CharacterObjectPool.Contains(ClassInfo))
 		{
-			return GetCharacter(SpawnTo, ClassInfo);
+			APooledCharacter* PC = GetCharacter(SpawnTo, ClassInfo);
+			if (PC) return PC;
 		}
 	}
-	else
-	{
-		return GetWorld()->SpawnActor<APooledCharacter>(ClassInfo, SpawnTo);
 
+	{
+		APooledCharacter* PC = GetWorld()->SpawnActorDeferred<APooledCharacter>(ClassInfo, SpawnTo);
+		PC->SpawnDefaultController();
+		PC->FinishSpawning(SpawnTo);
+		return PC;
 	}
 
-
-	return nullptr;
 }
 
 APooledObject* UObjectPoolComponent::FinishSpawning(const FTransform& SpawnTo, UClass* InName)
@@ -273,6 +273,7 @@ APooledObject* UObjectPoolComponent::Get(const FTransform& SpawnTo, UClass* InNa
 
 APooledCharacter* UObjectPoolComponent::GetCharacter(const FTransform& SpawnTo, UClass* InName)
 {
+
 	if (!CharacterObjectPool.Contains(InName))
 	{
 		UE_LOG(LogTemp, Error, TEXT("UObjectPoolComponent::GetCharacter : No Characters inbound"));

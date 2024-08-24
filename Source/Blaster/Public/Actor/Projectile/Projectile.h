@@ -17,6 +17,7 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 	virtual void Destroyed() override;
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetIsActive(bool InIsActive) override;
 

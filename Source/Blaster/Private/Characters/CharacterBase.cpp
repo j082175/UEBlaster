@@ -2086,6 +2086,7 @@ void ACharacterBase::ElimTimerFinished()
 
 void ACharacterBase::SpawnDefaultWeapon()
 {
+	//UE_LOG(LogTemp, Display, TEXT("SpawnDefaultWeapon"));
 	BlasterGameMode = BlasterGameMode == nullptr ? Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this)) : BlasterGameMode;
 	UWorld* World = GetWorld();
 	if (BlasterGameMode && World && !bIsElimmed && DefaultWeaponClass)
