@@ -1,1 +1,0 @@
-UnrealEditor.exe "%cd%\Blaster.uproject" -NetTrace=1 -Trace=Net
