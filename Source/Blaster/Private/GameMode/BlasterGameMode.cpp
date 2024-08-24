@@ -22,7 +22,6 @@ ABlasterGameMode::ABlasterGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.1f;
-
 	bDelayedStart = true;
 
 	//ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));
