@@ -35,7 +35,7 @@
 // Sets default values
 AProjectile::AProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
@@ -45,7 +45,7 @@ AProjectile::AProjectile()
 	SetRootComponent(CollisionBox);
 
 
-	
+
 	//CollisionBox->SetGenerateOverlapEvents(true);
 	//CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	//CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -135,7 +135,7 @@ void AProjectile::BeginPlay()
 
 	CollisionBox->MoveIgnoreActors.Add(GetOwner());
 	CollisionBox->IgnoreActorWhenMoving(GetOwner(), true);
-	
+
 	if (bIsNotPoolable)
 	{
 		SetIsActive(true);
@@ -223,8 +223,14 @@ void AProjectile::StartDestroyTimer()
 
 void AProjectile::DestroyTimerFinished()
 {
-	//Destroy();
-	Destroyed();
+	if (bIsNotPoolable)
+	{
+		Destroy();
+	}
+	else
+	{
+		Destroyed();
+	}
 }
 
 void AProjectile::ApplyForce(UFieldSystemComponent* InFieldSystemComponent, const FHitResult& InHitResult)

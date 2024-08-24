@@ -12,6 +12,13 @@ ABlasterGameState::ABlasterGameState()
 	ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));
 }
 
+void ABlasterGameState::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Display, TEXT("BlasterGameState tick"));
+}
+
 void ABlasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

@@ -9,7 +9,11 @@ void UMyUserWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	PollInit();
+	
 
+	EWidgetTickFrequency T = GetDesiredTickFrequency();
+
+	int a = 1;
 }
 
 void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

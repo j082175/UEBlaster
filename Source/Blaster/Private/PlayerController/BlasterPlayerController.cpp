@@ -32,6 +32,8 @@
 
 ABlasterPlayerController::ABlasterPlayerController()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.TickInterval = 0.01f;
 }
 
 void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

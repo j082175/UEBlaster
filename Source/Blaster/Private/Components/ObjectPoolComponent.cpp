@@ -19,6 +19,13 @@ UObjectPoolComponent::UObjectPoolComponent()
 
 }
 
+void UObjectPoolComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	UE_LOG(LogTemp, Warning, TEXT("ObjectPoolComponent tick"));
+}
+
 void UObjectPoolComponent::BeginPlay()
 {
 	Super::BeginPlay();

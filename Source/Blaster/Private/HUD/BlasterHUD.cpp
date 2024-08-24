@@ -25,7 +25,7 @@
 
 ABlasterHUD::ABlasterHUD()
 {
-
+	
 	static ConstructorHelpers::FClassFinder<UUserWidget> CORef(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/A_Blaster/Blueprints/HUD/WBP_CharacterOverlay.WBP_CharacterOverlay_C'"));
 	if (CORef.Succeeded()) CharacterOverlayClass = CORef.Class;
 	else UE_LOG(LogTemp, Error, TEXT("No CORef"));

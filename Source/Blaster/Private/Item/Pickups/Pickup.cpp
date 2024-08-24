@@ -52,6 +52,8 @@ void APickup::Tick(float DeltaTime)
 	{
 		PickupMesh->AddWorldRotation(FRotator(0.f, BaseTurnRate * DeltaTime, 0.f));
 	}
+
+	UE_LOG(LogTemp, Display, TEXT("Pickup Tick"));
 }
 
 void APickup::Destroyed()

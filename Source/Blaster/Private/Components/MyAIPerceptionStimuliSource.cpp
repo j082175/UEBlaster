@@ -6,5 +6,8 @@
 UMyAIPerceptionStimuliSource::UMyAIPerceptionStimuliSource(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 0.1f;
+
 	bAutoRegisterAsSource = true;
 }

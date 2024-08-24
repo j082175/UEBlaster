@@ -16,8 +16,6 @@ void UHpBarWidget::NativeConstruct()
 	//{
 	//	WidgetOwner->IBindOverheadWidget(this);
 	//}
-
-
 }
 
 void UHpBarWidget::SetHpBar(float InCurrent, float InMax)

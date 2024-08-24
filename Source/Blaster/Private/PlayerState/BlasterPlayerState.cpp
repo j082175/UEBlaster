@@ -7,6 +7,13 @@
 #include "Net/UnrealNetwork.h"
 #include "HUD/OverheadWidget.h"
 
+void ABlasterPlayerState::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("BlasterPlayerState tick"));
+}
+
 void ABlasterPlayerState::BeginPlay()
 {
 	Super::BeginPlay();

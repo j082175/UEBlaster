@@ -23,6 +23,7 @@ void UHpBarWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//UE_LOG(LogTemp, Display, TEXT("%s : HasLocalNetOwner : %d"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString(), GetOwner()->HasLocalNetOwner());
+
 	//if (bShieldChanged) SetShieldBar(0, ShieldRate, DeltaTime);
 }
 
@@ -48,8 +49,6 @@ void UHpBarWidgetComponent::InitWidget()
 void UHpBarWidgetComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-
 }
 
 void UHpBarWidgetComponent::SetHpBar(float InCurrent, float InMax)

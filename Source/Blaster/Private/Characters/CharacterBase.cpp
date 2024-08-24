@@ -237,8 +237,14 @@ void ACharacterBase::Tick(float DeltaTime)
 		}
 	}
 
+	HpBarWidgetComponent->SetVisibility(true);
 
-	CheckHpBarWidget(DeltaTime);
+	//if (!HpBarWidgetComponent->GetWidget()->IsVisible())
+	//{
+	//	HpBarWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
+	//}
+
+	//CheckHpBarWidget(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -351,8 +357,9 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 	{
 		HpCountdown = 0.f;
 		MulticastHpBarVisible(true);
-	}
 
+
+	}
 
 
 	LastDamageCauser = DamageCauser;
@@ -1300,7 +1307,13 @@ void ACharacterBase::CheckHpBarWidget(float DeltaTime)
 
 void ACharacterBase::MulticastHpBarVisible_Implementation(bool InIsVisible)
 {
-	HpBarWidgetComponent->SetVisibility(InIsVisible);
+	bool isA = InIsVisible == true ? false : true;
+
+	HpBarWidgetComponent->SetVisibility(isA);
+
+	UE_LOG(LogTemp, Display, TEXT("HpBarWidgetComponent->IsVisible() : %d"), HpBarWidgetComponent->IsVisible());
+	UE_LOG(LogTemp, Display, TEXT(" HpBarWidgetComponent->GetWidget()->IsVisible() : %d"), HpBarWidgetComponent->GetWidget()->IsVisible());
+
 }
 
 void ACharacterBase::MulticastRandomAttack_Implementation(int32 Index, const FString& AttackType)
@@ -2224,7 +2237,7 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 		//GetCharacterMovement()->bOrientRotationToMovement = true;
 		//bUseControllerRotationYaw = false;
 	}
-	
+
 
 	{
 		if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr) // Only Equipped One Weapon

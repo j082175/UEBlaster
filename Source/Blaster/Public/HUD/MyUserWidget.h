@@ -9,7 +9,7 @@
 /**
  *
  */
-UCLASS()
+UCLASS(meta = (DisableNativeTick))
 class BLASTER_API UMyUserWidget : public UUserWidget
 {
 	GENERATED_BODY()

@@ -27,7 +27,10 @@
 AItem::AItem()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.TickInterval = 0.1f;
+
 
 	bReplicates = true;
 
@@ -92,6 +95,9 @@ void AItem::BeginPlay()
 
 	//GEngine->AddOnScreenDebugMessage()
 	if (HasAuthority()) InitializeDelegates();
+
+
+	SetActorTickInterval(1.f);
 }
 
 // Called every frame
