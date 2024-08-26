@@ -11,6 +11,8 @@ UAttributeComponent::UAttributeComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
+	PrimaryComponentTick.TickInterval = 0.01f;
 
 	// ...
 	SetIsReplicatedByDefault(true);
@@ -44,8 +46,9 @@ void UAttributeComponent::BeginPlay()
 void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	//UE_LOG(LogTemp, Display, TEXT("AttributeComponent tick"));
 
-	if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName());
+	//if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName()); 
 
 	// ...
 	Owner = Owner == nullptr ? Cast<ACharacterBase>(GetOwner()) : Owner;
@@ -127,7 +130,7 @@ float UAttributeComponent::DecreaseResourceRate(float CurrentVal, float MaxVal, 
 void UAttributeComponent::CheckParryGaugeMaximum(float DeltaTime)
 {
 	//UE_LOG(LogTemp, Display, TEXT("CurrentParryGauge : %f"), CurrentParryGauge);
-	if (CurrentParryGauge + 1.f > MaxParryGauge)
+	if (FMath::IsNearlyEqual(CurrentParryGauge, MaxParryGauge))
 	{
 		ParryGaugeCoolDownCheck += DeltaTime;
 		if (ParryGaugeCoolDownCheck >= ParryGaugeCoolDown)
@@ -146,10 +149,13 @@ void UAttributeComponent::CheckParryGaugeMaximum(float DeltaTime)
 		}
 	}
 
-	if (CurrentParryGauge != 0.f)
+	if (!FMath::IsNearlyEqual(CurrentParryGauge, 0.f))
 	{
 		CurrentParryGauge = DecreaseResourceRate(CurrentParryGauge, MaxParryGauge, ParryGaugeDecreasingRate, DeltaTime);
-
+	}
+	else
+	{
+		bParryGaugeEnable = false;
 	}
 }
 
@@ -163,7 +169,7 @@ void UAttributeComponent::OnRep_Health(float LastHealth)
 	if (CurrentHp != LastHealth)
 	{
 		//HpBarWidgetComponent->SetHpBar(CurrentHp / MaxHp);
-		OnHpChanged.Broadcast(CurrentHp , MaxHp);
+		OnHpChanged.Broadcast(CurrentHp, MaxHp);
 		//PlayerController->UpdateHUDHealth();
 		//Owner->PlayHitReactMontage();
 
@@ -173,7 +179,7 @@ void UAttributeComponent::OnRep_Health(float LastHealth)
 			if (PlayerController)
 			{
 				PlayerController->SetHUDHealth(CurrentHp, MaxHp);
-				OnHpChanged.Broadcast(CurrentHp , MaxHp);
+				OnHpChanged.Broadcast(CurrentHp, MaxHp);
 			}
 		}
 
@@ -196,7 +202,7 @@ void UAttributeComponent::OnRep_Shield(float LastShield)
 		//UE_LOG(LogTemp, Display, TEXT("OnRep_Shield, LastShield : %f"), LastShield);
 		//Owner->PlayCombatHitReactMontage();
 
-		OnShieldChanged.Broadcast(CurrentShield , MaxShield);
+		OnShieldChanged.Broadcast(CurrentShield, MaxShield);
 
 		if (Owner)
 		{
@@ -231,4 +237,12 @@ void UAttributeComponent::OnRep_ParryGaugeAnim()
 	{
 		OnParryGaugeAnim.Broadcast(false);
 	}
+}
+
+bool UAttributeComponent::TickChecker()
+{
+	UE_LOG(LogTemp, Display, TEXT(""));
+	//return !(bHpEnable | bShieldEnable | bSpEnable | bParryGaugeEnable);
+	return !(bSpEnable | bParryGaugeEnable);
+
 }
