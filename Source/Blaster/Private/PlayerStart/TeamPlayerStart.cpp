@@ -6,6 +6,6 @@
 void ATeamPlayerStart::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	  
+	 
 	UE_LOG(LogTemp, Warning, TEXT("TeamPlayerStart tick"));
 }
