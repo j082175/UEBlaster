@@ -46,9 +46,8 @@ void UAttributeComponent::BeginPlay()
 void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	//UE_LOG(LogTemp, Display, TEXT("AttributeComponent tick"));
 
-	//if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName()); 
+	//if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName());
 
 	// ...
 	Owner = Owner == nullptr ? Cast<ACharacterBase>(GetOwner()) : Owner;
@@ -73,7 +72,10 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	//UE_LOG(LogTemp, Display, TEXT("%s : bIsParryGaugeAnimPlaying : %d"), *UEnum::GetDisplayValueAsText(Owner->GetLocalRole()).ToString(),  bIsParryGaugeAnimPlaying);
 
-	
+	if (TickChecker())
+	{
+		SetComponentTickEnabled(false);
+	}
 }
 
 void UAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -114,10 +116,33 @@ void UAttributeComponent::InitStatus()
 	OnParryGaugeChanged.Broadcast(0.f, MaxParryGauge);
 }
 
+void UAttributeComponent::SetCurrentSp(float InCurrentSp)
+{
+	CurrentSp = InCurrentSp;
+	bHasSpChanged = true;
+
+	bSpEnable = true;
+	SetComponentTickEnabled(true);
+}
+
+void UAttributeComponent::SetCurrentParryGauge(float InCurrentParryGauge)
+{
+	CurrentParryGauge = InCurrentParryGauge;
+
+	bParryGaugeEnable = true;
+	SetComponentTickEnabled(true);
+}
+
 
 float UAttributeComponent::RecoveringResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime)
 {
 	OnSpChanged.Broadcast(GetCurrentSp(), GetMaxSp());
+
+	if (FMath::IsNearlyEqual(CurrentVal, MaxVal))
+	{
+		bSpEnable = false;
+	}
+
 	return FMath::Clamp(CurrentVal + Rate * InDeltaTime, 0, MaxVal);
 }
 
@@ -169,7 +194,7 @@ void UAttributeComponent::OnRep_Health(float LastHealth)
 	if (CurrentHp != LastHealth)
 	{
 		//HpBarWidgetComponent->SetHpBar(CurrentHp / MaxHp);
-		OnHpChanged.Broadcast(CurrentHp, MaxHp);
+		OnHpChanged.Broadcast(CurrentHp , MaxHp);
 		//PlayerController->UpdateHUDHealth();
 		//Owner->PlayHitReactMontage();
 
@@ -179,7 +204,7 @@ void UAttributeComponent::OnRep_Health(float LastHealth)
 			if (PlayerController)
 			{
 				PlayerController->SetHUDHealth(CurrentHp, MaxHp);
-				OnHpChanged.Broadcast(CurrentHp, MaxHp);
+				OnHpChanged.Broadcast(CurrentHp , MaxHp);
 			}
 		}
 
@@ -202,7 +227,7 @@ void UAttributeComponent::OnRep_Shield(float LastShield)
 		//UE_LOG(LogTemp, Display, TEXT("OnRep_Shield, LastShield : %f"), LastShield);
 		//Owner->PlayCombatHitReactMontage();
 
-		OnShieldChanged.Broadcast(CurrentShield, MaxShield);
+		OnShieldChanged.Broadcast(CurrentShield , MaxShield);
 
 		if (Owner)
 		{

@@ -242,7 +242,7 @@ void ACharacterBase::Tick(float DeltaTime)
 	//	HpBarWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
 	//}
 
-	//CheckHpBarWidget(DeltaTime);
+	CheckHpBarWidget(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -1305,6 +1305,10 @@ void ACharacterBase::CheckHpBarWidget(float DeltaTime)
 
 void ACharacterBase::MulticastHpBarVisible_Implementation(bool InIsVisible)
 {
+	if (InIsVisible)
+	{
+		HpBarWidgetComponent->SetComponentTickEnabled(true);
+	}
 	HpBarWidgetComponent->SetVisibility(InIsVisible);
 }
 
