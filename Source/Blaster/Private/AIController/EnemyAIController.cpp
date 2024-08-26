@@ -20,6 +20,9 @@
 
 AEnemyAIController::AEnemyAIController()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.1f;
+
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
 
 
@@ -132,7 +135,7 @@ void AEnemyAIController::RunAI()
 
 void AEnemyAIController::StopAI()
 {
-	UE_LOG(LogTemp, Display, TEXT("StopAI"));
+	//UE_LOG(LogTemp, Display, TEXT("StopAI"));
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(GetBrainComponent());
 	ensure(BehaviorTreeComponent);
 	BehaviorTreeComponent->RestartTree();
@@ -159,26 +162,6 @@ void AEnemyAIController::BindPerceptionFunctions(bool InSet)
 		AIPerceptionComponent->OnPerceptionUpdated.RemoveDynamic(this, &ThisClass::OnPerceptionUpdated);
 		AIPerceptionComponent->OnTargetPerceptionForgotten.RemoveDynamic(this, &ThisClass::OnTargetPerceptionForgotten);
 		AIPerceptionComponent->OnTargetPerceptionInfoUpdated.RemoveDynamic(this, &ThisClass::OnTargetPerceptionInfoUpdated);
-
-		if (!AIPerceptionComponent->OnTargetPerceptionUpdated.IsAlreadyBound(this, &ThisClass::OnTargetPerceptionUpdated))
-		{
-			UE_LOG(LogTemp, Display, TEXT("OnTargetPerceptionUpdated Unbound"));
-		}
-
-		if (!AIPerceptionComponent->OnPerceptionUpdated.IsAlreadyBound(this, &ThisClass::OnPerceptionUpdated))
-		{
-			UE_LOG(LogTemp, Display, TEXT("OnTargetPerceptionUpdated Unbound"));
-		}
-
-		if (!AIPerceptionComponent->OnTargetPerceptionForgotten.IsAlreadyBound(this, &ThisClass::OnTargetPerceptionForgotten))
-		{
-			UE_LOG(LogTemp, Display, TEXT("OnTargetPerceptionUpdated Unbound"));
-		}
-
-		if (!AIPerceptionComponent->OnTargetPerceptionInfoUpdated.IsAlreadyBound(this, &ThisClass::OnTargetPerceptionInfoUpdated))
-		{
-			UE_LOG(LogTemp, Display, TEXT("OnTargetPerceptionUpdated Unbound"));
-		}
 	}
 }
 

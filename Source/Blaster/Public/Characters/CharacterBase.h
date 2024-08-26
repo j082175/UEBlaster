@@ -163,7 +163,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UMantleVaultComponent> MantleVaultComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "HpBarWidget", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HpBarWidget", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UHpBarWidgetComponent> HpBarWidgetComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "HpBarWidget", meta = (AllowPrivateAccess = true))

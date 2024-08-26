@@ -25,7 +25,10 @@
 
 ABlasterHUD::ABlasterHUD()
 {
-
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.TickInterval = 0.1f;
+	
 	static ConstructorHelpers::FClassFinder<UUserWidget> CORef(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/A_Blaster/Blueprints/HUD/WBP_CharacterOverlay.WBP_CharacterOverlay_C'"));
 	if (CORef.Succeeded()) CharacterOverlayClass = CORef.Class;
 	else UE_LOG(LogTemp, Error, TEXT("No CORef"));
@@ -51,6 +54,7 @@ void ABlasterHUD::DrawHUD()
 {
 	Super::DrawHUD();
 
+	//UE_LOG(LogTemp, Display, TEXT("BlasterHUD DrawHUD"));
 
 	//if (HUDPackage.CrosshairCenter)
 	//{
@@ -152,6 +156,7 @@ void ABlasterHUD::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UE_LOG(LogTemp, Display, TEXT("BlasterHUD Tick"));
 	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetOwningPlayerController()) : BlasterPlayerController;
 	//if (BlasterPlayerController)
 	//{

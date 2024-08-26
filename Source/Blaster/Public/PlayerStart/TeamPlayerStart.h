@@ -15,6 +15,8 @@ class BLASTER_API ATeamPlayerStart : public APlayerStart
 {
 	GENERATED_BODY()
 public:
+	virtual void Tick(float DeltaTime) override;
+
 	UPROPERTY(EditAnywhere)
 	ETeam Team;
 };

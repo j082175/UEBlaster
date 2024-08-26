@@ -5,6 +5,13 @@
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 
+void UElimAnnouncement::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	UE_LOG(LogTemp, Display, TEXT("ElimAnnouncement Tick"));
+}
+
 void UElimAnnouncement::SetElimAnnouncementText(FString AttackerName, FString VictimName)
 {
 	FString ElimAnnouncementText = FString::Printf(TEXT("%s elimmed %s!"), *AttackerName, *VictimName);
@@ -12,6 +19,4 @@ void UElimAnnouncement::SetElimAnnouncementText(FString AttackerName, FString Vi
 	{
 		AnnouncementText->SetText(FText::FromString(ElimAnnouncementText));
 	}
-
-	
 }

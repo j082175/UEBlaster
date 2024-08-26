@@ -5,6 +5,13 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
 
+void UOverheadWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	//UE_LOG(LogTemp, Display, TEXT("OverheadWidget Tick"));
+}
+
 void UOverheadWidget::SetDisplayText(FString TextToDisplay)
 {
 	if (DisplayText)

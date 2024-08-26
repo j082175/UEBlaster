@@ -15,22 +15,28 @@ class BLASTER_API UChatBox : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual FReply NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
+	void SetVisibility(ESlateVisibility SlateVisibility);
 	void OnTextCommitted(const FText& Text, const FString& PlayerName);
 
-	UPROPERTY(meta = (BindWidget))
-	class UScrollBox* ChatTextBox;
 
 	UPROPERTY(meta = (BindWidget))
 	class UEditableTextBox* ChatInput;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UChatViewer> ChatViewer;
 
+	// classes
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UChatTextBlock> ChatTextBlockClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UChatTextBlock*> ChatTextBlocks;
-
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UChatViewer> ChatViewerClass;
 private:
 
 	UPROPERTY()
@@ -38,4 +44,10 @@ private:
 
 	UPROPERTY()
 	class ABlasterPlayerState* BlasterPlayerState;
+
+	FTimerHandle ChatViewerReleaseTimerHandle;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float ChatViewerReleaseTime = 3.f;
+
 };

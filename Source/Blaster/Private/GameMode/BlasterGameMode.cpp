@@ -12,6 +12,7 @@
 #include "Characters/CharacterBase.h"
 #include "Actor/Casing.h"
 #include "Components/ObjectPoolComponent.h"
+#include "Components/ChatSystemComponent.h"
 
 namespace MatchState
 {
@@ -20,6 +21,8 @@ namespace MatchState
 
 ABlasterGameMode::ABlasterGameMode()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.1f;
 	bDelayedStart = true;
 
 	//ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));
@@ -227,10 +230,16 @@ void ABlasterGameMode::SendChatMsg(const FText& Text, const FString& PlayerName)
 {
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		ABlasterPlayerController* TempBlasterPlayerController = Cast<ABlasterPlayerController>(*It);
-		if (TempBlasterPlayerController)
+		//ABlasterPlayerController* TempBlasterPlayerController = Cast<ABlasterPlayerController>(*It);
+		//if (TempBlasterPlayerController)
+		//{
+		//	TempBlasterPlayerController->ClientChatCommitted(Text, PlayerName);
+		//}
+
+		UChatSystemComponent* ChatSystemComponent = It->Get()->GetComponentByClass<UChatSystemComponent>();
+		if (ChatSystemComponent)
 		{
-			TempBlasterPlayerController->ClientChatCommitted(Text, PlayerName);
+			ChatSystemComponent->ClientChatCommitted(Text, PlayerName);
 		}
 	}
 }

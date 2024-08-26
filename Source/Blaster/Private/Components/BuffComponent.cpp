@@ -15,6 +15,8 @@ UBuffComponent::UBuffComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
+	PrimaryComponentTick.TickInterval = 0.01f;
 
 	// ...
 }
@@ -41,7 +43,7 @@ void UBuffComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	//UE_LOG(LogTemp, Display, TEXT("%s : BuffComponent Tick"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString());
+	UE_LOG(LogTemp, Display, TEXT("%s : BuffComponent Tick"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString());
 	HealRampUp(DeltaTime);
 	ShieldRampUp(DeltaTime);
 }
@@ -62,6 +64,8 @@ void UBuffComponent::Heal(float HealAmount, float HealingTime)
 	bHealing = true;
 	HealingRate = HealAmount / HealingTime;
 	AmountToHeal += HealAmount;
+
+	SetComponentTickEnabled(true);
 }
 
 void UBuffComponent::ReplenishShield(float ShieldAmount, float ReplenishingTime)
@@ -71,6 +75,7 @@ void UBuffComponent::ReplenishShield(float ShieldAmount, float ReplenishingTime)
 	ShieldReplenishRate = ShieldAmount / ReplenishingTime;
 	AmountToShield += ShieldAmount;
 
+	SetComponentTickEnabled(true);
 }
 
 void UBuffComponent::BuffSpeed(float BuffBaseSpeed, float BuffCrouchSpeed, float BuffTime)
@@ -119,6 +124,11 @@ void UBuffComponent::HealRampUp(float DeltaTime)
 		bHealing = false;
 
 		AmountToHeal = 0.f;
+
+		if (!bReplenishingShield)
+		{
+			SetComponentTickEnabled(false);
+		}
 	}
 }
 
@@ -157,6 +167,11 @@ void UBuffComponent::ShieldRampUp(float DeltaTime)
 	{
 		bReplenishingShield = false;
 		AmountToShield = 0.f;
+
+		if (!bHealing)
+		{
+			SetComponentTickEnabled(false);
+		}
 	}
 }
 

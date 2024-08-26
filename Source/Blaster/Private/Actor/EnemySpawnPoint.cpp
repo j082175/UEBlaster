@@ -131,13 +131,13 @@ void AEnemySpawnPoint::MustRandomSpawner()
 	}
 
 	
-	if (SpawnEffect)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnEffect, SpawnTo);
-	}
-	else if (SpawnEffectNiagara)
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, SpawnEffectNiagara, SpawnTo.GetLocation());
-	}
+	//if (SpawnEffect)
+	//{
+	//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnEffect, SpawnTo);
+	//}
+	//else if (SpawnEffectNiagara)
+	//{
+	//	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, SpawnEffectNiagara, SpawnTo.GetLocation());
+	//}
 }
 

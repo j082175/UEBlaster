@@ -16,6 +16,8 @@ class BLASTER_API UHpBarWidget : public UMyUserWidget
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 	FORCEINLINE class UProgressBar* GetHpBar() const { return HpBar; }
 	FORCEINLINE class UProgressBar* GetShieldBar() const { return ShieldBar; }
 	FORCEINLINE class UProgressBar* GetParryBar() const { return ParryGauge; }

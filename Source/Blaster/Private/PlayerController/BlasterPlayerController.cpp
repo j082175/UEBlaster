@@ -24,14 +24,18 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 
-#include "Actor/ChatBox.h"
-#include "Actor/ChatTextBlock.h"
+#include "HUD/ChattingUI/ChatBox.h"
+#include "HUD/ChattingUI/ChatTextBlock.h"
 #include "Components/EditableTextBox.h"
-
+#include "Components/ChatSystemComponent.h"
 
 
 ABlasterPlayerController::ABlasterPlayerController()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.TickInterval = 0.01f;
+
+	ChatSystemComponent = CreateDefaultSubobject<UChatSystemComponent>(TEXT("ChatSystemComponent"));
 }
 
 void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -40,11 +44,19 @@ void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 	DOREPLIFETIME(ThisClass, MatchState);
 	DOREPLIFETIME(ThisClass, bShowTeamScores);
+
+}
+
+void ABlasterPlayerController::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
 }
 
 void ABlasterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Display, TEXT("BlasterPlayerController BeginPlay"));
 
 	//PrimaryActorTick.TickInterval = 0.1f;
 
@@ -61,8 +73,19 @@ void ABlasterPlayerController::BeginPlay()
 	//}
 	ServerCheckMatchState();
 
-
-
+	if (IsLocalController())
+	{
+		UChatBox* ChatBox = CreateWidget<UChatBox>(this, ChatSystemComponent->GetChatBoxClassToInit());
+		if (ChatBox)
+		{
+			ChatSystemComponent->SetChatBox(ChatBox);
+			ChatSystemComponent->AddChatBox();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ChatBox is not initialized"));
+		}
+	}
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
@@ -99,7 +122,7 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 	//	}
 	//}
 
-	
+
 
 
 	/* 여기도 에러뜸 */
@@ -269,6 +292,9 @@ void ABlasterPlayerController::SetupInputComponent()
 	if (EnhancedInputComponent)
 	{
 		EnhancedInputComponent->BindAction(IA_QuitAction, ETriggerEvent::Triggered, this, &ThisClass::ShowReturnToMainMenu);
+		EnhancedInputComponent->BindAction(IA_Chat, ETriggerEvent::Triggered, ChatSystemComponent.Get(), &UChatSystemComponent::ChatButtonPressed);
+
+
 	}
 }
 
@@ -1109,71 +1135,93 @@ void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerStat
 			BlasterHUD->AddElimAnnouncement(Attacker->GetPlayerName(), Victim->GetPlayerName());
 		}
 	}
+
 }
 
-void ABlasterPlayerController::AddChatBox()
-{
-	if (ChatBoxClass)
-	{
-		ChatBox = CreateWidget<UChatBox>(this, ChatBoxClass);
-		if (ChatBox && ChatBox->ChatInput)
-		{
-			ChatBox->AddToViewport();
-			ChatBox->ChatInput->SetHintText(FText(FText::FromString("-")));
-			ChatBox->SetVisibility(ESlateVisibility::Collapsed);
-			ChatBox->ChatInput->SetRevertTextOnEscape(true);
-			ChatBox->ChatInput->OnTextCommitted.AddDynamic(this, &ABlasterPlayerController::OnChatCommittedFunc);
-		}
-	}
-}
-
-void ABlasterPlayerController::OpenChatBox()
-{
-	if (ChatBox && ChatBox->ChatInput)
-	{
-		if (ChatBox->GetVisibility() == ESlateVisibility::Collapsed)
-		{
-			ChatBox->SetVisibility(ESlateVisibility::Visible);
-			FInputModeGameAndUI InputModeGameAndUI;
-			InputModeGameAndUI.SetWidgetToFocus(ChatBox->ChatInput->TakeWidget());
-			SetInputMode(InputModeGameAndUI);
-			//SetShowMouseCursor(true);
-		}
-		else if (ChatBox->GetVisibility() == ESlateVisibility::Visible)
-		{
-			ChatBox->SetVisibility(ESlateVisibility::Collapsed);
-			FInputModeGameOnly InputModeGameOnly;
-			SetInputMode(InputModeGameOnly);
-			//SetShowMouseCursor(false);
-		}
-	}
-}
-
-void ABlasterPlayerController::OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod)
-{
-	UE_LOG(LogTemp, Error, TEXT("OnChatCommittedFunc : %s"), *UEnum::GetDisplayValueAsText(CommitMethod).ToString());
-	if (CommitMethod != ETextCommit::OnEnter) return;
-
-	FString PlayerName{ "" };
-
-	APlayerState* TempPlayerState = GetPlayerState<APlayerState>();
-	if (TempPlayerState)
-	{
-		PlayerName = TempPlayerState->GetPlayerName();
-	}
-
-	ServerChatCommitted(Text, PlayerName); //TODO: Add a delay so that some absolute cucumber can't spam the chat.
-}
-
-void ABlasterPlayerController::ServerChatCommitted_Implementation(const FText& Text, const FString& PlayerName)
-{
-	BlasterGameMode->SendChatMsg(Text, PlayerName);
-}
-
-void ABlasterPlayerController::ClientChatCommitted_Implementation(const FText& Text, const FString& PlayerName)
-{
-	if (ChatBox)
-	{
-		ChatBox->OnTextCommitted(Text, PlayerName);
-	}
-}
+//void ABlasterPlayerController::AddChatBox()
+//{
+//	if (ChatBoxClass)
+//	{
+//		ChatBox = CreateWidget<UChatBox>(this, ChatBoxClass);
+//		if (ChatBox && ChatBox->ChatInput)
+//		{
+//			ChatBox->AddToViewport();
+//			ChatBox->ChatInput->SetHintText(FText(FText::FromString("-")));
+//			ChatBox->SetVisibility(ESlateVisibility::Collapsed);
+//			ChatBox->ChatInput->SetRevertTextOnEscape(true);
+//			ChatBox->ChatInput->OnTextCommitted.AddDynamic(this, &ABlasterPlayerController::OnChatCommittedFunc);
+//		}
+//	}
+//}
+//
+//void ABlasterPlayerController::OpenChatBox()
+//{
+//	if (ChatBox && ChatBox->ChatInput)
+//	{
+//		if (ChatBox->GetVisibility() == ESlateVisibility::Collapsed)
+//		{
+//			UE_LOG(LogTemp, Display, TEXT("ChatBox Open"));
+//			ChatBox->SetVisibility(ESlateVisibility::Visible);
+//			FInputModeGameAndUI InputModeGameAndUI;
+//			
+//			InputModeGameAndUI.SetWidgetToFocus(ChatBox->ChatInput->TakeWidget());
+//			InputModeGameAndUI.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+//			//InputModeGameAndUI.SetHideCursorDuringCapture(true);
+//
+//			SetShowMouseCursor(false);
+//			SetInputMode(InputModeGameAndUI);
+//		}
+//		else if (ChatBox->GetVisibility() == ESlateVisibility::Visible)
+//		{
+//			UE_LOG(LogTemp, Display, TEXT("ChatBox Close"));
+//			ChatBox->SetVisibility(ESlateVisibility::Collapsed);
+//			FInputModeGameOnly InputModeGameOnly;
+//			SetInputMode(InputModeGameOnly);
+//			//SetShowMouseCursor(false);
+//		}
+//	}
+//}
+//
+//void ABlasterPlayerController::OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod)
+//{
+//	UE_LOG(LogTemp, Error, TEXT("OnChatCommittedFunc : %s"), *UEnum::GetDisplayValueAsText(CommitMethod).ToString());
+//
+//	if (CommitMethod == ETextCommit::OnCleared || CommitMethod == ETextCommit::OnUserMovedFocus)
+//	{
+//		OpenChatBox();
+//		return;
+//	}
+//	
+//	if (CommitMethod != ETextCommit::OnEnter) return;
+//
+//	FString PlayerName{ "" };
+//
+//	APlayerState* TempPlayerState = GetPlayerState<APlayerState>();
+//	if (TempPlayerState)
+//	{
+//		PlayerName = TempPlayerState->GetPlayerName();
+//	}
+//
+//	ServerChatCommitted(Text, PlayerName); //TODO: Add a delay so that some absolute cucumber can't spam the chat.
+//
+//
+//}
+//
+//void ABlasterPlayerController::ChatButtonPressed()
+//{
+//	UE_LOG(LogTemp, Display, TEXT("ChatButtonPressed"));
+//	OpenChatBox();
+//}
+//
+//void ABlasterPlayerController::ServerChatCommitted_Implementation(const FText& Text, const FString& PlayerName)
+//{
+//	BlasterGameMode->SendChatMsg(Text, PlayerName);
+//}
+//
+//void ABlasterPlayerController::ClientChatCommitted_Implementation(const FText& Text, const FString& PlayerName)
+//{
+//	if (ChatBox)
+//	{
+//		ChatBox->OnTextCommitted(Text, PlayerName);
+//	}
+//}

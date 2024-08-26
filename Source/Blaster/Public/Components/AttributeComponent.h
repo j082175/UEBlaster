@@ -49,9 +49,10 @@ public:
 	FORCEINLINE void SetMaxHp(float InMaxHp) { MaxHp = InMaxHp; }
 	FORCEINLINE void SetCurrentShield(float InCurrentShield) { CurrentShield = InCurrentShield; }
 	FORCEINLINE void SetMaxShield(float InMaxShield) { MaxShield = InMaxShield; }
-	FORCEINLINE void SetCurrentSp(float InCurrentSp) { CurrentSp = InCurrentSp; bHasSpChanged = true; }
+	void SetCurrentSp(float InCurrentSp);
+
 	FORCEINLINE void SetMaxSp(float InMaxSp) { MaxSp = InMaxSp; }
-	FORCEINLINE void SetCurrentParryGauge(float InCurrentParryGauge) { CurrentParryGauge = InCurrentParryGauge; }
+	void SetCurrentParryGauge(float InCurrentParryGauge);
 	FORCEINLINE void SetMaxParryGauge(float InMaxParryGauge) { MaxParryGauge = InMaxParryGauge; }
 	FORCEINLINE void SetSpRecoveringRate(float InSpRecoveringRate) { SpRecoveringRate = InSpRecoveringRate; }
 	FORCEINLINE void SetParryGaugeIncrement(float InParryGaugeIncrement) { ParryGaugeIncrement = InParryGaugeIncrement; }
@@ -152,6 +153,15 @@ private:
 
 	UFUNCTION()
 	void OnRep_ParryGaugeAnim();
+
+
+	bool TickChecker();
+	//uint8 bHpEnable : 1;
+	//uint8 bShieldEnable : 1;
+	uint8 bSpEnable : 1;
+	uint8 bParryGaugeEnable : 1;
+
+
 public:
 	UPROPERTY(ReplicatedUsing = OnRep_ParryGaugeAnim)
 	uint8 bIsParryGaugeAnimPlaying : 1;
@@ -161,5 +171,5 @@ public:
 
 
 
-
+	FTimerHandle H;
 };

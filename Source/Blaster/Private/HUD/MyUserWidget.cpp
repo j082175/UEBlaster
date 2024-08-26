@@ -10,11 +10,16 @@ void UMyUserWidget::NativeConstruct()
 
 	PollInit();
 
+
+	EWidgetTickFrequency T = GetDesiredTickFrequency();
+
 }
 
 void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	//UE_LOG(LogTemp, Display, TEXT("MyUserWidget Tick"));
 
 	//UE_LOG(LogTemp, Display, TEXT("GetOwningPlayerPawn : %x"), OPawn.Get());
 	//UE_LOG(LogTemp, Display, TEXT("GetOwningPlayerPawn : %x"), GetOwningPlayerPawn());
@@ -24,6 +29,7 @@ void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Get PollInit"));
 		PollInit();
+		SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

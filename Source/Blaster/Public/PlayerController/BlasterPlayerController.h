@@ -30,6 +30,7 @@ public:
 	ABlasterPlayerController();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	virtual void PreInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
@@ -211,26 +212,36 @@ protected:
 	FString GetTeamsInfoText(class ABlasterGameState* BlasterGameState);
 
 
-public:
-	UFUNCTION(Client, Reliable)
-	void ClientChatCommitted(const FText& Text, const FString& PlayerName);
-	void AddChatBox();
-	void OpenChatBox();
-protected:
-	UFUNCTION()
-	void OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod);
+	// Chatting
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UChatSystemComponent> ChatSystemComponent;
 
-	UFUNCTION(Server, Reliable)
-	void ServerChatCommitted(const FText& Text, const FString& PlayerName);
-
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TSubclassOf<class UChatBox> ChatBoxClass;
-
-	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class UChatBox> ChatBox;
-
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UInputAction> IA_Chat;
+//public:
+//	UFUNCTION(Client, Reliable)
+//	void ClientChatCommitted(const FText& Text, const FString& PlayerName);
+//	void AddChatBox();
+//	void OpenChatBox();
+//protected:
+//	UFUNCTION()
+//	void OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod);
+//
+//	UFUNCTION(Server, Reliable)
+//	void ServerChatCommitted(const FText& Text, const FString& PlayerName);
+//
+//	void ChatButtonPressed();
+//
+//
+//
+//	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+//	TSubclassOf<class UChatBox> ChatBoxClass;
+//
+//	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
+//	TObjectPtr<class UChatBox> ChatBox;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
+//	TObjectPtr<class UInputAction> IA_Chat;
 
 
 	// Test

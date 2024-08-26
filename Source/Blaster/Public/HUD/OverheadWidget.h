@@ -14,6 +14,9 @@ class BLASTER_API UOverheadWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> DisplayText;
 

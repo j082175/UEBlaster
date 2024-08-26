@@ -14,6 +14,8 @@ class BLASTER_API UElimAnnouncement : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 	void SetElimAnnouncementText(FString AttackerName, FString VictimName);
 
 	UPROPERTY(meta = (BindWidget))

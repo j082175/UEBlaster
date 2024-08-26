@@ -16,8 +16,13 @@ void UHpBarWidget::NativeConstruct()
 	//{
 	//	WidgetOwner->IBindOverheadWidget(this);
 	//}
+}
 
+void UHpBarWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
 
+	//UE_LOG(LogTemp, Display, TEXT("HpBarWidget Tick"));
 }
 
 void UHpBarWidget::SetHpBar(float InCurrent, float InMax)

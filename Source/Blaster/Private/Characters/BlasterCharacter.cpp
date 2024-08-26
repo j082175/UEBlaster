@@ -24,6 +24,7 @@
 #include "HUD/CharacterOverlay.h"
 #include "HUD/HpBarWidget.h"
 #include "HUD/HpBarWidgetComponent.h"
+#include "HUD/MyWidgetComponent.h"
 
 // Network
 #include "Net/UnrealNetwork.h"
@@ -89,7 +90,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GetController()->SetActorTickInterval(0.01f);
 	//GetMesh()->SetComponentTickInterval(0.001);
 	GetCharacterMovement()->SetComponentTickInterval(0.001f);
 
@@ -462,6 +462,7 @@ void ABlasterCharacter::InitializeDefaults()
 	bUseControllerRotationYaw = false;
 
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
+	OverheadWidgetComponent->SetComponentTickInterval(1.f);
 
 	BuffComponent->SetIsReplicated(true);
 

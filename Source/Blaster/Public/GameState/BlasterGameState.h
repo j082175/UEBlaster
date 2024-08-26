@@ -15,6 +15,7 @@ class BLASTER_API ABlasterGameState : public AGameState
 	GENERATED_BODY()
 public:
 	ABlasterGameState();
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void UpdateTopScore(class ABlasterPlayerState* ScoringPlayer);
