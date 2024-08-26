@@ -11,8 +11,6 @@ UAttributeComponent::UAttributeComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.bStartWithTickEnabled = false;
-	PrimaryComponentTick.TickInterval = 0.01f;
 
 	// ...
 	SetIsReplicatedByDefault(true);
@@ -47,7 +45,7 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName());
+	if (Owner) UE_LOG(LogTemp, Display, TEXT("%s : AttributeComponent tick"), *Owner->GetName());
 
 	// ...
 	Owner = Owner == nullptr ? Cast<ACharacterBase>(GetOwner()) : Owner;
@@ -72,10 +70,7 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	//UE_LOG(LogTemp, Display, TEXT("%s : bIsParryGaugeAnimPlaying : %d"), *UEnum::GetDisplayValueAsText(Owner->GetLocalRole()).ToString(),  bIsParryGaugeAnimPlaying);
 
-	if (TickChecker())
-	{
-		SetComponentTickEnabled(false);
-	}
+	
 }
 
 void UAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -116,33 +111,10 @@ void UAttributeComponent::InitStatus()
 	OnParryGaugeChanged.Broadcast(0.f, MaxParryGauge);
 }
 
-void UAttributeComponent::SetCurrentSp(float InCurrentSp)
-{
-	CurrentSp = InCurrentSp;
-	bHasSpChanged = true;
-
-	bSpEnable = true;
-	SetComponentTickEnabled(true);
-}
-
-void UAttributeComponent::SetCurrentParryGauge(float InCurrentParryGauge)
-{
-	CurrentParryGauge = InCurrentParryGauge;
-
-	bParryGaugeEnable = true;
-	SetComponentTickEnabled(true);
-}
-
 
 float UAttributeComponent::RecoveringResourceRate(float CurrentVal, float MaxVal, float Rate, float InDeltaTime)
 {
 	OnSpChanged.Broadcast(GetCurrentSp(), GetMaxSp());
-
-	if (FMath::IsNearlyEqual(CurrentVal, MaxVal))
-	{
-		bSpEnable = false;
-	}
-
 	return FMath::Clamp(CurrentVal + Rate * InDeltaTime, 0, MaxVal);
 }
 
@@ -155,7 +127,7 @@ float UAttributeComponent::DecreaseResourceRate(float CurrentVal, float MaxVal, 
 void UAttributeComponent::CheckParryGaugeMaximum(float DeltaTime)
 {
 	//UE_LOG(LogTemp, Display, TEXT("CurrentParryGauge : %f"), CurrentParryGauge);
-	if (FMath::IsNearlyEqual(CurrentParryGauge, MaxParryGauge))
+	if (CurrentParryGauge + 1.f > MaxParryGauge)
 	{
 		ParryGaugeCoolDownCheck += DeltaTime;
 		if (ParryGaugeCoolDownCheck >= ParryGaugeCoolDown)
@@ -174,13 +146,10 @@ void UAttributeComponent::CheckParryGaugeMaximum(float DeltaTime)
 		}
 	}
 
-	if (!FMath::IsNearlyEqual(CurrentParryGauge, 0.f))
+	if (CurrentParryGauge != 0.f)
 	{
 		CurrentParryGauge = DecreaseResourceRate(CurrentParryGauge, MaxParryGauge, ParryGaugeDecreasingRate, DeltaTime);
-	}
-	else
-	{
-		bParryGaugeEnable = false;
+
 	}
 }
 
@@ -262,12 +231,4 @@ void UAttributeComponent::OnRep_ParryGaugeAnim()
 	{
 		OnParryGaugeAnim.Broadcast(false);
 	}
-}
-
-bool UAttributeComponent::TickChecker()
-{
-	UE_LOG(LogTemp, Display, TEXT(""));
-	//return !(bHpEnable | bShieldEnable | bSpEnable | bParryGaugeEnable);
-	return !(bSpEnable | bParryGaugeEnable);
-
 }
