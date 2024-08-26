@@ -237,7 +237,12 @@ void ACharacterBase::Tick(float DeltaTime)
 		}
 	}
 
-	CheckHpBarWidget(DeltaTime);
+	//if (!HpBarWidgetComponent->GetWidget()->IsVisible())
+	//{
+	//	HpBarWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
+	//}
+
+	//CheckHpBarWidget(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -350,6 +355,8 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 	{
 		HpCountdown = 0.f;
 		MulticastHpBarVisible(true);
+
+
 	}
 
 
@@ -1298,20 +1305,7 @@ void ACharacterBase::CheckHpBarWidget(float DeltaTime)
 
 void ACharacterBase::MulticastHpBarVisible_Implementation(bool InIsVisible)
 {
-	if (InIsVisible)
-	{
-		HpBarWidgetComponent->SetComponentTickEnabled(true);
-	}
-
 	HpBarWidgetComponent->SetVisibility(InIsVisible);
-
-	//bool isA = InIsVisible == true ? false : true;
-
-	//HpBarWidgetComponent->SetVisibility(isA);
-
-	//UE_LOG(LogTemp, Display, TEXT("HpBarWidgetComponent->IsVisible() : %d"), HpBarWidgetComponent->IsVisible());
-	//UE_LOG(LogTemp, Display, TEXT(" HpBarWidgetComponent->GetWidget()->IsVisible() : %d"), HpBarWidgetComponent->GetWidget()->IsVisible());
-
 }
 
 void ACharacterBase::MulticastRandomAttack_Implementation(int32 Index, const FString& AttackType)

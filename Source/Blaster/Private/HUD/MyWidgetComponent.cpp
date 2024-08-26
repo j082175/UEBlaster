@@ -35,7 +35,6 @@ void UMyWidgetComponent::InitWidget()
 		UserWidget->SetOwingActor(GetOwner());
 	}
 
-
 	//IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwner());
 	//if (WidgetOwner)
 	//{
