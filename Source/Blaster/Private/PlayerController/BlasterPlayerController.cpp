@@ -359,14 +359,11 @@ void ABlasterPlayerController::SetHUDShield(float Shield, float MaxShield)
 	//UE_LOG(LogTemp, Display, TEXT("SetHUDShield, LocalRole : %s"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
 
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->ShieldBar && BlasterHUD->CharacterOverlay->ShieldText;
+	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 
 	if (bHUDValid)
 	{
-		const float ShieldPercent = Shield / MaxShield;
-		BlasterHUD->CharacterOverlay->ShieldBar->SetPercent(ShieldPercent);
-		FString ShieldText = FString::Printf(TEXT("%d / %d"), FMath::CeilToInt(Shield), FMath::CeilToInt(MaxShield));
-		BlasterHUD->CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldText));
+		BlasterHUD->CharacterOverlay->SetShieldBar(Shield, MaxShield);
 	}
 	else
 	{
@@ -381,26 +378,22 @@ void ABlasterPlayerController::SetHUDSp(float InSp, float InMaxSp)
 {
 
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->StaminaBar && BlasterHUD->CharacterOverlay->StaminaText;
+	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 
 	if (bHUDValid)
 	{
-		const float ShieldPercent = InSp / InMaxSp;
-		BlasterHUD->CharacterOverlay->StaminaBar->SetPercent(ShieldPercent);
-		FString ShieldText = FString::Printf(TEXT("%d / %d"), FMath::CeilToInt(InSp), FMath::CeilToInt(InMaxSp));
-		BlasterHUD->CharacterOverlay->StaminaText->SetText(FText::FromString(ShieldText));
+		BlasterHUD->CharacterOverlay->SetSpBar(InSp, InMaxSp);
 	}
 }
 
 void ABlasterPlayerController::SetHUDParryGauge(float InP, float InMaxP)
 {
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->ParryBar;
+	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 
 	if (bHUDValid)
 	{
-		const float ParryPercent = InP / InMaxP;
-		BlasterHUD->CharacterOverlay->ParryBar->SetPercent(ParryPercent);
+		BlasterHUD->CharacterOverlay->SetParryGaugeBar(InP, InMaxP);
 	}
 }
 
@@ -429,7 +422,7 @@ void ABlasterPlayerController::SetHUDDefeats(int32 Defeats)
 void ABlasterPlayerController::SetHUDWeaponAmmo(int32 CurrentAmmo)
 {
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->WeaponAmmoAmount;
+	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 	if (bHUDValid)
 	{
 		//if (HasAuthority() && IsLocalPlayerController())
@@ -437,8 +430,7 @@ void ABlasterPlayerController::SetHUDWeaponAmmo(int32 CurrentAmmo)
 		//	UE_LOG(LogTemp, Display, TEXT("SetHUDWeaponAmmo : %d"), CurrentAmmo);
 
 		//}
-		FString AmmoText = FString::Printf(TEXT("%d"), CurrentAmmo);
-		BlasterHUD->CharacterOverlay->WeaponAmmoAmount->SetText(FText::FromString(AmmoText));
+		BlasterHUD->CharacterOverlay->SetHUDWeaponAmmo(CurrentAmmo);
 		bInitializedCurrentAmmo = true;
 	}
 }
@@ -446,12 +438,10 @@ void ABlasterPlayerController::SetHUDWeaponAmmo(int32 CurrentAmmo)
 void ABlasterPlayerController::SetHUDCarriedAmmo(int32 CarriedAmmo)
 {
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->CarriedAmmoAmount;
+	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 	if (bHUDValid)
 	{
-		//UE_LOG(LogTemp, Display, TEXT("SetHUDCarriedAmmo"));
-		FString AmmoText = FString::Printf(TEXT("%d"), CarriedAmmo);
-		BlasterHUD->CharacterOverlay->CarriedAmmoAmount->SetText(FText::FromString(AmmoText));
+		BlasterHUD->CharacterOverlay->SetHUDCarriedAmmo(CarriedAmmo);
 		bInitializedCarriedAmmo = true;
 	}
 }
@@ -459,12 +449,10 @@ void ABlasterPlayerController::SetHUDCarriedAmmo(int32 CarriedAmmo)
 void ABlasterPlayerController::SetHUDWeaponType(EWeaponName InWeaponType)
 {
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->WeaponType;
+	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 	if (bHUDValid)
 	{
-		//UE_LOG(LogTemp, Display, TEXT("SetHUDWeaponType"));
-		FText WeaponTypeText = UEnum::GetDisplayValueAsText(InWeaponType);
-		BlasterHUD->CharacterOverlay->WeaponType->SetText(WeaponTypeText);
+		BlasterHUD->CharacterOverlay->SetHUDWeaponType(InWeaponType);
 	}
 }
 
@@ -517,14 +505,13 @@ void ABlasterPlayerController::SetHUDGrenades(int32 Grenades)
 {
 
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->GrenadesText;
+	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 	if (bHUDValid)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("SetHUDGrenades"));
 		//if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Magenta, FString::Printf(TEXT("SetHUDGrenades")));
 
-		FString GrenadesText = FString::Printf(TEXT("%d"), Grenades);
-		BlasterHUD->CharacterOverlay->GrenadesText->SetText(FText::FromString(GrenadesText));
+		BlasterHUD->CharacterOverlay->SetHUDGrenades(Grenades);
 		bInitializedGrenades = true;
 	}
 }

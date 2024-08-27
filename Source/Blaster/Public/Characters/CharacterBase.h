@@ -31,6 +31,7 @@
 
 typedef int32 AmmoAmountInt;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillStartedDelegate, const FString&, InPrefix, int32, InIndex, float, InPlaybackSpeed);
 
 UCLASS()
 class BLASTER_API ACharacterBase : public APooledCharacter, public IHitInterface, public IWidgetBindDelegateInterface, public ICanParryInterface
@@ -465,6 +466,8 @@ protected:
 	virtual void CameraShake(const TSubclassOf<UCameraShakeBase>& CameraShake, bool bTrue);
 
 	// Dash
+public:
+
 protected:
 	void InitDashCurve();
 	//각각 Dash를 시작할 때, 끝날 때 사용할 함수 목록
@@ -479,7 +482,7 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastDash(FName InSectionName);
 	void DashFunc(FName InSectionName);
-	void Dash(FName InSectionName);
+	bool Dash(FName InSectionName);
 	bool CheckSpUnder(float InCurrentSp, float InCost);
 
 	UPROPERTY(EditAnywhere)
@@ -575,8 +578,10 @@ protected:
 	TObjectPtr<class UStaticMeshComponent> AttachedGrenade;
 
 	// Dodge
+public:
+
 protected:
-	void Dodge(FName InSectionName);
+	bool Dodge(FName InSectionName);
 	void DodgeFunc(FName InSectionName);
 
 	UFUNCTION(Server, Reliable)
@@ -910,4 +915,8 @@ protected:
 	void CheckHpBarWidget(float DeltaTime);
 
 	float HpCountdown;
+
+
+	// Total Actives (Skill)
+	FOnSkillStartedDelegate OnSkillStarted;
 };

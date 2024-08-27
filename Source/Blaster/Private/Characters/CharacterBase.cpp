@@ -304,13 +304,13 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 	}
 	else if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget CharacterOverlay : %s"), *InUserWidget->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget CharacterOverlay : %s"), *InUserWidget->GetName());
 		AttributeComponent->OnHpChanged.AddUObject(CO, &UCharacterOverlay::SetHpBar);
 		AttributeComponent->OnShieldChanged.AddUObject(CO, &UCharacterOverlay::SetShieldBar);
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 
-
+		OnSkillStarted.AddDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
 	}
 
 	AttributeComponent->Init();
@@ -3085,18 +3085,18 @@ void ACharacterBase::OnRep_Sliding()
 	}
 }
 
-void ACharacterBase::Dodge(FName InSectionName)
+bool ACharacterBase::Dodge(FName InSectionName)
 {
 	//UE_LOG(LogTemp, Display, TEXT("Dodge : CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	if (CombatState != ECombatState::ECS_Unoccupied || GetCharacterMovement()->IsFalling())
 	{
 		if (CombatState != ECombatState::ECS_Reloading)
 		{
-			if (CombatState != ECombatState::ECS_Attacking) return;
+			if (CombatState != ECombatState::ECS_Attacking) return false;
 		}
 	}
 
-	if (!CheckSpUnder(AttributeComponent->GetCurrentSp(), AttributeComponent->GetDodgeCost())) return;
+	if (!CheckSpUnder(AttributeComponent->GetCurrentSp(), AttributeComponent->GetDodgeCost())) return false;
 
 	//CombatState = ECombatState::ECS_Dodging;
 
@@ -3107,6 +3107,8 @@ void ACharacterBase::Dodge(FName InSectionName)
 		if (!HasAuthority()) DodgeFunc(InSectionName);
 		ServerDodge(InSectionName);
 	}
+
+	return true;
 }
 
 void ACharacterBase::DodgeFunc(FName InSectionName)
@@ -3559,7 +3561,7 @@ void ACharacterBase::DashFunc(FName InSectionName)
 	DashTimeline.PlayFromStart();
 }
 
-void ACharacterBase::Dash(FName InSectionName)
+bool ACharacterBase::Dash(FName InSectionName)
 {
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
@@ -3567,14 +3569,14 @@ void ACharacterBase::Dash(FName InSectionName)
 	{
 		if (CombatState != ECombatState::ECS_Reloading)
 		{
-			if (CombatState != ECombatState::ECS_Attacking) return;
+			if (CombatState != ECombatState::ECS_Attacking) return false;
 		}
 	}
 
-	if (GetCharacterMovement()->IsFalling()) return;
+	if (GetCharacterMovement()->IsFalling()) return false;
 
 
-	if (!CheckSpUnder(AttributeComponent->GetCurrentSp(), AttributeComponent->GetDashCost())) return;
+	if (!CheckSpUnder(AttributeComponent->GetCurrentSp(), AttributeComponent->GetDashCost())) return false;
 
 
 	if (IsLocallyControlled())
@@ -3583,6 +3585,7 @@ void ACharacterBase::Dash(FName InSectionName)
 		ServerDash(InSectionName);
 	}
 
+	return true;
 }
 
 bool ACharacterBase::CheckSpUnder(float InCurrentSp, float InCost)

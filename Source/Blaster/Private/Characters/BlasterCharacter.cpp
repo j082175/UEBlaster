@@ -90,6 +90,8 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	CoolTimeChecker(DeltaTime);
+
 	//GetMesh()->SetComponentTickInterval(0.001);
 	GetCharacterMovement()->SetComponentTickInterval(0.001f);
 
@@ -134,7 +136,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 		if (CombatState != ECombatState::ECS_Attacking)
 		{
-			 bIsFirebuttonPressed = false;
+			bIsFirebuttonPressed = false;
 		}
 	}
 
@@ -247,7 +249,7 @@ void ABlasterCharacter::BeginPlay()
 			Subsystem->AddMappingContext(IMC_Shoulder, 0);
 		}
 	}
-	
+
 	OverheadWidget = Cast<UOverheadWidget>(OverheadWidgetComponent->GetWidget());
 	OverheadWidget->ShowPlayerNetRole(this);
 	//UE_LOG(LogTemp, Display, TEXT("CurrentHealth : %f, MaxHealth : %f"), CurrentHealth, MaxHealth);
@@ -447,7 +449,7 @@ void ABlasterCharacter::OnPlayerStateInitialized()
 void ABlasterCharacter::InitializeDefaults()
 {
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	
+
 	CameraBoom->AddRelativeLocation(FVector(0.f, 0.f, 80.f));
 	CameraBoom->TargetArmLength = 400.f;
 	CameraBoom->bUsePawnControlRotation = true;
@@ -940,7 +942,13 @@ void ABlasterCharacter::SlideButtonPressed()
 void ABlasterCharacter::DodgeButtonPressed()
 {
 	if (bDisableGameplay) return;
-	Dodge(KeySectionName);
+
+	if (bCanDodge)
+	{
+		if (!Dodge(KeySectionName)) return;
+		bCanDodge = false;
+		OnSkillStarted.Broadcast(TEXT("Active"), 1, DodgeCoolTime);
+	}
 
 
 }
@@ -959,7 +967,12 @@ void ABlasterCharacter::DashButtonPressed()
 	MoveButtonPressedCount = FMath::Clamp(MoveButtonPressedCount, 0, 2);
 	if (MoveButtonPressedCount == 2)
 	{
-		Dash(KeySectionName);
+		if (bCanDash)
+		{
+			if (!Dash(KeySectionName)) return;
+			bCanDash = false;
+			OnSkillStarted.Broadcast(TEXT("Active"), 2, DashCoolTime);
+		}
 	}
 
 	FTimerHandle DashHandle;
@@ -979,7 +992,7 @@ void ABlasterCharacter::MeleeButtonPressed()
 void ABlasterCharacter::TestingButtonPressed()
 {
 	//SetReplicateMovement(false);
-	
+
 	//ServerTest();
 	Test();
 }
@@ -1765,6 +1778,36 @@ void ABlasterCharacter::UpdateCarriedAmmo()
 void ABlasterCharacter::Test()
 {
 	ServerTest();
+}
+
+void ABlasterCharacter::CoolTimeChecker(float DeltaTime)
+{
+	if (!bCanDodge)
+	{
+		if (DodgeCoolTimeCount > DodgeCoolTime)
+		{
+			bCanDodge = true;
+			DodgeCoolTimeCount = 0.f;
+		}
+		else
+		{
+			DodgeCoolTimeCount += DeltaTime;
+		}
+	}
+
+	if (!bCanDash)
+	{
+		if (DashCoolTimeCount > DashCoolTime)
+		{
+			bCanDash = true;
+			DashCoolTimeCount = 0.f;
+		}
+		else
+		{
+			DashCoolTimeCount += DeltaTime;
+		}
+	}
+
 }
 
 void ABlasterCharacter::ServerTest_Implementation()

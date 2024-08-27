@@ -44,7 +44,7 @@ AProjectile::AProjectile()
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	SetRootComponent(CollisionBox);
 
-
+	int a = 1;
 
 	//CollisionBox->SetGenerateOverlapEvents(true);
 	//CollisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);

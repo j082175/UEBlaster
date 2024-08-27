@@ -313,4 +313,17 @@ protected:
 
 
 	uint8 Check : 1 = false;
+
+	// CoolTime
+	void CoolTimeChecker(float DeltaTime);
+
+	float DodgeCoolTimeCount;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float DodgeCoolTime = 3.f;
+	uint8 bCanDodge : 1 = true;
+
+	float DashCoolTimeCount;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float DashCoolTime = 2.f;
+	uint8 bCanDash : 1 = true;
 };

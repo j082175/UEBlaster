@@ -33,6 +33,9 @@ public:
 	void SetHUDRedTeamScore(int32 RedScore);
 	void SetHUDBlueTeamScore(int32 BlueScore);
 
+	UFUNCTION()
+	void StartCoolTimeAnim(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed);
+
 	void HideTeamScores();
 	void InitTeamScores();
 		
@@ -40,26 +43,36 @@ public:
 	void HighPingWarning();
 	void StopHighPingWarning();
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UProgressBar> HealthBar;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> HealthText;
+	TObjectPtr<class UWeaponStatus> WeaponStatus;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UProgressBar> ShieldBar;
+	TObjectPtr<class USkillBar> SkillBar;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> ShieldText;
+	TObjectPtr<class UAttributeStatus> AttributeStatus;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UProgressBar> StaminaBar;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UProgressBar> HealthBar;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> StaminaText;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> HealthText;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UProgressBar> ParryBar;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UProgressBar> ShieldBar;
+
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> ShieldText;
+
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UProgressBar> StaminaBar;
+
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> StaminaText;
+
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UProgressBar> ParryBar;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<class UTextBlock> ScoreAmount;
@@ -67,20 +80,20 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> DefeatsAmount;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> WeaponAmmoAmount;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> WeaponAmmoAmount;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> CarriedAmmoAmount;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> CarriedAmmoAmount;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> WeaponType;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> WeaponType;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> MatchCountdownText;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> GrenadesText;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> GrenadesText;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> RedTeamScore;
