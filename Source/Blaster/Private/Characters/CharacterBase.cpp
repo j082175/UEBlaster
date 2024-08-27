@@ -97,6 +97,7 @@
 #include "Characters/Enemy/EnemyRange.h"
 
 #include "BlasterTypes/KeyType.h"
+#include "GameData/DataSingleton.h"
 
 // Set default values
 ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
@@ -131,7 +132,6 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 
 	InitializeCollisionStates();
 	InitializeDefaults();
-
 
 }
 
