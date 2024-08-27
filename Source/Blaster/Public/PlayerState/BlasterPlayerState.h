@@ -35,7 +35,7 @@ private:
 	class ABlasterCharacter* Character;
 	UPROPERTY()
 	class ABlasterPlayerController* Controller;
-
+	
 
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats, VisibleAnywhere, Category = "Score", meta = (AllowPrivateAccess = true))
 	int32 Defeats;
