@@ -27,7 +27,7 @@ void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(ThisClass, Defeats);
 	DOREPLIFETIME(ThisClass, Team);
-
+	 
 }
 
 void ABlasterPlayerState::OnRep_Score()
