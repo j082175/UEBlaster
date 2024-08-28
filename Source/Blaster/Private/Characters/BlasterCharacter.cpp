@@ -961,7 +961,7 @@ void ABlasterCharacter::DodgeButtonPressed()
 	{
 		if (!Dodge(KeySectionName)) return;
 		S->bCanExecute = false;
-		SkillComponent->OnSkillStarted.Broadcast(TEXT("Active"), 1, S->CoolTime);
+		SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Active"), 1, S->CoolTime);
 	}
 
 }
@@ -993,7 +993,7 @@ void ABlasterCharacter::DashButtonPressed()
 		{
 			if (!Dash(KeySectionName)) return;
 			S->bCanExecute = false;
-			SkillComponent->OnSkillStarted.Broadcast(TEXT("Active"), 2, S->CoolTime);
+			SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Active"), 2, S->CoolTime);
 		}
 	}
 

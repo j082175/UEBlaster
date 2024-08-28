@@ -35,4 +35,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Soul Properties", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UParticleSystem> SoulEffectEnd;
+
+	UPROPERTY(EditAnywhere, Category = "Soul Properties", meta = (AllowPrivateAccess = true))
+	TObjectPtr<class USoundBase> TakeSound;
 };

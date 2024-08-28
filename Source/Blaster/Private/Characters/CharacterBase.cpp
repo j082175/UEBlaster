@@ -317,7 +317,7 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 
 		
 
-		SkillComponent->OnSkillStarted.AddDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
+		SkillComponent->OnSkillCoolTimeStarted.AddDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
 	}
 
 	AttributeComponent->Init();

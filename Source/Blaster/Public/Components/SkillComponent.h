@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "SkillComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillStartedDelegate, const FString&, InPrefix, int32, InIndex, float, InPlaybackSpeed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillCoolTimeStartedDelegate, const FString&, InPrefix, int32, InIndex, float, InPlaybackSpeed);
 
 USTRUCT(BlueprintType)
 struct FCoolTimeCheckStruct
@@ -53,7 +53,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Total Actives (Skill)
-	FOnSkillStartedDelegate OnSkillStarted;
+	FOnSkillCoolTimeStartedDelegate OnSkillCoolTimeStarted;
 
 	FORCEINLINE int32 GetSkillPoint() const { return SkillPoint; }
 	FORCEINLINE void SetSkillPoint(int32 InSkillPoint) { SkillPoint = InSkillPoint; }

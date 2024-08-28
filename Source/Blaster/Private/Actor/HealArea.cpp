@@ -48,7 +48,7 @@ void AHealArea::Destroyed()
 		USkillComponent* SkillComponent = GetOwner()->GetComponentByClass<USkillComponent>();
 		if (SkillComponent)
 		{
-			SkillComponent->OnSkillStarted.Broadcast(TEXT("Skill"), 0, SkillComponent->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())->CoolTime);
+			SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), 0, SkillComponent->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())->CoolTime);
 		}
 	}
 }

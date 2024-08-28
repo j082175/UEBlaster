@@ -20,6 +20,7 @@ void ASoul::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, 
 	USkillComponent* SkillComponent = OtherActor->GetComponentByClass<USkillComponent>();
 	if (SkillComponent)
 	{
+		UGameplayStatics::PlaySoundAtLocation(this, TakeSound, SoulEffect->GetComponentLocation());
 		SkillComponent->AddSkillPoint(Soul);
 		MulticastSpawnEmitter();
 
