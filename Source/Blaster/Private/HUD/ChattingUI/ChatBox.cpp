@@ -17,8 +17,8 @@ void UChatBox::NativeConstruct()
 
 	//bIsFocusable = true;
 	//SetKeyboardFocus();
-	Cursor = EMouseCursor::None;
-
+	SetCursor(EMouseCursor::None);
+	 
 	if (ChatViewerClass) ChatViewer = CreateWidget<UChatViewer>(this, ChatViewerClass);
 }
 

@@ -2,7 +2,6 @@
 
 
 #include "Item/Pickups/HealthPickup.h"
-#include "Characters/BlasterCharacter.h"
 #include "Components/BuffComponent.h"
 
 
@@ -21,14 +20,10 @@ void AHealthPickup::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedCom
 {
 	Super::OnCapsuleBeginOverlapFunc(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
-	if (BlasterCharacter)
+	UBuffComponent* Buff = OtherActor->GetComponentByClass<UBuffComponent>();
+	if (Buff)
 	{
-		UBuffComponent* Buff = BlasterCharacter->GetBuffComponent();
-		if (Buff)
-		{
-			Buff->Heal(HealAmount, HealingTime);
-		}
+		Buff->Heal(HealAmount, HealingTime);
 	}
 
 	Destroy();

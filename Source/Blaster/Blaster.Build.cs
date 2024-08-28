@@ -8,17 +8,20 @@ public class Blaster : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
+		PublicIncludePathModuleNames.Add("Blaster");
+
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
 
 		/*		PublicDependencyModuleNames.AddRange(new string[] { "Blaster", "Niagara", "OnlineSubsystem", "OnlineSubsystemSteam", "MotionWarping", "ControlRig", "GeometryCollectionEngine", "AIModule", "NavigationSystem", "UMG", "FieldSystemEngine" });
 
 				PublicDependencyModuleNames.AddRange(new string[] { "MultiplayerSessions", "GameplayCameras", "AnimGraphRuntime" });*/
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "Blaster", "Niagara", "OnlineSubsystem", "OnlineSubsystemSteam", "MotionWarping", "ControlRig", "GeometryCollectionEngine", "AIModule", "NavigationSystem", "UMG", "FieldSystemEngine" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Niagara", "OnlineSubsystem", "OnlineSubsystemSteam", "MotionWarping", "ControlRig", "GeometryCollectionEngine", "AIModule", "NavigationSystem", "UMG", "FieldSystemEngine" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "MultiplayerSessions", "GameplayCameras", "AnimGraphRuntime" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

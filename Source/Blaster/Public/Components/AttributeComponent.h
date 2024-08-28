@@ -29,6 +29,8 @@ public:
 	void InitStatus();
 
 	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
+
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE float GetMaxHp() const { return MaxHp; }
 	FORCEINLINE float GetCurrentShield() const { return CurrentShield; }
 	FORCEINLINE float GetMaxShield() const { return MaxShield; }

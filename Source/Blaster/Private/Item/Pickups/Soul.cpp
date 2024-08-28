@@ -3,10 +3,31 @@
 
 #include "Item/Pickups/Soul.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/SkillComponent.h"
+
+ASoul::ASoul()
+{
+	SoulEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SoulEffectComponent"));
+	SoulEffect->SetupAttachment(GetRootComponent());
+}
 
 void ASoul::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnCapsuleBeginOverlapFunc(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-	Destroy();
+	USkillComponent* SkillComponent = OtherActor->GetComponentByClass<USkillComponent>();
+	if (SkillComponent)
+	{
+		SkillComponent->AddSkillPoint(Soul);
+		MulticastSpawnEmitter();
+
+		Destroy();
+	}
+}
+
+void ASoul::MulticastSpawnEmitter_Implementation()
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SoulEffectEnd, SoulEffect->GetComponentTransform());
 }

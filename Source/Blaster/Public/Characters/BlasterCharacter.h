@@ -25,6 +25,8 @@
 
 #include "BlasterCharacter.generated.h"
 
+
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftGame);
 
 UCLASS()
@@ -119,6 +121,13 @@ public:
 	void MeleeButtonPressed();
 	void TestingButtonPressed();
 
+	void SkillButtonPressed0();
+	void SkillButtonPressed1();
+	void SkillButtonPressed2();
+	void SkillButtonPressed3();
+	void SkillButtonPressed4();
+
+
 	uint8 bIsFirebuttonPressed : 1;
 	uint8 bCheckIsSemi : 1;
 
@@ -171,6 +180,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UInputAction> IA_TestingKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
+	TArray<TObjectPtr<class UInputAction>> IA_SkillKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UInputMappingContext> IMC_Shoulder;
@@ -314,16 +326,17 @@ protected:
 
 	uint8 Check : 1 = false;
 
-	// CoolTime
-	void CoolTimeChecker(float DeltaTime);
 
-	float DodgeCoolTimeCount;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float DodgeCoolTime = 3.f;
-	uint8 bCanDodge : 1 = true;
 
-	float DashCoolTimeCount;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float DashCoolTime = 2.f;
-	uint8 bCanDash : 1 = true;
+
+
+	//float DodgeCoolTimeCount;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	//float DodgeCoolTime = 3.f;
+	//uint8 bCanDodge : 1 = true;
+
+	//float DashCoolTimeCount;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	//float DashCoolTime = 2.f;
+	//uint8 bCanDash : 1 = true;
 };

@@ -2,7 +2,6 @@
 
 
 #include "Item/Pickups/JumpPickup.h"
-#include "Characters/BlasterCharacter.h"
 #include "Components/BuffComponent.h"
 #include "Components/CombatComponent.h"
 
@@ -10,15 +9,10 @@ void AJumpPickup::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedCompo
 {
 	Super::OnCapsuleBeginOverlapFunc(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
-	if (BlasterCharacter)
+	UBuffComponent* Buff = OtherActor->GetComponentByClass<UBuffComponent>();
+	if (Buff)
 	{
-		UBuffComponent* Buff = BlasterCharacter->GetBuffComponent();
-		if (Buff)
-		{
-			Buff->BuffJump(JumpZVelocityBuff, JumpBuffTime);
-		}
-
+		Buff->BuffJump(JumpZVelocityBuff, JumpBuffTime);
 	}
 
 	Destroy();

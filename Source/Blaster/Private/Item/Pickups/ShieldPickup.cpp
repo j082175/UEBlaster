@@ -2,9 +2,7 @@
 
 
 #include "Item/Pickups/ShieldPickup.h"
-#include "Characters/BlasterCharacter.h"
 #include "Components/BuffComponent.h"
-
 
 AShieldPickup::AShieldPickup()
 {
@@ -13,17 +11,11 @@ AShieldPickup::AShieldPickup()
 void AShieldPickup::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnCapsuleBeginOverlapFunc(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-
-	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
-	if (BlasterCharacter)
+	UBuffComponent* Buff = OtherActor->GetComponentByClass<UBuffComponent>();
+	if (Buff)
 	{
-		UBuffComponent* Buff = BlasterCharacter->GetBuffComponent();
-		if (Buff)
-		{
-			Buff->ReplenishShield(ShieldAmount, ShieldReplenishTime);
+		Buff->ReplenishShield(ShieldAmount, ShieldReplenishTime);
 
-		}
 	}
-
 	Destroy();
 }

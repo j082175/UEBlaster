@@ -23,6 +23,8 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/MyAIPerceptionStimuliSource.h"
 #include "Components/ObjectPoolComponent.h"
+#include "Components/SkillComponent.h"
+#include "Components/InventoryComponent.h"
 
 // Interfaces
 #include "Interfaces/InteractWithCrosshairsInterface.h"
@@ -128,6 +130,9 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 
 	AIPerceptionStimuliSource = CreateDefaultSubobject<UMyAIPerceptionStimuliSource>(TEXT("AIPerceptionStimuliSource"));
 
+	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+
 	//UE_LOG(LogTemp, Display, TEXT("Base Constructor"));
 
 	InitializeCollisionStates();
@@ -216,7 +221,7 @@ void ACharacterBase::Tick(float DeltaTime)
 
 	PollInit();
 
-	RotateInPlace(DeltaTime);
+	//RotateInPlace(DeltaTime);
 	UpdateMotionWarpingTransform();
 
 	DashTimeline.TickTimeline(DeltaTime);
@@ -304,13 +309,15 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 	}
 	else if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget CharacterOverlay : %s"), *InUserWidget->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget CharacterOverlay : %s"), *InUserWidget->GetName());
 		AttributeComponent->OnHpChanged.AddUObject(CO, &UCharacterOverlay::SetHpBar);
 		AttributeComponent->OnShieldChanged.AddUObject(CO, &UCharacterOverlay::SetShieldBar);
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 
-		OnSkillStarted.AddDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
+		
+
+		SkillComponent->OnSkillStarted.AddDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
 	}
 
 	AttributeComponent->Init();
@@ -993,7 +1000,7 @@ void ACharacterBase::RandomAttack(int32 Index, const FString& AttackType)
 	}
 	else if (CharacterState == ECharacterState::ECS_EquippedGun)
 	{
-		FireButtonPressed(true);
+		Fire(true);
 		//PlayMontage(GetMesh()->GetAnimInstance(), AttackMontage, TEXT("RifleAim"), -1);
 		SetState(CharacterState, ECombatState::ECS_Attacking);
 	}
@@ -1326,7 +1333,7 @@ void ACharacterBase::SetState(ECharacterState InCharacterState, ECombatState InA
 
 void ACharacterBase::OnRep_CombatState()
 {
-	FireButtonPressed(false);
+	Fire(false);
 	bIsFiring = false;
 
 	switch (CombatState)
@@ -1334,7 +1341,7 @@ void ACharacterBase::OnRep_CombatState()
 	case ECombatState::ECS_Unoccupied:
 		if (bFireButtonPressed)
 		{
-			FireButtonPressed(true);
+			Fire(true);
 		}
 		break;
 	case ECombatState::ECS_Reloading:
@@ -1957,7 +1964,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	//	DisableInput(BlasterPlayerController);
 	//}
 	bDisableGameplay = true;
-	FireButtonPressed(false);
+	Fire(false);
 
 
 
@@ -2088,8 +2095,9 @@ void ACharacterBase::ElimTimerFinished()
 	}
 	else
 	{
-		Recover();
-		SetIsActive(false);
+		Destroy();
+		//Recover();
+		//SetIsActive(false);
 	}
 }
 
@@ -2286,7 +2294,7 @@ void ACharacterBase::OnRep_SecondaryWeapon()
 
 }
 
-void ACharacterBase::FireButtonPressed(bool bPressed)
+void ACharacterBase::Fire(bool bPressed)
 {
 	if (EquippedWeapon == nullptr) return;
 	bFireButtonPressed = bPressed;
@@ -2430,7 +2438,7 @@ void ACharacterBase::FireTimerFinished()
 	ReloadEmptyWeapon();
 	if (bFireButtonPressed && Gun->IsAutomatic())
 	{
-		FireButtonPressed(true);
+		Fire(true);
 	}
 	bIsFiring = false;
 

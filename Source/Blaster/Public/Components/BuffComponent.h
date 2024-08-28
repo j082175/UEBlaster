@@ -18,11 +18,17 @@ public:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	FORCEINLINE void SetIsHealing(bool InIsHealing) { bHealing = InIsHealing; }
+
 	void SetInitialSpeeds(float BaseSpeed, float CrouchSpeed);
 	void SetInitialJumpVelocity(float Velocity);
 
+	UFUNCTION(BlueprintCallable)
 	void Heal(float HealAmount, float HealingTime);
+
+	UFUNCTION(BlueprintCallable)
 	void ReplenishShield(float ShieldAmount, float ReplenishingTime);
+
 	void BuffSpeed(float BuffBaseSpeed, float BuffCrouchSpeed, float BuffTime);
 	void BuffJump(float BuffJumpVelocity, float BuffTime);
 
@@ -40,11 +46,13 @@ protected:
 	class ABlasterPlayerController* BlasterPlayerController;
 
 	// Health
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bHealing = false;
 	float HealingRate = 0.f;
 	float AmountToHeal = 0.f;
 
 	// Shield
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bReplenishingShield = false;
 	float ShieldReplenishRate = 0.f;
 	float AmountToShield = 0.f;

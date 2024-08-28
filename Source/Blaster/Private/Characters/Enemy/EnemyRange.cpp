@@ -71,7 +71,7 @@ void AEnemyRange::Tick(float DeltaTime)
 					//UE_LOG(LogTemp, Display, TEXT("TargetActor Set"));
 					AIController->GetBlackboardComponent()->SetValueAsVector(TARGET_ACTOR_LAST_POSITION, TargetPoint);
 					SetAiming(false);
-					FireButtonPressed(false);
+					Fire(false);
 					OnAttackEnded.ExecuteIfBound();
 
 					TargetPointCheckCount += DeltaTime;
@@ -112,7 +112,7 @@ void AEnemyRange::InitializeDefaults()
 	}
 }
 
-void AEnemyRange::FireButtonPressed(bool bPressed)
+void AEnemyRange::Fire(bool bPressed)
 {
 	//UE_LOG(LogTemp, Display, TEXT("bPressed : %d"), bPressed);
 	//UE_LOG(LogTemp, Display, TEXT("AI Firing"));
@@ -255,7 +255,7 @@ void AEnemyRange::AttackFunc()
 
 	TargetPoint = EquippedGun->bUseScatter ? EquippedGun->TraceEndWithScatter(TargetPoint) : TargetPoint;
 	//MulticastFire(true, TargetPoint);
-	FireButtonPressed(true);
+	Fire(true);
 	SetAiming(true);
 	EquippedGun->SetIsAutomatic(true);
 
@@ -277,7 +277,7 @@ void AEnemyRange::SetIsActive(bool InIsActive)
 	if (!InIsActive)
 	{
 		SetAiming(false);
-		FireButtonPressed(false);
+		Fire(false);
 		OnAttackEnded.ExecuteIfBound();
 	}
 }

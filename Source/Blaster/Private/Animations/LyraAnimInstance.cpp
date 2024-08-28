@@ -5,6 +5,7 @@
 #include "Characters/BlasterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "KismetAnimationLibrary.h"
 
 void ULyraAnimInstance::NativeInitializeAnimation()
 {
@@ -51,7 +52,7 @@ void ULyraAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	// 4. Calculate Direction
 	const FVector Velocity2D = UKismetMathLibrary::MakeVector(Velocity.X, Velocity.Y, 0.f);
-	const float Angle = UAnimInstance::CalculateDirection(Velocity2D, CharacterRef->GetActorRotation());
+	const float Angle = UKismetAnimationLibrary::CalculateDirection(Velocity2D, CharacterRef->GetActorRotation());
 	Direction = UKismetMathLibrary::NormalizeAxis(Angle);
 
 	// 5.

@@ -14,6 +14,7 @@
 #include "Components/LagCompensationComponent.h"
 #include "Components/MantleVaultComponent.h"
 #include "Components/AttributeComponent.h"
+#include "Components/SkillComponent.h"
 
 // EnhancedInput
 #include "EnhancedInputSubsystems.h"
@@ -90,7 +91,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CoolTimeChecker(DeltaTime);
 
 	//GetMesh()->SetComponentTickInterval(0.001);
 	GetCharacterMovement()->SetComponentTickInterval(0.001f);
@@ -663,6 +663,11 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Melee, ETriggerEvent::Triggered, this, &ThisClass::MeleeButtonPressed);
 		EnhancedInputComponent->BindAction(IA_TestingKey, ETriggerEvent::Triggered, this, &ThisClass::TestingButtonPressed);
 
+		EnhancedInputComponent->BindAction(IA_SkillKey[0], ETriggerEvent::Triggered, this, &ThisClass::SkillButtonPressed0);
+		EnhancedInputComponent->BindAction(IA_SkillKey[1], ETriggerEvent::Triggered, this, &ThisClass::SkillButtonPressed1);
+		EnhancedInputComponent->BindAction(IA_SkillKey[2], ETriggerEvent::Triggered, this, &ThisClass::SkillButtonPressed2);
+		EnhancedInputComponent->BindAction(IA_SkillKey[3], ETriggerEvent::Triggered, this, &ThisClass::SkillButtonPressed3);
+		EnhancedInputComponent->BindAction(IA_SkillKey[4], ETriggerEvent::Triggered, this, &ThisClass::SkillButtonPressed4);
 	}
 	else
 	{
@@ -878,7 +883,7 @@ void ABlasterCharacter::FireButtonPressed(const FInputActionValue& isPressed)
 		bIsFirebuttonPressed = true;
 		NotifyFireButtonPressed(true);
 
-		Super::FireButtonPressed(true);
+		Fire(true);
 
 		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
 
@@ -900,9 +905,9 @@ void ABlasterCharacter::FireButtonReleased(const FInputActionValue& isPressed)
 	{
 		bIsFirebuttonPressed = false;
 		NotifyFireButtonPressed(false);
-		Super::FireButtonPressed(false);
+		Super::Fire(false);
 		bCheckIsSemi = false;
-	}
+	} 
 }
 
 void ABlasterCharacter::NotifyFireButtonPressed_Implementation(bool IsFired)
@@ -943,13 +948,21 @@ void ABlasterCharacter::DodgeButtonPressed()
 {
 	if (bDisableGameplay) return;
 
-	if (bCanDodge)
+	//if (bCanDodge)
+	//{
+	//	if (!Dodge(KeySectionName)) return;
+	//	bCanDodge = false;
+	//	OnSkillStarted.Broadcast(TEXT("Active"), 1, DodgeCoolTime);
+	//}
+
+	FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(TEXT("Dodge"));
+
+	if (S->bCanExecute)
 	{
 		if (!Dodge(KeySectionName)) return;
-		bCanDodge = false;
-		OnSkillStarted.Broadcast(TEXT("Active"), 1, DodgeCoolTime);
+		S->bCanExecute = false;
+		SkillComponent->OnSkillStarted.Broadcast(TEXT("Active"), 1, S->CoolTime);
 	}
-
 
 }
 
@@ -967,11 +980,20 @@ void ABlasterCharacter::DashButtonPressed()
 	MoveButtonPressedCount = FMath::Clamp(MoveButtonPressedCount, 0, 2);
 	if (MoveButtonPressedCount == 2)
 	{
-		if (bCanDash)
+		//if (bCanDash)
+		//{
+		//	if (!Dash(KeySectionName)) return;
+		//	bCanDash = false;
+		//	OnSkillStarted.Broadcast(TEXT("Active"), 2, DashCoolTime);
+		//}
+
+		FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(TEXT("Dash"));
+
+		if (S->bCanExecute)
 		{
 			if (!Dash(KeySectionName)) return;
-			bCanDash = false;
-			OnSkillStarted.Broadcast(TEXT("Active"), 2, DashCoolTime);
+			S->bCanExecute = false;
+			SkillComponent->OnSkillStarted.Broadcast(TEXT("Active"), 2, S->CoolTime);
 		}
 	}
 
@@ -996,6 +1018,33 @@ void ABlasterCharacter::TestingButtonPressed()
 	//ServerTest();
 	Test();
 }
+
+void ABlasterCharacter::SkillButtonPressed0()
+{
+	SkillComponent->SkillButtonPressed(0);
+}
+
+void ABlasterCharacter::SkillButtonPressed1()
+{
+	SkillComponent->SkillButtonPressed(1);
+}
+
+void ABlasterCharacter::SkillButtonPressed2()
+{
+	SkillComponent->SkillButtonPressed(2);
+}
+
+void ABlasterCharacter::SkillButtonPressed3()
+{
+	SkillComponent->SkillButtonPressed(3);
+}
+
+void ABlasterCharacter::SkillButtonPressed4()
+{
+	SkillComponent->SkillButtonPressed(4);
+}
+
+
 
 //void ABlasterCharacter::HitCapsuleConstruction()
 //{
@@ -1780,35 +1829,54 @@ void ABlasterCharacter::Test()
 	ServerTest();
 }
 
-void ABlasterCharacter::CoolTimeChecker(float DeltaTime)
-{
-	if (!bCanDodge)
-	{
-		if (DodgeCoolTimeCount > DodgeCoolTime)
-		{
-			bCanDodge = true;
-			DodgeCoolTimeCount = 0.f;
-		}
-		else
-		{
-			DodgeCoolTimeCount += DeltaTime;
-		}
-	}
+//void ABlasterCharacter::CoolTimeChecker(float DeltaTime)
+//{
+//
+//	/*if (!bCanDodge)
+//	{
+//		if (DodgeCoolTimeCount > DodgeCoolTime)
+//		{
+//			bCanDodge = true;
+//			DodgeCoolTimeCount = 0.f;
+//		}
+//		else
+//		{
+//			DodgeCoolTimeCount += DeltaTime;
+//		}
+//	}
+//
+//	if (!bCanDash)
+//	{
+//		if (DashCoolTimeCount > DashCoolTime)
+//		{
+//			bCanDash = true;
+//			DashCoolTimeCount = 0.f;
+//		}
+//		else
+//		{
+//			DashCoolTimeCount += DeltaTime;
+//		}
+//	}*/
+//
+//}
 
-	if (!bCanDash)
-	{
-		if (DashCoolTimeCount > DashCoolTime)
-		{
-			bCanDash = true;
-			DashCoolTimeCount = 0.f;
-		}
-		else
-		{
-			DashCoolTimeCount += DeltaTime;
-		}
-	}
-
-}
+//void ABlasterCharacter::InitializeCoolTimeMap()
+//{
+//	CoolTimeMap.Add(TEXT("Dodge"), FCoolTimeCheckStruct(3.f));
+//	CoolTimeMap.Add(TEXT("Dash"), FCoolTimeCheckStruct(2.f));
+//
+//	CoolTimeMap.Reserve(5);
+//	SkillButtonPressedChecker.Reserve(5);
+//
+//	for (size_t i = 0; i < 5; i++)
+//	{
+//		FString Str = UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString();
+//		CoolTimeMap.Add(Str);
+//		SkillButtonPressedChecker.Add(false);
+//	}
+//
+//
+//}
 
 void ABlasterCharacter::ServerTest_Implementation()
 {

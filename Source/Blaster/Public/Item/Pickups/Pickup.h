@@ -41,6 +41,9 @@ public:
 
 	virtual void InitializeDelegates() override;
 
+	// Particle
+
+
 	// Niagara Effect
 //private:
 	UPROPERTY(VisibleAnywhere)

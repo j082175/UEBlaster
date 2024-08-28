@@ -2,22 +2,17 @@
 
 
 #include "Item/Pickups/SpeedPickup.h"
-#include "Characters/BlasterCharacter.h"
 #include "Components/BuffComponent.h"
 
 void ASpeedPickup::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnCapsuleBeginOverlapFunc(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
-	if (BlasterCharacter)
+	UBuffComponent* Buff = OtherActor->GetComponentByClass<UBuffComponent>();
+	if (Buff)
 	{
-		UBuffComponent* Buff = BlasterCharacter->GetBuffComponent();
-		if (Buff)
-		{
-			Buff->BuffSpeed(BaseSpeedBuff, CrouchSpeedBuff, SpeedBuffTime);
-			Buff->SpeedBuff = this;
-		}
+		Buff->BuffSpeed(BaseSpeedBuff, CrouchSpeedBuff, SpeedBuffTime);
+		Buff->SpeedBuff = this;
 	}
 
 	Destroy();

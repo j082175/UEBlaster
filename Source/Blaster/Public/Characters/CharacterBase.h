@@ -31,7 +31,7 @@
 
 typedef int32 AmmoAmountInt;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillStartedDelegate, const FString&, InPrefix, int32, InIndex, float, InPlaybackSpeed);
+
 
 UCLASS()
 class BLASTER_API ACharacterBase : public APooledCharacter, public IHitInterface, public IWidgetBindDelegateInterface, public ICanParryInterface
@@ -155,10 +155,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UCombatComponent> CombatComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "Component", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UBuffComponent> BuffComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "Component", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class ULagCompensationComponent> LagCompensation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
@@ -167,18 +167,24 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HpBarWidget", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UHpBarWidgetComponent> HpBarWidgetComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "HpBarWidget", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HpBarWidget", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAttributeComponent> AttributeComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UMotionWarpingComponent> MotionWarpingComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UPawnNoiseEmitterComponent> PawnNoiseEmitterComponent;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UMyAIPerceptionStimuliSource> AIPerceptionStimuliSource;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class USkillComponent> SkillComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UInventoryComponent> InventoryComponent;
 
 	// Sounds
 protected:
@@ -525,7 +531,7 @@ protected:
 
 	// Fire
 public:
-	virtual void FireButtonPressed(bool bPressed);
+	virtual void Fire(bool bPressed);
 
 protected:
 	virtual void FireProjectileWeapon(bool bPressed);
@@ -917,6 +923,5 @@ protected:
 	float HpCountdown;
 
 
-	// Total Actives (Skill)
-	FOnSkillStartedDelegate OnSkillStarted;
+
 };

@@ -21,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void InitializeDefaults() override;
 
-	virtual void FireButtonPressed(bool bPressed) override;
+	virtual void Fire(bool bPressed) override;
 
 protected:
 	virtual void BeginPlay() override;
