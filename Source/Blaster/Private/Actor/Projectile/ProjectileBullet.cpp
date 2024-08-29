@@ -15,6 +15,7 @@
 
 #include "PlayerController/BlasterPlayerController.h"
 #include "Characters/BlasterCharacter.h"
+#include "Blaster/Blaster.h"
 
 AProjectileBullet::AProjectileBullet()
 {
@@ -124,12 +125,29 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	if (OwnerCharacter)
 	{
 
+		float DamageToCause;
+
+		ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(GetInstigatorController());
+		if (BPC)
+		{
+			if (Hit.BoneName.ToString() == TEXT("neck_02"))
+			{
+				BPC->PlayHitNoticeAnim(TEXT("Head"));
+				DamageToCause = HeadShotDamage;
+			}
+			else
+			{
+				BPC->PlayHitNoticeAnim(TEXT("Body"));
+				DamageToCause = Damage;
+			}
+		}
 
 		if (OwnerCharacter->HasAuthority() && !bUseServerSideRewind)
 		{
 
-			//UE_LOG(LogTemp, Error, TEXT("1"));
-			const float DamageToCause = Hit.BoneName.ToString() == TEXT("head") ? HeadShotDamage : Damage;
+			//float DamageToCause = Hit.BoneName.ToString() == TEXT("neck_02") ? HeadShotDamage : Damage;
+			//UE_LOG(LogTemp, Error, TEXT("OnHit Head : %f"), DamageToCause);
+
 
 			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType::StaticClass());
 			Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);

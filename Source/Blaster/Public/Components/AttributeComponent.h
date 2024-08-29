@@ -47,15 +47,16 @@ public:
 
 
 
-	FORCEINLINE void SetCurrentHp(float InCurrentHp) { CurrentHp = InCurrentHp; }
-	FORCEINLINE void SetMaxHp(float InMaxHp) { MaxHp = InMaxHp; }
-	FORCEINLINE void SetCurrentShield(float InCurrentShield) { CurrentShield = InCurrentShield; }
-	FORCEINLINE void SetMaxShield(float InMaxShield) { MaxShield = InMaxShield; }
+	FORCEINLINE void SetCurrentHp(float InCurrentHp) { CurrentHp = InCurrentHp; OnHpChanged.Broadcast(CurrentHp, MaxHp); }
+	FORCEINLINE void SetMaxHp(float InMaxHp) { MaxHp = InMaxHp; OnHpChanged.Broadcast(CurrentHp, MaxHp); }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetCurrentShield(float InCurrentShield) { CurrentShield = InCurrentShield; OnShieldChanged.Broadcast(CurrentShield, MaxShield); }
+	FORCEINLINE void SetMaxShield(float InMaxShield) { MaxShield = InMaxShield; OnShieldChanged.Broadcast(CurrentShield, MaxShield); }
 	void SetCurrentSp(float InCurrentSp);
 
-	FORCEINLINE void SetMaxSp(float InMaxSp) { MaxSp = InMaxSp; }
+	FORCEINLINE void SetMaxSp(float InMaxSp) { MaxSp = InMaxSp; OnSpChanged.Broadcast(CurrentSp, MaxSp); }
 	void SetCurrentParryGauge(float InCurrentParryGauge);
-	FORCEINLINE void SetMaxParryGauge(float InMaxParryGauge) { MaxParryGauge = InMaxParryGauge; }
+	FORCEINLINE void SetMaxParryGauge(float InMaxParryGauge) { MaxParryGauge = InMaxParryGauge; OnParryGaugeChanged.Broadcast(CurrentParryGauge, MaxParryGauge); }
 	FORCEINLINE void SetSpRecoveringRate(float InSpRecoveringRate) { SpRecoveringRate = InSpRecoveringRate; }
 	FORCEINLINE void SetParryGaugeIncrement(float InParryGaugeIncrement) { ParryGaugeIncrement = InParryGaugeIncrement; }
 
@@ -103,10 +104,10 @@ private:
 	UFUNCTION()
 	void OnRep_Shield(float LastShield);
 
-	UPROPERTY(ReplicatedUsing = OnRep_Shield, VisibleAnywhere, Category = "Player Stats")
+	UPROPERTY(ReplicatedUsing = OnRep_Shield, EditAnywhere, Category = "Attribute", meta = (AllowPrivateAccess = true))
 	float CurrentShield = 100.f;
 
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	UPROPERTY(EditAnywhere, Category = "Attribute", meta = (AllowPrivateAccess = true))
 	float MaxShield = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Attribute", meta = (AllowPrivateAccess = true))

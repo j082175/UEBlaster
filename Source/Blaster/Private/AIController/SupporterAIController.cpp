@@ -19,6 +19,8 @@
 
 #include "BlasterTypes/BlackboardKeys.h"
 
+#include "Characters/CharacterBase.h"
+
 
 ASupporterAIController::ASupporterAIController()
 {
@@ -38,11 +40,16 @@ void ASupporterAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 
 	if (!Actor->GetInstigatorController()) return;
 	if (Actor->GetInstigatorController()->Tags.Num() == 0) return;
-	if (Actor->GetInstigatorController()->Tags[0] != TEXT("Enemy")) return;
 
-	UE_LOG(LogTemp, Display, TEXT("Actor Tag : %s"), *Actor->GetInstigatorController()->Tags[0].ToString());
+	ACharacterBase* CharacterBase = Cast<ACharacterBase>(Actor);
+	ACharacterBase* ThisCharacter = Cast<ACharacterBase>(GetPawn());
 
-	Super::OnTargetPerceptionUpdated(Actor, Stimulus);
+	if (Actor->GetInstigatorController()->Tags[0] == TEXT("Enemy") || CharacterBase->GetTeam() != ThisCharacter->GetTeam())
+	{
+		//UE_LOG(LogTemp, Display, TEXT("Owner Team : %s, This Team : %s"), CharacterBase->GetTeam(), ThisCharacter->GetTeam());
+
+		Super::OnTargetPerceptionUpdated(Actor, Stimulus);
+	}
 }
 
 void ASupporterAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)

@@ -68,8 +68,6 @@ public:
 	TObjectPtr<class UWidgetAnimation> ActiveCoolTimeAnim2;
 
 private:
-	void FindWidgetAnimationName();
-
 	TMap<FString, class UWidgetAnimation*> FindWidgetAnimation;
 };
 

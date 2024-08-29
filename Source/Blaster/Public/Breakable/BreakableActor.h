@@ -31,7 +31,7 @@ private:
 	virtual void InitializeDelegates();
 
 private:
-	virtual void IGetHit(const FVector& HitPoint) override;
+	virtual void IGetHit(const FVector& HitPoint, const FHitResult& InHitResult, AController* InPlayerController) override;
 
 private:
 	UFUNCTION()

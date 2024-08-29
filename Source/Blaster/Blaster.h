@@ -21,3 +21,13 @@
 
 
 #define PRINT_DEBUG_LOCALROLE(Actor) UE_LOG(LogTemp, Display, TEXT("Actor's LocalRole : %s"), *UEnum::GetDisplayValueAsText(Actor->GetLocalRole()).ToString())
+
+static class WidgetAnimHelper
+{
+public:
+	static void FindWidgetAnimationName(class UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations);
+
+	UFUNCTION(BlueprintCallable)
+	static void StartAnimation(const FString& InPrefix, const FString& InName, int32 InIndex, float InPlaybackSpeed, class UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations);
+};
+

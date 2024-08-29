@@ -121,6 +121,7 @@ void UAttributeComponent::SetCurrentSp(float InCurrentSp)
 
 	bSpEnable = true;
 	SetComponentTickEnabled(true);
+	OnSpChanged.Broadcast(CurrentSp, MaxSp);
 }
 
 void UAttributeComponent::SetCurrentParryGauge(float InCurrentParryGauge)
@@ -129,6 +130,7 @@ void UAttributeComponent::SetCurrentParryGauge(float InCurrentParryGauge)
 
 	bParryGaugeEnable = true;
 	SetComponentTickEnabled(true);
+	OnParryGaugeChanged.Broadcast(CurrentParryGauge, MaxParryGauge);
 }
 
 

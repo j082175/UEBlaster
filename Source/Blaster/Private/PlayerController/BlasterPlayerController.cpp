@@ -28,6 +28,7 @@
 #include "HUD/ChattingUI/ChatTextBlock.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ChatSystemComponent.h"
+#include "Blaster/Blaster.h"
 
 
 ABlasterPlayerController::ABlasterPlayerController()
@@ -88,6 +89,25 @@ void ABlasterPlayerController::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("ChatBox is not initialized"));
 		}
 	}
+	
+	if (IsLocalPlayerController())
+	{
+		if (HitNoticeClass)
+		{
+			HitNotice = CreateWidget<UUserWidget>(this, HitNoticeClass);
+			if (!HitNotice)
+			{
+				UE_LOG(LogTemp, Error, TEXT("HitNotice not initialized"));
+
+			}
+			else
+			{
+				HitNotice->AddToViewport();
+			}
+		}
+	}
+
+
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
@@ -1088,6 +1108,12 @@ FString ABlasterPlayerController::GetTeamsInfoText(ABlasterGameState* BlasterGam
 	}
 
 	return InfoTextString;
+}
+
+void ABlasterPlayerController::PlayHitNoticeAnim(const FString& InPrefix)
+{
+	WidgetAnimHelper::FindWidgetAnimationName(HitNotice, FindWidgetAnimation);
+	WidgetAnimHelper::StartAnimation(InPrefix, TEXT("HitNotice"), - 1, 1.f, HitNotice, FindWidgetAnimation);
 }
 
 void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)

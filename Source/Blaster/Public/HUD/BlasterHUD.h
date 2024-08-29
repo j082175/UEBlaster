@@ -28,6 +28,7 @@ public:
 	TObjectPtr<class UTexture2D> CrosshairTop;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UTexture2D> CrosshairBottom;
+
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpread;
 	UPROPERTY(EditAnywhere)
@@ -111,6 +112,8 @@ private:
 
 	UPROPERTY()
 	TWeakObjectPtr<UElimAnnouncement> ElimAnnouncementWidget;
+
+
 //	void SetHUDTime();
 //	float LevelStartingTime = 0.f;
 //	float MatchTime = 0.f;

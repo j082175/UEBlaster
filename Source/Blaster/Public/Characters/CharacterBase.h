@@ -44,6 +44,7 @@ public:
 
 	// Overrides
 protected:
+	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 
@@ -56,6 +57,10 @@ public:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif // WITH_EDITOR
+
+	virtual void OnConstruction(const FTransform& Transform);
+	virtual void PostLoad() override;
+
 
 public:
 	// Getters
@@ -83,6 +88,7 @@ public:
 	ECharacterState GetCharacterState() const;
 	EAnimState GetAnimState() const { return AnimState; }
 	FVector GetHitTarget() const;
+	UFUNCTION(BlueprintCallable)
 	ETeam GetTeam();
 
 	FORCEINLINE bool IsSprint() const { return bIsSprint; }
@@ -93,6 +99,8 @@ public:
 	bool IsHoldingTheFlag() const;
 
 	// Setters
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetTeam(ETeam InNewTeam) { Team = InNewTeam; }
 	void SetHoldingTheFlag(bool bHolding);
 	FORCEINLINE void SetOverlappingWeapon(class AWeapon* InWeapon) { OverlappingWeapon = InWeapon; }
 
@@ -135,7 +143,7 @@ protected:
 	// Interface Functions
 public:
 	// IHitInterface
-	virtual void IGetHit(const FVector& HitPoint) override;
+	virtual void IGetHit(const FVector& HitPoint, const FHitResult& InHitResult, class AController* InPlayerController) override;
 	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
 
 	//virtual void IBindOverheadWidget(class UWidgetComponent* InWidgetComponent) override;
@@ -432,6 +440,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class USkeletalMesh> RedTeamSKMesh;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class USkeletalMesh> BlueTeamSKMesh;
 
 	// Respawn
 protected:
@@ -664,19 +674,19 @@ protected:
 	TMap<EWeaponType, int32> CarriedAmmoMap;
 
 	UPROPERTY(EditAnywhere)
-	float StartingARAmmo;
+	int32 StartingARAmmo;
 	UPROPERTY(EditAnywhere)
-	float StartingRocketAmmo;
+	int32 StartingRocketAmmo;
 	UPROPERTY(EditAnywhere)
-	float StartingPistolAmmo;
+	int32 StartingPistolAmmo;
 	UPROPERTY(EditAnywhere)
-	float StartingSMGAmmo;
+	int32 StartingSMGAmmo;
 	UPROPERTY(EditAnywhere)
-	float StartingShotgunAmmo;
+	int32 StartingShotgunAmmo;
 	UPROPERTY(EditAnywhere)
-	float StartingSniperAmmo;
+	int32 StartingSniperAmmo;
 	UPROPERTY(EditAnywhere)
-	float StartingGrenadeLauncherAmmo;
+	int32 StartingGrenadeLauncherAmmo;
 
 
 
@@ -922,6 +932,11 @@ protected:
 
 	float HpCountdown;
 
+
+
+	// Team , for non-local players
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	ETeam Team;
 
 
 };

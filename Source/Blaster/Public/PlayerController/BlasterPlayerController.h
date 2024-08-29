@@ -218,33 +218,46 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UInputAction> IA_Chat;
-//public:
-//	UFUNCTION(Client, Reliable)
-//	void ClientChatCommitted(const FText& Text, const FString& PlayerName);
-//	void AddChatBox();
-//	void OpenChatBox();
-//protected:
-//	UFUNCTION()
-//	void OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod);
-//
-//	UFUNCTION(Server, Reliable)
-//	void ServerChatCommitted(const FText& Text, const FString& PlayerName);
-//
-//	void ChatButtonPressed();
-//
-//
-//
-//	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-//	TSubclassOf<class UChatBox> ChatBoxClass;
-//
-//	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
-//	TObjectPtr<class UChatBox> ChatBox;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
-//	TObjectPtr<class UInputAction> IA_Chat;
 
 
-	// Test
+	// For hud
+public:
+	void PlayHitNoticeAnim(const FString& InPrefix);
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UUserWidget> HitNoticeClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UUserWidget> HitNotice;
+
+	TMap<FString, class UWidgetAnimation*> FindWidgetAnimation;
+
+	//public:
+	//	UFUNCTION(Client, Reliable)
+	//	void ClientChatCommitted(const FText& Text, const FString& PlayerName);
+	//	void AddChatBox();
+	//	void OpenChatBox();
+	//protected:
+	//	UFUNCTION()
+	//	void OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod);
+	//
+	//	UFUNCTION(Server, Reliable)
+	//	void ServerChatCommitted(const FText& Text, const FString& PlayerName);
+	//
+	//	void ChatButtonPressed();
+	//
+	//
+	//
+	//	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	//	TSubclassOf<class UChatBox> ChatBoxClass;
+	//
+	//	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
+	//	TObjectPtr<class UChatBox> ChatBox;
+	//
+	//	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
+	//	TObjectPtr<class UInputAction> IA_Chat;
+
+
+		// Test
 	TWeakObjectPtr<class UCharacterOverlay> HUD_CO;
 	TWeakObjectPtr<class UAnnouncement> HUD_A;
 	TWeakObjectPtr<AHUD> HUUD;

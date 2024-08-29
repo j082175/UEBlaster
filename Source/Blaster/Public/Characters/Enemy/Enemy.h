@@ -41,6 +41,7 @@ public:
 	FORCEINLINE FAIConfig GetAIConfig() const { return AIConfig; }
 	FORCEINLINE class ABaseAIController* GetBaseAIController() const { return BaseAIController; }
 
+	virtual void SetOwner(AActor* NewOwner) override;
 
 	FOnSpawnedEnemyDisabledDelegate OnSpawnedEnemyDisabled;
 protected:
@@ -48,6 +49,8 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	//virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+
 
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser) override;
 
@@ -70,7 +73,7 @@ protected:
 
 	// Interface
 protected:
-	virtual void IGetHit(const FVector& InHitPoint) override;
+	virtual void IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult, class AController* InPlayerController) override;
 	//FORCEINLINE virtual class UPawnSensingComponent* IGetSensingComponent() override { return PawnSensingComponent; }
 	//virtual bool IIsHit() override;
 	virtual void IAttack(FAttackEndedDelegate Delegate, const FString& AttackType) override;

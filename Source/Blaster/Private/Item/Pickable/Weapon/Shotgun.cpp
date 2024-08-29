@@ -119,7 +119,7 @@ void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 			IHitInterface* HitActor = Cast<IHitInterface>(FireHit.GetActor());
 			if (HitActor)
 			{
-				HitActor->IGetHit(-HitTarget);
+				HitActor->IGetHit(-HitTarget, FireHit, FireHit.GetActor()->GetInstigatorController());
 				ApplyForce(FieldSystemComponent, FireHit);
 			}
 

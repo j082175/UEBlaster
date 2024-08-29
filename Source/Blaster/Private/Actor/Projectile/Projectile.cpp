@@ -169,7 +169,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	IHitInterface* HitActor = Cast<IHitInterface>(OtherActor);
 	if (HitActor)
 	{
-		HitActor->IGetHit(GetActorLocation());
+		HitActor->IGetHit(GetActorLocation(), Hit, GetInstigatorController());
 		ApplyForce(FieldSystemComponent, Hit);
 
 	}
@@ -179,6 +179,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		{
 			float VisibleDistance = 30.f;
 			UGameplayStatics::SpawnDecalAttached(BulletHole, FVector(VisibleDistance, 3.f, 3.f), OtherComp, TEXT(""), Hit.ImpactPoint, Hit.ImpactNormal.ToOrientationRotator(), EAttachLocation::KeepWorldPosition, 10.f);
+
 		}
 	}
 

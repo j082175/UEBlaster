@@ -30,6 +30,7 @@ enum class ESkillAssistant : uint8
 {
 	ESA_HealArea = 0 UMETA(DisplayName = "HealArea"),
 	ESA_ShieldRecovery UMETA(DisplayName = "ShieldRecovery"),
+	ESA_Supporter UMETA(DisplayName = "Supporter"),
 
 	ESA_MAX UMETA(DisplayName = "Default_MAX")
 };
@@ -88,7 +89,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TWeakObjectPtr<class AHealArea> HealArea;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<class AShieldBarrier> ShieldBarrierClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TWeakObjectPtr<class AShieldBarrier> ShieldBarrier;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<class AEnemyRange> EnemyRangeClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TWeakObjectPtr<class AEnemyRange> EnemyRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	int32 SkillPoint;

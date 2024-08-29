@@ -22,5 +22,5 @@ class BLASTER_API IHitInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void IGetHit(const FVector& InHitPoint) = 0;
+	virtual void IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult, class AController* InPlayerController) = 0;
 };

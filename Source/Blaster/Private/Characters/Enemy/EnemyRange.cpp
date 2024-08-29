@@ -114,6 +114,7 @@ void AEnemyRange::InitializeDefaults()
 
 void AEnemyRange::Fire(bool bPressed)
 {
+	if (!HasAuthority()) return;
 	//UE_LOG(LogTemp, Display, TEXT("bPressed : %d"), bPressed);
 	//UE_LOG(LogTemp, Display, TEXT("AI Firing"));
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());

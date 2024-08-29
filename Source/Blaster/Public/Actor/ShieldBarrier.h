@@ -4,22 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "DefenceActor.h"
-#include "HealArea.generated.h"
+#include "ShieldBarrier.generated.h"
 
 UCLASS()
-class BLASTER_API AHealArea : public ADefenceActor
+class BLASTER_API AShieldBarrier : public ADefenceActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AHealArea();
+	AShieldBarrier();
+	virtual void Destroyed() override;
 
-private:
 	virtual void SphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
-	virtual void SphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
+
+
+private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float HealingRate = 20.f;
+	float ReplenishInterval = 0.5f;
+
+	FTimerHandle ReplenishTimer;
+
+	class UAttributeComponent* AttributeComponent;
 };

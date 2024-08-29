@@ -78,7 +78,7 @@ void ABreakableActor::Tick(float DeltaTime)
 	UE_LOG(LogTemp, Warning, TEXT("BreakableActor tick"));
 }
 
-void ABreakableActor::IGetHit(const FVector& HitPoint)
+void ABreakableActor::IGetHit(const FVector& HitPoint, const FHitResult& InHitResult, AController* InController)
 {
 	//UE_LOG(LogTemp, Display, TEXT("BreakableActor : isHit : %d"), bIsHit);
 	if (Treasures.Num() > 0 && bIsHit == 0)

@@ -66,12 +66,14 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					//}
 
 
-					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass);
+					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass));
 					if (PO)
 					{
-						Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+						PO->SetProjectileMovementVelocity(ToTarget);
 						PO->SetOwner(GetOwner());
 						PO->SetInstigator(InstigatorPawn);
+						PO->Damage = Damage;
+						PO->HeadShotDamage = HeadShotDamage;
 					}
 
 				}
@@ -81,12 +83,14 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					//SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 					//SpawnedProjectile->bUseServerSideRewind = true;
 
-					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass);
+					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass));
 					if (PO)
 					{
-						Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+						PO->SetProjectileMovementVelocity(ToTarget);
 						PO->SetOwner(GetOwner());
 						PO->SetInstigator(InstigatorPawn);
+						PO->Damage = Damage;
+						PO->HeadShotDamage = HeadShotDamage;
 					}
 				}
 			}
@@ -101,12 +105,14 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					//SpawnedProjectile->InitialVelocity = SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->InitialSpeed;
 
 
-					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass);
+					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass));
 					if (PO)
 					{
-						Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+						PO->SetProjectileMovementVelocity(ToTarget);
 						PO->SetOwner(GetOwner());
 						PO->SetInstigator(InstigatorPawn);
+						PO->Damage = Damage;
+						PO->HeadShotDamage = HeadShotDamage;
 					}
 				}
 				else // client, not locally controlled - spawn non-replicated projectile, no SSR
@@ -116,12 +122,14 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					//SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 					//SpawnedProjectile->bUseServerSideRewind = false;
 
-					APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass);
+					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass));
 					if (PO)
 					{
-						Cast<AProjectileBullet>(PO)->SetProjectileMovementVelocity(ToTarget);
+						PO->SetProjectileMovementVelocity(ToTarget);
 						PO->SetOwner(GetOwner());
 						PO->SetInstigator(InstigatorPawn);
+						PO->Damage = Damage;
+						PO->HeadShotDamage = HeadShotDamage;
 					}
 				}
 			}
@@ -140,12 +148,14 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 				//SpawnedProjectile->Damage = Damage;
 
 
-				APooledObject* PO = GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass);
+				AProjectile* PO = Cast<AProjectile>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass));
 				if (PO)
 				{
-					Cast<AProjectile>(PO)->SetProjectileMovementVelocity(ToTarget);
+					PO->SetProjectileMovementVelocity(ToTarget);
 					PO->SetOwner(GetOwner());
 					PO->SetInstigator(InstigatorPawn);
+					PO->Damage = Damage;
+					PO->HeadShotDamage = HeadShotDamage;
 				}
 			}
 		}

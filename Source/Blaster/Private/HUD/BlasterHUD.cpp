@@ -22,6 +22,7 @@
 #include "BlasterTypes/AnnouncementTypes.h"
 #include "GameState/BlasterGameState.h"
 #include "PlayerState/BlasterPlayerState.h"
+#include "Blaster/Blaster.h"
 
 ABlasterHUD::ABlasterHUD()
 {
@@ -125,6 +126,8 @@ void ABlasterHUD::BeginPlay()
 	Super::BeginPlay();
 
 	//UE_LOG(LogTemp, Display, TEXT("ABlasterHUD::BeginPlay"));
+
+
 
 
 	//AddCharacterOverlay();
@@ -231,7 +234,7 @@ void ABlasterHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, F
 	const float TextureWidth = Texture->GetSizeX();
 	const float TextureHeight = Texture->GetSizeY();
 	const FVector2D TextureDrawPoint(ViewportCenter.X - (TextureWidth / 2.f) + Spread.X, ViewportCenter.Y - (TextureHeight / 2.f) + Spread.Y);
-
+	
 	DrawTexture(Texture, TextureDrawPoint.X, TextureDrawPoint.Y, TextureWidth, TextureHeight, 0.f, 0.f, 1.f, 1.f, InCrosshairsColor);
 }
 

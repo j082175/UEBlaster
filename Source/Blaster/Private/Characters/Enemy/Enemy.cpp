@@ -84,6 +84,14 @@ void AEnemy::BeginPlay()
 
 		EquipWeapon(Weapon);
 	}
+
+	ACharacterBase* OwingActor = Cast<ACharacterBase>(GetOwner());
+	if (OwingActor)
+	{
+		SetTeam(OwingActor->GetTeam());
+		SetTeamColor(OwingActor->GetTeam());
+	}
+
 }
 
 // Called every frame
@@ -129,6 +137,17 @@ void AEnemy::Tick(float DeltaTime)
 
 }
 
+void AEnemy::SetOwner(AActor* NewOwner)
+{
+	Super::SetOwner(NewOwner);
+
+	AAIController* AIOwner = Cast<AAIController>(GetController());
+	if (AIOwner)
+	{
+		AIOwner->GetBlackboardComponent()->SetValueAsObject(OWING_ACTOR, NewOwner);
+	}
+}
+
 //float AEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 //{
 //	UE_LOG(LogTemp, Display, TEXT("DamageCauser Owner : %s"), *DamageCauser->GetOwner()->GetName());
@@ -166,12 +185,6 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
 	//UE_LOG(LogTemp, Display, TEXT("DamageCauser Owner : %s"), *DamageCauser->GetOwner()->GetName());
-	APlayerController* PlayerController = Cast<APlayerController>(InstigatorController);
-	if (PlayerController == nullptr)
-	{
-		//UE_LOG(LogTemp, Display, TEXT("We are Same"));
-		return;
-	}
 
 	Super::ReceiveDamage(DamagedActor, Damage, DamageType, InstigatorController, DamageCauser);
 
@@ -266,7 +279,7 @@ void AEnemy::InitializeDefaults()
 
 }
 
-void AEnemy::IGetHit(const FVector& InHitPoint)
+void AEnemy::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult, AController* InPlayerController)
 {
 	CharacterHitPoint = InHitPoint;
 

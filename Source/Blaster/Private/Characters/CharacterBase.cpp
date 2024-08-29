@@ -106,7 +106,7 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 
-	//UE_LOG(LogTemp, Display, TEXT("Super getname : %s"), *GetName());
+	//UE_LOG(LogTemp, Display, TEXT("Construction Super getname : %s"), *GetName());
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -138,6 +138,25 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 	InitializeCollisionStates();
 	InitializeDefaults();
 
+
+	//TSharedPtr<FBlueprintEditor> BlueprintEditor = WeakBlueprintEditor.Pin();
+	//if (BlueprintEditor->IsEditingSingleBlueprint())
+	//{
+	//	if (TSubclassOf<UObject> GeneratedClass = BlueprintEditor->GetBlueprintObj()->GeneratedClass)
+	//	{
+	//		if (UObject* DefaultObject = GeneratedClass->GetDefaultObject())
+	//		{
+	//			FStrProperty* Property = FindFProperty<FStrProperty>(GeneratedClass, "GenerationScript");
+	//			Property->SetPropertyValue_InContainer(DefaultObject, GenerationScript);
+	//			DefaultObject->Modify(true);
+	//		}
+	//	}
+	//}
+}
+
+void ACharacterBase::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
 }
 
 void ACharacterBase::PostInitializeComponents()
@@ -165,6 +184,8 @@ void ACharacterBase::PostInitializeComponents()
 	{
 		InitializeCarriedAmmo();
 	}
+
+
 }
 
 // Called when the game starts or when spawned
@@ -172,12 +193,15 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Base Beginplay"));
+	UE_LOG(LogTemp, Warning, TEXT("Base Beginplay"));
 
 	InitializeDelegates();
 	InitializeWidgets();
 
 	if (CharacterSpawnEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetTransform());
+	UE_LOG(LogTemp, Error, TEXT("StartingARAmmo : %d"), StartingARAmmo);
+
+
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -221,7 +245,7 @@ void ACharacterBase::Tick(float DeltaTime)
 
 	PollInit();
 
-	//RotateInPlace(DeltaTime);
+	RotateInPlace(DeltaTime);
 	UpdateMotionWarpingTransform();
 
 	DashTimeline.TickTimeline(DeltaTime);
@@ -257,10 +281,23 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-void ACharacterBase::IGetHit(const FVector& InHitPoint)
+void ACharacterBase::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult, AController* InPlayerController)
 {
 	//DrawDebugSphere(GetWorld(), CharacterHitPoint, 10.f, 12, FColor::Cyan, false, 5.f);
 	//EnemyAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
+
+	ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(InPlayerController);
+	if (BPC)
+	{
+		if (InHitResult.BoneName.ToString() == TEXT("neck_02"))
+		{
+			BPC->PlayHitNoticeAnim(TEXT("Head"));
+		}
+		else
+		{
+			BPC->PlayHitNoticeAnim(TEXT("Body"));
+		}
+	}
 
 	CharacterHitPoint = InHitPoint;
 
@@ -315,7 +352,7 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 
-		
+
 
 		SkillComponent->OnSkillCoolTimeStarted.AddDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
 	}
@@ -354,6 +391,7 @@ bool ACharacterBase::ICheckParry(AActor* OtherActor)
 
 void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
+
 	//UE_LOG(LogTemp, Display, TEXT("Damage : %f"), Damage);
 
 	//UE_LOG(LogTemp, Display, TEXT("DamageType : bCausedByWorld :%d, bScaleMomentumByMass : %d, bRadialDamageVelChange : %d, DamageImpulse : %f, DestructibleImpulse : %f, DestructibleDamageSpreadScale : %f, DamageFalloff : %f"), DamageType->bCausedByWorld, DamageType->bScaleMomentumByMass, DamageType->bRadialDamageVelChange, DamageType->DamageImpulse, DamageType->DestructibleImpulse, DamageType->DestructibleDamageSpreadScale, DamageType->DamageFalloff);
@@ -373,14 +411,12 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	if (AttributeComponent == nullptr || BlasterGameMode == nullptr)
 	{
-		//UE_LOG(LogTemp, Error, TEXT("ReceiveDamage Error!"));
+		UE_LOG(LogTemp, Error, TEXT("ReceiveDamage Error!"));
 	}
-
-	//UE_LOG(LogTemp, Display, TEXT("ReceiveDamage : %f"), Damage);
 
 	if (bIsElimmed || BlasterGameMode == nullptr) return;
 	Damage = BlasterGameMode->CalculateDamage(InstigatorController, Controller, Damage);
-	//UE_LOG(LogTemp, Display, TEXT("ReceiveDamage Damage : %f"), Damage);
+	UE_LOG(LogTemp, Display, TEXT("ReceiveDamage Damage : %f"), Damage);
 	float DamageToHealth = Damage;
 
 	float CurrentShield = AttributeComponent->GetCurrentShield();
@@ -1589,6 +1625,22 @@ void ACharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 }
 #endif // WITH_EDITOR
 
+void ACharacterBase::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+}
+
+void ACharacterBase::PostLoad()
+{
+	Super::PostLoad();
+
+	UE_LOG(LogTemp, Display, TEXT("%s: PostLoad"), *GetName());
+
+	UDataSingleton& S = UDataSingleton::Get();
+
+	
+}
+
 void ACharacterBase::PollInit()
 {
 	BlasterGameMode = BlasterGameMode == nullptr ? Cast<ABlasterGameMode>(GetWorld()->GetAuthGameMode()) : BlasterGameMode;
@@ -1634,7 +1686,17 @@ FVector ACharacterBase::GetHitTarget() const
 ETeam ACharacterBase::GetTeam()
 {
 	BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
-	if (BlasterPlayerState == nullptr) return ETeam::ET_NoTeam;
+	if (BlasterPlayerState == nullptr)
+	{
+		if (Team != ETeam::ET_NoTeam)
+		{
+			return Team;
+		}
+		else
+		{
+			return ETeam::ET_NoTeam;
+		}
+	}
 
 	return BlasterPlayerState->GetTeam();
 }
@@ -1879,6 +1941,7 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 	case ETeam::ET_BlueTeam:
 		//GetMesh()->SetMaterial(1, BlueMaterial);
 		//DissolveMaterialInstance = BlueDissolveMatInst;
+		if (BlueTeamSKMesh) GetMesh()->SetSkeletalMesh(BlueTeamSKMesh);
 		break;
 	case ETeam::ET_MAX:
 		break;

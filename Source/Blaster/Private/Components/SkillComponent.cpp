@@ -4,6 +4,8 @@
 #include "Components/SkillComponent.h"
 #include "Characters/CharacterBase.h"
 #include "Actor/HealArea.h"
+#include "Actor/ShieldBarrier.h"
+#include "Characters/Enemy/EnemyRange.h"
 
 // Sets default values for this component's properties
 USkillComponent::USkillComponent()
@@ -25,6 +27,7 @@ void USkillComponent::BeginPlay()
 	Super::BeginPlay();
 
 	SetComponentTickEnabled(true);
+	SetComponentTickInterval(0.1f);
 
 	// ...
 
@@ -47,7 +50,7 @@ void USkillComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void USkillComponent::SkillButtonPressed(int32 InIndex)
 {
-	FCoolTimeCheckStruct* S = CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString());
+	FCoolTimeCheckStruct* S = CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant(InIndex)).ToString());
 
 
 	switch (InIndex)
@@ -55,21 +58,43 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 	case 0:
 		if (S->bCanExecute)
 		{
+			UE_LOG(LogTemp, Display, TEXT(""));
 			if (!SkillButtonPressedChecker[InIndex])
 			{
 				OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), InIndex, S->CoolTime);
 				S->bCanExecute = false;
 
-				ServerSpawnAttributeAssistant(ESkillAssistant::ESA_HealArea);
+				ServerSpawnAttributeAssistant((ESkillAssistant)InIndex);
 			}
 		}
 		else
 		{
-			ServerSpawnAttributeAssistantDetach(ESkillAssistant::ESA_HealArea);
+			ServerSpawnAttributeAssistantDetach((ESkillAssistant)InIndex);
 		}
 		SkillButtonPressedChecker[InIndex] = !SkillButtonPressedChecker[InIndex];
 
 
+		break;
+	case 1:
+		if (S->bCanExecute)
+		{
+			UE_LOG(LogTemp, Display, TEXT("1 Executed"));
+			OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), InIndex, S->CoolTime);
+			S->bCanExecute = false;
+
+			ServerSpawnAttributeAssistant((ESkillAssistant)InIndex);
+		}
+
+		break;
+	case 2:
+		if (S->bCanExecute)
+		{
+			UE_LOG(LogTemp, Display, TEXT("2 Executed"));
+			OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), InIndex, S->CoolTime);
+			S->bCanExecute = false;
+
+			ServerSpawnAttributeAssistant((ESkillAssistant)InIndex);
+		}
 		break;
 	default:
 		break;
@@ -97,6 +122,41 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 
 	break;
 	case ESkillAssistant::ESA_ShieldRecovery:
+	{
+		ShieldBarrier = GetWorld()->SpawnActorDeferred<AShieldBarrier>(ShieldBarrierClass, CharacterOwner->GetTransform());
+		if (ShieldBarrier.IsValid())
+		{
+			ShieldBarrier->SetOwner(CharacterOwner);
+			ShieldBarrier->SetInstigator(CharacterOwner);
+
+			ShieldBarrier->FinishSpawning(CharacterOwner->GetTransform());
+
+			FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, true);
+			ShieldBarrier->AttachToComponent(CharacterOwner->GetMesh(), Rules, TEXT("pelvis"));
+		}
+	}
+
+		break;
+	case ESkillAssistant::ESA_Supporter:
+	{
+		if (CharacterOwner->HasAuthority())
+		{
+			//UE_LOG(LogTemp, Display, TEXT("Getlocalrole : %s"), *UEnum::GetDisplayValueAsText(CharacterOwner->GetLocalRole()).ToString());
+			FTransform SpawnTo(CharacterOwner->GetActorRotation(), CharacterOwner->GetActorLocation() + FVector(0.f, 0.f, 100.f));
+
+			EnemyRange = GetWorld()->SpawnActor<AEnemyRange>(EnemyRangeClass, SpawnTo);
+			if (EnemyRange.IsValid())
+			{
+				EnemyRange->SpawnDefaultController();
+				EnemyRange->SetOwner(CharacterOwner);
+				EnemyRange->SetInstigator(CharacterOwner);
+				EnemyRange->SetTeam(CharacterOwner->GetTeam());
+				EnemyRange->SetTeamColor(CharacterOwner->GetTeam());
+			}
+		}
+
+	}
+
 		break;
 	case ESkillAssistant::ESA_MAX:
 		break;
@@ -193,7 +253,7 @@ void USkillComponent::InitializeCoolTimeMap()
 
 	for (size_t i = 0; i < 5; i++)
 	{
-		FString Str = UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString();
+		FString Str = UEnum::GetDisplayValueAsText((ESkillAssistant)i).ToString();
 		CoolTimeMap.Add(Str);
 		SkillButtonPressedChecker.Add(false);
 	}
