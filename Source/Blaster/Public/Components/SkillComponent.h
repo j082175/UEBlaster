@@ -28,7 +28,7 @@ struct FCoolTimeCheckStruct
 UENUM(BlueprintType)
 enum class ESkillAssistant : uint8
 {
-	ESA_HealArea = 0 UMETA(DisplayName = "HealAreaClass"),
+	ESA_HealArea = 0 UMETA(DisplayName = "HealArea"),
 	ESA_ShieldRecovery UMETA(DisplayName = "ShieldRecovery"),
 
 	ESA_MAX UMETA(DisplayName = "Default_MAX")

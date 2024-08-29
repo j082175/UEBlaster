@@ -31,7 +31,7 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "NavigationSystem.h"
 #include "Perception/PawnSensingComponent.h"
-#include "AIController/EnemyAIController.h"
+#include "AIController/BaseAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Perception/AISense_Damage.h"
@@ -65,8 +65,8 @@ void AEnemy::BeginPlay()
 
 	SetActorTickInterval(0.1f);
 
-	EnemyAIController = Cast<AEnemyAIController>(GetController());
-	NullChecker(EnemyAIController, TEXT("EnemyAIController"), *GetName());
+	BaseAIController = Cast<ABaseAIController>(GetController());
+	NullChecker(BaseAIController, TEXT("BaseAIController"), *GetName());
 	NullChecker(SoulToSpawn, TEXT("SoulToSpawn"), *GetName());
 
 
@@ -186,9 +186,9 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 		UE_LOG(LogTemp, Error, TEXT("EventInstigator is NULL"));
 	}
 
-	if (EnemyAIController)
+	if (BaseAIController)
 	{
-		EnemyAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), PawnDamageCauser);
+		BaseAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), PawnDamageCauser);
 	}
 
 
@@ -220,23 +220,23 @@ void AEnemy::SetIsActive(bool InIsActive)
 
 	if (InIsActive)
 	{
-		if (EnemyAIController)
+		if (BaseAIController)
 		{
 			UE_LOG(LogTemp, Display, TEXT("RunAI"));
-			EnemyAIController->RunAI();
-			EnemyAIController->PrimaryActorTick.bCanEverTick = true;
-			EnemyAIController->SetActorTickEnabled(true);
+			BaseAIController->RunAI();
+			BaseAIController->PrimaryActorTick.bCanEverTick = true;
+			BaseAIController->SetActorTickEnabled(true);
 		}
 	}
 	else
 	{
-		if (EnemyAIController)
+		if (BaseAIController)
 		{
 			UE_LOG(LogTemp, Display, TEXT("StopAI"));
 
-			EnemyAIController->StopAI();
-			EnemyAIController->PrimaryActorTick.bCanEverTick = true;
-			EnemyAIController->SetActorTickEnabled(false);
+			BaseAIController->StopAI();
+			BaseAIController->PrimaryActorTick.bCanEverTick = true;
+			BaseAIController->SetActorTickEnabled(false);
 		}
 		OnSpawnedEnemyDisabled.ExecuteIfBound(this);
 	}
@@ -299,9 +299,9 @@ void AEnemy::IGetHit(const FVector& InHitPoint)
 
 
 
-	if (EnemyAIController)
+	if (BaseAIController)
 	{
-		EnemyAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
+		BaseAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
 	}
 }
 
@@ -332,10 +332,10 @@ void AEnemy::ISetAIState(EAIState InAIState)
 {
 	//UE_LOG(LogTemp, Display, TEXT("ISetAIState : %s"), *UEnum::GetDisplayValueAsText(InAIState).ToString());
 
-	EnemyAIController = EnemyAIController == nullptr ? Cast<AEnemyAIController>(GetController()) : EnemyAIController.Get();
-	if (EnemyAIController)
+	BaseAIController = BaseAIController == nullptr ? Cast<ABaseAIController>(GetController()) : BaseAIController.Get();
+	if (BaseAIController)
 	{
-		EnemyAIController->SetAIState(InAIState);
+		BaseAIController->SetAIState(InAIState);
 	}
 
 	switch (InAIState)
@@ -383,9 +383,9 @@ void AEnemy::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)
 	{
 		if (HitReactMontage == Montage)
 		{
-			if (EnemyAIController)
+			if (BaseAIController)
 			{
-				EnemyAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), false);
+				BaseAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), false);
 			}
 
 			//UE_LOG(LogTemp, Display, TEXT("OnAttackEnded ExecuteIfBound"));
@@ -410,9 +410,9 @@ void AEnemy::UpdateMotionWarpingTransform()
 	FName RushToTarget = TEXT("RushToTarget");
 
 	//UE_LOG(LogTemp, Display, TEXT("UpdateMotionWarpingTransform"));
-	if (EnemyAIController && EnemyAIController->GetBlackboardComponent())
+	if (BaseAIController && BaseAIController->GetBlackboardComponent())
 	{
-		AActor* TargetActor = Cast<AActor>(EnemyAIController->GetBlackboardComponent()->GetValueAsObject(TEXT("TargetActor")));
+		AActor* TargetActor = Cast<AActor>(BaseAIController->GetBlackboardComponent()->GetValueAsObject(TEXT("TargetActor")));
 		if (TargetActor)
 		{
 			//UE_LOG(LogTemp, Display, TEXT("UpdateMotionWarpingTransform"));
@@ -480,15 +480,15 @@ void AEnemy::OnSeePawnFunc(APawn* Pawn)
 {
 	//UE_LOG(LogTemp, Display, TEXT("%s Saw the %s"), *GetName(), *Pawn->GetName());
 
-	if (EnemyAIController)
+	if (BaseAIController)
 	{
 		if (!Pawn->InputEnabled())
 		{
-			EnemyAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), nullptr);
+			BaseAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), nullptr);
 			return;
 		}
 
-		EnemyAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), Pawn);
+		BaseAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), Pawn);
 	}
 }
 
@@ -496,9 +496,9 @@ void AEnemy::SetDead()
 {
 	Super::SetDead();
 
-	if (EnemyAIController)
+	if (BaseAIController)
 	{
-		UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(EnemyAIController->GetBrainComponent());
+		UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(BaseAIController->GetBrainComponent());
 		BehaviorTreeComponent->StopTree();
 	}
 
@@ -514,13 +514,13 @@ void AEnemy::SetDead()
 
 void AEnemy::SpawnMagic(FName SocketToSpawn)
 {
-	if (EnemyAIController == nullptr) return;
+	if (BaseAIController == nullptr) return;
 
-	APawn* InstigatorPawn = EnemyAIController->GetPawn();
+	APawn* InstigatorPawn = BaseAIController->GetPawn();
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetMesh()->GetSocketByName(SocketToSpawn);
 	UWorld* World = GetWorld();
 
-	AActor* TargetActor = Cast<AActor>(EnemyAIController->GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
+	AActor* TargetActor = Cast<AActor>(BaseAIController->GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
 	if (TargetActor == nullptr) return;
 
 	if (MuzzleFlashSocket && World)
@@ -589,7 +589,7 @@ bool AEnemy::CheckParryFunc(AActor* OtherActor)
 			if (ParriedMontage) PlayMontage(GetMesh()->GetAnimInstance(), ParriedMontage, TEXT("Parried"), -1);
 		}
 
-		if (EnemyAIController) EnemyAIController->GetBlackboardComponent()->SetValueAsEnum(E_COMBAT_STATE, (int)CombatState);
+		if (BaseAIController) BaseAIController->GetBlackboardComponent()->SetValueAsEnum(E_COMBAT_STATE, (int)CombatState);
 
 		//UE_LOG(LogTemp, Display, TEXT("Time : %f"), StunTime);
 
@@ -599,7 +599,7 @@ bool AEnemy::CheckParryFunc(AActor* OtherActor)
 				//UE_LOG(LogTemp, Display, TEXT("End, Stun Time : %f"), StunTime);
 				if (StunMontage) StopAnimMontage(StunMontage);
 				CombatState = ECombatState::ECS_Unoccupied;
-				if (EnemyAIController) EnemyAIController->GetBlackboardComponent()->SetValueAsEnum(E_COMBAT_STATE, (int)CombatState);
+				if (BaseAIController) BaseAIController->GetBlackboardComponent()->SetValueAsEnum(E_COMBAT_STATE, (int)CombatState);
 				//if (EnemyAIController) EnemyAIController->RunAI();
 			}), StunTime, false);
 

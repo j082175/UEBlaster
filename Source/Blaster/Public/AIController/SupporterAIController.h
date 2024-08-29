@@ -3,20 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseAIController.h"
-#include "Perception/AIPerceptionTypes.h"
-#include "BlasterTypes/AIState.h"
-#include "EnemyAIController.generated.h"
+#include "AIController/BaseAIController.h"
+#include "SupporterAIController.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS()
-class BLASTER_API AEnemyAIController : public ABaseAIController
+class BLASTER_API ASupporterAIController : public ABaseAIController
 {
 	GENERATED_BODY()
-	AEnemyAIController();
+	ASupporterAIController();
 
+	virtual void BeginPlay() override;
 private:
 
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus) override;

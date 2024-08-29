@@ -448,6 +448,7 @@ void ABlasterCharacter::OnPlayerStateInitialized()
 
 void ABlasterCharacter::InitializeDefaults()
 {
+
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	CameraBoom->AddRelativeLocation(FVector(0.f, 0.f, 80.f));

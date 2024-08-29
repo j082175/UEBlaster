@@ -18,7 +18,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	FORCEINLINE void SetIsHealing(bool InIsHealing) { bHealing = InIsHealing; }
+	FORCEINLINE void SetIsHealing(bool InIsHealing) { bHealing = InIsHealing; SetComponentTickEnabled(InIsHealing); }
 
 	void SetInitialSpeeds(float BaseSpeed, float CrouchSpeed);
 	void SetInitialJumpVelocity(float Velocity);

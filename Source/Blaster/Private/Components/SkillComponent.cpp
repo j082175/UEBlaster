@@ -57,18 +57,19 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 		{
 			if (!SkillButtonPressedChecker[InIndex])
 			{
-				ServerSpawnAttributeAssistant(ESkillAssistant::ESA_HealArea);
-			}
-			else
-			{
-				ServerSpawnAttributeAssistantDetach(ESkillAssistant::ESA_HealArea);
-				//OnSkillStarted.Broadcast(TEXT("Skill"), InIndex, S->CoolTime);
+				OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), InIndex, S->CoolTime);
 				S->bCanExecute = false;
 
+				ServerSpawnAttributeAssistant(ESkillAssistant::ESA_HealArea);
 			}
-			SkillButtonPressedChecker[InIndex] = !SkillButtonPressedChecker[InIndex];
-
 		}
+		else
+		{
+			ServerSpawnAttributeAssistantDetach(ESkillAssistant::ESA_HealArea);
+		}
+		SkillButtonPressedChecker[InIndex] = !SkillButtonPressedChecker[InIndex];
+
+
 		break;
 	default:
 		break;
@@ -157,6 +158,12 @@ void USkillComponent::CoolTimeChecker(float DeltaTime)
 
 	for (auto& Iter : CoolTimeMap)
 	{
+
+		//if (Iter.Key == UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())
+		//{
+		//	UE_LOG(LogTemp, Display, TEXT("cooltime : %f"), Iter.Value.CoolTime);
+		//}
+
 		if (!Iter.Value.bCanExecute)
 		{
 			if (Iter.Value.CoolTimeCount > Iter.Value.CoolTime)

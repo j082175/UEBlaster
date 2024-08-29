@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Item/Pickable/Weapon/Weapon_Gun.h"
 #include "Components/CombatComponent.h"
-#include "AIController/EnemyAIController.h"
+#include "AIController/BaseAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BlasterTypes/BlackboardKeys.h"
 #include "Item/Pickable/Weapon/Shotgun.h"
@@ -45,14 +45,14 @@ void AEnemyRange::Tick(float DeltaTime)
 
 	EquippedGun = EquippedGun == nullptr ? Cast<AWeapon_Gun>(EquippedWeapon) : EquippedGun;
 
-	AIController = AIController == nullptr ? Cast<AEnemyAIController>(GetController()) : AIController;
+	BaseAIController = BaseAIController == nullptr ? Cast<ABaseAIController>(GetController()) : BaseAIController.Get();
 
-	if (AIController && AIController->GetBlackboardComponent())
+	if (BaseAIController && BaseAIController->GetBlackboardComponent())
 	{
-		AActor* TargetActor = Cast<AActor>(AIController->GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
+		AActor* TargetActor = Cast<AActor>(BaseAIController->GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
 		if (TargetActor)
 		{
-			AIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
+			BaseAIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
 
 			TargetPoint = TargetActor->GetActorLocation();
 		}
@@ -62,14 +62,14 @@ void AEnemyRange::Tick(float DeltaTime)
 			{
 				if (TargetPointCheckCount > TargetPointCheckThreshold)
 				{
-					AIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
+					BaseAIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
 					TargetPointCheckCount = 0.f;
 					TargetPoint = FVector(0.f);
 				}
 				else
 				{
 					//UE_LOG(LogTemp, Display, TEXT("TargetActor Set"));
-					AIController->GetBlackboardComponent()->SetValueAsVector(TARGET_ACTOR_LAST_POSITION, TargetPoint);
+					BaseAIController->GetBlackboardComponent()->SetValueAsVector(TARGET_ACTOR_LAST_POSITION, TargetPoint);
 					SetAiming(false);
 					Fire(false);
 					OnAttackEnded.ExecuteIfBound();
@@ -137,7 +137,7 @@ void AEnemyRange::Fire(bool bPressed)
 		return;
 	}
 
-	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(EnemyAIController->GetBrainComponent());
+	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(BaseAIController->GetBrainComponent());
 	if (BehaviorTreeComponent && !BehaviorTreeComponent->IsRunning())
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("AEnemyRange::FireButtonPressed : Shutdown"));
@@ -186,9 +186,9 @@ void AEnemyRange::BeginPlay()
 	Super::BeginPlay();
 
 	SpawnDefaultWeapon();
-	
-	if (AIController && AIController->GetBlackboardComponent())
-	AIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
+
+	if (BaseAIController && BaseAIController->GetBlackboardComponent())
+		BaseAIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
 
 
 }
@@ -204,7 +204,7 @@ void AEnemyRange::ISetAIState(EAIState InAIState)
 {
 	Super::ISetAIState(InAIState);
 
-	if (AIController) AIController->GetBlackboardComponent()->SetValueAsBool(CAN_SEE, false);
+	if (BaseAIController) BaseAIController->GetBlackboardComponent()->SetValueAsBool(CAN_SEE, false);
 }
 
 void AEnemyRange::FinishReloading()

@@ -36,6 +36,8 @@ ABlasterPlayerController::ABlasterPlayerController()
 	//PrimaryActorTick.TickInterval = 0.01f;
 
 	ChatSystemComponent = CreateDefaultSubobject<UChatSystemComponent>(TEXT("ChatSystemComponent"));
+
+	Tags.Add(TEXT("Player"));
 }
 
 void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

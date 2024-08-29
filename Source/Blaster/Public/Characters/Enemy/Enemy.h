@@ -39,7 +39,7 @@ public:
 	AEnemy();
 
 	FORCEINLINE FAIConfig GetAIConfig() const { return AIConfig; }
-	FORCEINLINE class AEnemyAIController* GetEnemyAIController() const { return EnemyAIController; }
+	FORCEINLINE class ABaseAIController* GetBaseAIController() const { return BaseAIController; }
 
 
 	FOnSpawnedEnemyDisabledDelegate OnSpawnedEnemyDisabled;
@@ -101,7 +101,7 @@ protected:
 	TObjectPtr<class ASplineActor> PatrolTarget;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
-	TObjectPtr<class AEnemyAIController> EnemyAIController;
+	TObjectPtr<class ABaseAIController> BaseAIController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<AActor> PawnDamageCauser;

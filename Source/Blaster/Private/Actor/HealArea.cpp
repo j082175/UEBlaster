@@ -45,11 +45,11 @@ void AHealArea::Destroyed()
 
 	if (GetOwner())
 	{
-		USkillComponent* SkillComponent = GetOwner()->GetComponentByClass<USkillComponent>();
-		if (SkillComponent)
-		{
-			SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), 0, SkillComponent->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())->CoolTime);
-		}
+		//USkillComponent* SkillComponent = GetOwner()->GetComponentByClass<USkillComponent>();
+		//if (SkillComponent)
+		//{
+		//	SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), Index, SkillComponent->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())->CoolTime);
+		//}
 	}
 }
 

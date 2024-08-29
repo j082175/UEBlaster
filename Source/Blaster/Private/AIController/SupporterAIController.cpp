@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AIController/EnemyAIController.h"
+#include "AIController/SupporterAIController.h"
 #include "Characters/Enemy/Enemy.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -13,45 +13,52 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISense_Hearing.h"
 #include "AISystem.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "Interfaces/AIInterface.h"
 
 #include "BlasterTypes/BlackboardKeys.h"
 
 
-AEnemyAIController::AEnemyAIController()
+ASupporterAIController::ASupporterAIController()
 {
-	Tags.Add(TEXT("Enemy"));
+	Tags.Add(TEXT("Supporter"));
+
+	PrimaryActorTick.TickInterval = 0.01f;
 }
 
-void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+void ASupporterAIController::BeginPlay()
 {
-	AController* A = Actor->GetInstigatorController();
+	Super::BeginPlay();
+}
+
+void ASupporterAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+{
+	AController* C = Actor->GetInstigatorController();
 
 	if (!Actor->GetInstigatorController()) return;
 	if (Actor->GetInstigatorController()->Tags.Num() == 0) return;
-	if (Actor->GetInstigatorController()->Tags[0] != TEXT("Player") &&
-		Actor->GetInstigatorController()->Tags[0] != TEXT("Supporter")) return;
+	if (Actor->GetInstigatorController()->Tags[0] != TEXT("Enemy")) return;
 
-	//UE_LOG(LogTemp, Display, TEXT("Actor Tag : %s"), *Actor->GetInstigatorController()->Tags[0].ToString());
+	UE_LOG(LogTemp, Display, TEXT("Actor Tag : %s"), *Actor->GetInstigatorController()->Tags[0].ToString());
 
 	Super::OnTargetPerceptionUpdated(Actor, Stimulus);
 }
 
-void AEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+void ASupporterAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
 	Super::OnPerceptionUpdated(UpdatedActors);
 }
 
-void AEnemyAIController::OnTargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
+void ASupporterAIController::OnTargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
 {
 	Super::OnTargetPerceptionInfoUpdated(UpdateInfo);
 }
 
-void AEnemyAIController::OnTargetPerceptionForgotten(AActor* Actor)
+void ASupporterAIController::OnTargetPerceptionForgotten(AActor* Actor)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("OnTargetPerceptionForgotten : %s"), *Actor->GetName());
-	
+
 	AActor* TargetActor = Cast<AActor>(GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
 	if (TargetActor == Actor && GetBlackboardComponent())
 	{
