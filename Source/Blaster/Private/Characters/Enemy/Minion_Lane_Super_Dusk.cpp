@@ -156,7 +156,7 @@ void AMinion_Lane_Super_Dusk::OnRightWeaponCapsuleBeginOverlap(UPrimitiveCompone
 		//UE_LOG(LogTemp, Display, TEXT("HitActor : %s"), *OtherActor->GetName());
 		FVector ImpactPoint = HitCollisionCapsules[TEXT("weapon_r")]->GetComponentLocation();
 
-		HitActor->IGetHit(ImpactPoint, SweepResult, GetInstigatorController());
+		HitActor->IGetHit(ImpactPoint, SweepResult);
 
 
 		//FVector Location = HitCollisionCapsules[TEXT("weapon_r")]->GetComponentLocation();
@@ -219,7 +219,7 @@ void AMinion_Lane_Super_Dusk::OnLeftWeaponCapsuleBeginOverlap(UPrimitiveComponen
 		//UE_LOG(LogTemp, Display, TEXT("HitActor : %s"), *OtherActor->GetName());
 		FVector ImpactPoint = HitCollisionCapsules[TEXT("weapon_l")]->GetComponentLocation();
 
-		HitActor->IGetHit(ImpactPoint, SweepResult, GetInstigatorController());
+		HitActor->IGetHit(ImpactPoint, SweepResult);
 		float ForceDamage = 1000'00000.f;
 		float ForceRadius = 100.f;
 

@@ -34,7 +34,6 @@
 #include "AIController/BaseAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-#include "Perception/AISense_Damage.h"
 #include "Actor/SplineActor.h"
 
 
@@ -88,8 +87,8 @@ void AEnemy::BeginPlay()
 	ACharacterBase* OwingActor = Cast<ACharacterBase>(GetOwner());
 	if (OwingActor)
 	{
-		SetTeam(OwingActor->GetTeam());
-		SetTeamColor(OwingActor->GetTeam());
+		ISetTeam(OwingActor->IGetTeam());
+		SetTeamColor(OwingActor->IGetTeam());
 	}
 
 }
@@ -188,8 +187,6 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 
 	Super::ReceiveDamage(DamagedActor, Damage, DamageType, InstigatorController, DamageCauser);
 
-	UAISense_Damage::ReportDamageEvent(this, this, InstigatorController->GetPawn(), Damage, DamageCauser->GetActorLocation(), GetActorLocation());
-
 	if (InstigatorController)
 	{
 		PawnDamageCauser = InstigatorController->GetPawn();
@@ -199,10 +196,10 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 		UE_LOG(LogTemp, Error, TEXT("EventInstigator is NULL"));
 	}
 
-	if (BaseAIController)
-	{
-		BaseAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), PawnDamageCauser);
-	}
+	//if (BaseAIController)
+	//{
+	//	BaseAIController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), PawnDamageCauser);
+	//}
 
 
 }
@@ -279,7 +276,7 @@ void AEnemy::InitializeDefaults()
 
 }
 
-void AEnemy::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult, AController* InPlayerController)
+void AEnemy::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult)
 {
 	CharacterHitPoint = InHitPoint;
 

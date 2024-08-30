@@ -18,7 +18,7 @@ void ABlasterPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerState::BeginPlay"));
+	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerState::BeginPlay"));
 }
 
 void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -37,7 +37,12 @@ void ABlasterPlayerState::OnRep_Score()
 	SetHUDScore(GetScore());
 }
 
-void ABlasterPlayerState::SetTeam(ETeam TeamToSlot)
+ETeam ABlasterPlayerState::IGetTeam() const
+{
+	return Team;
+}
+
+void ABlasterPlayerState::ISetTeam(ETeam TeamToSlot)
 {
 	UE_LOG(LogTemp, Error, TEXT("TeamToSlot : %d"), (int)TeamToSlot);
 	Team = TeamToSlot;

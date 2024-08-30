@@ -54,7 +54,7 @@ public:
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 	FORCEINLINE bool GetDisableGameplay() const { return bDisableGameplay; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
-	FORCEINLINE class UOverheadWidget* GetOverheadWidget() const { return OverheadWidget; }
+
 
 	FORCEINLINE float GetGrenades() const { return Grenades; }
 	FORCEINLINE float GetCarriedAmmo() const { return CarriedAmmo; }
@@ -198,13 +198,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
-	// Widgets
-private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class UOverheadWidget> OverheadWidget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class UWidgetComponent> OverheadWidgetComponent;
 
 
 	UPROPERTY(Replicated)

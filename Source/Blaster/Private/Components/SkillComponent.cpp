@@ -150,8 +150,8 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 				EnemyRange->SpawnDefaultController();
 				EnemyRange->SetOwner(CharacterOwner);
 				EnemyRange->SetInstigator(CharacterOwner);
-				EnemyRange->SetTeam(CharacterOwner->GetTeam());
-				EnemyRange->SetTeamColor(CharacterOwner->GetTeam());
+				EnemyRange->ISetTeam(CharacterOwner->IGetTeam());
+				EnemyRange->SetTeamColor(CharacterOwner->IGetTeam());
 			}
 		}
 

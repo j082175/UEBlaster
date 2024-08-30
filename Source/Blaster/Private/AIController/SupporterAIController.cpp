@@ -44,7 +44,7 @@ void ASupporterAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulu
 	ACharacterBase* CharacterBase = Cast<ACharacterBase>(Actor);
 	ACharacterBase* ThisCharacter = Cast<ACharacterBase>(GetPawn());
 
-	if (Actor->GetInstigatorController()->Tags[0] == TEXT("Enemy") || CharacterBase->GetTeam() != ThisCharacter->GetTeam())
+	if (Actor->GetInstigatorController()->Tags[0] == TEXT("Enemy") || CharacterBase->IGetTeam() != ThisCharacter->IGetTeam())
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Owner Team : %s, This Team : %s"), CharacterBase->GetTeam(), ThisCharacter->GetTeam());
 

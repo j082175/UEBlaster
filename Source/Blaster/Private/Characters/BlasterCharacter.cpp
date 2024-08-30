@@ -76,7 +76,6 @@ ABlasterCharacter::ABlasterCharacter()
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
 	BuffComponent = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
 	DissolveTimelineComponent = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 	AttachedGrenade = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttachedGrenade"));
@@ -219,10 +218,7 @@ void ABlasterCharacter::BeginPlay()
 	//			OverheadWidget->ShowPlayerName(GetPlayerState());
 	//		}
 	//	}), 0.2f, false);
-	if (OverheadWidget && GetPlayerState())
-	{
-		OverheadWidget->ShowPlayerName(GetPlayerState());
-	}
+
 
 
 	//UE_LOG(LogTemp, Display, TEXT("BeginPlay"));
@@ -250,8 +246,7 @@ void ABlasterCharacter::BeginPlay()
 		}
 	}
 
-	OverheadWidget = Cast<UOverheadWidget>(OverheadWidgetComponent->GetWidget());
-	OverheadWidget->ShowPlayerNetRole(this);
+
 	//UE_LOG(LogTemp, Display, TEXT("CurrentHealth : %f, MaxHealth : %f"), CurrentHealth, MaxHealth);
 
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
@@ -442,7 +437,7 @@ void ABlasterCharacter::OnPlayerStateInitialized()
 {
 	BlasterPlayerState->AddToScore(0.f);
 	BlasterPlayerState->AddToDefeats(0);
-	SetTeamColor(BlasterPlayerState->GetTeam());
+	SetTeamColor(BlasterPlayerState->IGetTeam());
 	SetSpawnPoint();
 }
 
@@ -464,8 +459,7 @@ void ABlasterCharacter::InitializeDefaults()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 420.f);
 	bUseControllerRotationYaw = false;
 
-	OverheadWidgetComponent->SetupAttachment(RootComponent);
-	OverheadWidgetComponent->SetComponentTickInterval(1.f);
+
 
 	BuffComponent->SetIsReplicated(true);
 
@@ -1448,7 +1442,6 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 		ShowSniperScopeWidget(false);
 	}
 
-	OverheadWidget->SetVisibility(ESlateVisibility::Hidden);
 	//if (CrownNiagaraComponent)
 	//{
 	//	CrownNiagaraComponent->DestroyComponent();
@@ -1751,7 +1744,21 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
 		{
-			HUDPackage.CrosshairsColor = FLinearColor::Red;
+
+			ITeamInterface* T1 = Cast<ITeamInterface>(TraceHitResult.GetActor());
+			if (T1)
+			{
+				if (T1->IGetTeam() == IGetTeam())
+				{
+					HUDPackage.CrosshairsColor = FLinearColor::Green;
+				}
+				else
+				{
+					HUDPackage.CrosshairsColor = FLinearColor::Red;
+				}
+			}
+
+			
 		}
 		else
 		{

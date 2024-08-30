@@ -28,6 +28,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UEditableTextBox* ChatInput;
 	
+	UPROPERTY()
 	TObjectPtr<class UChatViewer> ChatViewer;
 
 	// classes

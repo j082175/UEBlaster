@@ -191,6 +191,9 @@ void ABaseAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Sti
 
 	TSubclassOf<UAISense> Result = UAIPerceptionSystem::GetSenseClassForStimulus(this, Stimulus);
 
+	//UE_LOG(LogTemp, Display, TEXT("%s Detected"), *Result->GetName());
+
+
 	if (Result == AISense_Sight)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("AISense_Sight Detected"));

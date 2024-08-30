@@ -26,6 +26,8 @@
 
 #include "HUD/ChattingUI/ChatBox.h"
 #include "HUD/ChattingUI/ChatTextBlock.h"
+#include "HUD/OverheadWidget.h"
+#include "Components/WidgetComponent.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ChatSystemComponent.h"
 #include "Blaster/Blaster.h"
@@ -59,10 +61,27 @@ void ABlasterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Display, TEXT("BlasterPlayerController BeginPlay"));
+	//UE_LOG(LogTemp, Display, TEXT("%s BeginPlay"), *GetName());
 
 	//PrimaryActorTick.TickInterval = 0.1f;
 
+	//if (IsLocalController())
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("LocalController : %s"), *GetName());
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Not LocalController : %s"), *GetName());
+	//}
+
+	//if (IsLocalPlayerController())
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("LocalPlayerController : %s"), *GetName());
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Not LocalPlayerController : %s"), *GetName());
+	//}
 
 	//if (GEngine)
 	//{
@@ -76,7 +95,7 @@ void ABlasterPlayerController::BeginPlay()
 	//}
 	ServerCheckMatchState();
 
-	if (IsLocalController())
+	if (IsLocalPlayerController())
 	{
 		UChatBox* ChatBox = CreateWidget<UChatBox>(this, ChatSystemComponent->GetChatBoxClassToInit());
 		if (ChatBox)
@@ -102,12 +121,25 @@ void ABlasterPlayerController::BeginPlay()
 			}
 			else
 			{
+				//UE_LOG(LogTemp, Warning, TEXT("HitNotice %s, %s"), *GetName(), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
 				HitNotice->AddToViewport();
 			}
 		}
 	}
+	
+	BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
+	if (BlasterCharacter)
+	{
+		UOverheadWidget* OverheadWidget = Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget());
 
+		if (OverheadWidget)
+		{
+			OverheadWidget->ShowPlayerName(GetPlayerState<APlayerState>());
+		}
 
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("%s : PlayerState : %x"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), GetPlayerState<APlayerState>());
 }
 
 void ABlasterPlayerController::OnPossess(APawn* InPawn)

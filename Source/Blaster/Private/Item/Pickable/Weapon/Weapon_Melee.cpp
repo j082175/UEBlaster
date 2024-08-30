@@ -163,7 +163,7 @@ void AWeapon_Melee::HitTrace()
 		{
 
 			UGameplayStatics::ApplyDamage(OutHitResult.GetActor(), DamageAmount, GetInstigatorController(), this, UDamageType::StaticClass());
-			IHitActor->IGetHit(OutHitResult.ImpactPoint, OutHitResult, GetInstigatorController());
+			IHitActor->IGetHit(OutHitResult.ImpactPoint, OutHitResult);
 
 			ActorsToIgnore.AddUnique(OutHitResult.GetActor());
 

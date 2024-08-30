@@ -22,7 +22,7 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastResetFlag();
 
-	FORCEINLINE ETeam GetTeam() const { return Team; }
+	FORCEINLINE ETeam IGetTeam() const { return Team; }
 
 protected:
 	//virtual void OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

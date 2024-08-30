@@ -20,6 +20,7 @@
 
 // Interfaces
 #include "Interfaces/HitInterface.h"
+#include "Interfaces/TeamInterface.h"
 
 // FieldSystem
 #include "Field/FieldSystemComponent.h"
@@ -28,8 +29,9 @@
 #include "NiagaraFunctionLibrary.h"
 
 #include "Blaster/Blaster.h"
-
 #include "Perception/AISense_Hearing.h"
+
+#include "PlayerController/BlasterPlayerController.h"
 
 
 // Sets default values
@@ -166,12 +168,33 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	//UE_LOG(LogTemp, Display, TEXT("%s"), *OtherComp->GetName());
 
 
+
 	IHitInterface* HitActor = Cast<IHitInterface>(OtherActor);
 	if (HitActor)
 	{
-		HitActor->IGetHit(GetActorLocation(), Hit, GetInstigatorController());
+
+		HitActor->IGetHit(GetActorLocation(), Hit);
 		ApplyForce(FieldSystemComponent, Hit);
 
+		ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(GetInstigatorController());
+
+		if (BPC && BPC->IsLocalPlayerController())
+		{
+
+			UE_LOG(LogTemp, Error, TEXT("BoneName : %s"), *Hit.BoneName.ToString());
+			UE_LOG(LogTemp, Error, TEXT("MyBoneName : %s"), *Hit.MyBoneName.ToString());
+			UE_LOG(LogTemp, Error, TEXT("Component : %s"), *Hit.Component->GetName());
+
+
+			if (Hit.BoneName.ToString() == TEXT("neck_02") || Hit.BoneName.ToString() == TEXT("head"))
+			{
+				BPC->PlayHitNoticeAnim(TEXT("Head"));
+			}
+			else
+			{
+				BPC->PlayHitNoticeAnim(TEXT("Body"));
+			}
+		}
 	}
 	else
 	{
@@ -183,6 +206,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		}
 	}
 
+
 	if (bIsNotPoolable)
 	{
 		Destroy();
@@ -191,9 +215,8 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	{
 		Destroyed();
 	}
+
 }
-
-
 
 void AProjectile::ExplodeDamage()
 {

@@ -11,7 +11,7 @@
 
 // Kismet
 #include "Kismet/GameplayStatics.h"
-
+#include "Perception/AISense_Hearing.h"
 
 #include "PlayerController/BlasterPlayerController.h"
 #include "Characters/BlasterCharacter.h"
@@ -121,33 +121,32 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 {
 	//UE_LOG(LogTemp, Display, TEXT("GetOwner : %s"), *GetOwner()->GetName());
 
+	ITeamInterface* TI = Cast<ITeamInterface>(OtherActor);
+	ITeamInterface* T2 = Cast<ITeamInterface>(GetOwner());
+	if (TI && T2 && TI->IGetTeam() == T2->IGetTeam())
+	{
+		if (bIsNotPoolable)
+		{
+			Super::Destroy();
+		}
+		else
+		{
+			ProjectileMovementComponent->SetUpdatedComponent(nullptr);
+			ProjectileMovementComponent->Activate(false);
+			Deactivate();
+		}
+
+		return;
+	}
+
 	ACharacterBase* OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (OwnerCharacter)
 	{
 
-		float DamageToCause;
-
-		ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(GetInstigatorController());
-		if (BPC)
-		{
-			if (Hit.BoneName.ToString() == TEXT("neck_02"))
-			{
-				BPC->PlayHitNoticeAnim(TEXT("Head"));
-				DamageToCause = HeadShotDamage;
-			}
-			else
-			{
-				BPC->PlayHitNoticeAnim(TEXT("Body"));
-				DamageToCause = Damage;
-			}
-		}
-
 		if (OwnerCharacter->HasAuthority() && !bUseServerSideRewind)
 		{
 
-			//float DamageToCause = Hit.BoneName.ToString() == TEXT("neck_02") ? HeadShotDamage : Damage;
-			//UE_LOG(LogTemp, Error, TEXT("OnHit Head : %f"), DamageToCause);
-
+			float DamageToCause = Hit.BoneName.ToString() == TEXT("neck_02") ? HeadShotDamage : Damage;
 
 			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType::StaticClass());
 			Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
@@ -175,3 +174,4 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 
 }
+

@@ -21,6 +21,7 @@
 #include "Interfaces/HitInterface.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
 #include "Interfaces/CanParryInterface.h"
+#include "Interfaces/TeamInterface.h"
 //#include "Interfaces/ObjectPoolInterface.h"
 //#include "Actor/PooledObject.h"
 
@@ -34,7 +35,7 @@ typedef int32 AmmoAmountInt;
 
 
 UCLASS()
-class BLASTER_API ACharacterBase : public APooledCharacter, public IHitInterface, public IWidgetBindDelegateInterface, public ICanParryInterface
+class BLASTER_API ACharacterBase : public APooledCharacter, public IHitInterface, public IWidgetBindDelegateInterface, public ICanParryInterface, public ITeamInterface
 {
 	GENERATED_BODY()
 
@@ -80,6 +81,7 @@ public:
 	FORCEINLINE uint8 GetIsRagdollStateStopped() const { return bIsRagdollStateStopped; }
 
 	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
+	FORCEINLINE class UOverheadWidget* GetOverheadWidget() const { return OverheadWidget; }
 
 	ECombatState GetCombatState() const;
 	class AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
@@ -88,8 +90,9 @@ public:
 	ECharacterState GetCharacterState() const;
 	EAnimState GetAnimState() const { return AnimState; }
 	FVector GetHitTarget() const;
+
 	UFUNCTION(BlueprintCallable)
-	ETeam GetTeam();
+	virtual ETeam IGetTeam() const override;
 
 	FORCEINLINE bool IsSprint() const { return bIsSprint; }
 	FORCEINLINE bool IsElimmed() const { return bIsElimmed; }
@@ -100,7 +103,7 @@ public:
 
 	// Setters
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetTeam(ETeam InNewTeam) { Team = InNewTeam; }
+	FORCEINLINE void ISetTeam(ETeam InNewTeam) override { Team = InNewTeam; }
 	void SetHoldingTheFlag(bool bHolding);
 	FORCEINLINE void SetOverlappingWeapon(class AWeapon* InWeapon) { OverlappingWeapon = InWeapon; }
 
@@ -143,7 +146,7 @@ protected:
 	// Interface Functions
 public:
 	// IHitInterface
-	virtual void IGetHit(const FVector& HitPoint, const FHitResult& InHitResult, class AController* InPlayerController) override;
+	virtual void IGetHit(const FVector& HitPoint, const FHitResult& InHitResult) override;
 	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
 
 	//virtual void IBindOverheadWidget(class UWidgetComponent* InWidgetComponent) override;
@@ -938,5 +941,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	ETeam Team;
 
+	// Widgets
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UOverheadWidget> OverheadWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UWidgetComponent> OverheadWidgetComponent;
 };

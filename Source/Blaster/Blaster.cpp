@@ -31,10 +31,10 @@ void WidgetAnimHelper::StartAnimation(const FString& InPrefix, const FString& In
 	}
 	else
 	{
-		Str = FString::Printf(TEXT("%s%s%dAnim_INST"), *InPrefix, *InName, InIndex);
+		Str = FString::Printf(TEXT("%s%sAnim%d_INST"), *InPrefix, *InName, InIndex);
 	}
 
-	//UE_LOG(LogTemp, Display, TEXT("%s"), *Str);
+	UE_LOG(LogTemp, Display, TEXT("StartAnimation str : %s"), *Str);
 
 	if (InWidgetAnimations.Contains(Str))
 	{
@@ -42,6 +42,7 @@ void WidgetAnimHelper::StartAnimation(const FString& InPrefix, const FString& In
 
 		if (WidgetAnimation)
 		{
+			InUserWidget->StopAnimation(WidgetAnimation);
 			InUserWidget->PlayAnimation(WidgetAnimation, 0.f, 1, EUMGSequencePlayMode::Forward, 1.f / InPlaybackSpeed);
 		}
 

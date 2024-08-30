@@ -15,17 +15,23 @@ void UChatBox::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	UE_LOG(LogTemp, Display, TEXT("%s : NativeConstruct, owner : %s, %s"), *GetName(), *GetOwningPlayer()->GetName(), *UEnum::GetDisplayValueAsText(GetOwningPlayer()->GetLocalRole()).ToString());
+
 	//bIsFocusable = true;
 	//SetKeyboardFocus();
 	SetCursor(EMouseCursor::None);
 	 
 	if (ChatViewerClass) ChatViewer = CreateWidget<UChatViewer>(this, ChatViewerClass);
+	if (!ChatViewer)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ChatViewer is not initialized!"));
+	}
 }
 
 void UChatBox::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	  
+	 
 	//UE_LOG(LogTemp, Warning, TEXT("Chatbox tick"));
 }
 
@@ -90,8 +96,9 @@ void UChatBox::SetVisibility(ESlateVisibility SlateVisibility)
 {
 	if (SlateVisibility == ESlateVisibility::Visible)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(ChatViewerReleaseTimerHandle);
 		ChatViewer->SetVisibility(SlateVisibility);
+		GetWorld()->GetTimerManager().ClearTimer(ChatViewerReleaseTimerHandle);
+		ChatViewerReleaseTimerHandle.Invalidate();
 	}
 
 	Super::SetVisibility(SlateVisibility);

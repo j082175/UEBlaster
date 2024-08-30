@@ -23,7 +23,7 @@ void ACaptureTheFlagGameMode::PlayerEliminated(ACharacterBase* ElimmedCharacter,
 
 void ACaptureTheFlagGameMode::FlagCaptured(AFlag* Flag, AFlagZone* Zone)
 {
-	bool bValidCapture = Flag->GetTeam() != Zone->Team;
+	bool bValidCapture = Flag->IGetTeam() != Zone->Team;
 	ABlasterGameState* BGameState = GetGameState<ABlasterGameState>();
 	if (BGameState)
 	{

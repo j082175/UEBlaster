@@ -227,8 +227,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> HitNoticeClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UUserWidget> HitNotice;
-
+	class UUserWidget* HitNotice;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TMap<FString, class UWidgetAnimation*> FindWidgetAnimation;
 
 	//public:

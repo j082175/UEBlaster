@@ -14,6 +14,7 @@
 #include "PlayerController/BlasterPlayerController.h"
 #include "Blaster/Blaster.h"
 #include "Interfaces/HitInterface.h"
+#include "Interfaces/TeamInterface.h"
 
 #include "Perception/AISense_Damage.h"
 #include "Perception/AISense_Hearing.h"
@@ -44,10 +45,35 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 			IHitInterface* HitActor = Cast<IHitInterface>(FireHit.GetActor());
 			if (HitActor)
 			{
+
+				ITeamInterface* TI = Cast<ITeamInterface>(FireHit.GetActor());
+				ITeamInterface* T2 = Cast<ITeamInterface>(GetOwner());
+				if (TI && T2 && TI->IGetTeam() == T2->IGetTeam())
+				{
+					return;
+				}
+				
+
 				//if (HasAuthority()) UE_LOG(LogTemp, Error, TEXT("HitActor : %s"), *FireHit.GetActor()->GetName());
-				HitActor->IGetHit(HitTarget, FireHit, FireHit.GetActor()->GetInstigatorController());
+				HitActor->IGetHit(HitTarget, FireHit);
 				//ApplyForce(FieldSystemComponent, FireHit);
 				//UAISense_Damage::ReportDamageEvent(this, FireHit.GetActor(), GetInstigator(), Damage, GetActorLocation(), HitTarget);
+				
+				ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(GetInstigatorController());
+
+				if (BPC && BPC->IsLocalPlayerController())
+				{
+					//UE_LOG(LogTemp, Error, TEXT("OnHit : %s"), *FireHit.BoneName.ToString());
+
+					if (FireHit.BoneName.ToString() == TEXT("neck_02") || FireHit.BoneName.ToString() == TEXT("head"))
+					{
+						BPC->PlayHitNoticeAnim(TEXT("Head"));
+					}
+					else
+					{
+						BPC->PlayHitNoticeAnim(TEXT("Body"));
+					}
+				}
 			}
 
 

@@ -73,7 +73,7 @@ protected:
 
 	// Interface
 protected:
-	virtual void IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult, class AController* InPlayerController) override;
+	virtual void IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult) override;
 	//FORCEINLINE virtual class UPawnSensingComponent* IGetSensingComponent() override { return PawnSensingComponent; }
 	//virtual bool IIsHit() override;
 	virtual void IAttack(FAttackEndedDelegate Delegate, const FString& AttackType) override;

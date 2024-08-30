@@ -38,7 +38,7 @@ void AFlagZone::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	//UE_LOG(LogTemp, Display, TEXT("%s : OnSphereOverlap"), *UEnum::GetDisplayValueAsText(OtherActor->GetLocalRole()).ToString());
 
 	AFlag* OverlappingFlag = Cast<AFlag>(OtherActor);
-	if (OverlappingFlag && OverlappingFlag->GetTeam() != Team)
+	if (OverlappingFlag && OverlappingFlag->IGetTeam() != Team)
 	{
 
 

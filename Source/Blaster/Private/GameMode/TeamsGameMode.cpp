@@ -65,17 +65,17 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 	if (BGameState)
 	{
 		ABlasterPlayerState* BPState = PlayerController->GetPlayerState<ABlasterPlayerState>();
-		if (BPState && BPState->GetTeam() == ETeam::ET_NoTeam)
+		if (BPState && BPState->IGetTeam() == ETeam::ET_NoTeam)
 		{
 			if (BGameState->BlueTeam.Num() >= BGameState->RedTeam.Num())
 			{
 				BGameState->RedTeam.AddUnique(BPState);
-				BPState->SetTeam(ETeam::ET_RedTeam);
+				BPState->ISetTeam(ETeam::ET_RedTeam);
 			}
 			else
 			{
 				BGameState->BlueTeam.AddUnique(BPState);
-				BPState->SetTeam(ETeam::ET_BlueTeam);
+				BPState->ISetTeam(ETeam::ET_BlueTeam);
 			}
 		}
 		else
@@ -129,7 +129,7 @@ float ATeamsGameMode::CalculateDamage(AController* Attacker, AController* Victim
 
 	if (AttackerPState == nullptr || VictimPState == nullptr) return BaseDamage;
 	if (AttackerPState == VictimPState) return BaseDamage;
-	if (AttackerPState->GetTeam() == VictimPState->GetTeam()) return 0.f;
+	if (AttackerPState->IGetTeam() == VictimPState->IGetTeam()) return 0.f;
 
 	return BaseDamage;
 }
@@ -148,11 +148,11 @@ void ATeamsGameMode::PlayerEliminated(ACharacterBase* ElimmedCharacter, ABlaster
 	ABlasterPlayerState* AttackerPlayerState = AttackerController ? Cast<ABlasterPlayerState>(AttackerController->PlayerState) : nullptr;
 	if (BGameState && AttackerPlayerState)
 	{
-		if (AttackerPlayerState->GetTeam() == ETeam::ET_BlueTeam)
+		if (AttackerPlayerState->IGetTeam() == ETeam::ET_BlueTeam)
 		{
 			BGameState->BlueTeamScores();
 		}
-		else if (AttackerPlayerState->GetTeam() == ETeam::ET_RedTeam)
+		else if (AttackerPlayerState->IGetTeam() == ETeam::ET_RedTeam)
 		{
 			BGameState->RedTeamScores();
 		}
@@ -171,17 +171,17 @@ void ATeamsGameMode::HandleMatchHasStarted()
 		for (const auto& PState : BGameState->PlayerArray)
 		{
 			ABlasterPlayerState* BPState = Cast<ABlasterPlayerState>(PState.Get());
-			if (BPState && BPState->GetTeam() == ETeam::ET_NoTeam)
+			if (BPState && BPState->IGetTeam() == ETeam::ET_NoTeam)
 			{
 				if (BGameState->BlueTeam.Num() >= BGameState->RedTeam.Num())
 				{
 					BGameState->RedTeam.AddUnique(BPState);
-					BPState->SetTeam(ETeam::ET_RedTeam);
+					BPState->ISetTeam(ETeam::ET_RedTeam);
 				}
 				else
 				{
 					BGameState->BlueTeam.AddUnique(BPState);
-					BPState->SetTeam(ETeam::ET_BlueTeam);
+					BPState->ISetTeam(ETeam::ET_BlueTeam);
 				}
 			}
 		}

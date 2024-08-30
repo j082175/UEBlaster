@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
-#include "BlasterTypes/Team.h"
+#include "Interfaces/TeamInterface.h"
 #include "BlasterPlayerState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BLASTER_API ABlasterPlayerState : public APlayerState
+class BLASTER_API ABlasterPlayerState : public APlayerState, public ITeamInterface
 {
 	GENERATED_BODY()
 public:
@@ -20,8 +20,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void OnRep_Score() override;
 
-	FORCEINLINE ETeam GetTeam() const { return Team; }
-	void SetTeam(ETeam TeamToSlot);
+	virtual ETeam IGetTeam() const override;
+	virtual void ISetTeam(ETeam TeamToSlot) override;
 
 	void AddToScore(float ScoreAmount);
 	UFUNCTION()

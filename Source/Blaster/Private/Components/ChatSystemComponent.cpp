@@ -75,6 +75,8 @@ void UChatSystemComponent::OpenChatBox()
 
 		if (ChatBox->GetVisibility() == ESlateVisibility::Collapsed)
 		{
+			//UE_LOG(LogTemp, Display, TEXT("OpenChatBox : %s"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString());
+
 			ChatBox->SetVisibility(ESlateVisibility::Visible);
 			FInputModeGameAndUI InputModeGameAndUI;
 

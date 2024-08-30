@@ -61,9 +61,17 @@ void UOverheadWidget::ShowPlayerName(APlayerState* InPlayerState)
 		{
 			DisplayText2->SetText(FText::FromString(Result));
 		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("DisplayText2 is not valid"));
+		}
 
 
 		//UE_LOG(LogTemp, Display, TEXT("PlayerState is : %s"), *InPlayerState->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("OverheadWidget : PlayerState is not valid"));
 	}
 }
 

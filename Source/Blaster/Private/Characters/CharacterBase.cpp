@@ -98,6 +98,9 @@
 #include "Characters/Enemy/Enemy.h"
 #include "Characters/Enemy/EnemyRange.h"
 
+#include "Perception/AISense_Damage.h"
+
+
 #include "BlasterTypes/KeyType.h"
 #include "GameData/DataSingleton.h"
 
@@ -132,6 +135,9 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 
 	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+
+	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
+
 
 	//UE_LOG(LogTemp, Display, TEXT("Base Constructor"));
 
@@ -193,13 +199,34 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("Base Beginplay"));
+	//UE_LOG(LogTemp, Warning, TEXT("Base Beginplay"));
 
 	InitializeDelegates();
 	InitializeWidgets();
 
 	if (CharacterSpawnEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetTransform());
 	UE_LOG(LogTemp, Error, TEXT("StartingARAmmo : %d"), StartingARAmmo);
+
+	if (HasAuthority() && !IsLocallyControlled())
+	{
+		int a = 1;
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("%s : PlayerState : %x"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), GetPlayerState<APlayerState>());
+
+	OverheadWidget = Cast<UOverheadWidget>(OverheadWidgetComponent->GetWidget());
+
+
+
+	if (OverheadWidget)
+	{
+		if (AAIController* C = Cast<AAIController>(GetController()))
+		{
+			int a = 1;
+		}
+
+		OverheadWidget->ShowPlayerNetRole(this);
+	}
 
 
 }
@@ -281,23 +308,10 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-void ACharacterBase::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult, AController* InPlayerController)
+void ACharacterBase::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult)
 {
 	//DrawDebugSphere(GetWorld(), CharacterHitPoint, 10.f, 12, FColor::Cyan, false, 5.f);
 	//EnemyAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
-
-	ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(InPlayerController);
-	if (BPC)
-	{
-		if (InHitResult.BoneName.ToString() == TEXT("neck_02"))
-		{
-			BPC->PlayHitNoticeAnim(TEXT("Head"));
-		}
-		else
-		{
-			BPC->PlayHitNoticeAnim(TEXT("Body"));
-		}
-	}
 
 	CharacterHitPoint = InHitPoint;
 
@@ -391,6 +405,14 @@ bool ACharacterBase::ICheckParry(AActor* OtherActor)
 
 void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
+
+	ITeamInterface* T1 = Cast<ITeamInterface>(InstigatorController->GetPawn());
+	if (T1->IGetTeam() == IGetTeam())
+	{
+		return;
+	}
+
+	UAISense_Damage::ReportDamageEvent(this, this, InstigatorController->GetPawn(), Damage, DamageCauser->GetActorLocation(), GetActorLocation());
 
 	//UE_LOG(LogTemp, Display, TEXT("Damage : %f"), Damage);
 
@@ -1516,6 +1538,9 @@ void ACharacterBase::InitializeDefaults()
 {
 	InitDashCurve();
 
+	OverheadWidgetComponent->SetupAttachment(RootComponent);
+	OverheadWidgetComponent->SetComponentTickInterval(1.f);
+
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 
 	NetUpdateFrequency = 66.f;
@@ -1633,12 +1658,6 @@ void ACharacterBase::OnConstruction(const FTransform& Transform)
 void ACharacterBase::PostLoad()
 {
 	Super::PostLoad();
-
-	UE_LOG(LogTemp, Display, TEXT("%s: PostLoad"), *GetName());
-
-	UDataSingleton& S = UDataSingleton::Get();
-
-	
 }
 
 void ACharacterBase::PollInit()
@@ -1683,10 +1702,13 @@ FVector ACharacterBase::GetHitTarget() const
 	return HitTarget;
 }
 
-ETeam ACharacterBase::GetTeam()
+ETeam ACharacterBase::IGetTeam() const
 {
-	BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
-	if (BlasterPlayerState == nullptr)
+	//BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
+
+	ITeamInterface* TeamPlayerState = Cast<ITeamInterface>(GetPlayerState());
+
+	if (TeamPlayerState == nullptr)
 	{
 		if (Team != ETeam::ET_NoTeam)
 		{
@@ -1698,7 +1720,7 @@ ETeam ACharacterBase::GetTeam()
 		}
 	}
 
-	return BlasterPlayerState->GetTeam();
+	return TeamPlayerState->IGetTeam();
 }
 
 void ACharacterBase::SetHoldingTheFlag(bool bHolding)
@@ -2091,6 +2113,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 		CrownNiagaraComponent->DestroyComponent();
 	}
 
+	if (OverheadWidget) OverheadWidget->SetVisibility(ESlateVisibility::Hidden);
 
 
 
@@ -2123,7 +2146,7 @@ void ACharacterBase::Recover()
 
 void ACharacterBase::SetSpawnPoint()
 {
-	if (HasAuthority() && BlasterPlayerState->GetTeam() != ETeam::ET_NoTeam)
+	if (HasAuthority() && BlasterPlayerState->IGetTeam() != ETeam::ET_NoTeam)
 	{
 		TArray<AActor*> PlayerStarts;
 		UGameplayStatics::GetAllActorsOfClass(this, ATeamPlayerStart::StaticClass(), PlayerStarts);
@@ -2132,7 +2155,7 @@ void ACharacterBase::SetSpawnPoint()
 		for (const auto& Start : PlayerStarts)
 		{
 			ATeamPlayerStart* TeamStart = Cast<ATeamPlayerStart>(Start);
-			if (TeamStart && TeamStart->Team == BlasterPlayerState->GetTeam())
+			if (TeamStart && TeamStart->Team == BlasterPlayerState->IGetTeam())
 			{
 				TeamPlayerStarts.Add(TeamStart);
 			}
@@ -2249,6 +2272,7 @@ void ACharacterBase::EquipWeaponFunc()
 		EquippedWeapon->EnableCustomDepth(false);
 
 		EquippedWeapon->SetOwner(this);
+		EquippedWeapon->SetInstigator(this);
 		if (AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon)) Gun->SetHUDAmmo();
 		UpdateCarriedAmmo();
 		ReloadEmptyWeapon();
@@ -2270,6 +2294,7 @@ void ACharacterBase::EquipSecondaryFunc()
 		AttachActorToBackpack(SecondaryWeapon);
 		PlaySecondaryWeaponSound();
 		SecondaryWeapon->SetOwner(this);
+		SecondaryWeapon->SetInstigator(this);
 		SecondaryWeapon->ShowPickupWidget(false);
 		SecondaryWeapon->EnableCustomDepth(false);
 
