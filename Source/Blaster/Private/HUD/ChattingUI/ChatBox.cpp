@@ -25,14 +25,14 @@ void UChatBox::NativeConstruct()
 void UChatBox::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
+	
 	//UE_LOG(LogTemp, Warning, TEXT("Chatbox tick"));
 }
 
 FReply UChatBox::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
-
+	 
 	// Not Work
 
 	//UE_LOG(LogTemp, Display, TEXT("NativeOnKeyDown"));
