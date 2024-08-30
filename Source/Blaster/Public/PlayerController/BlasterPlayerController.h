@@ -231,6 +231,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TMap<FString, class UWidgetAnimation*> FindWidgetAnimation;
 
+	UPROPERTY()
+	class UOverheadWidget* OverheadWidget;
+
 	//public:
 	//	UFUNCTION(Client, Reliable)
 	//	void ClientChatCommitted(const FText& Text, const FString& PlayerName);

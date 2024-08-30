@@ -11,6 +11,8 @@
 #include "Item/Pickable/Weapon/Shotgun.h"
 #include "Components/MyCharacterMovementComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "HUD/OverheadWidget.h"
+#include "PlayerState/BlasterPlayerState.h"
 
 AEnemyRange::AEnemyRange()
 {
@@ -190,6 +192,23 @@ void AEnemyRange::BeginPlay()
 
 	if (BaseAIController && BaseAIController->GetBlackboardComponent())
 		BaseAIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
+
+
+	FTimerHandle H;
+	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+		{
+			if (Tags.Num() != 0 && GetInstigatorController())
+			{
+				ABlasterPlayerState* BPS = GetInstigatorController()->GetPlayerState<ABlasterPlayerState>();
+				if (BPS)
+				{
+					FString PlayerName = BPS->GetPlayerName();
+					FString Str = FString::Printf(TEXT("%s's %s"), *PlayerName, *Tags[0].ToString());
+					OverheadWidget->ShowPlayerName(Str);
+				}
+			}
+		}), 0.1f, false);
+
 
 
 }

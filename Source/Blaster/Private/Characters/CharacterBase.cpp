@@ -137,7 +137,7 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
-
+	OverheadWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//UE_LOG(LogTemp, Display, TEXT("Base Constructor"));
 
@@ -205,30 +205,13 @@ void ACharacterBase::BeginPlay()
 	InitializeWidgets();
 
 	if (CharacterSpawnEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetTransform());
-	UE_LOG(LogTemp, Error, TEXT("StartingARAmmo : %d"), StartingARAmmo);
-
-	if (HasAuthority() && !IsLocallyControlled())
-	{
-		int a = 1;
-	}
-
-	UE_LOG(LogTemp, Error, TEXT("%s : PlayerState : %x"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), GetPlayerState<APlayerState>());
 
 	OverheadWidget = Cast<UOverheadWidget>(OverheadWidgetComponent->GetWidget());
 
-
-
 	if (OverheadWidget)
 	{
-		if (AAIController* C = Cast<AAIController>(GetController()))
-		{
-			int a = 1;
-		}
-
 		OverheadWidget->ShowPlayerNetRole(this);
 	}
-
-
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -1959,11 +1942,13 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 		//GetMesh()->SetMaterial(1, RedMaterial);
 		//DissolveMaterialInstance = RedDissolveMatInst;
 		if (RedTeamSKMesh) GetMesh()->SetSkeletalMesh(RedTeamSKMesh);
+		OverheadWidget->SetTextColor(ETeam::ET_RedTeam);
 		break;
 	case ETeam::ET_BlueTeam:
 		//GetMesh()->SetMaterial(1, BlueMaterial);
 		//DissolveMaterialInstance = BlueDissolveMatInst;
 		if (BlueTeamSKMesh) GetMesh()->SetSkeletalMesh(BlueTeamSKMesh);
+		OverheadWidget->SetTextColor(ETeam::ET_BlueTeam);
 		break;
 	case ETeam::ET_MAX:
 		break;

@@ -128,13 +128,17 @@ void ABlasterPlayerController::BeginPlay()
 	}
 	
 	BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
-	if (BlasterCharacter)
+	if (BlasterCharacter && IsLocalPlayerController())
 	{
-		UOverheadWidget* OverheadWidget = Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget());
+		OverheadWidget = Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget());
 
 		if (OverheadWidget)
 		{
 			OverheadWidget->ShowPlayerName(GetPlayerState<APlayerState>());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s : OverheadWidget is null"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
 		}
 
 	}
@@ -158,6 +162,19 @@ void ABlasterPlayerController::OnUnPossess()
 void ABlasterPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	BlasterCharacter = BlasterCharacter == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : BlasterCharacter.Get();
+
+	if (IsLocalPlayerController() && BlasterCharacter)
+	{
+		OverheadWidget = OverheadWidget == nullptr ? Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget()) : OverheadWidget;
+
+		if (OverheadWidget)
+		{
+			OverheadWidget->ShowPlayerName(GetPlayerState<APlayerState>());
+		}
+	}
+
 
 	//if (IsLocalController())
 	//{

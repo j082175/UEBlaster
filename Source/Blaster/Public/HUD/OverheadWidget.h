@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "BlasterTypes/Team.h"
 #include "OverheadWidget.generated.h"
 
 /**
@@ -18,17 +19,20 @@ public:
 
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> DisplayText;
+	TObjectPtr<class UTextBlock> LocaleRoleText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> DisplayText2;
+	TObjectPtr<class UTextBlock> PlayerIDText;
 
 	void SetDisplayText(FString TextToDisplay);
+	void SetTextColor(ETeam InTeam);
 
 	UFUNCTION(BlueprintCallable)
 	void ShowPlayerNetRole(APawn* InPawn);
 
 	void ShowPlayerName(APlayerState* InPlayerState);
+	void ShowPlayerName(const FString& InName);
+
 
 protected:
 	virtual void NativeDestruct() override;
