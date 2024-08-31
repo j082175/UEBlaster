@@ -5,13 +5,43 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/TeamInterface.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "Interfaces/WidgetBindDelegateInterface.h"
 
+
+void UOverheadWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	SetVisibility(ESlateVisibility::Visible);
+
+
+	Init();
+
+}
 
 void UOverheadWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	//UE_LOG(LogTemp, Display, TEXT("OverheadWidget Tick"));
+	UE_LOG(LogTemp, Display, TEXT("OverheadWidget Tick"));
+}
+
+void UOverheadWidget::Init()
+{
+
+	GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
+			if (WBDI)
+			{
+				//UE_LOG(LogTemp, Display, TEXT("Initializing"));
+				WBDI->IBindOverheadWidget(this);
+				GetWorld()->GetTimerManager().ClearTimer(InitTimerHandle);
+				InitTimerHandle.Invalidate();
+			}
+		}), 0.01f, true);
 }
 
 void UOverheadWidget::SetDisplayText(FString TextToDisplay)
@@ -22,29 +52,50 @@ void UOverheadWidget::SetDisplayText(FString TextToDisplay)
 	}
 }
 
-void UOverheadWidget::SetTextColor(ETeam InTeam)
+void UOverheadWidget::SetTextColor(FLinearColor InColor)
 {
-	FSlateColor Red(FLinearColor(1.f, 0.13f, 0.19f));
-	FSlateColor Green(FLinearColor(0.1f, 1.f, 0.f));
+	LocaleRoleText->SetColorAndOpacity(InColor);
+	PlayerIDText->SetColorAndOpacity(InColor);
 
-	APawn* P = GetWorld()->GetFirstPlayerController()->GetPawn();
-	if (P)
-	{
-		ITeamInterface* T1 = Cast<ITeamInterface>(GetOwningPlayerPawn());
-		ITeamInterface* T2 = Cast<ITeamInterface>(P);
+	//APawn* P = GetWorld()->GetFirstPlayerController()->GetPawn();
+	//if (P)
+	//{
+
+	//	ITeamInterface* T2 = Cast<ITeamInterface>(P);
+
+	//	TArray<AActor*> FoundActors;
+	//	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ActorToFind, FoundActors);
+
+	//	for (auto& i : FoundActors)
+	//	{
+	//		ITeamInterface* T1 = Cast<ITeamInterface>(i);
+	//		if (T1 && T1->IGetTeam() == T2->IGetTeam())
+	//		{
+	//			LocaleRoleText->SetColorAndOpacity(Green);
+	//			PlayerIDText->SetColorAndOpacity(Green);
+	//		}
+	//		else
+	//		{
+	//			LocaleRoleText->SetColorAndOpacity(Red);
+	//			PlayerIDText->SetColorAndOpacity(Red);
+	//		}
+	//	}
+
+		//ITeamInterface* T1 = Cast<ITeamInterface>(GetOwningPlayerPawn());
 
 
-		if (InTeam == T2->IGetTeam())
-		{
-			LocaleRoleText->SetColorAndOpacity(Green);
-			PlayerIDText->SetColorAndOpacity(Green);
-		}
-		else
-		{
-			LocaleRoleText->SetColorAndOpacity(Red);
-			PlayerIDText->SetColorAndOpacity(Red);
-		}
-	}
+
+		//if (InTeam == T2->IGetTeam())
+		//{
+		//	LocaleRoleText->SetColorAndOpacity(Green);
+		//	PlayerIDText->SetColorAndOpacity(Green);
+		//}
+		//else
+		//{
+		//	LocaleRoleText->SetColorAndOpacity(Red);
+		//	PlayerIDText->SetColorAndOpacity(Red);
+		//}
+	//}
 }
 
 void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
@@ -105,6 +156,16 @@ void UOverheadWidget::ShowPlayerName(APlayerState* InPlayerState)
 void UOverheadWidget::ShowPlayerName(const FString& InName)
 {
 	PlayerIDText->SetText(FText::FromString(InName));
+}
+
+void UOverheadWidget::ServerShowPlayerName_Implementation(APlayerState* InPlayerState)
+{
+	MulticastShowPlayerName(InPlayerState);
+}
+
+void UOverheadWidget::MulticastShowPlayerName_Implementation(APlayerState* InPlayerState)
+{
+	ShowPlayerName(InPlayerState);
 }
 
 void UOverheadWidget::NativeDestruct()

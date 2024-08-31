@@ -76,39 +76,40 @@ void ABlasterHUD::AddAnnouncement()
 
 void ABlasterHUD::AddElimAnnouncement(FString Attacker, FString Victim)
 {
+
 	OwingPlayer = OwingPlayer == nullptr ? GetOwningPlayerController() : OwingPlayer;
 	if (OwingPlayer && ElimAnnouncementClass)
 	{
-		ElimAnnouncementWidget = CreateWidget<UElimAnnouncement>(OwingPlayer, ElimAnnouncementClass);
+		ElimAnnouncementWidget = ElimAnnouncementWidget == nullptr ? CreateWidget<UElimAnnouncement>(OwingPlayer, ElimAnnouncementClass) : ElimAnnouncementWidget;
 		if (ElimAnnouncementWidget.IsValid())
 		{
 			ElimAnnouncementWidget->SetElimAnnouncementText(Attacker, Victim);
-			ElimAnnouncementWidget->AddToViewport();
+			if (!ElimAnnouncementWidget->IsVisible()) ElimAnnouncementWidget->AddToViewport();
 
-			for (const auto& Msg : ElimMessages)
-			{
-				if (Msg && Msg->AnnouncementBox)
-				{
-					UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(Cast<UWidget>(Msg->AnnouncementBox));
-					FVector2D Position = CanvasSlot->GetPosition();
-					FVector2D NewPosition(CanvasSlot->GetPosition().X, Position.Y - CanvasSlot->GetSize().Y);
-					CanvasSlot->SetPosition(NewPosition);
-				}
-			}
+			//for (const auto& Msg : ElimMessages)
+			//{
+			//	if (Msg && Msg->AnnouncementBox)
+			//	{
+			//		UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(Cast<UWidget>(Msg->AnnouncementBox));
+			//		FVector2D Position = CanvasSlot->GetPosition();
+			//		FVector2D NewPosition(CanvasSlot->GetPosition().X, Position.Y - CanvasSlot->GetSize().Y);
+			//		CanvasSlot->SetPosition(NewPosition);
+			//	}
+			//}
 
 
-			ElimMessages.Add(ElimAnnouncementWidget.Get());
+			//ElimMessages.Add(ElimAnnouncementWidget.Get());
 
 			//FTimerHandle ElimMsgTimer;
 			//FTimerDelegate ElimMsgDelegate;
 			//ElimMsgDelegate.BindUFunction(this, TEXT("ElimAnnouncementTimerFinished"), ElimAnnouncementWidget);
 			//GetWorldTimerManager().SetTimer(ElimMsgTimer, ElimMsgDelegate, ElimAnnouncementTime, false);
 
-			FTimerHandle ElimMsgTimer;
-			GetWorldTimerManager().SetTimer(ElimMsgTimer, FTimerDelegate::CreateLambda([&]()
-				{
-					ElimAnnouncementTimerFinished(ElimAnnouncementWidget.Get());
-				}), ElimAnnouncementTime, false);
+			//FTimerHandle ElimMsgTimer;
+			//GetWorldTimerManager().SetTimer(ElimMsgTimer, FTimerDelegate::CreateLambda([&]()
+			//	{
+			//		ElimAnnouncementTimerFinished(ElimMessages[ElimMessages.Num() - 1]);
+			//	}), ElimAnnouncementTime, false);
 		}
 	}
 }
@@ -160,6 +161,14 @@ void ABlasterHUD::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UE_LOG(LogTemp, Display, TEXT("BlasterHUD Tick"));
+
+	//if (CharacterOverlay->GetVisibility() != ESlateVisibility::Visible)
+	//{
+	//	CharacterOverlay->SetVisibility(ESlateVisibility::Visible);
+	//	//SetActorTickEnabled(false);
+	//}
+
+
 	//BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetOwningPlayerController()) : BlasterPlayerController;
 	//if (BlasterPlayerController)
 	//{

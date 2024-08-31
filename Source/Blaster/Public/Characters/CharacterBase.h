@@ -32,7 +32,7 @@
 
 typedef int32 AmmoAmountInt;
 
-
+DECLARE_DELEGATE_OneParam(FOnOverheadTextColorChangedDelegate, FLinearColor);
 
 UCLASS()
 class BLASTER_API ACharacterBase : public APooledCharacter, public IHitInterface, public IWidgetBindDelegateInterface, public ICanParryInterface, public ITeamInterface
@@ -48,6 +48,7 @@ protected:
 	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -103,7 +104,7 @@ public:
 
 	// Setters
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ISetTeam(ETeam InNewTeam) override { Team = InNewTeam; }
+	void ISetTeam(ETeam InNewTeam) override;
 	void SetHoldingTheFlag(bool bHolding);
 	FORCEINLINE void SetOverlappingWeapon(class AWeapon* InWeapon) { OverlappingWeapon = InWeapon; }
 
@@ -112,6 +113,9 @@ public:
 
 	void SetEquippedWeapon(class AWeapon* W) { EquippedWeapon = W; }
 	void SetSecondaryEquippedWeapon(class AWeapon* W) { SecondaryWeapon = W; }
+
+
+	FOnOverheadTextColorChangedDelegate OnOverheadTextColorChanged;
 
 	// Initializes
 protected:
@@ -938,14 +942,19 @@ protected:
 
 
 	// Team , for non-local players
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	ETeam Team;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	ETeam Team = ETeam::ET_NoTeam;
 
 	// Widgets
 public:
+	void SetOverheadWidgetColor();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UOverheadWidget> OverheadWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UWidgetComponent> OverheadWidgetComponent;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<class AActor> PlayableActor;
 };

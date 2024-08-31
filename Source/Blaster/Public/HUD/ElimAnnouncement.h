@@ -19,8 +19,14 @@ public:
 	void SetElimAnnouncementText(FString AttackerName, FString VictimName);
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UHorizontalBox> AnnouncementBox;
+	TObjectPtr<class UScrollBox> AnnouncementScroll;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> AnnouncementText;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UElimAnnouncementBox> ElimAnnouncementBox;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<class UElimAnnouncementBox> ElimAnnouncementBoxClass;
+
+	UPROPERTY(EditAnywhere)
+	float ElimAnnouncementTime = 3.f;
 };

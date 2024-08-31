@@ -15,6 +15,18 @@
 void UCharacterOverlay::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	SetVisibility(ESlateVisibility::Visible);
+
+}
+
+void UCharacterOverlay::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	//UE_LOG(LogTemp, Display, TEXT("CharacterOverlay Tick"));
+	PollInit();
+
 }
 
 void UCharacterOverlay::SetHpBar(float InCurrent, float InMax)
@@ -180,5 +192,14 @@ void UCharacterOverlay::StopHighPingWarning()
 	if (IsAnimationPlaying(HighPingAnimation))
 	{
 		StopAnimation(HighPingAnimation);
+	}
+}
+
+void UCharacterOverlay::PollInit()
+{
+	IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer());
+	if (WBDI)
+	{
+		WBDI->IBindOverheadWidget(this);
 	}
 }

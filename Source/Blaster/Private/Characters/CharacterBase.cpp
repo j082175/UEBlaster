@@ -91,6 +91,7 @@
 
 // DamageType
 #include "DamageType/DamageType_Rumbling.h"
+#include "DamageType/DamageType_Projectile.h"
 
 //#include "TimerManager.h"
 #include "Item/Pickable/Weapon/WeaponTypes.h"
@@ -212,6 +213,13 @@ void ACharacterBase::BeginPlay()
 	{
 		OverheadWidget->ShowPlayerNetRole(this);
 	}
+
+
+}
+
+void ACharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -243,7 +251,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Pitch, COND_SimulatedOnly);
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Yaw, COND_SimulatedOnly);
-
+	DOREPLIFETIME(ThisClass, Team);
 }
 
 // Called every frame
@@ -349,9 +357,11 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 
-
-
-		SkillComponent->OnSkillCoolTimeStarted.AddDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
+		SkillComponent->OnSkillCoolTimeStarted.AddUniqueDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
+	}
+	else if (UOverheadWidget* OW = Cast<UOverheadWidget>(InUserWidget))
+	{
+		OnOverheadTextColorChanged.BindUObject(OW, &UOverheadWidget::SetTextColor);
 	}
 
 	AttributeComponent->Init();
@@ -390,7 +400,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 {
 
 	ITeamInterface* T1 = Cast<ITeamInterface>(InstigatorController->GetPawn());
-	if (T1->IGetTeam() == IGetTeam())
+	if (T1->IGetTeam() == IGetTeam() && Cast<UDamageType_Projectile>(DamageType))
 	{
 		return;
 	}
@@ -1351,6 +1361,19 @@ void ACharacterBase::CheckHpBarWidget(float DeltaTime)
 	}
 }
 
+void ACharacterBase::SetOverheadWidgetColor()
+{
+	if (OverheadWidget)
+	{
+		//UE_LOG(LogTemp, Display, TEXT("%s : SetOverheadWidgetColor"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
+		OverheadWidget->SetVisibility(ESlateVisibility::Visible);
+		if (!OnOverheadTextColorChanged.ExecuteIfBound(FLinearColor(0.13f, 1.f, 0.f)))
+		{
+			UE_LOG(LogTemp, Error, TEXT("Not Bounded!"));
+		}
+	}
+}
+
 void ACharacterBase::MulticastHpBarVisible_Implementation(bool InIsVisible)
 {
 	if (InIsVisible)
@@ -1706,6 +1729,11 @@ ETeam ACharacterBase::IGetTeam() const
 	return TeamPlayerState->IGetTeam();
 }
 
+void ACharacterBase::ISetTeam(ETeam InNewTeam)
+{
+	Team = InNewTeam;
+}
+
 void ACharacterBase::SetHoldingTheFlag(bool bHolding)
 {
 	if (CombatComponent == nullptr) return;
@@ -1942,13 +1970,11 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 		//GetMesh()->SetMaterial(1, RedMaterial);
 		//DissolveMaterialInstance = RedDissolveMatInst;
 		if (RedTeamSKMesh) GetMesh()->SetSkeletalMesh(RedTeamSKMesh);
-		OverheadWidget->SetTextColor(ETeam::ET_RedTeam);
 		break;
 	case ETeam::ET_BlueTeam:
 		//GetMesh()->SetMaterial(1, BlueMaterial);
 		//DissolveMaterialInstance = BlueDissolveMatInst;
 		if (BlueTeamSKMesh) GetMesh()->SetSkeletalMesh(BlueTeamSKMesh);
-		OverheadWidget->SetTextColor(ETeam::ET_BlueTeam);
 		break;
 	case ETeam::ET_MAX:
 		break;

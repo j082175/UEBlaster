@@ -43,9 +43,14 @@ public:
 	float BlueTeamScore = 0.f;
 
 private:
+
+
 	float TopScore = 0.f;
 
 
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UObjectPoolComponent> ObjectPoolComponent;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<class AActor> PlayableActor;
 };

@@ -37,7 +37,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-	//virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
+	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
 
 
 	FORCEINLINE class ABlasterHUD* GetBlasterHUD() const { return BlasterHUD; }
@@ -108,8 +108,6 @@ protected:
 	float TimeSyncFrequency = 5.f;
 	float TimeSyncRunningTime = 0.f;
 
-	// Interfaces
-	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
 
 
 	// Pings
@@ -233,6 +231,8 @@ private:
 
 	UPROPERTY()
 	class UOverheadWidget* OverheadWidget;
+	
+	FTimerHandle OverheadWidgetTimer;
 
 	//public:
 	//	UFUNCTION(Client, Reliable)

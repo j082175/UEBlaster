@@ -46,10 +46,10 @@ void ABlasterPlayerState::ISetTeam(ETeam TeamToSlot)
 {
 	UE_LOG(LogTemp, Error, TEXT("TeamToSlot : %d"), (int)TeamToSlot);
 	Team = TeamToSlot;
-	ABlasterCharacter* BCharacter = Cast<ABlasterCharacter>(GetPawn());
+	ITeamInterface* BCharacter = Cast<ITeamInterface>(GetPawn());
 	if (BCharacter)
 	{
-		BCharacter->SetTeamColor(Team);
+		BCharacter->ISetTeam(TeamToSlot);
 	}
 }
 

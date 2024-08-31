@@ -15,6 +15,7 @@
 
 #include "PlayerController/BlasterPlayerController.h"
 #include "Characters/BlasterCharacter.h"
+#include "DamageType/DamageType_Projectile.h"
 #include "Blaster/Blaster.h"
 
 AProjectileBullet::AProjectileBullet()
@@ -148,7 +149,7 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 			float DamageToCause = Hit.BoneName.ToString() == TEXT("neck_02") ? HeadShotDamage : Damage;
 
-			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType::StaticClass());
+			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType_Projectile::StaticClass());
 			Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 			
 			return;

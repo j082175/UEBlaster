@@ -6,6 +6,11 @@
 #include "PlayerState/BlasterPlayerState.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "Components/ObjectPoolComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Interfaces/TeamInterface.h"
+#include "Characters/CharacterBase.h"
+#include "HUD/OverheadWidget.h"
+#include "Components/WidgetComponent.h"
 
 ABlasterGameState::ABlasterGameState()
 {

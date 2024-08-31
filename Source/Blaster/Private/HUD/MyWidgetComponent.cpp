@@ -17,17 +17,20 @@ void UMyWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//UE_LOG(LogTemp, Warning, TEXT("MyWidgetComponent tick"));
+
 	if (GetWidget() && !GetWidget()->IsVisible())
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Widget Hidden"));
 		SetComponentTickEnabled(false);
 	}
+
+
 }
 
 void UMyWidgetComponent::InitWidget()
 {
 	Super::InitWidget();
-	SetComponentTickEnabled(false);
+	SetComponentTickEnabled(true);
 
 	UMyUserWidget* UserWidget = Cast<UMyUserWidget>(GetWidget());
 	if (UserWidget)

@@ -4,19 +4,34 @@
 #include "HUD/ElimAnnouncement.h"
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
+#include "Components/ScrollBox.h"
+#include "HUD/ElimAnnouncementBox.h"
 
 void UElimAnnouncement::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	UE_LOG(LogTemp, Display, TEXT("ElimAnnouncement Tick"));
+	//UE_LOG(LogTemp, Display, TEXT("ElimAnnouncement Tick"));
+
+	AnnouncementScroll->ScrollToEnd();
 }
 
 void UElimAnnouncement::SetElimAnnouncementText(FString AttackerName, FString VictimName)
 {
-	FString ElimAnnouncementText = FString::Printf(TEXT("%s elimmed %s!"), *AttackerName, *VictimName);
-	if (AnnouncementText)
+	ElimAnnouncementBox = CreateWidget<UElimAnnouncementBox>(this, ElimAnnouncementBoxClass);
+
+	ElimAnnouncementBox->SetElimAnnouncementText(AttackerName, VictimName);
+	if (ElimAnnouncementBox)
 	{
-		AnnouncementText->SetText(FText::FromString(ElimAnnouncementText));
+		AnnouncementScroll->AddChild(ElimAnnouncementBox);
 	}
+
+	FTimerHandle ElimMsgTimer;
+	
+	GetWorld()->GetTimerManager().SetTimer(ElimMsgTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			AnnouncementScroll->GetChildAt(0)->RemoveFromParent();
+
+		}), ElimAnnouncementTime, false);
+
 }

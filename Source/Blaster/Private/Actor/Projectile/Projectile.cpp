@@ -181,9 +181,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		if (BPC && BPC->IsLocalPlayerController())
 		{
 
-			UE_LOG(LogTemp, Error, TEXT("BoneName : %s"), *Hit.BoneName.ToString());
-			UE_LOG(LogTemp, Error, TEXT("MyBoneName : %s"), *Hit.MyBoneName.ToString());
-			UE_LOG(LogTemp, Error, TEXT("Component : %s"), *Hit.Component->GetName());
+			//UE_LOG(LogTemp, Error, TEXT("BoneName : %s"), *Hit.BoneName.ToString());
+			//UE_LOG(LogTemp, Error, TEXT("MyBoneName : %s"), *Hit.MyBoneName.ToString());
+			//UE_LOG(LogTemp, Error, TEXT("Component : %s"), *Hit.Component->GetName());
 
 
 			if (Hit.BoneName.ToString() == TEXT("neck_02") || Hit.BoneName.ToString() == TEXT("head"))

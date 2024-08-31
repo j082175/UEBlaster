@@ -34,7 +34,7 @@ void WidgetAnimHelper::StartAnimation(const FString& InPrefix, const FString& In
 		Str = FString::Printf(TEXT("%s%sAnim%d_INST"), *InPrefix, *InName, InIndex);
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("StartAnimation str : %s"), *Str);
+	//UE_LOG(LogTemp, Display, TEXT("StartAnimation str : %s"), *Str);
 
 	if (InWidgetAnimations.Contains(Str))
 	{

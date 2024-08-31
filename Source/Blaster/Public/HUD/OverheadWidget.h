@@ -15,8 +15,9 @@ class BLASTER_API UOverheadWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
+	void Init();
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> LocaleRoleText;
@@ -25,7 +26,7 @@ public:
 	TObjectPtr<class UTextBlock> PlayerIDText;
 
 	void SetDisplayText(FString TextToDisplay);
-	void SetTextColor(ETeam InTeam);
+	void SetTextColor(FLinearColor InColor);
 
 	UFUNCTION(BlueprintCallable)
 	void ShowPlayerNetRole(APawn* InPawn);
@@ -33,7 +34,17 @@ public:
 	void ShowPlayerName(APlayerState* InPlayerState);
 	void ShowPlayerName(const FString& InName);
 
+	UFUNCTION(Server, Reliable)
+	void ServerShowPlayerName(APlayerState* InPlayerState);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastShowPlayerName(APlayerState* InPlayerState);
 
 protected:
 	virtual void NativeDestruct() override;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<class ACharacter> ActorToFind;
+
+	FTimerHandle InitTimerHandle;
 };

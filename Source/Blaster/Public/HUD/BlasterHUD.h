@@ -104,8 +104,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UElimAnnouncement> ElimAnnouncementClass;
 
-	UPROPERTY(EditAnywhere)
-	float ElimAnnouncementTime = 3.f;
+	//UPROPERTY(EditAnywhere)
+	//float ElimAnnouncementTime = 3.f;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UElimAnnouncement>> ElimMessages;

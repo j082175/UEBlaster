@@ -321,8 +321,7 @@ protected:
 	uint8 Check : 1 = false;
 
 
-
-
+	class ACharacterBase* CharacterBase;
 
 	//float DodgeCoolTimeCount;
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

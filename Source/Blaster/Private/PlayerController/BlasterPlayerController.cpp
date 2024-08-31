@@ -127,21 +127,31 @@ void ABlasterPlayerController::BeginPlay()
 		}
 	}
 	
-	BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
-	if (BlasterCharacter && IsLocalPlayerController())
-	{
-		OverheadWidget = Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget());
 
-		if (OverheadWidget)
-		{
-			OverheadWidget->ShowPlayerName(GetPlayerState<APlayerState>());
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("%s : OverheadWidget is null"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
-		}
 
-	}
+	GetWorldTimerManager().SetTimer(OverheadWidgetTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
+			if (BlasterCharacter && IsLocalPlayerController())
+			{
+				OverheadWidget = Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget());
+				APlayerState* PlayerState = GetPlayerState<APlayerState>();
+
+				if (OverheadWidget && PlayerState)
+				{
+					OverheadWidget->ServerShowPlayerName(PlayerState);
+					GetWorldTimerManager().ClearTimer(OverheadWidgetTimer);
+					OverheadWidgetTimer.Invalidate();
+				}
+				else
+				{
+					//UE_LOG(LogTemp, Error, TEXT("%s : OverheadWidget is null"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
+				}
+			}
+		}), 0.01f, true);
+
+
+
 
 	//UE_LOG(LogTemp, Warning, TEXT("%s : PlayerState : %x"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), GetPlayerState<APlayerState>());
 }
@@ -149,6 +159,7 @@ void ABlasterPlayerController::BeginPlay()
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	//UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess"));
 	//UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess, BlasterHUD : %x"), BlasterHUD);
 
 	PollInit(InPawn);
@@ -168,11 +179,6 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 	if (IsLocalPlayerController() && BlasterCharacter)
 	{
 		OverheadWidget = OverheadWidget == nullptr ? Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget()) : OverheadWidget;
-
-		if (OverheadWidget)
-		{
-			OverheadWidget->ShowPlayerName(GetPlayerState<APlayerState>());
-		}
 	}
 
 

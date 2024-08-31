@@ -98,7 +98,7 @@ void UAttributeComponent::Init()
 	//		//UE_LOG(LogTemp, Warning, TEXT("Attribute Initialized!"));
 	//	}), 0.5f, false);
 
-	OnHpChanged.Broadcast(GetCurrentHp(), GetMaxHp());
+	OnHpChanged.Broadcast(CurrentHp, MaxHp);
 	OnShieldChanged.Broadcast(CurrentShield, MaxShield);
 	OnSpChanged.Broadcast(CurrentSp, MaxSp);
 	OnParryGaugeChanged.Broadcast(CurrentParryGauge, MaxParryGauge);

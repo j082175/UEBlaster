@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "HUD/MyUserWidget.h"
+//#include "HUD/MyUserWidget.h"
 #include "Item/Pickable/Weapon/Weapon.h"
 #include "CharacterOverlay.generated.h"
 
@@ -12,11 +12,13 @@
  * 
  */
 UCLASS()
-class BLASTER_API UCharacterOverlay : public UMyUserWidget
+class BLASTER_API UCharacterOverlay : public UUserWidget
 {
 	GENERATED_BODY()
 
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 public:
 	void SetHpBar(float InCurrent, float InMax);
 	void SetShieldBar(float InCurrent, float InMax);
@@ -109,4 +111,7 @@ public:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> HighPingAnimation;
+
+private:
+	void PollInit();
 };

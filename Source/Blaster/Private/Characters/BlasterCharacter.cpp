@@ -559,7 +559,7 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 {
 	Super::ReceiveDamage(DamagedActor, Damage, DamageType, InstigatorController, DamageCauser);
 
-	UE_LOG(LogTemp, Display, TEXT("Blaster ReceiveDamage"));
+	//UE_LOG(LogTemp, Display, TEXT("Blaster ReceiveDamage"));
 
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
@@ -1746,23 +1746,39 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		{
 
 			ITeamInterface* T1 = Cast<ITeamInterface>(TraceHitResult.GetActor());
-			if (T1)
+
+			if (T1 && T1->IGetTeam() == IGetTeam())
 			{
-				if (T1->IGetTeam() == IGetTeam())
-				{
-					HUDPackage.CrosshairsColor = FLinearColor::Green;
-				}
-				else
-				{
-					HUDPackage.CrosshairsColor = FLinearColor::Red;
-				}
+				HUDPackage.CrosshairsColor = FLinearColor::Green;
+				return;
 			}
 
+			if (CharacterBase && CharacterBase->OverheadWidget)
+			{
+				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
+			}
+
+			CharacterBase = Cast<ACharacterBase>(TraceHitResult.GetActor());
+			if (T1 && T1->IGetTeam() != ETeam::ET_NoTeam)
+			{
+
+				FLinearColor Red(1.f, 0.13f, 0.19f);
+				FLinearColor Green(0.1f, 1.f, 0.f);
+
+				HUDPackage.CrosshairsColor = FLinearColor::Red;
+				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Visible);
+				CharacterBase->OverheadWidget->SetTextColor(Red);
+			}
 			
 		}
 		else
 		{
 			HUDPackage.CrosshairsColor = FLinearColor::White;
+			if (CharacterBase && CharacterBase->OverheadWidget)
+			{
+				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
+			}
+
 		}
 
 		ETraceTypeQuery IsPickable = UEngineTypes::ConvertToTraceType(ECC_IsPickable);
