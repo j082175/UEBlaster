@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-//#include "HUD/MyUserWidget.h"
+//#include "Blueprint/UserWidget.h"
+#include "HUD/MyUserWidget.h"
 #include "Item/Pickable/Weapon/Weapon.h"
 #include "CharacterOverlay.generated.h"
 
@@ -12,10 +12,10 @@
  * 
  */
 UCLASS()
-class BLASTER_API UCharacterOverlay : public UUserWidget
+class BLASTER_API UCharacterOverlay : public UMyUserWidget
 {
 	GENERATED_BODY()
-
+	//UCharacterOverlay(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get);
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -113,5 +113,7 @@ public:
 	TObjectPtr<class UWidgetAnimation> HighPingAnimation;
 
 private:
-	void PollInit();
+	//void PollInit();
+
+	//FTimerHandle H;
 };

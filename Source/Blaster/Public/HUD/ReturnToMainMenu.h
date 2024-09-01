@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "HUD/MyUserWidget.h"
 #include "ReturnToMainMenu.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BLASTER_API UReturnToMainMenu : public UUserWidget
+class BLASTER_API UReturnToMainMenu : public UMyUserWidget
 {
 	GENERATED_BODY()
 public:

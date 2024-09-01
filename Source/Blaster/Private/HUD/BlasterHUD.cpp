@@ -39,7 +39,7 @@ ABlasterHUD::ABlasterHUD()
 	else UE_LOG(LogTemp, Error, TEXT("No CORef2"));
 
 
-	
+	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
 //void ABlasterHUD::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -124,7 +124,9 @@ void ABlasterHUD::AddCharacterOverlay()
 
 void ABlasterHUD::BeginPlay()
 {
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::BeginPlay();
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
 	//UE_LOG(LogTemp, Display, TEXT("ABlasterHUD::BeginPlay"));
 

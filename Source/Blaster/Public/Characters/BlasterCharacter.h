@@ -45,6 +45,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	// Getters
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
@@ -321,7 +322,7 @@ protected:
 	uint8 Check : 1 = false;
 
 
-	class ACharacterBase* CharacterBase;
+
 
 	//float DodgeCoolTimeCount;
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

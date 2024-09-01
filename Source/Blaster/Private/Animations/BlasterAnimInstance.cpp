@@ -18,9 +18,16 @@
 //	DOREPLIFETIME(ThisClass, bUseFABRIK);
 //}
 
+UBlasterAnimInstance::UBlasterAnimInstance()
+{
+	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
+}
+
 void UBlasterAnimInstance::NativeInitializeAnimation()
 {
+	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 	Super::NativeInitializeAnimation();
+	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("End"));
 
 	BlasterCharacter = Cast<ABlasterCharacter>(CharacterOwner);
 }

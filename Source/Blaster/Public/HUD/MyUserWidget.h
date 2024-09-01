@@ -14,6 +14,7 @@ class BLASTER_API UMyUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UMyUserWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -25,6 +26,10 @@ protected:
 
 	void PollInit();
 
-	TWeakObjectPtr<AActor> OPawn;
+	//TWeakObjectPtr<AActor> OPawn;
 private:
+	UFUNCTION()
+	void VisibilityChanged(ESlateVisibility InVisibility);
+
+	FTimerHandle InitializeTimerHandle;
 };

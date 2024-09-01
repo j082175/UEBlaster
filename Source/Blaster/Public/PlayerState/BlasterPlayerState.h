@@ -15,6 +15,8 @@ class BLASTER_API ABlasterPlayerState : public APlayerState, public ITeamInterfa
 {
 	GENERATED_BODY()
 public:
+	ABlasterPlayerState();
+
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;

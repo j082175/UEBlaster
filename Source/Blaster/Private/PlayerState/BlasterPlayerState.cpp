@@ -6,6 +6,12 @@
 #include "PlayerController/BlasterPlayerController.h"
 #include "Net/UnrealNetwork.h"
 #include "HUD/OverheadWidget.h"
+#include "Blaster.h"
+
+ABlasterPlayerState::ABlasterPlayerState()
+{
+	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
+}
 
 void ABlasterPlayerState::Tick(float DeltaTime)
 {
@@ -16,7 +22,9 @@ void ABlasterPlayerState::Tick(float DeltaTime)
 
 void ABlasterPlayerState::BeginPlay()
 {
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::BeginPlay();
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
 	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerState::BeginPlay"));
 

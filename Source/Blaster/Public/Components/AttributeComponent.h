@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AttributeComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHpChangedDelegate, float/*, Percentage*/, float);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHpChangedDelegate, float/*, InCurrent*/, float/*, InMax*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnShieldChangedDelegate, float/*, Percentage*/, float);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSpChangedDelegate, float/*, Percentage*/, float);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnParryGaugeChangedDelegate, float/*, Percentage*/, float);
@@ -27,7 +27,7 @@ public:
 
 	void Init();
 	void InitStatus();
-
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
 
 	UFUNCTION(BlueprintCallable)
@@ -46,7 +46,7 @@ public:
 	FORCEINLINE float GetParryGaugeIncrement() const { return ParryGaugeIncrement; }
 
 
-
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetCurrentHp(float InCurrentHp) { CurrentHp = InCurrentHp; OnHpChanged.Broadcast(CurrentHp, MaxHp); }
 	FORCEINLINE void SetMaxHp(float InMaxHp) { MaxHp = InMaxHp; OnHpChanged.Broadcast(CurrentHp, MaxHp); }
 	UFUNCTION(BlueprintCallable)

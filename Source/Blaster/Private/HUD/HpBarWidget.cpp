@@ -14,7 +14,7 @@ void UHpBarWidget::NativeConstruct()
 	//IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
 	//if (WidgetOwner)
 	//{
-	//	WidgetOwner->IBindOverheadWidget(this);
+	//	WidgetOwner->IBindWidget(this);
 	//}
 }
 

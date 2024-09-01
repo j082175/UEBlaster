@@ -37,7 +37,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
+	virtual void IBindWidget(class UUserWidget* InUserWidget) override;
 
 
 	FORCEINLINE class ABlasterHUD* GetBlasterHUD() const { return BlasterHUD; }
@@ -229,13 +229,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TMap<FString, class UWidgetAnimation*> FindWidgetAnimation;
 
-	UPROPERTY()
-	class UOverheadWidget* OverheadWidget;
 
-	FTimerHandle OverheadWidgetTimer;
-
-public:
-
+private:
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnPossess(APawn* InPawn);
 
 
 	//public:

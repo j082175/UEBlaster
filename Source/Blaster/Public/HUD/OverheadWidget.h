@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "HUD/MyUserWidget.h"
 #include "BlasterTypes/Team.h"
 #include "OverheadWidget.generated.h"
 
@@ -11,19 +12,26 @@
  * 
  */
 UCLASS()
-class BLASTER_API UOverheadWidget : public UUserWidget
+class BLASTER_API UOverheadWidget : public UMyUserWidget
 {
 	GENERATED_BODY()
 public:
+	UOverheadWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	void Init();
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> LocaleRoleText;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> PlayerIDText;
+
+
+	void SetLocalRoleText(const FString& InStr, const FLinearColor& InColor);
+	void SetPlayerIDText(const FString& InStr, const FLinearColor& InColor);
+
+	void SetLocalRoleVisibility(ESlateVisibility InVisibility);
+	void SetPlayerIDVisibility(ESlateVisibility InVisibility);
 
 	void SetDisplayText(FString TextToDisplay);
 	void SetTextColor(FLinearColor InColor);
@@ -46,5 +54,4 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class ACharacter> ActorToFind;
 
-	FTimerHandle InitTimerHandle;
 };

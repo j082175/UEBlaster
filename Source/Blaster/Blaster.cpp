@@ -8,6 +8,8 @@
 
 IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, Blaster, "Blaster");
 
+DEFINE_LOG_CATEGORY(LogABDisplay);
+DEFINE_LOG_CATEGORY(LogABBeginPlay);
 DEFINE_LOG_CATEGORY(LogABNetwork);
 DEFINE_LOG_CATEGORY(LogABTeleport);
 

@@ -15,6 +15,7 @@
 #include "Components/MantleVaultComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/SkillComponent.h"
+#include "Components/OverheadWidgetComponent.h"
 
 // EnhancedInput
 #include "EnhancedInputSubsystems.h"
@@ -83,6 +84,7 @@ ABlasterCharacter::ABlasterCharacter()
 	InitializeDefaults();
 
 	//UE_LOG(LogTemp, Display, TEXT("BlasterCharacter Constructor"));
+	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
 // Called every frame
@@ -201,7 +203,9 @@ void ABlasterCharacter::PostInitializeComponents()
 // Called when the game starts or when spawned
 void ABlasterCharacter::BeginPlay()
 {
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::BeginPlay();
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
 	//UE_LOG(LogTemp, Display, TEXT("ABlasterCharacter::BeginPlay()"));
 
@@ -294,6 +298,8 @@ void ABlasterCharacter::BeginPlay()
 			OverheadWidget->ShowPlayerName(PlayerName1);
 		}), 3.f, false);
 
+
+
 }
 
 void ABlasterCharacter::Destroyed()
@@ -307,6 +313,14 @@ void ABlasterCharacter::Destroyed()
 	{
 		EquippedWeapon->Destroy();
 	}
+}
+
+void ABlasterCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AB_LOG(LogABDisplay, Log, TEXT("%s"), TEXT("Begin"));
+	//AB_SUBLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
 //bool ABlasterCharacter::IsSprint() const
@@ -1490,6 +1504,7 @@ void ABlasterCharacter::ElimTimerFinished()
 		BlasterGameMode->RequestRespawn(this, GetController());
 	}
 
+
 	if (bLeftGame && IsLocallyControlled()) // client who is trying to leave the game
 	{
 		OnLeftGame.Broadcast();
@@ -1747,48 +1762,55 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			TraceHitResult.ImpactPoint = End;
 		}
 
-		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
+		if (TraceHitResult.GetActor())
 		{
+			UOverheadWidgetComponent* OWC = TraceHitResult.GetActor()->GetComponentByClass<UOverheadWidgetComponent>();
 
-			ITeamInterface* T1 = Cast<ITeamInterface>(TraceHitResult.GetActor());
-
-			FLinearColor Red(1.f, 0.13f, 0.19f);
-			FLinearColor Green(0.1f, 1.f, 0.f);
-
-			if (CharacterBase && CharacterBase->OverheadWidget)
+			if (TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
 			{
-				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
-			}
 
-			CharacterBase = Cast<ACharacterBase>(TraceHitResult.GetActor());
+				ITeamInterface* T1 = Cast<ITeamInterface>(TraceHitResult.GetActor());
 
-			if (T1 && T1->IGetTeam() == IGetTeam())
-			{
-				HUDPackage.CrosshairsColor = FLinearColor::Green;
-				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Visible);
-				CharacterBase->OverheadWidget->SetTextColor(Green);
-			}
-			else if (T1 && T1->IGetTeam() != ETeam::ET_NoTeam)
-			{
-				HUDPackage.CrosshairsColor = FLinearColor::Red;
-				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Visible);
-				CharacterBase->OverheadWidget->SetTextColor(Red);
+				FLinearColor Red(1.f, 0.13f, 0.19f);
+				FLinearColor Green(0.1f, 1.f, 0.f);
+
+				//if (CharacterBase && CharacterBase->OverheadWidget)
+				//{
+				//	CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
+				//}
+
+
+				//CharacterBase = Cast<ACharacterBase>(TraceHitResult.GetActor());
+
+
+				if (OWC && T1 && T1->IGetTeam() == IGetTeam())
+				{
+					HUDPackage.CrosshairsColor = FLinearColor::Green;
+					OWC->OnLocalRoleTextVisibilityChanged.ExecuteIfBound(ESlateVisibility::Visible);
+					OWC->OnLocalRoleTextChanged.ExecuteIfBound(TEXT(""), Green);
+				}
+				else if (OWC && T1 && T1->IGetTeam() != ETeam::ET_NoTeam)
+				{
+					HUDPackage.CrosshairsColor = FLinearColor::Red;
+					OWC->OnLocalRoleTextVisibilityChanged.ExecuteIfBound(ESlateVisibility::Visible);
+					OWC->OnLocalRoleTextChanged.ExecuteIfBound(TEXT(""), Red);
+				}
+				else
+				{
+					HUDPackage.CrosshairsColor = FLinearColor::Red;
+				}
+
 			}
 			else
 			{
-				HUDPackage.CrosshairsColor = FLinearColor::Red;
+				HUDPackage.CrosshairsColor = FLinearColor::White;
+				if (OWC) OWC->OnLocalRoleTextVisibilityChanged.ExecuteIfBound(ESlateVisibility::Collapsed);
 			}
-			
 		}
-		else
-		{
-			HUDPackage.CrosshairsColor = FLinearColor::White;
-			if (CharacterBase && CharacterBase->OverheadWidget)
-			{
-				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
-			}
 
-		}
+
+
+		
 
 		ETraceTypeQuery IsPickable = UEngineTypes::ConvertToTraceType(ECC_IsPickable);
 		TArray<AActor*> IgnoreActors;

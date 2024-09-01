@@ -11,10 +11,20 @@
 #include "Characters/CharacterBase.h"
 #include "HUD/OverheadWidget.h"
 #include "Components/WidgetComponent.h"
+#include "Blaster.h"
 
 ABlasterGameState::ABlasterGameState()
 {
 	ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));
+
+	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
+}
+
+void ABlasterGameState::BeginPlay()
+{
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
+	Super::BeginPlay();
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 }
 
 void ABlasterGameState::Tick(float DeltaTime)

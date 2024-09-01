@@ -25,6 +25,7 @@
 #include "Components/ObjectPoolComponent.h"
 #include "Components/SkillComponent.h"
 #include "Components/InventoryComponent.h"
+#include "Components/OverheadWidgetComponent.h"
 
 // Interfaces
 #include "Interfaces/InteractWithCrosshairsInterface.h"
@@ -137,7 +138,7 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 
-	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
+	OverheadWidgetComponent = CreateDefaultSubobject<UOverheadWidgetComponent>(TEXT("OverheadWidgetComponent"));
 	OverheadWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//UE_LOG(LogTemp, Display, TEXT("Base Constructor"));
@@ -223,8 +224,8 @@ void ACharacterBase::PossessedBy(AController* NewController)
 
 	//UE_LOG(LogTemp, Display, TEXT("PossessedBy : %s"), *NewController->GetName());
 
-	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("AB_LOG Begin"));
-	AB_SUBLOG(LogABNetwork, Log, TEXT("%s"), TEXT("AB_SUBLOG Begin"));
+	//AB_LOG(LogABNetwork, Warning, TEXT("%s"), TEXT("Begin"));
+	//AB_SUBLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -337,18 +338,19 @@ void ACharacterBase::IGetHit(const FVector& InHitPoint, const FHitResult& InHitR
 
 }
 
-void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
+void ACharacterBase::IBindWidget(UUserWidget* InUserWidget)
 {
-	if (AttributeComponent == nullptr) return;
 
-	//UE_LOG(LogTemp, Display, TEXT("ACharacterBase::IBindOverheadWidget"));
+
+	//UE_LOG(LogTemp, Display, TEXT("ACharacterBase::IBindWidget"));
 
 	//AttributeComponent->OnHpChanged.AddDynamic(InHpBarWidgetComponent, &UHpBarWidgetComponent::SetHpBar);
 	//AttributeComponent->OnShieldChanged.AddDynamic(InHpBarWidgetComponent, &UHpBarWidgetComponent::SetShieldBar);
 
 	if (UHpBarWidget* Hp = Cast<UHpBarWidget>(InUserWidget))
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget HpBar"));
+		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindWidget HpBar"));
+		if (AttributeComponent == nullptr) return;
 
 		AttributeComponent->OnHpChanged.AddUObject(Hp, &UHpBarWidget::SetHpBar);
 		AttributeComponent->OnShieldChanged.AddUObject(Hp, &UHpBarWidget::SetShieldBar);
@@ -357,7 +359,9 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 	}
 	else if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindOverheadWidget CharacterOverlay : %s"), *InUserWidget->GetName());
+		if (AttributeComponent == nullptr) return;
+		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindWidget CharacterOverlay : %s"), *InUserWidget->GetName());
+		AB_LOG(LogABDisplay, Warning, TEXT(""));
 		AttributeComponent->OnHpChanged.AddUObject(CO, &UCharacterOverlay::SetHpBar);
 		AttributeComponent->OnShieldChanged.AddUObject(CO, &UCharacterOverlay::SetShieldBar);
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
@@ -367,10 +371,15 @@ void ACharacterBase::IBindOverheadWidget(UUserWidget* InUserWidget)
 	}
 	else if (UOverheadWidget* OW = Cast<UOverheadWidget>(InUserWidget))
 	{
-		OnOverheadTextColorChanged.BindUObject(OW, &UOverheadWidget::SetTextColor);
+		OverheadWidgetComponent->OnLocalRoleTextChanged.BindUObject(OW, &UOverheadWidget::SetLocalRoleText);
+		OverheadWidgetComponent->OnPlayerIDTextChanged.BindUObject(OW, &UOverheadWidget::SetPlayerIDText);
+		OverheadWidgetComponent->OnLocalRoleTextVisibilityChanged.BindUObject(OW, &UOverheadWidget::SetLocalRoleVisibility);
+		OverheadWidgetComponent->OnPlayerIDTextVisibilityChanged.BindUObject(OW, &UOverheadWidget::SetPlayerIDVisibility);
+
 	}
 
-	AttributeComponent->Init();
+
+	if (AttributeComponent) AttributeComponent->Init();
 }
 
 bool ACharacterBase::IIsParring()
@@ -1364,19 +1373,6 @@ void ACharacterBase::CheckHpBarWidget(float DeltaTime)
 
 		}
 
-	}
-}
-
-void ACharacterBase::SetOverheadWidgetColor()
-{
-	if (OverheadWidget)
-	{
-		//UE_LOG(LogTemp, Display, TEXT("%s : SetOverheadWidgetColor"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
-		OverheadWidget->SetVisibility(ESlateVisibility::Visible);
-		if (!OnOverheadTextColorChanged.ExecuteIfBound(FLinearColor(0.13f, 1.f, 0.f)))
-		{
-			UE_LOG(LogTemp, Error, TEXT("Not Bounded!"));
-		}
 	}
 }
 

@@ -4,15 +4,20 @@
 #include "HUD/MyUserWidget.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
 
+
+
+UMyUserWidget::UMyUserWidget(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
+{
+}
+
 void UMyUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	PollInit();
 
-
-	EWidgetTickFrequency T = GetDesiredTickFrequency();
-
+	OnVisibilityChanged.AddUniqueDynamic(this, &ThisClass::VisibilityChanged);
 }
 
 void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -25,38 +30,76 @@ void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	//UE_LOG(LogTemp, Display, TEXT("GetOwningPlayerPawn : %x"), GetOwningPlayerPawn());
 
 
-	if (!OPawn.Get())
-	{
-		//UE_LOG(LogTemp, Display, TEXT("Get PollInit"));
-		PollInit();
-		SetVisibility(ESlateVisibility::Hidden);
-	}
+	//if (!OPawn.Get())
+	//{
+	//	//UE_LOG(LogTemp, Display, TEXT("Get PollInit"));
+	//	PollInit();
+	//	SetVisibility(ESlateVisibility::Hidden);
+	//}
 }
 
 void UMyUserWidget::PollInit()
 {
-	OPawn = GetOwningPlayerPawn();
+	//OPawn = GetOwningPlayerPawn();
 
-	FTimerHandle T;
-	GetWorld()->GetTimerManager().SetTimer(T, FTimerDelegate::CreateLambda([&]()
-		{
-			if (OwingActor.IsValid())
+	//FTimerHandle T;
+	//GetWorld()->GetTimerManager().SetTimer(T, FTimerDelegate::CreateLambda([&]()
+	//	{
+	//		if (OwingActor.IsValid())
+	//		{
+	//			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
+	//			if (WBDI)
+	//			{
+	//				WBDI->IBindWidget(this);
+	//			}
+	//			OPawn = OwingActor;
+	//		}
+	//		else if (GetOwningPlayer())
+	//		{
+	//			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer());
+	//			if (WBDI)
+	//			{
+	//				WBDI->IBindWidget(this);
+	//			}
+	//			//OPawn = GetOwningPlayer();
+	//		}
+	//	}), 0.01f, false);
+
+	if (OwingActor.IsValid())
+	{
+		GetWorld()->GetTimerManager().SetTimer(InitializeTimerHandle, FTimerDelegate::CreateLambda([&]()
 			{
 				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
 				if (WBDI)
 				{
-					WBDI->IBindOverheadWidget(this);
+					WBDI->IBindWidget(this);
+					GetWorld()->GetTimerManager().ClearTimer(InitializeTimerHandle);
+					InitializeTimerHandle.Invalidate();
 				}
-				OPawn = OwingActor;
-			}
-			else if (GetOwningPlayer())
+			}), 0.01f, true);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimer(InitializeTimerHandle, FTimerDelegate::CreateLambda([&]()
 			{
 				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer());
 				if (WBDI)
 				{
-					WBDI->IBindOverheadWidget(this);
+					WBDI->IBindWidget(this);
+					GetWorld()->GetTimerManager().ClearTimer(InitializeTimerHandle);
+					InitializeTimerHandle.Invalidate();
 				}
-				//OPawn = GetOwningPlayer();
-			}
-		}), 0.01f, false);
+			}), 0.01f, true);
+	}
+
+
+
+
+
+
+}
+
+void UMyUserWidget::VisibilityChanged(ESlateVisibility InVisibility)
+{
+	PollInit();
 }

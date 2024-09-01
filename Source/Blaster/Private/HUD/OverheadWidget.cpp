@@ -8,17 +8,22 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
+#include "Blaster.h"
 
+
+UOverheadWidget::UOverheadWidget(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
+{
+	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
+}
 
 void UOverheadWidget::NativeConstruct()
 {
+	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::NativeConstruct();
+	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
-	SetVisibility(ESlateVisibility::Collapsed);
-
-
-	Init();
-
+	SetVisibility(ESlateVisibility::Visible);
 }
 
 void UOverheadWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -28,20 +33,26 @@ void UOverheadWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	UE_LOG(LogTemp, Display, TEXT("OverheadWidget Tick"));
 }
 
-void UOverheadWidget::Init()
+void UOverheadWidget::SetLocalRoleText(const FString& InStr, const FLinearColor& InColor)
 {
+	if (InStr != TEXT("")) LocaleRoleText->SetText(FText::FromString(InStr));
+	LocaleRoleText->SetColorAndOpacity(InColor);
+}
 
-	GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
-			if (WBDI)
-			{
-				//UE_LOG(LogTemp, Display, TEXT("Initializing"));
-				WBDI->IBindOverheadWidget(this);
-				GetWorld()->GetTimerManager().ClearTimer(InitTimerHandle);
-				InitTimerHandle.Invalidate();
-			}
-		}), 0.01f, true);
+void UOverheadWidget::SetPlayerIDText(const FString& InStr, const FLinearColor& InColor)
+{
+	if (InStr != TEXT("")) PlayerIDText->SetText(FText::FromString(InStr));
+	PlayerIDText->SetColorAndOpacity(InColor);
+}
+
+void UOverheadWidget::SetLocalRoleVisibility(ESlateVisibility InVisibility)
+{
+	LocaleRoleText->SetVisibility(InVisibility);
+}
+
+void UOverheadWidget::SetPlayerIDVisibility(ESlateVisibility InVisibility)
+{
+	PlayerIDText->SetVisibility(InVisibility);
 }
 
 void UOverheadWidget::SetDisplayText(FString TextToDisplay)

@@ -47,7 +47,7 @@ void UHpBarWidgetComponent::InitWidget()
 	//IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwner());
 	//if (WidgetOwner)
 	//{
-	//	WidgetOwner->IBindOverheadWidget(this);
+	//	WidgetOwner->IBindWidget(this);
 	//}
 }
 

@@ -63,4 +63,5 @@ private:
 
 	//UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	//TObjectPtr<class UObjectPoolComponent> ObjectPoolComponent;
+
 };

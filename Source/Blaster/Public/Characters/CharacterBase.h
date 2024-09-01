@@ -32,7 +32,6 @@
 
 typedef int32 AmmoAmountInt;
 
-DECLARE_DELEGATE_OneParam(FOnOverheadTextColorChangedDelegate, FLinearColor);
 
 UCLASS()
 class BLASTER_API ACharacterBase : public APooledCharacter, public IHitInterface, public IWidgetBindDelegateInterface, public ICanParryInterface, public ITeamInterface
@@ -115,7 +114,6 @@ public:
 	void SetSecondaryEquippedWeapon(class AWeapon* W) { SecondaryWeapon = W; }
 
 
-	FOnOverheadTextColorChangedDelegate OnOverheadTextColorChanged;
 
 	// Initializes
 protected:
@@ -151,9 +149,9 @@ protected:
 public:
 	// IHitInterface
 	virtual void IGetHit(const FVector& HitPoint, const FHitResult& InHitResult) override;
-	virtual void IBindOverheadWidget(class UUserWidget* InUserWidget) override;
+	virtual void IBindWidget(class UUserWidget* InUserWidget) override;
 
-	//virtual void IBindOverheadWidget(class UWidgetComponent* InWidgetComponent) override;
+	//virtual void IBindWidget(class UWidgetComponent* InWidgetComponent) override;
 
 	virtual bool IIsParring() override;
 	virtual bool ICheckParry(AActor* OtherActor) override;
@@ -947,13 +945,13 @@ protected:
 
 	// Widgets
 public:
-	void SetOverheadWidgetColor();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UOverheadWidget> OverheadWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class UWidgetComponent> OverheadWidgetComponent;
+	TObjectPtr<class UOverheadWidgetComponent> OverheadWidgetComponent;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AActor> PlayableActor;

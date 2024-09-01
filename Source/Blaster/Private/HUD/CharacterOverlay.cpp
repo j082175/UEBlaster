@@ -10,14 +10,23 @@
 #include "HUD/OverlayModules/AttributeStatus.h"
 #include "HUD/OverlayModules/SkillBar.h"
 #include "HUD/OverlayModules/WeaponStatus.h"
+#include "Blaster.h"
 
+//UCharacterOverlay::UCharacterOverlay(const FObjectInitializer& ObjectInitializer)
+//	:Super(ObjectInitializer)
+//{
+//	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
+//}
 
 void UCharacterOverlay::NativeConstruct()
 {
+	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::NativeConstruct();
+	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
 	SetVisibility(ESlateVisibility::Visible);
 
+	//OnVisibilityChanged.AddUniqueDynamic(this, &ThisClass::VisibilityChanged);
 }
 
 void UCharacterOverlay::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -195,11 +204,31 @@ void UCharacterOverlay::StopHighPingWarning()
 	}
 }
 
-void UCharacterOverlay::PollInit()
-{
-	IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer());
-	if (WBDI)
-	{
-		WBDI->IBindOverheadWidget(this);
-	}
-}
+//void UCharacterOverlay::PollInit()
+//{
+//
+//	GetWorld()->GetTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+//		{
+//			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
+//			if (WBDI)
+//			{
+//				WBDI->IBindWidget(this);
+//				GetWorld()->GetTimerManager().ClearTimer(H);
+//				H.Invalidate();
+//			}
+//			else
+//			{
+//				AB_CALLLOG(LogABDisplay, Error, TEXT("PollInit!"));
+//			}
+//		}), 0.01f, true);
+//
+//
+//}
+
+//void UCharacterOverlay::VisibilityChanged(ESlateVisibility InVisibility)
+//{
+//
+//	AB_CALLLOG(LogABDisplay, Warning, TEXT("Visibilitychanged"));
+//
+//	PollInit();
+//}

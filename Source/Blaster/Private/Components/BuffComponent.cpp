@@ -7,6 +7,7 @@
 #include "Characters/CharacterBase.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Blaster.h"
 
 
 // Sets default values for this component's properties
@@ -25,7 +26,9 @@ UBuffComponent::UBuffComponent()
 // Called when the game starts
 void UBuffComponent::BeginPlay()
 {
+	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::BeginPlay();
+	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
 	// ...
 	Character = Cast<ABlasterCharacter>(GetOwner());

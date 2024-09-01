@@ -25,6 +25,10 @@
 //	DOREPLIFETIME(ThisClass, bUseFABRIK);
 //}
 
+UBaseAnimInstance::UBaseAnimInstance()
+{
+}
+
 void UBaseAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();

@@ -41,6 +41,8 @@ ABlasterPlayerController::ABlasterPlayerController()
 	ChatSystemComponent = CreateDefaultSubobject<UChatSystemComponent>(TEXT("ChatSystemComponent"));
 
 	Tags.Add(TEXT("Player"));
+
+	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
 void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -49,7 +51,6 @@ void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 	DOREPLIFETIME(ThisClass, MatchState);
 	DOREPLIFETIME(ThisClass, bShowTeamScores);
-
 }
 
 void ABlasterPlayerController::PreInitializeComponents()
@@ -59,7 +60,9 @@ void ABlasterPlayerController::PreInitializeComponents()
 
 void ABlasterPlayerController::BeginPlay()
 {
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::BeginPlay();
+	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
 	//UE_LOG(LogTemp, Display, TEXT("%s BeginPlay"), *GetName());
 
@@ -108,7 +111,7 @@ void ABlasterPlayerController::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("ChatBox is not initialized"));
 		}
 	}
-	
+
 	if (IsLocalPlayerController())
 	{
 		if (HitNoticeClass)
@@ -128,39 +131,6 @@ void ABlasterPlayerController::BeginPlay()
 	}
 
 
-	
-
-	//if (HasAuthority())
-	{
-		GetWorldTimerManager().SetTimer(OverheadWidgetTimer, FTimerDelegate::CreateLambda([&]()
-			{
-				BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
-				if (BlasterCharacter && IsLocalPlayerController())
-				{
-					OverheadWidget = Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget());
-					ABlasterPlayerState* PlayerState = GetPlayerState<ABlasterPlayerState>();
-
-					if (OverheadWidget && PlayerState)
-					{
-						OverheadWidget->ServerShowPlayerName(PlayerState);
-						GetWorldTimerManager().ClearTimer(OverheadWidgetTimer);
-						OverheadWidgetTimer.Invalidate();
-
-						BlasterCharacter->PlayerName1 = PlayerState->PlayerNamee;
-						OverheadWidget->ShowPlayerName(PlayerState->PlayerNamee);
-						//UE_LOG(LogTemp, Warning, TEXT("%s, %s"), *UEnum::getdis);
-					}
-					else
-					{
-						//UE_LOG(LogTemp, Error, TEXT("%s : OverheadWidget is null"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
-					}
-				}
-			}), 0.01f, true);
-	}
-
-
-
-
 
 	//UE_LOG(LogTemp, Warning, TEXT("%s : PlayerState : %x"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), GetPlayerState<APlayerState>());
 }
@@ -171,24 +141,27 @@ void ABlasterPlayerController::OnPossess(APawn* InPawn)
 	//UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess"));
 	//UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess, BlasterHUD : %x"), BlasterHUD);
 
+	MulticastOnPossess(InPawn);
+
 	PollInit(InPawn);
 }
 
 void ABlasterPlayerController::OnUnPossess()
 {
 	Super::OnUnPossess();
+
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD.Get();
+	if (BlasterHUD)
+	{
+		BlasterHUD->CharacterOverlay->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void ABlasterPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	BlasterCharacter = BlasterCharacter == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : BlasterCharacter.Get();
 
-	if (IsLocalPlayerController() && BlasterCharacter)
-	{
-		OverheadWidget = OverheadWidget == nullptr ? Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget()) : OverheadWidget;
-	}
+	BlasterCharacter = BlasterCharacter == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : BlasterCharacter.Get();
 
 
 	//if (IsLocalController())
@@ -242,7 +215,7 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 		//	IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetPawn());
 		//	if (WBDI)
 		//	{
-		//		WBDI->IBindOverheadWidget(BlasterHUD->CharacterOverlay);
+		//		WBDI->IBindWidget(BlasterHUD->CharacterOverlay);
 		//		UE_LOG(LogTemp, Error, TEXT("OnPossess CharacterOverlay"));
 		//		CheckWidgetDelegateIsBound = true;
 		//	}
@@ -357,13 +330,13 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 
 }
 
-//void ABlasterPlayerController::IBindOverheadWidget(UUserWidget* InUserWidget)
+//void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 //{
-//	UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindOverheadWidget"));
+//	UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindWidget"));
 //	if (BlasterCharacter && !CheckWidgetDelegateIsBound)
 //	{
 //		CheckWidgetDelegateIsBound = true;
-//		BlasterCharacter->IBindOverheadWidget(InUserWidget);
+//		BlasterCharacter->IBindWidget(InUserWidget);
 //	}
 //}
 
@@ -773,15 +746,19 @@ void ABlasterPlayerController::CheckTimeSync(float DeltaTime)
 	}
 }
 
-void ABlasterPlayerController::IBindOverheadWidget(UUserWidget* InUserWidget)
+void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 {
-	if (BlasterCharacter) BlasterCharacter->IBindOverheadWidget(InUserWidget);
+	if (BlasterCharacter) BlasterCharacter->IBindWidget(InUserWidget);
 
-	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindOverheadWidget Called"));
+	//AB_LOG(LogABDisplay, Warning, TEXT("Num : %d"), UserWidgetsToBind.Num());
+
+
+
+	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindWidget Called"));
 
 	if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindOverheadWidget"));
+		//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindWidget"));
 		MatchCountdown.AddUObject(CO, &UCharacterOverlay::SetHUDMatchCountdown);
 	}
 }
@@ -1177,7 +1154,19 @@ FString ABlasterPlayerController::GetTeamsInfoText(ABlasterGameState* BlasterGam
 void ABlasterPlayerController::PlayHitNoticeAnim(const FString& InPrefix)
 {
 	WidgetAnimHelper::FindWidgetAnimationName(HitNotice, FindWidgetAnimation);
-	WidgetAnimHelper::StartAnimation(InPrefix, TEXT("HitNotice"), - 1, 1.f, HitNotice, FindWidgetAnimation);
+	WidgetAnimHelper::StartAnimation(InPrefix, TEXT("HitNotice"), -1, 1.f, HitNotice, FindWidgetAnimation);
+}
+
+void ABlasterPlayerController::MulticastOnPossess_Implementation(APawn* InPawn)
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD.Get();
+	if (BlasterHUD && BlasterHUD->CharacterOverlay)
+	{
+		BlasterHUD->CharacterOverlay->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	BlasterCharacter = Cast<ABlasterCharacter>(InPawn);
+	IBindWidget(nullptr);
 }
 
 void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)

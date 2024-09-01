@@ -21,6 +21,7 @@ class BLASTER_API UBlasterAnimInstance : public UBaseAnimInstance
 {
 	GENERATED_BODY()
 public:
+	UBlasterAnimInstance();
 	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;

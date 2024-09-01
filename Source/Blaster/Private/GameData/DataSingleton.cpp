@@ -2,6 +2,7 @@
 
 
 #include "GameData/DataSingleton.h"
+#include "Blaster.h"
 
 DEFINE_LOG_CATEGORY(LogABGameSingleton);
 
@@ -34,6 +35,8 @@ UDataSingleton::UDataSingleton()
 
 	CharacterMaxLevel = WeaponDataMap.Num();
 	ensure(CharacterMaxLevel > 0);
+
+	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
 UDataSingleton& UDataSingleton::Get()

@@ -5,6 +5,7 @@
 #include "Characters/CharacterBase.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "Net/UnrealNetwork.h"
+#include "Blaster.h"
 
 UAttributeComponent::UAttributeComponent()
 {
@@ -23,13 +24,17 @@ UAttributeComponent::UAttributeComponent()
 	CurrentSp = MaxSp;
 	CurrentShield = MaxShield;
 	CurrentParryGauge = 0.f;
+
+	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
 
 // Called when the game starts
 void UAttributeComponent::BeginPlay()
 {
+	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::BeginPlay();
+	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
 	// ...
 	//SpRecoveringRate = 1.f;
@@ -98,6 +103,7 @@ void UAttributeComponent::Init()
 	//		//UE_LOG(LogTemp, Warning, TEXT("Attribute Initialized!"));
 	//	}), 0.5f, false);
 
+	//AB_CALLLOG(LogABDisplay, Display, TEXT("CurrentHp : %f"), CurrentHp);
 	OnHpChanged.Broadcast(CurrentHp, MaxHp);
 	OnShieldChanged.Broadcast(CurrentShield, MaxShield);
 	OnSpChanged.Broadcast(CurrentSp, MaxSp);

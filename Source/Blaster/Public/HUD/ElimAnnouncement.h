@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+//#include "Blueprint/UserWidget.h"
+#include "HUD/MyUserWidget.h"
 #include "ElimAnnouncement.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BLASTER_API UElimAnnouncement : public UUserWidget
+class BLASTER_API UElimAnnouncement : public UMyUserWidget
 {
 	GENERATED_BODY()
 public:
