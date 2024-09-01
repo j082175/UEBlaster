@@ -957,4 +957,7 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AActor> PlayableActor;
+
+	UPROPERTY(Replicated)
+	FString PlayerName1;
 };

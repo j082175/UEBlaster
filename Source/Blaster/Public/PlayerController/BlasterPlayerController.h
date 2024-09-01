@@ -231,8 +231,12 @@ private:
 
 	UPROPERTY()
 	class UOverheadWidget* OverheadWidget;
-	
+
 	FTimerHandle OverheadWidgetTimer;
+
+public:
+
+
 
 	//public:
 	//	UFUNCTION(Client, Reliable)

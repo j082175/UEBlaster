@@ -11,11 +11,12 @@
 #include "PlayerState/BlasterPlayerState.h"
 #include "Components/ChatSystemComponent.h"
 
+
 void UChatBox::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UE_LOG(LogTemp, Display, TEXT("%s : NativeConstruct, owner : %s, %s"), *GetName(), *GetOwningPlayer()->GetName(), *UEnum::GetDisplayValueAsText(GetOwningPlayer()->GetLocalRole()).ToString());
+	//UE_LOG(LogTemp, Display, TEXT("%s : NativeConstruct, owner : %s, %s"), *GetName(), *GetOwningPlayer()->GetName(), *UEnum::GetDisplayValueAsText(GetOwningPlayer()->GetLocalRole()).ToString());
 
 	//bIsFocusable = true;
 	//SetKeyboardFocus();
@@ -26,6 +27,7 @@ void UChatBox::NativeConstruct()
 	{
 		UE_LOG(LogTemp, Error, TEXT("ChatViewer is not initialized!"));
 	}
+
 }
 
 void UChatBox::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

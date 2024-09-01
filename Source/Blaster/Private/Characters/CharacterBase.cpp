@@ -220,6 +220,11 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	//UE_LOG(LogTemp, Display, TEXT("PossessedBy : %s"), *NewController->GetName());
+
+	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("AB_LOG Begin"));
+	AB_SUBLOG(LogABNetwork, Log, TEXT("%s"), TEXT("AB_SUBLOG Begin"));
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -252,6 +257,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Pitch, COND_SimulatedOnly);
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Yaw, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, Team);
+	DOREPLIFETIME(ThisClass, PlayerName1);
 }
 
 // Called every frame
@@ -1959,6 +1965,7 @@ void ACharacterBase::StartDissolve()
 
 void ACharacterBase::SetTeamColor(ETeam InTeam)
 {
+	//if (!HasAuthority()) return;
 	//if (!IsValid(GetMesh()) || !IsValid(OriginalMaterial)) return;
 	switch (InTeam)
 	{
@@ -1970,11 +1977,28 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 		//GetMesh()->SetMaterial(1, RedMaterial);
 		//DissolveMaterialInstance = RedDissolveMatInst;
 		if (RedTeamSKMesh) GetMesh()->SetSkeletalMesh(RedTeamSKMesh);
+
+		//UE_LOG(LogTemp, Warning, TEXT("%s ,%s, : RedTeam~"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), *GetName());
+
+
+		//OnOverheadTextColorChanged.ExecuteIfBound(FLinearColor::Red);
+		//OverheadWidget->SetTextColor(FLinearColor::Red);
+		//OverheadWidget->SetVisibility(ESlateVisibility::Visible);
+
+
 		break;
 	case ETeam::ET_BlueTeam:
 		//GetMesh()->SetMaterial(1, BlueMaterial);
 		//DissolveMaterialInstance = BlueDissolveMatInst;
 		if (BlueTeamSKMesh) GetMesh()->SetSkeletalMesh(BlueTeamSKMesh);
+
+		//UE_LOG(LogTemp, Error, TEXT("%s ,%s, : BlueTeam~"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), *GetName());
+
+		//OnOverheadTextColorChanged.ExecuteIfBound(FLinearColor::Green);
+		//OverheadWidget->SetTextColor(FLinearColor::Green);
+
+		//OverheadWidget->SetVisibility(ESlateVisibility::Visible);
+
 		break;
 	case ETeam::ET_MAX:
 		break;
@@ -2707,7 +2731,7 @@ void ACharacterBase::InitializeCarriedAmmo()
 
 void ACharacterBase::OnRep_CarriedAmmo()
 {
-	UE_LOG(LogTemp, Display, TEXT("OnRep_CarriedAmmo"));
+	//UE_LOG(LogTemp, Display, TEXT("OnRep_CarriedAmmo"));
 
 	bool bJumpToShoutgunEnd = CombatState == ECombatState::ECS_Reloading && EquippedWeapon != nullptr && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun && CarriedAmmo == 0;
 	if (bJumpToShoutgunEnd)

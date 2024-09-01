@@ -156,7 +156,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	//}
 
-
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -204,7 +203,7 @@ void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Display, TEXT("ABlasterCharacter::BeginPlay()"));
+	//UE_LOG(LogTemp, Display, TEXT("ABlasterCharacter::BeginPlay()"));
 
 	SetActorTickInterval(0.01f);
 
@@ -288,6 +287,12 @@ void ABlasterCharacter::BeginPlay()
 
 
 	PollInit();
+
+	FTimerHandle H;
+	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+		{
+			OverheadWidget->ShowPlayerName(PlayerName1);
+		}), 3.f, false);
 
 }
 
@@ -1747,11 +1752,8 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 			ITeamInterface* T1 = Cast<ITeamInterface>(TraceHitResult.GetActor());
 
-			if (T1 && T1->IGetTeam() == IGetTeam())
-			{
-				HUDPackage.CrosshairsColor = FLinearColor::Green;
-				return;
-			}
+			FLinearColor Red(1.f, 0.13f, 0.19f);
+			FLinearColor Green(0.1f, 1.f, 0.f);
 
 			if (CharacterBase && CharacterBase->OverheadWidget)
 			{
@@ -1759,15 +1761,22 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			}
 
 			CharacterBase = Cast<ACharacterBase>(TraceHitResult.GetActor());
-			if (T1 && T1->IGetTeam() != ETeam::ET_NoTeam)
+
+			if (T1 && T1->IGetTeam() == IGetTeam())
 			{
-
-				FLinearColor Red(1.f, 0.13f, 0.19f);
-				FLinearColor Green(0.1f, 1.f, 0.f);
-
+				HUDPackage.CrosshairsColor = FLinearColor::Green;
+				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Visible);
+				CharacterBase->OverheadWidget->SetTextColor(Green);
+			}
+			else if (T1 && T1->IGetTeam() != ETeam::ET_NoTeam)
+			{
 				HUDPackage.CrosshairsColor = FLinearColor::Red;
 				CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Visible);
 				CharacterBase->OverheadWidget->SetTextColor(Red);
+			}
+			else
+			{
+				HUDPackage.CrosshairsColor = FLinearColor::Red;
 			}
 			
 		}

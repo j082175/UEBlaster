@@ -14,7 +14,7 @@ void UOverheadWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	SetVisibility(ESlateVisibility::Visible);
+	SetVisibility(ESlateVisibility::Collapsed);
 
 
 	Init();
@@ -128,6 +128,8 @@ void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
 
 void UOverheadWidget::ShowPlayerName(APlayerState* InPlayerState)
 {
+	//UE_LOG(LogTemp, Display, TEXT("ShowPlayerName"));
+
 	TWeakObjectPtr<APlayerState> PS = InPlayerState;
 
 	if (PS.IsValid())
@@ -149,7 +151,7 @@ void UOverheadWidget::ShowPlayerName(APlayerState* InPlayerState)
 	}
 	else
 	{
-		/*UE_LOG(LogTemp, Error, TEXT("OverheadWidget : PlayerState is not valid"));*/
+		UE_LOG(LogTemp, Error, TEXT("OverheadWidget : PlayerState is not valid"));
 	}
 }
 
@@ -160,6 +162,7 @@ void UOverheadWidget::ShowPlayerName(const FString& InName)
 
 void UOverheadWidget::ServerShowPlayerName_Implementation(APlayerState* InPlayerState)
 {
+	//UE_LOG(LogTemp, Display, TEXT("ServerShowPlayerName"));
 	MulticastShowPlayerName(InPlayerState);
 }
 

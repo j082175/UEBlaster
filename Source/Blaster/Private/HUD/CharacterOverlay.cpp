@@ -25,7 +25,7 @@ void UCharacterOverlay::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	//UE_LOG(LogTemp, Display, TEXT("CharacterOverlay Tick"));
-	PollInit();
+	//PollInit();
 
 }
 

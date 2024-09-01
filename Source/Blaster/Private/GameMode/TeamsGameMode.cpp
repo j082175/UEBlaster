@@ -59,7 +59,7 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 
 	Super::PostLogin(PlayerController);
 
-	UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::PostLogin"));
+	//UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::PostLogin"));
 
 	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	if (BGameState)
@@ -162,7 +162,7 @@ void ATeamsGameMode::PlayerEliminated(ACharacterBase* ElimmedCharacter, ABlaster
 void ATeamsGameMode::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
-	UE_LOG(LogTemp, Display, TEXT("HandleMatchHasStarted"));
+	//UE_LOG(LogTemp, Display, TEXT("HandleMatchHasStarted"));
 
 	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	if (BGameState)

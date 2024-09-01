@@ -47,10 +47,10 @@ void UChatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UChatSystemComponent::AddChatBox()
 {
-	UE_LOG(LogTemp, Display, TEXT("AddChatBox"));
+	//UE_LOG(LogTemp, Display, TEXT("AddChatBox"));
 	if (ChatBox)
 	{
-		UE_LOG(LogTemp, Display, TEXT("ChatBox visibility : %s"), *UEnum::GetDisplayValueAsText(ChatBox->GetVisibility()).ToString());
+		//UE_LOG(LogTemp, Display, TEXT("ChatBox visibility : %s"), *UEnum::GetDisplayValueAsText(ChatBox->GetVisibility()).ToString());
 
 		//ChatBox = OwingPlayerController->CreateWidget<UChatBox>(this, ChatBoxClass);
 		if (ChatBox && ChatBox->ChatInput)

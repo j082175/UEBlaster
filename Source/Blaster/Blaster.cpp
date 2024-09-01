@@ -8,6 +8,9 @@
 
 IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, Blaster, "Blaster");
 
+DEFINE_LOG_CATEGORY(LogABNetwork);
+DEFINE_LOG_CATEGORY(LogABTeleport);
+
 
 void WidgetAnimHelper::FindWidgetAnimationName(UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations)
 {

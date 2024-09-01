@@ -19,6 +19,8 @@ void ABlasterPlayerState::BeginPlay()
 	Super::BeginPlay();
 
 	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerState::BeginPlay"));
+
+	PlayerNamee = GetPlayerName();
 }
 
 void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -27,7 +29,7 @@ void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(ThisClass, Defeats);
 	DOREPLIFETIME(ThisClass, Team);
-	 
+	DOREPLIFETIME(ThisClass, PlayerNamee);
 }
 
 void ABlasterPlayerState::OnRep_Score()
@@ -44,7 +46,7 @@ ETeam ABlasterPlayerState::IGetTeam() const
 
 void ABlasterPlayerState::ISetTeam(ETeam TeamToSlot)
 {
-	UE_LOG(LogTemp, Error, TEXT("TeamToSlot : %d"), (int)TeamToSlot);
+	//UE_LOG(LogTemp, Error, TEXT("TeamToSlot : %d"), (int)TeamToSlot);
 	Team = TeamToSlot;
 	ITeamInterface* BCharacter = Cast<ITeamInterface>(GetPawn());
 	if (BCharacter)

@@ -78,7 +78,7 @@ void AWeapon_Melee::ItemAttachToComponent(USceneComponent* SceneComponent, FAtta
 		}
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("ItemAttachToComponent"));
+	//UE_LOG(LogTemp, Display, TEXT("ItemAttachToComponent"));
 }
 
 void AWeapon_Melee::ItemDetachToComponent(FDetachmentTransformRules& DetachmentRules)

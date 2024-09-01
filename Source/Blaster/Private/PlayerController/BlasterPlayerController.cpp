@@ -126,29 +126,38 @@ void ABlasterPlayerController::BeginPlay()
 			}
 		}
 	}
+
+
 	
 
-
-	GetWorldTimerManager().SetTimer(OverheadWidgetTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
-			if (BlasterCharacter && IsLocalPlayerController())
+	//if (HasAuthority())
+	{
+		GetWorldTimerManager().SetTimer(OverheadWidgetTimer, FTimerDelegate::CreateLambda([&]()
 			{
-				OverheadWidget = Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget());
-				APlayerState* PlayerState = GetPlayerState<APlayerState>();
+				BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
+				if (BlasterCharacter && IsLocalPlayerController())
+				{
+					OverheadWidget = Cast<UOverheadWidget>(BlasterCharacter->OverheadWidgetComponent->GetWidget());
+					ABlasterPlayerState* PlayerState = GetPlayerState<ABlasterPlayerState>();
 
-				if (OverheadWidget && PlayerState)
-				{
-					OverheadWidget->ServerShowPlayerName(PlayerState);
-					GetWorldTimerManager().ClearTimer(OverheadWidgetTimer);
-					OverheadWidgetTimer.Invalidate();
+					if (OverheadWidget && PlayerState)
+					{
+						OverheadWidget->ServerShowPlayerName(PlayerState);
+						GetWorldTimerManager().ClearTimer(OverheadWidgetTimer);
+						OverheadWidgetTimer.Invalidate();
+
+						BlasterCharacter->PlayerName1 = PlayerState->PlayerNamee;
+						OverheadWidget->ShowPlayerName(PlayerState->PlayerNamee);
+						//UE_LOG(LogTemp, Warning, TEXT("%s, %s"), *UEnum::getdis);
+					}
+					else
+					{
+						//UE_LOG(LogTemp, Error, TEXT("%s : OverheadWidget is null"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
+					}
 				}
-				else
-				{
-					//UE_LOG(LogTemp, Error, TEXT("%s : OverheadWidget is null"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
-				}
-			}
-		}), 0.01f, true);
+			}), 0.01f, true);
+	}
+
 
 
 

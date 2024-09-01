@@ -45,4 +45,8 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_Team, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	ETeam Team = ETeam::ET_NoTeam;
+
+public:
+	UPROPERTY(Replicated)
+	FString PlayerNamee;
 };
