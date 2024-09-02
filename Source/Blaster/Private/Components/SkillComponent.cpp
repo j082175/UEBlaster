@@ -144,14 +144,18 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 			//UE_LOG(LogTemp, Display, TEXT("Getlocalrole : %s"), *UEnum::GetDisplayValueAsText(CharacterOwner->GetLocalRole()).ToString());
 			FTransform SpawnTo(CharacterOwner->GetActorRotation(), CharacterOwner->GetActorLocation() + FVector(0.f, 0.f, 100.f));
 
-			EnemyRange = GetWorld()->SpawnActor<AEnemyRange>(EnemyRangeClass, SpawnTo);
+			EnemyRange = GetWorld()->SpawnActorDeferred<AEnemyRange>(EnemyRangeClass, SpawnTo);
 			if (EnemyRange.IsValid())
 			{
+				EnemyRange->FinishSpawning(SpawnTo);
 				EnemyRange->SpawnDefaultController();
 				EnemyRange->SetOwner(CharacterOwner);
 				EnemyRange->SetInstigator(CharacterOwner);
+
 				EnemyRange->ISetTeam(CharacterOwner->IGetTeam());
 				EnemyRange->SetTeamColor(CharacterOwner->IGetTeam());
+				EnemyRange->OverheadInit();
+
 			}
 		}
 

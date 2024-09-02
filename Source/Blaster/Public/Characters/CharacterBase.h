@@ -944,7 +944,7 @@ protected:
 	ETeam Team = ETeam::ET_NoTeam;
 
 	// Widgets
-public:
+protected:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -953,9 +953,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UOverheadWidgetComponent> OverheadWidgetComponent;
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TSubclassOf<class AActor> PlayableActor;
 
-	UPROPERTY(Replicated)
-	FString PlayerName1;
+
+	FTimerHandle InitHandle;
+public:
+	void OverheadInit();
 };

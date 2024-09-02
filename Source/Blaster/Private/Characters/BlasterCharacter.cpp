@@ -83,6 +83,10 @@ ABlasterCharacter::ABlasterCharacter()
 
 	InitializeDefaults();
 
+
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+
+
 	//UE_LOG(LogTemp, Display, TEXT("BlasterCharacter Constructor"));
 	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
@@ -291,15 +295,7 @@ void ABlasterCharacter::BeginPlay()
 
 
 	PollInit();
-
-	FTimerHandle H;
-	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-		{
-			OverheadWidget->ShowPlayerName(PlayerName1);
-		}), 3.f, false);
-
-
-
+	OverheadInit();
 }
 
 void ABlasterCharacter::Destroyed()
@@ -319,8 +315,6 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	AB_LOG(LogABDisplay, Log, TEXT("%s"), TEXT("Begin"));
-	//AB_SUBLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
 //bool ABlasterCharacter::IsSprint() const
@@ -1030,7 +1024,10 @@ void ABlasterCharacter::TestingButtonPressed()
 	//SetReplicateMovement(false);
 
 	//ServerTest();
-	Test();
+	//Test();
+
+	GEngine->ForceGarbageCollection();
+	UE_LOG(LogTemp, Display, TEXT("ForceGarbageCollection"));
 }
 
 void ABlasterCharacter::SkillButtonPressed0()
@@ -1764,36 +1761,30 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 		if (TraceHitResult.GetActor())
 		{
-			UOverheadWidgetComponent* OWC = TraceHitResult.GetActor()->GetComponentByClass<UOverheadWidgetComponent>();
 
 			if (TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
 			{
 
 				ITeamInterface* T1 = Cast<ITeamInterface>(TraceHitResult.GetActor());
+				
 
 				FLinearColor Red(1.f, 0.13f, 0.19f);
 				FLinearColor Green(0.1f, 1.f, 0.f);
 
-				//if (CharacterBase && CharacterBase->OverheadWidget)
-				//{
-				//	CharacterBase->OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
-				//}
-
-
-				//CharacterBase = Cast<ACharacterBase>(TraceHitResult.GetActor());
-
-
-				if (OWC && T1 && T1->IGetTeam() == IGetTeam())
+				if (T1 && T1->IGetTeam() == IGetTeam())
 				{
 					HUDPackage.CrosshairsColor = FLinearColor::Green;
-					OWC->OnLocalRoleTextVisibilityChanged.ExecuteIfBound(ESlateVisibility::Visible);
-					OWC->OnLocalRoleTextChanged.ExecuteIfBound(TEXT(""), Green);
 				}
-				else if (OWC && T1 && T1->IGetTeam() != ETeam::ET_NoTeam)
+				else if (T1 && T1->IGetTeam() != IGetTeam())
 				{
+					if (UOverheadWidgetComponent* OWC = TraceHitResult.GetActor()->GetComponentByClass<UOverheadWidgetComponent>())
+					{
+						if (OpponentOverheadWidget.IsValid()) OpponentOverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
+						OpponentOverheadWidget = OWC->GetOverheadWidget();
+					}
+
 					HUDPackage.CrosshairsColor = FLinearColor::Red;
-					OWC->OnLocalRoleTextVisibilityChanged.ExecuteIfBound(ESlateVisibility::Visible);
-					OWC->OnLocalRoleTextChanged.ExecuteIfBound(TEXT(""), Red);
+					if (OpponentOverheadWidget.IsValid()) OpponentOverheadWidget->SetVisibility(ESlateVisibility::Visible);
 				}
 				else
 				{
@@ -1804,9 +1795,11 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			else
 			{
 				HUDPackage.CrosshairsColor = FLinearColor::White;
-				if (OWC) OWC->OnLocalRoleTextVisibilityChanged.ExecuteIfBound(ESlateVisibility::Collapsed);
+				if (OpponentOverheadWidget.IsValid()) OpponentOverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}
+
+
 
 
 
@@ -1883,6 +1876,8 @@ void ABlasterCharacter::Test()
 {
 	ServerTest();
 }
+
+
 
 //void ABlasterCharacter::CoolTimeChecker(float DeltaTime)
 //{

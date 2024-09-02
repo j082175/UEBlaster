@@ -12,6 +12,7 @@
 #include "PlayerState/BlasterPlayerState.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "GameFramework/PlayerStart.h"
+#include "Components/OverheadWidgetComponent.h"
 
 
 ATeamsGameMode::ATeamsGameMode()
@@ -59,18 +60,23 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 
 	Super::PostLogin(PlayerController);
 
+	//PC = PlayerController;
+	//Init();
+
 	//UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::PostLogin"));
 
 	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	if (BGameState)
 	{
 		ABlasterPlayerState* BPState = PlayerController->GetPlayerState<ABlasterPlayerState>();
+
 		if (BPState && BPState->IGetTeam() == ETeam::ET_NoTeam)
 		{
 			if (BGameState->BlueTeam.Num() >= BGameState->RedTeam.Num())
 			{
 				BGameState->RedTeam.AddUnique(BPState);
 				BPState->ISetTeam(ETeam::ET_RedTeam);
+
 			}
 			else
 			{
@@ -88,6 +94,8 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 		UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::No GameState"));
 
 	}
+
+
 }
 
 void ATeamsGameMode::Logout(AController* Exiting)
@@ -164,6 +172,8 @@ void ATeamsGameMode::HandleMatchHasStarted()
 	Super::HandleMatchHasStarted();
 	//UE_LOG(LogTemp, Display, TEXT("HandleMatchHasStarted"));
 
+	//Init();
+
 	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	if (BGameState)
 	{
@@ -187,4 +197,3 @@ void ATeamsGameMode::HandleMatchHasStarted()
 		}
 	}
 }
-

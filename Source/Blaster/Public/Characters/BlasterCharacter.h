@@ -322,6 +322,10 @@ protected:
 	uint8 Check : 1 = false;
 
 
+	// OverheadWidget Init
+
+	
+	TWeakObjectPtr<class UOverheadWidget> OpponentOverheadWidget;
 
 
 	//float DodgeCoolTimeCount;

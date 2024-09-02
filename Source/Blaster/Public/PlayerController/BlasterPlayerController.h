@@ -35,7 +35,7 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 	virtual void Tick(float DeltaTime) override;
-
+	virtual void OnRep_Pawn() override;
 
 	virtual void IBindWidget(class UUserWidget* InUserWidget) override;
 
@@ -231,8 +231,9 @@ private:
 
 
 private:
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOnPossess(APawn* InPawn);
+	void CharacterOverlayReset();
+
+	virtual void OnRep_PlayerState() override;
 
 
 	//public:

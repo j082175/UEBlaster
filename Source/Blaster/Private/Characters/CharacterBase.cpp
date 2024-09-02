@@ -213,7 +213,10 @@ void ACharacterBase::BeginPlay()
 	if (OverheadWidget)
 	{
 		OverheadWidget->ShowPlayerNetRole(this);
+
 	}
+	
+
 
 
 }
@@ -258,7 +261,6 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Pitch, COND_SimulatedOnly);
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Yaw, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, Team);
-	DOREPLIFETIME(ThisClass, PlayerName1);
 }
 
 // Called every frame
@@ -361,21 +363,13 @@ void ACharacterBase::IBindWidget(UUserWidget* InUserWidget)
 	{
 		if (AttributeComponent == nullptr) return;
 		//UE_LOG(LogTemp, Warning, TEXT("ACharacterBase::IBindWidget CharacterOverlay : %s"), *InUserWidget->GetName());
-		AB_LOG(LogABDisplay, Warning, TEXT(""));
+		//AB_LOG(LogABDisplay, Warning, TEXT(""));
 		AttributeComponent->OnHpChanged.AddUObject(CO, &UCharacterOverlay::SetHpBar);
 		AttributeComponent->OnShieldChanged.AddUObject(CO, &UCharacterOverlay::SetShieldBar);
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 
 		SkillComponent->OnSkillCoolTimeStarted.AddUniqueDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
-	}
-	else if (UOverheadWidget* OW = Cast<UOverheadWidget>(InUserWidget))
-	{
-		OverheadWidgetComponent->OnLocalRoleTextChanged.BindUObject(OW, &UOverheadWidget::SetLocalRoleText);
-		OverheadWidgetComponent->OnPlayerIDTextChanged.BindUObject(OW, &UOverheadWidget::SetPlayerIDText);
-		OverheadWidgetComponent->OnLocalRoleTextVisibilityChanged.BindUObject(OW, &UOverheadWidget::SetLocalRoleVisibility);
-		OverheadWidgetComponent->OnPlayerIDTextVisibilityChanged.BindUObject(OW, &UOverheadWidget::SetPlayerIDVisibility);
-
 	}
 
 
@@ -3151,6 +3145,7 @@ void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantiz
 			DrawDebugLine(World, StartingLocation, Target, FColor::Magenta, false, 5.f);
 			FTransform T(ToTarget.Rotation(), StartingLocation);
 			AProjectileGrenade* Grenade = World->SpawnActor<AProjectileGrenade>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParams);
+			Grenade->SetReplicates(true);
 			//AProjectileGrenade* Grenade = Cast<AProjectileGrenade>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(T, GrenadeClass));
 			//if (Grenade)
 			//{
@@ -3940,4 +3935,40 @@ void ACharacterBase::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickupWidget(false);
 	}
+}
+
+void ACharacterBase::OverheadInit()
+{
+
+	GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			FLinearColor Green(0.1f, 1.f, 0.f);
+			FLinearColor Red(1.f, 0.13f, 0.19f);
+
+			//ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>());
+			//ITeamInterface* T2 = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
+
+			ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPawn());
+			ITeamInterface* T2 = Cast<ITeamInterface>(this);
+
+			if (T1 && T2 && T1->IGetTeam() == T2->IGetTeam())
+			{
+				OverheadWidget->SetAllTextColor(Green);
+				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
+				InitHandle.Invalidate();
+			}
+			else if (T1 && T2 && T1->IGetTeam() != T2->IGetTeam())
+			{
+				OverheadWidget->SetAllTextColor(Red);
+				OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
+				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
+				InitHandle.Invalidate();
+			}
+			else
+			{
+				AB_LOG(LogTemp, Log, TEXT("Initializing"));
+				//UE_LOG(LogTemp, Error, TEXT("Blaster: Failed ShowPlayerName"));
+			}
+
+		}), 0.1f, true);
 }

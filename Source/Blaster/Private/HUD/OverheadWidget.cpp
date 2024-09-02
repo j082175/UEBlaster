@@ -8,6 +8,8 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Characters/BlasterCharacter.h"
 #include "Blaster.h"
 
 
@@ -24,6 +26,8 @@ void UOverheadWidget::NativeConstruct()
 	AB_CALLLOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
 	SetVisibility(ESlateVisibility::Visible);
+
+	ShowPlayerName(GetOwningPlayerPawn());
 }
 
 void UOverheadWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -31,28 +35,8 @@ void UOverheadWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	UE_LOG(LogTemp, Display, TEXT("OverheadWidget Tick"));
-}
 
-void UOverheadWidget::SetLocalRoleText(const FString& InStr, const FLinearColor& InColor)
-{
-	if (InStr != TEXT("")) LocaleRoleText->SetText(FText::FromString(InStr));
-	LocaleRoleText->SetColorAndOpacity(InColor);
-}
 
-void UOverheadWidget::SetPlayerIDText(const FString& InStr, const FLinearColor& InColor)
-{
-	if (InStr != TEXT("")) PlayerIDText->SetText(FText::FromString(InStr));
-	PlayerIDText->SetColorAndOpacity(InColor);
-}
-
-void UOverheadWidget::SetLocalRoleVisibility(ESlateVisibility InVisibility)
-{
-	LocaleRoleText->SetVisibility(InVisibility);
-}
-
-void UOverheadWidget::SetPlayerIDVisibility(ESlateVisibility InVisibility)
-{
-	PlayerIDText->SetVisibility(InVisibility);
 }
 
 void UOverheadWidget::SetDisplayText(FString TextToDisplay)
@@ -63,50 +47,10 @@ void UOverheadWidget::SetDisplayText(FString TextToDisplay)
 	}
 }
 
-void UOverheadWidget::SetTextColor(FLinearColor InColor)
+void UOverheadWidget::SetAllTextColor(FLinearColor InColor)
 {
 	LocaleRoleText->SetColorAndOpacity(InColor);
 	PlayerIDText->SetColorAndOpacity(InColor);
-
-	//APawn* P = GetWorld()->GetFirstPlayerController()->GetPawn();
-	//if (P)
-	//{
-
-	//	ITeamInterface* T2 = Cast<ITeamInterface>(P);
-
-	//	TArray<AActor*> FoundActors;
-	//	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ActorToFind, FoundActors);
-
-	//	for (auto& i : FoundActors)
-	//	{
-	//		ITeamInterface* T1 = Cast<ITeamInterface>(i);
-	//		if (T1 && T1->IGetTeam() == T2->IGetTeam())
-	//		{
-	//			LocaleRoleText->SetColorAndOpacity(Green);
-	//			PlayerIDText->SetColorAndOpacity(Green);
-	//		}
-	//		else
-	//		{
-	//			LocaleRoleText->SetColorAndOpacity(Red);
-	//			PlayerIDText->SetColorAndOpacity(Red);
-	//		}
-	//	}
-
-		//ITeamInterface* T1 = Cast<ITeamInterface>(GetOwningPlayerPawn());
-
-
-
-		//if (InTeam == T2->IGetTeam())
-		//{
-		//	LocaleRoleText->SetColorAndOpacity(Green);
-		//	PlayerIDText->SetColorAndOpacity(Green);
-		//}
-		//else
-		//{
-		//	LocaleRoleText->SetColorAndOpacity(Red);
-		//	PlayerIDText->SetColorAndOpacity(Red);
-		//}
-	//}
 }
 
 void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
@@ -137,49 +81,41 @@ void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
 	SetDisplayText(LocalRoleString);
 }
 
-void UOverheadWidget::ShowPlayerName(APlayerState* InPlayerState)
+void UOverheadWidget::ShowPlayerName(APawn* InPawn)
 {
 	//UE_LOG(LogTemp, Display, TEXT("ShowPlayerName"));
 
-	TWeakObjectPtr<APlayerState> PS = InPlayerState;
+	//game instance > game mode > game state > player state > controller > pawn
+	//begin play is initialized around the time player state is,
+	//so smetimes it's not initialized yet so we get the name once on tick 
 
-	if (PS.IsValid())
-	{
-		FString PlayerName = PS->GetPlayerName();
-		FString Result = FString::Printf(TEXT("Player name : %s"), *PlayerName);
+	PawnToInit = InPawn;
 
-		if (PlayerIDText)
+	GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			PlayerIDText->SetText(FText::FromString(Result));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("PlayerIDText is not valid"));
-		}
+			if (PawnToInit.IsValid())
+			{
+				APlayerState* PlayerState = PawnToInit->GetPlayerState();
+				
+				if (PlayerState)
+				{
+					FString PlayerName = PlayerState->GetPlayerName();
+					FString PlayerNameToDisplay = FString::Printf(TEXT("%s"), *PlayerName);
 
+					PlayerIDText->SetText(FText::FromString(PlayerNameToDisplay));
+					GetWorld()->GetTimerManager().ClearTimer(InitHandle);
+					InitHandle.Invalidate();
+				}
+			}
 
-		//UE_LOG(LogTemp, Display, TEXT("PlayerState is : %s"), *InPlayerState->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("OverheadWidget : PlayerState is not valid"));
-	}
+			
+		}), 0.1f, true);
+
 }
 
 void UOverheadWidget::ShowPlayerName(const FString& InName)
 {
 	PlayerIDText->SetText(FText::FromString(InName));
-}
-
-void UOverheadWidget::ServerShowPlayerName_Implementation(APlayerState* InPlayerState)
-{
-	//UE_LOG(LogTemp, Display, TEXT("ServerShowPlayerName"));
-	MulticastShowPlayerName(InPlayerState);
-}
-
-void UOverheadWidget::MulticastShowPlayerName_Implementation(APlayerState* InPlayerState)
-{
-	ShowPlayerName(InPlayerState);
 }
 
 void UOverheadWidget::NativeDestruct()

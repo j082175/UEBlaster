@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "HUD/OverheadWidget.h"
 #include "Blaster.h"
+#include "Components/OverheadWidgetComponent.h"
 
 ABlasterPlayerState::ABlasterPlayerState()
 {
@@ -28,7 +29,6 @@ void ABlasterPlayerState::BeginPlay()
 
 	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerState::BeginPlay"));
 
-	PlayerNamee = GetPlayerName();
 }
 
 void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -37,7 +37,6 @@ void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(ThisClass, Defeats);
 	DOREPLIFETIME(ThisClass, Team);
-	DOREPLIFETIME(ThisClass, PlayerNamee);
 }
 
 void ABlasterPlayerState::OnRep_Score()
@@ -56,11 +55,22 @@ void ABlasterPlayerState::ISetTeam(ETeam TeamToSlot)
 {
 	//UE_LOG(LogTemp, Error, TEXT("TeamToSlot : %d"), (int)TeamToSlot);
 	Team = TeamToSlot;
-	ITeamInterface* BCharacter = Cast<ITeamInterface>(GetPawn());
-	if (BCharacter)
-	{
-		BCharacter->ISetTeam(TeamToSlot);
-	}
+
+	GetWorldTimerManager().SetTimer(InitializeTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			ITeamInterface* BCharacter = Cast<ITeamInterface>(GetPawn());
+			if (BCharacter)
+			{
+				BCharacter->ISetTeam(Team);
+				GetWorldTimerManager().ClearTimer(InitializeTimerHandle);
+				InitializeTimerHandle.Invalidate();
+			}
+			else
+			{
+				AB_LOG(LogABDisplay, Log, TEXT("Initializing"));
+			}
+		}), 0.1f, true);
+
 }
 
 void ABlasterPlayerState::AddToScore(float ScoreAmount)

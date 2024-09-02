@@ -30,6 +30,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ChatSystemComponent.h"
+#include "Components/OverheadWidgetComponent.h"
 #include "Blaster/Blaster.h"
 
 
@@ -138,10 +139,7 @@ void ABlasterPlayerController::BeginPlay()
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	//UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess"));
-	//UE_LOG(LogTemp, Display, TEXT("ABlasterPlayerController::OnPossess, BlasterHUD : %x"), BlasterHUD);
-
-	MulticastOnPossess(InPawn);
+	CharacterOverlayReset();
 
 	PollInit(InPawn);
 }
@@ -185,7 +183,7 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 
 
 	/* 여기도 에러뜸 */
-	if (IsLocalController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
+	if (IsLocalPlayerController()) // UI에 나타나는건 로컬플레이어만 나타나면되고 나머지 프록시들은 필요없어
 	{
 		SetHUDTime();
 		CheckTimeSync(DeltaTime);
@@ -328,6 +326,13 @@ void ABlasterPlayerController::Tick(float DeltaTime)
 	//	}
 	//}
 
+}
+
+void ABlasterPlayerController::OnRep_Pawn()
+{
+	Super::OnRep_Pawn();
+
+	CharacterOverlayReset();
 }
 
 //void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
@@ -1157,16 +1162,23 @@ void ABlasterPlayerController::PlayHitNoticeAnim(const FString& InPrefix)
 	WidgetAnimHelper::StartAnimation(InPrefix, TEXT("HitNotice"), -1, 1.f, HitNotice, FindWidgetAnimation);
 }
 
-void ABlasterPlayerController::MulticastOnPossess_Implementation(APawn* InPawn)
+void ABlasterPlayerController::CharacterOverlayReset()
 {
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD.Get();
 	if (BlasterHUD && BlasterHUD->CharacterOverlay)
 	{
 		BlasterHUD->CharacterOverlay->SetVisibility(ESlateVisibility::Visible);
 	}
+}
 
-	BlasterCharacter = Cast<ABlasterCharacter>(InPawn);
-	IBindWidget(nullptr);
+void ABlasterPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	if (UOverheadWidgetComponent* OWC = GetComponentByClass<UOverheadWidgetComponent>())
+	{
+		Cast<UOverheadWidget>(OWC->GetWidget())->ShowPlayerName(GetPawn());
+	}
 }
 
 void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerState* Attacker, APlayerState* Victim)

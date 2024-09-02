@@ -20,6 +20,19 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	void SetAllTextColor(FLinearColor InColor);
+
+	UFUNCTION(BlueprintCallable)
+	void ShowPlayerNetRole(APawn* InPawn);
+
+	void ShowPlayerName(APawn* InPawn);
+	void ShowPlayerName(const FString& InName);
+
+protected:
+	void SetDisplayText(FString TextToDisplay);
+
+	virtual void NativeDestruct() override;
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> LocaleRoleText;
 
@@ -27,31 +40,10 @@ public:
 	TObjectPtr<class UTextBlock> PlayerIDText;
 
 
-	void SetLocalRoleText(const FString& InStr, const FLinearColor& InColor);
-	void SetPlayerIDText(const FString& InStr, const FLinearColor& InColor);
+private:
 
-	void SetLocalRoleVisibility(ESlateVisibility InVisibility);
-	void SetPlayerIDVisibility(ESlateVisibility InVisibility);
+	TWeakObjectPtr<APawn> PawnToInit;
 
-	void SetDisplayText(FString TextToDisplay);
-	void SetTextColor(FLinearColor InColor);
-
-	UFUNCTION(BlueprintCallable)
-	void ShowPlayerNetRole(APawn* InPawn);
-
-	void ShowPlayerName(APlayerState* InPlayerState);
-	void ShowPlayerName(const FString& InName);
-
-	UFUNCTION(Server, Reliable)
-	void ServerShowPlayerName(APlayerState* InPlayerState);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastShowPlayerName(APlayerState* InPlayerState);
-
-protected:
-	virtual void NativeDestruct() override;
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TSubclassOf<class ACharacter> ActorToFind;
-
+	UPROPERTY()
+	FTimerHandle InitHandle;
 };
