@@ -21,6 +21,10 @@ public:
 	FORCEINLINE class UOverheadWidget* GetOverheadWidget() const { return OverheadWidget; }
 
 private:
+	void Init();
+
+	FTimerHandle InitHandle;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UOverheadWidget> OverheadWidget;
 };

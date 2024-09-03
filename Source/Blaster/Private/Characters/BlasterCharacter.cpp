@@ -295,7 +295,6 @@ void ABlasterCharacter::BeginPlay()
 
 
 	PollInit();
-	OverheadInit();
 }
 
 void ABlasterCharacter::Destroyed()

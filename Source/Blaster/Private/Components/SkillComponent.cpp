@@ -154,7 +154,6 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 
 				EnemyRange->ISetTeam(CharacterOwner->IGetTeam());
 				EnemyRange->SetTeamColor(CharacterOwner->IGetTeam());
-				EnemyRange->OverheadInit();
 
 			}
 		}

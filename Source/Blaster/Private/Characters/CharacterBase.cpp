@@ -1660,6 +1660,14 @@ void ACharacterBase::OnConstruction(const FTransform& Transform)
 void ACharacterBase::PostLoad()
 {
 	Super::PostLoad();
+
+	StartingARAmmo = 300.f;
+	StartingRocketAmmo = 10.f;
+	StartingPistolAmmo = 300.f;
+	StartingSMGAmmo = 320.f;
+	StartingShotgunAmmo = 64.f;
+	StartingSniperAmmo = 30.f;
+	StartingGrenadeLauncherAmmo = 30.f;
 }
 
 void ACharacterBase::PollInit()
@@ -3935,40 +3943,4 @@ void ACharacterBase::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickupWidget(false);
 	}
-}
-
-void ACharacterBase::OverheadInit()
-{
-
-	GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			FLinearColor Green(0.1f, 1.f, 0.f);
-			FLinearColor Red(1.f, 0.13f, 0.19f);
-
-			//ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>());
-			//ITeamInterface* T2 = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
-
-			ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPawn());
-			ITeamInterface* T2 = Cast<ITeamInterface>(this);
-
-			if (T1 && T2 && T1->IGetTeam() == T2->IGetTeam())
-			{
-				OverheadWidget->SetAllTextColor(Green);
-				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
-				InitHandle.Invalidate();
-			}
-			else if (T1 && T2 && T1->IGetTeam() != T2->IGetTeam())
-			{
-				OverheadWidget->SetAllTextColor(Red);
-				OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
-				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
-				InitHandle.Invalidate();
-			}
-			else
-			{
-				AB_LOG(LogTemp, Log, TEXT("Initializing"));
-				//UE_LOG(LogTemp, Error, TEXT("Blaster: Failed ShowPlayerName"));
-			}
-
-		}), 0.1f, true);
 }

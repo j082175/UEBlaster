@@ -955,7 +955,4 @@ protected:
 
 
 
-	FTimerHandle InitHandle;
-public:
-	void OverheadInit();
 };
