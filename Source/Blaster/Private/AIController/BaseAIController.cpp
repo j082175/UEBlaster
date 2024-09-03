@@ -31,7 +31,6 @@ ABaseAIController::ABaseAIController()
 	// Setup AIController's Perception system values
 	//AIPerceptionComponent = GetAIPerceptionComponent();
 
-
 }
 
 void ABaseAIController::PostInitializeComponents()

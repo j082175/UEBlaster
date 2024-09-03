@@ -21,7 +21,7 @@ public:
 	FORCEINLINE class UOverheadWidget* GetOverheadWidget() const { return OverheadWidget; }
 
 private:
-	void Init();
+	void InitTextColor();
 
 	FTimerHandle InitHandle;
 

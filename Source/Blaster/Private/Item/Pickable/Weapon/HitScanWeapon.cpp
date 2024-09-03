@@ -65,7 +65,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 				{
 					//UE_LOG(LogTemp, Error, TEXT("OnHit : %s"), *FireHit.BoneName.ToString());
 
-					if (FireHit.BoneName.ToString() == TEXT("neck_02") || FireHit.BoneName.ToString() == TEXT("head"))
+					if (FireHit.BoneName.ToString() == TEXT("head"))
 					{
 						BPC->PlayHitNoticeAnim(TEXT("Head"));
 					}

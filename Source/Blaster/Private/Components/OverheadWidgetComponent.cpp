@@ -19,10 +19,10 @@ void UOverheadWidgetComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Init();
+	InitTextColor();
 }
 
-void UOverheadWidgetComponent::Init()
+void UOverheadWidgetComponent::InitTextColor()
 {
 	GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([&]()
 		{
