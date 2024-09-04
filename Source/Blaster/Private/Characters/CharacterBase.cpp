@@ -188,10 +188,10 @@ void ACharacterBase::PostInitializeComponents()
 		LagCompensation->Character = this;
 	}
 
-	if (HasAuthority())
-	{
-		InitializeCarriedAmmo();
-	}
+	//if (HasAuthority())
+	//{
+	//	InitializeCarriedAmmo();
+	//}
 
 
 }
@@ -237,12 +237,12 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(ThisClass, CombatState);
 
-	DOREPLIFETIME(ThisClass, EquippedWeapon);
-	DOREPLIFETIME(ThisClass, SecondaryWeapon);
+	//DOREPLIFETIME(ThisClass, InventoryComponent->EquippedWeapon);
+	//DOREPLIFETIME(ThisClass, SecondaryWeapon);
 	DOREPLIFETIME(ThisClass, bIsAiming);
 	DOREPLIFETIME(ThisClass, CharacterState);
-	DOREPLIFETIME_CONDITION(ThisClass, CarriedAmmo, COND_OwnerOnly);
-	DOREPLIFETIME(ThisClass, Grenades);
+	//DOREPLIFETIME_CONDITION(ThisClass, CarriedAmmo, COND_OwnerOnly);
+	//DOREPLIFETIME(ThisClass, Grenades);
 	DOREPLIFETIME(ThisClass, bHoldingTheFlag);
 	DOREPLIFETIME(ThisClass, Flag);
 	DOREPLIFETIME(ThisClass, bIsSliding);
@@ -371,6 +371,15 @@ void ACharacterBase::IBindWidget(UUserWidget* InUserWidget)
 		SkillComponent->OnSkillCoolTimeStarted.AddUniqueDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
 		SkillComponent->OnSkillCostChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSkillCost);
 		SkillComponent->OnSoulCountChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSoulCount);
+		SkillComponent->OnSkillCoolTimeCheck.AddUniqueDynamic(CO, &UCharacterOverlay::ShowCoolTimeAnnouncement);
+
+		InventoryComponent->OnCurrentAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetCurrentAmmo);
+		InventoryComponent->OnCarriedAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetMaxAmmo);
+		InventoryComponent->OnGrenadeCountChanged.BindUObject(CO, &UCharacterOverlay::SetGrenadeNum);
+		InventoryComponent->OnWeaponNameChanged.BindUObject(CO, &UCharacterOverlay::SetWeaponName);
+
+		InventoryComponent->OnWeaponNameChanged.ExecuteIfBound(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
+		InventoryComponent->OnCurrentAmmoChanged.ExecuteIfBound(Cast<AWeapon_Gun>(InventoryComponent->GetEquippedWeapon())->GetAmmo());
 	}
 
 
@@ -864,7 +873,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 			UE_LOG(LogTemp, Display, TEXT("ECS_SwappingWeapon finished"));
 			//CombatComponent->CombatState = ECombatState::ECS_Unoccupied;
 			bFinishedSwapping = true;
-			if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(true);
+			if (InventoryComponent->SecondaryWeapon) InventoryComponent->SecondaryWeapon->EnableCustomDepth(true);
 			CombatState = ECombatState::ECS_Unoccupied;
 		}
 		else if (Montage == VaultMontage || Montage == MantleMontage)
@@ -879,7 +888,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 		}
 		else if (Montage == BoltActionMontage)
 		{
-			AttachActorToRightHand(EquippedWeapon);
+			AttachActorToRightHand(InventoryComponent->EquippedWeapon);
 		}
 
 
@@ -1607,7 +1616,7 @@ void ACharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 	FName PropertyName = PropertyChangedEvent.Property != nullptr ? PropertyChangedEvent.Property->GetFName() : NAME_None;
 
 	// 변경된 프로퍼티에 따라 작업을 수행
-	if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, StartingARAmmo))
+	//if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, StartingARAmmo))
 	{
 
 		//if (ProjectileMovementComponent)
@@ -1629,13 +1638,13 @@ void ACharacterBase::PostLoad()
 {
 	Super::PostLoad();
 
-	StartingARAmmo = 300.f;
-	StartingRocketAmmo = 10.f;
-	StartingPistolAmmo = 300.f;
-	StartingSMGAmmo = 320.f;
-	StartingShotgunAmmo = 64.f;
-	StartingSniperAmmo = 30.f;
-	StartingGrenadeLauncherAmmo = 30.f;
+	//StartingARAmmo = 300.f;
+	//StartingRocketAmmo = 10.f;
+	//StartingPistolAmmo = 300.f;
+	//StartingSMGAmmo = 320.f;
+	//StartingShotgunAmmo = 64.f;
+	//StartingSniperAmmo = 30.f;
+	//StartingGrenadeLauncherAmmo = 30.f;
 }
 
 void ACharacterBase::PollInit()
@@ -1715,7 +1724,7 @@ void ACharacterBase::SetHoldingTheFlag(bool bHolding)
 
 bool ACharacterBase::IsWeaponEquipped()
 {
-	return EquippedWeapon == nullptr ? false : true;
+	return InventoryComponent->EquippedWeapon == nullptr ? false : true;
 }
 
 bool ACharacterBase::IsAiming()
@@ -1735,7 +1744,7 @@ bool ACharacterBase::IsHoldingTheFlag() const
 
 void ACharacterBase::PlayFireMontage(bool InbIsAiming)
 {
-	if (!EquippedWeapon) return;
+	if (!InventoryComponent->EquippedWeapon) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && AttackMontage)
@@ -1765,7 +1774,7 @@ void ACharacterBase::PlayDeadMontage()
 
 //void ACharacterBase::PlayCombatHitReactMontage()
 //{
-//	if (!CombatComponent || !CombatComponent->EquippedWeapon) return;
+//	if (!CombatComponent || !CombatComponent->InventoryComponent->EquippedWeapon) return;
 //
 //	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 //	if (AnimInstance && HitReactMontage)
@@ -1781,14 +1790,14 @@ void ACharacterBase::PlayDeadMontage()
 
 void ACharacterBase::PlayReloadMontage()
 {
-	if (!EquippedWeapon) return;
+	if (!InventoryComponent->EquippedWeapon) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && ReloadMontage)
 	{
 		AnimInstance->Montage_Play(ReloadMontage);
 		FName SectionName;
-		switch (EquippedWeapon->GetWeaponType())
+		switch (InventoryComponent->EquippedWeapon->GetWeaponType())
 		{
 		case EWeaponType::EWT_AssaultRifle:
 			//UE_LOG(LogTemp, Display, TEXT("%s"), *UEnum::GetDisplayValueAsText(EWeaponType::EWT_AssaultRifle).ToString());
@@ -1902,7 +1911,7 @@ void ACharacterBase::PlayBoltActionMontage(FName SectionName)
 	if (AnimInstance && BoltActionMontage)
 	{
 		CombatState = ECombatState::ECS_Reloading;
-		AttachActorToLeftHand(EquippedWeapon);
+		AttachActorToLeftHand(InventoryComponent->EquippedWeapon);
 
 		AnimInstance->Montage_Play(BoltActionMontage);
 		if (SectionName.ToString() == TEXT("")) return;
@@ -1977,14 +1986,14 @@ void ACharacterBase::Elim(bool bPlayerLeftGame)
 {
 	if (!GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->IsTurnOff() && !Cast<AEnemy>(this))
 	{
-		if (EquippedWeapon)
+		if (InventoryComponent->EquippedWeapon)
 		{
-			DropOrDestroyWeapon(EquippedWeapon);
+			DropOrDestroyWeapon(InventoryComponent->EquippedWeapon);
 		}
 
-		if (SecondaryWeapon)
+		if (InventoryComponent->SecondaryWeapon)
 		{
-			DropOrDestroyWeapon(SecondaryWeapon);
+			DropOrDestroyWeapon(InventoryComponent->SecondaryWeapon);
 		}
 
 		if (Flag)
@@ -2102,7 +2111,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 		UGameplayStatics::SpawnSoundAtLocation(this, ElimBotSound, GetActorLocation());
 	}
 
-	//bool bHideSniperScope = IsLocallyControlled() && CombatComponent && CombatComponent->bIsAiming && CombatComponent->EquippedWeapon && CombatComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
+	//bool bHideSniperScope = IsLocallyControlled() && CombatComponent && CombatComponent->bIsAiming && CombatComponent->InventoryComponent->EquippedWeapon && CombatComponent->InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
 
 	//if (bHideSniperScope)
 	//{
@@ -2206,7 +2215,7 @@ void ACharacterBase::SpawnDefaultWeapon()
 
 bool ACharacterBase::ShouldSwapWeapons()
 {
-	return EquippedWeapon != nullptr && SecondaryWeapon != nullptr;
+	return InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->SecondaryWeapon != nullptr;
 }
 
 void ACharacterBase::FinishSwapAttachWeapons()
@@ -2215,9 +2224,9 @@ void ACharacterBase::FinishSwapAttachWeapons()
 
 	if (HasAuthority())
 	{
-		AWeapon* Temp = EquippedWeapon;
-		EquippedWeapon = SecondaryWeapon;
-		SecondaryWeapon = Temp;
+		AWeapon* Temp = InventoryComponent->EquippedWeapon;
+		InventoryComponent->EquippedWeapon = InventoryComponent->SecondaryWeapon;
+		InventoryComponent->SecondaryWeapon = Temp;
 
 		EquipWeaponFunc();
 		EquipSecondaryFunc();
@@ -2227,15 +2236,15 @@ void ACharacterBase::FinishSwapAttachWeapons()
 
 
 
-	//AWeapon* Temp = EquippedWeapon;
-	//EquippedWeapon = SecondaryWeapon;
+	//AWeapon* Temp = InventoryComponent->EquippedWeapon;
+	//InventoryComponent->EquippedWeapon = SecondaryWeapon;
 	////EquipWeaponFunc();
 
 	//SecondaryWeapon = Temp;
 	////EquipSecondaryFunc();
 
-	/*EquippedWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
-	AttachActorToBackpack(EquippedWeapon);
+	/*InventoryComponent->EquippedWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
+	AttachActorToBackpack(InventoryComponent->EquippedWeapon);
 
 	SecondaryWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
@@ -2244,8 +2253,8 @@ void ACharacterBase::FinishSwapAttachWeapons()
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	AttachActorToRightHand(SecondaryWeapon);
 
-	AWeapon* Temp = EquippedWeapon;
-	EquippedWeapon = SecondaryWeapon;
+	AWeapon* Temp = InventoryComponent->EquippedWeapon;
+	InventoryComponent->EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = Temp;
 
 
@@ -2255,27 +2264,27 @@ void ACharacterBase::FinishSwapAttachWeapons()
 
 void ACharacterBase::EquipWeaponFunc()
 {
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
 		bUseControllerRotationYaw = true;
 		//GetCharacterMovement()->bOrientRotationToMovement = false;
 		//bUseControllerRotationYaw = true;
 		//UE_LOG(LogTemp, Display, TEXT("Equipped!"));
-		//EquippedWeapon->ItemAttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, );
+		//InventoryComponent->EquippedWeapon->ItemAttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, );
 
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		InventoryComponent->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 		//CharacterState = ECharacterState::EAS_Equipped;
 
-		AttachActorToRightHand(EquippedWeapon);
+		AttachActorToRightHand(InventoryComponent->EquippedWeapon);
 		PlayEquipWeaponSound();
 
-		EquippedWeapon->ShowPickupWidget(false);
-		EquippedWeapon->EnableCustomDepth(false);
+		InventoryComponent->EquippedWeapon->ShowPickupWidget(false);
+		InventoryComponent->EquippedWeapon->EnableCustomDepth(false);
 
-		EquippedWeapon->SetOwner(this);
-		EquippedWeapon->SetInstigator(this);
-		if (AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon)) Gun->SetHUDAmmo();
-		UpdateCarriedAmmo();
+		InventoryComponent->EquippedWeapon->SetOwner(this);
+		InventoryComponent->EquippedWeapon->SetInstigator(this);
+		if (AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon)) Gun->SetHUDAmmo();
+		InventoryComponent->UpdateCarriedAmmo();
 		ReloadEmptyWeapon();
 	}
 
@@ -2283,21 +2292,21 @@ void ACharacterBase::EquipWeaponFunc()
 
 void ACharacterBase::EquipSecondaryFunc()
 {
-	if (SecondaryWeapon)
+	if (InventoryComponent->SecondaryWeapon)
 	{
 		//GetCharacterMovement()->bOrientRotationToMovement = false;
 		//bUseControllerRotationYaw = true;
 		//UE_LOG(LogTemp, Display, TEXT("Equipped!"));
 
-		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
+		InventoryComponent->SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
 		//CharacterState = ECharacterState::;
 
-		AttachActorToBackpack(SecondaryWeapon);
+		AttachActorToBackpack(InventoryComponent->SecondaryWeapon);
 		PlaySecondaryWeaponSound();
-		SecondaryWeapon->SetOwner(this);
-		SecondaryWeapon->SetInstigator(this);
-		SecondaryWeapon->ShowPickupWidget(false);
-		SecondaryWeapon->EnableCustomDepth(false);
+		InventoryComponent->SecondaryWeapon->SetOwner(this);
+		InventoryComponent->SecondaryWeapon->SetInstigator(this);
+		InventoryComponent->SecondaryWeapon->ShowPickupWidget(false);
+		InventoryComponent->SecondaryWeapon->EnableCustomDepth(false);
 
 		//Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(GetController()) : Controller;
 		//if (Controller)
@@ -2333,16 +2342,16 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 
 
 	{
-		if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr) // Only Equipped One Weapon
+		if (InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->SecondaryWeapon == nullptr) // Only Equipped One Weapon
 		{
-			SecondaryWeapon = InWeapon;
+			InventoryComponent->SecondaryWeapon = InWeapon;
 			EquipSecondaryFunc();
 		}
 		else // First Slot and Secondary Slot is all full
 		{
 			//UE_LOG(LogTemp, Display, TEXT("EquipWeapon"));
 			DropEquippedWeapon();
-			EquippedWeapon = InWeapon;
+			InventoryComponent->EquippedWeapon = InWeapon;
 			EquipWeaponFunc();
 		}
 
@@ -2365,27 +2374,27 @@ void ACharacterBase::SwapWeapons()
 
 	//CombatState = ECombatState::ECS_SwappingWeapon;
 
-	//AWeapon* TempWeapon = EquippedWeapon;
-	//EquippedWeapon = SecondaryWeapon;
+	//AWeapon* TempWeapon = InventoryComponent->EquippedWeapon;
+	//InventoryComponent->EquippedWeapon = SecondaryWeapon;
 	//SecondaryWeapon = TempWeapon;
 
 
 }
 
-void ACharacterBase::OnRep_EquippedWeapon()
-{
-	EquipWeaponFunc();
-}
-
-void ACharacterBase::OnRep_SecondaryWeapon()
-{
-	EquipSecondaryFunc();
-
-}
+//void ACharacterBase::OnRep_EquippedWeapon()
+//{
+//	EquipWeaponFunc();
+//}
+//
+//void ACharacterBase::OnRep_SecondaryWeapon()
+//{
+//	EquipSecondaryFunc();
+//
+//}
 
 void ACharacterBase::Fire(bool bPressed)
 {
-	if (EquippedWeapon == nullptr) return;
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
 	bFireButtonPressed = bPressed;
 
 	if (CanFire())
@@ -2398,13 +2407,13 @@ void ACharacterBase::Fire(bool bPressed)
 		//TraceUnderCrosshairs(HitResult);
 
 
-		if (EquippedWeapon && bPressed)
+		if (InventoryComponent->EquippedWeapon && bPressed)
 		{
 
 			CrosshairShootingFactor += 0.75;
 			CameraShake(FireCameraShakeClass, true);
 
-			AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+			AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 			if (!Gun) return;
 
 			AddControllerPitchInput(Gun->GetRandomRecoilPitch());
@@ -2435,9 +2444,9 @@ void ACharacterBase::Fire(bool bPressed)
 
 void ACharacterBase::FireProjectileWeapon(bool bPressed)
 {
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
-		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 		if (!Gun) return;
 
 		HitTarget = Gun->bUseScatter ? Gun->TraceEndWithScatter(HitTarget) : HitTarget;
@@ -2453,9 +2462,9 @@ void ACharacterBase::FireProjectileWeapon(bool bPressed)
 
 void ACharacterBase::FireHitScanWeapon(bool bPressed)
 {
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
-		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 		if (!Gun) return;
 
 		HitTarget = Gun->bUseScatter ? Gun->TraceEndWithScatter(HitTarget) : HitTarget;
@@ -2472,7 +2481,7 @@ void ACharacterBase::FireHitScanWeapon(bool bPressed)
 
 void ACharacterBase::FireShotgun(bool bPressed)
 {
-	AShotgun* Shotgun = Cast<AShotgun>(EquippedWeapon);
+	AShotgun* Shotgun = Cast<AShotgun>(InventoryComponent->EquippedWeapon);
 	if (Shotgun)
 	{
 		TArray<FVector_NetQuantize> HitTargets;
@@ -2486,7 +2495,7 @@ void ACharacterBase::FireShotgun(bool bPressed)
 
 void ACharacterBase::ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
-	AShotgun* Shotgun = Cast<AShotgun>(EquippedWeapon);
+	AShotgun* Shotgun = Cast<AShotgun>(InventoryComponent->EquippedWeapon);
 	if (Shotgun == nullptr) return;
 	if (CombatState == ECombatState::ECS_Reloading || CombatState == ECombatState::ECS_Unoccupied)
 	{
@@ -2503,8 +2512,8 @@ void ACharacterBase::StartFireTimer()
 {
 	//UE_LOG(LogTemp, Display, TEXT("StartFireTimer"));
 
-	if (EquippedWeapon == nullptr) return;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
 	GetWorldTimerManager().SetTimer(FireTimer, this, &ThisClass::FireTimerFinished, Gun->GetFireDelay());
@@ -2514,8 +2523,8 @@ void ACharacterBase::StartFireTimer()
 
 void ACharacterBase::FireTimerFinished()
 {
-	if (EquippedWeapon == nullptr) return;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 	//UE_LOG(LogTemp, Display, TEXT("FireTimerFinished"));
 
@@ -2542,9 +2551,9 @@ void ACharacterBase::ServerFire_Implementation(bool bPressed, const FVector_NetQ
 
 bool ACharacterBase::ServerFire_Validate(bool bPressed, const FVector_NetQuantize& TraceHitTarget, float FireDelay)
 {
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
-		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 		if (!Gun) return false;
 
 		bool bNearlyEqual = FMath::IsNearlyEqual(Gun->GetFireDelay(), FireDelay, 0.001f);
@@ -2600,13 +2609,13 @@ void ACharacterBase::LocalFire(bool bPressed, const FVector_NetQuantize& TraceHi
 	//UE_LOG(LogTemp, Display, TEXT("TraceHitTarget : %f, %f, %f, %s"), TraceHitTarget.X, TraceHitTarget.Y, TraceHitTarget.Z, *RoleStr);
 	//UE_LOG(LogTemp, Warning, TEXT("%s : LocalFire"), *RoleStr);
 
-	if (EquippedWeapon == nullptr) return;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
-	//if (Character && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun)
+	//if (Character && CombatState == ECombatState::ECS_Reloading && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun)
 	//{
 	//	PlayFireMontage(bIsAiming);
-	//	EquippedWeapon->Fire(TraceHitTarget);
+	//	InventoryComponent->EquippedWeapon->Fire(TraceHitTarget);
 	//	CombatState = ECombatState::ECS_Unoccupied;
 	//	return;
 	//}
@@ -2626,9 +2635,9 @@ void ACharacterBase::ServerShotgunFire_Implementation(const TArray<FVector_NetQu
 
 bool ACharacterBase::ServerShotgunFire_Validate(const TArray<FVector_NetQuantize>& TraceHitTargets, float FireDelay)
 {
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
-		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 		if (!Gun) return false;
 
 		bool bNearlyEqual = FMath::IsNearlyEqual(Gun->GetFireDelay(), FireDelay, 0.001f);
@@ -2652,12 +2661,12 @@ bool ACharacterBase::CanFire()
 {
 
 	//UE_LOG(LogTemp, Display, TEXT("bLocallyReloading : %d"), bLocallyReloading);
-	if (EquippedWeapon == nullptr) return false;
+	if (InventoryComponent->EquippedWeapon == nullptr) return false;
 	if (bLocallyReloading) return false;
 	if (!IsAiming()) return false;
 	if (!bFireButtonPressed) return false;
 	if (!IsLocallyControlled()) return false;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return false;
 
 	if (Gun->IsEmpty()) Reload();
@@ -2667,60 +2676,63 @@ bool ACharacterBase::CanFire()
 
 void ACharacterBase::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)
 {
-	if (CarriedAmmoMap.Contains(InWeaponType))
+	if (InventoryComponent->CarriedAmmoMap.Contains(InWeaponType))
 	{
-		CarriedAmmoMap[InWeaponType] = FMath::Clamp(CarriedAmmoMap[InWeaponType] + AmmoAmount, 0, INT32_MAX);
+		InventoryComponent->CarriedAmmoMap[InWeaponType] = FMath::Clamp(InventoryComponent->CarriedAmmoMap[InWeaponType] + AmmoAmount, 0, INT32_MAX);
 
-		UpdateCarriedAmmo();
+		InventoryComponent->UpdateCarriedAmmo();
 	}
 
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
-	if (EquippedWeapon && Gun->IsEmpty() && EquippedWeapon->GetWeaponType() == InWeaponType)
+	if (InventoryComponent->EquippedWeapon && Gun->IsEmpty() && InventoryComponent->EquippedWeapon->GetWeaponType() == InWeaponType)
 	{
 		Reload();
 	}
 }
 
-void ACharacterBase::InitializeCarriedAmmo()
-{
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_Pistol, StartingPistolAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_GrenadeLauncher, StartingGrenadeLauncherAmmo);
+//void ACharacterBase::InitializeCarriedAmmo()
+//{
+//	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::EWT_Pistol, StartingPistolAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::EWT_GrenadeLauncher, StartingGrenadeLauncherAmmo);
+//
+//}
 
-}
-
-void ACharacterBase::OnRep_CarriedAmmo()
-{
-	//UE_LOG(LogTemp, Display, TEXT("OnRep_CarriedAmmo"));
-
-	bool bJumpToShoutgunEnd = CombatState == ECombatState::ECS_Reloading && EquippedWeapon != nullptr && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun && CarriedAmmo == 0;
-	if (bJumpToShoutgunEnd)
-	{
-		JumpToShotgunEnd();
-	}
-
-	UpdateCarriedAmmo();
-}
+//void ACharacterBase::OnRep_CarriedAmmo()
+//{
+//	//UE_LOG(LogTemp, Display, TEXT("OnRep_CarriedAmmo"));
+//
+//	bool bJumpToShoutgunEnd = CombatState == ECombatState::ECS_Reloading && InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun && CarriedAmmo == 0;
+//	if (CarriedAmmo == 0)
+//	{
+//		UE_LOG(LogTemp, Display, TEXT("JumpToShotgunEnd"));
+//		JumpToShotgunEnd();
+//	}
+//
+//	UpdateCarriedAmmo();
+//}
 
 void ACharacterBase::UpdateAmmoValues()
 {
-	if (EquippedWeapon == nullptr) return;
-	if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun) return;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
+	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun) return;
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
 	int32 ReloadAmount = AmountToReload();
 
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+	if (InventoryComponent->CarriedAmmoMap.Contains(InventoryComponent->EquippedWeapon->GetWeaponType()))
 	{
-		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
-		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
+		//InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()] -= ReloadAmount;
+		InventoryComponent->SubtractCarriedAmmoMap(InventoryComponent->EquippedWeapon->GetWeaponType(), ReloadAmount);
+
+		InventoryComponent->CarriedAmmo = InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()];
 		//UE_LOG(LogTemp, Display, TEXT("CarriedAmmo : %d"), CarriedAmmo);
 	}
 	Gun->AddAmmo(ReloadAmount);
@@ -2728,27 +2740,28 @@ void ACharacterBase::UpdateAmmoValues()
 
 	if (IsLocallyControlled())
 	{
-		UE_LOG(LogTemp, Display, TEXT("%s: UpdateAmmoValues's CarriedAmmo : %d"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), CarriedAmmo);
+		UE_LOG(LogTemp, Display, TEXT("%s: UpdateAmmoValues's CarriedAmmo : %d"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), InventoryComponent->CarriedAmmo);
 	}
 }
 
 void ACharacterBase::UpdateShotgunAmmoValues()
 {
 	//UE_LOG(LogTemp, Display, TEXT("UpdateShotgunAmmoValues : %d"), bReloadStopCheck);
-	if (EquippedWeapon == nullptr) return;
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
+	if (InventoryComponent->CarriedAmmoMap.Contains(InventoryComponent->EquippedWeapon->GetWeaponType()))
 	{
-		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= 1;
+		//InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()] -= 1;
+		InventoryComponent->SubtractCarriedAmmoMap(InventoryComponent->EquippedWeapon->GetWeaponType(), 1);
 
-		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
+		InventoryComponent->CarriedAmmo = InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()];
 	}
 
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
 	Gun->AddAmmo(1);
 
-	if (Gun->IsFull() || CarriedAmmo == 0 || bReloadStopCheck)
+	if (Gun->IsFull() || InventoryComponent->CarriedAmmo == 0 || bReloadStopCheck)
 	{
 		// Jump to ShotgunEnd section
 		JumpToShotgunEnd();
@@ -2760,10 +2773,10 @@ void ACharacterBase::Reload()
 {
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %d"), CombatState);
 	if ((int)CombatState > 1) return;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
-	if (CarriedAmmo > 0 && !Gun->IsFull() && !bLocallyReloading)
+	if (InventoryComponent->CarriedAmmo > 0 && !Gun->IsFull() && !bLocallyReloading)
 	{
 		if (!HasAuthority() && IsLocallyControlled()) HandleReload();
 		ServerReload();
@@ -2798,7 +2811,7 @@ void ACharacterBase::JumpToShotgunEnd_Implementation()
 void ACharacterBase::ServerReload_Implementation()
 {
 	//UE_LOG(LogTemp, Display, TEXT("ServerReload_Implementation"));
-	if (EquippedWeapon == nullptr) return;
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
 	//UpdateAmmoValues();
 
 	//if (!IsLocallyControlled()) HandleReload();
@@ -2827,15 +2840,15 @@ void ACharacterBase::FinishReloading()
 
 int32 ACharacterBase::AmountToReload()
 {
-	if (EquippedWeapon == nullptr) return 0;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	if (InventoryComponent->EquippedWeapon == nullptr) return 0;
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return 0;
 
 	int32 RoomInMag = Gun->GetMagCapacity() - Gun->GetAmmo();
 
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+	if (InventoryComponent->CarriedAmmoMap.Contains(InventoryComponent->EquippedWeapon->GetWeaponType()))
 	{
-		int32 AmountCarried = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
+		int32 AmountCarried = InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()];
 		int32 Least = FMath::Min(RoomInMag, AmountCarried);
 		return FMath::Clamp(RoomInMag, 0, Least); // 사실 클램프는 없어도 되는데 GetAmmo 가 MagCapacity 보다 클 경우를 대비한 거임. 즉 실수가 생겼을 시 예방책
 	}
@@ -2854,9 +2867,9 @@ void ACharacterBase::MulticastBolt_Implementation()
 
 void ACharacterBase::Bolt()
 {
-	if (EquippedWeapon && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	if (InventoryComponent->EquippedWeapon && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
 	{
-		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 		if (!Gun) return;
 
 		Gun->EjectCasing();
@@ -2967,14 +2980,14 @@ void ACharacterBase::ThrowGrenadeFinished()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("ThrowGrenadeFinished"));
 	CombatState = ECombatState::ECS_Unoccupied;
-	AttachActorToRightHand(EquippedWeapon);
+	AttachActorToRightHand(InventoryComponent->EquippedWeapon);
 }
 
 void ACharacterBase::DropEquippedWeapon()
 {
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
-		EquippedWeapon->Dropped();
+		InventoryComponent->EquippedWeapon->Dropped();
 	}
 }
 
@@ -3002,12 +3015,12 @@ void ACharacterBase::AttachActorToBackpack(AActor* ActorToAttach)
 
 void ACharacterBase::AttachActorToLeftHand(AActor* ActorToAttach)
 {
-	if (GetMesh() == nullptr || ActorToAttach == nullptr || EquippedWeapon == nullptr) return;
+	if (GetMesh() == nullptr || ActorToAttach == nullptr || InventoryComponent->EquippedWeapon == nullptr) return;
 	//UE_LOG(LogTemp, Display, TEXT("AttachActorToRightHand"));
-	bool bUsePistolSocket = EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol || EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SMG;
+	bool bUsePistolSocket = InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol || InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SMG;
 	FName SocketName = bUsePistolSocket ? TEXT("hand_lSocket_Pistol") : TEXT("hand_lSocket");
 
-	if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
 	{
 		SocketName = TEXT("hand_lSocket_Rifle");
 	}
@@ -3032,39 +3045,39 @@ void ACharacterBase::AttachFlagToLeftHand(AWeapon* InFlag)
 
 void ACharacterBase::ServerThrowGrenade_Implementation()
 {
-	if (Grenades == 0) return;
+	if (InventoryComponent->Grenades == 0) return;
 	//UE_LOG(LogTemp, Display, TEXT("ServerThrowGrenade_Implementation"));
 	CombatState = ECombatState::ECS_ThrowingGrenade;
 	ShowAttachedGrenade(true);
-	AttachActorToLeftHand(EquippedWeapon);
+	AttachActorToLeftHand(InventoryComponent->EquippedWeapon);
 	PlayThrowGrenadeMontage();
 
-	Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);
+	InventoryComponent->Grenades = FMath::Clamp(InventoryComponent->Grenades - 1, 0, InventoryComponent->MaxGrenades);
 
 }
 
-void ACharacterBase::UpdateCarriedAmmo()
-{
-	if (EquippedWeapon == nullptr) return;
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
-	{
-		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
-	}
-}
+//void ACharacterBase::UpdateCarriedAmmo()
+//{
+//	if (InventoryComponent->EquippedWeapon == nullptr) return;
+//	if (InventoryComponent->CarriedAmmoMap.Contains(InventoryComponent->EquippedWeapon->GetWeaponType()))
+//	{
+//		CarriedAmmo = InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()];
+//	}
+//}
 
 void ACharacterBase::PlayEquipWeaponSound()
 {
-	if (EquippedWeapon && EquippedWeapon->GetTakeSound())
+	if (InventoryComponent->EquippedWeapon && InventoryComponent->EquippedWeapon->GetTakeSound())
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, EquippedWeapon->GetTakeSound(), GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, InventoryComponent->EquippedWeapon->GetTakeSound(), GetActorLocation());
 	}
 }
 
 void ACharacterBase::PlaySecondaryWeaponSound()
 {
-	if (SecondaryWeapon && SecondaryWeapon->GetTakeSound())
+	if (InventoryComponent->SecondaryWeapon && InventoryComponent->SecondaryWeapon->GetTakeSound())
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, SecondaryWeapon->GetTakeSound(), GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, InventoryComponent->SecondaryWeapon->GetTakeSound(), GetActorLocation());
 	}
 }
 
@@ -3072,9 +3085,9 @@ void ACharacterBase::ReloadEmptyWeapon()
 {
 	if (bDisableGameplay) return;
 
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
-	if (EquippedWeapon && Gun->IsEmpty())
+	if (InventoryComponent->EquippedWeapon && Gun->IsEmpty())
 	{
 		Reload();
 	}
@@ -3099,11 +3112,11 @@ void ACharacterBase::LaunchGrenade()
 }
 
 
-void ACharacterBase::OnRep_Grenades()
-{
-
-
-}
+//void ACharacterBase::OnRep_Grenades()
+//{
+//
+//
+//}
 
 void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantize& Target)
 {
@@ -3122,6 +3135,8 @@ void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantiz
 			FTransform T(ToTarget.Rotation(), StartingLocation);
 			AProjectileGrenade* Grenade = World->SpawnActor<AProjectileGrenade>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParams);
 			Grenade->SetReplicates(true);
+
+			InventoryComponent->OnGrenadeCountChanged.ExecuteIfBound(InventoryComponent->GetGrenades());
 			//AProjectileGrenade* Grenade = Cast<AProjectileGrenade>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(T, GrenadeClass));
 			//if (Grenade)
 			//{
@@ -3323,7 +3338,7 @@ void ACharacterBase::SetAimingFunc(bool InbIsAiming)
 void ACharacterBase::SetAiming(bool InbIsAiming)
 {
 	//bIsAiming = InbIsAiming;
-	if (EquippedWeapon == nullptr) return;
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
 
 	if (IsLocallyControlled()) bAimButtonPressed = InbIsAiming;
 
@@ -3372,7 +3387,7 @@ void ACharacterBase::SimProxiesTurn()
 {
 	// Turning about Simulated Proxies
 
-	if (EquippedWeapon == nullptr) return;
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
 
 	bRotateRootBone = false;
 
@@ -3443,7 +3458,7 @@ void ACharacterBase::TurnInPlace(float DeltaTime)
 // This function must be executed when character is idling. not moving.
 void ACharacterBase::AimOffset(float DeltaTime)
 {
-	if (EquippedWeapon == nullptr) return;
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
 
 	//UE_LOG(LogTemp, Display, TEXT("AimOffset"));
 
@@ -3766,7 +3781,7 @@ void ACharacterBase::RotateInPlace(float DeltaTime)
 		return;
 	}
 
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		bUseControllerRotationYaw = true;

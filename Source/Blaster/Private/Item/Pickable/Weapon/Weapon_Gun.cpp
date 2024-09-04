@@ -16,6 +16,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Blaster/Blaster.h"
 
 // Niagara
@@ -149,8 +150,11 @@ void AWeapon_Gun::OnRep_Owner()
 	}
 	else
 	{
+
 		BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
-		if (BlasterOwnerCharacter && BlasterOwnerCharacter->GetEquippedWeapon() && BlasterOwnerCharacter->GetEquippedWeapon() == this)
+
+		TWeakObjectPtr<UInventoryComponent> IC = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
+		if (BlasterOwnerCharacter && IC->GetEquippedWeapon() && IC->GetEquippedWeapon() == this)
 		{
 			SetHUDAmmo();
 		}
@@ -213,21 +217,32 @@ void AWeapon_Gun::SetHUDAmmo()
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 	if (BlasterOwnerCharacter) BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(BlasterOwnerCharacter->GetController()) : BlasterOwnerController;
 
-	if (BlasterOwnerController)
-	{
-		BlasterOwnerController->SetHUDWeaponAmmo(Ammo);
-		//UE_LOG(LogTemp, Warning, TEXT("BlasterOwnerController"));
+	UInventoryComponent* IC = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
 
-	}
-	else
+	//if (BlasterOwnerController)
+	//{
+	//	BlasterOwnerController->SetHUDWeaponAmmo(Ammo);
+	//	//UE_LOG(LogTemp, Warning, TEXT("BlasterOwnerController"));
+
+	//}
+	// 
+
+	if (IC)
 	{
-		if (HasAuthority())
-		{
-			//UE_LOG(LogTemp, Error, TEXT("BlasterOwnerController"));
-			FTimerHandle Timerhandle;
-			GetWorldTimerManager().SetTimer(Timerhandle, this, &ThisClass::SetHUDAmmo, 0.1f);
-		}
+		IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo);
 	}
+	//if (IC && IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo))
+	//{
+	//}
+	//else
+	//{
+	//	if (HasAuthority())
+	//	{
+	//		//UE_LOG(LogTemp, Error, TEXT("BlasterOwnerController"));
+	//		FTimerHandle Timerhandle;
+	//		GetWorldTimerManager().SetTimer(Timerhandle, this, &ThisClass::SetHUDAmmo, 0.1f);
+	//	}
+	//}
 }
 
 void AWeapon_Gun::Dropped()

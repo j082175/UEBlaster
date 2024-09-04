@@ -98,6 +98,7 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 		else
 		{
 			ServerSpawnAttributeAssistantDetach((ESkillAssistant)InIndex);
+			OnSkillCoolTimeCheck.Broadcast(InIndex);
 		}
 		SkillButtonPressedChecker[InIndex] = !SkillButtonPressedChecker[InIndex];
 
@@ -108,12 +109,20 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 		{
 			ServerProcedure(InIndex);
 		}
+		else
+		{
+			OnSkillCoolTimeCheck.Broadcast(InIndex);
+		}
 
 		break;
 	case 2:
 		if (S->bCanExecute && SkillPoint >= NeededSkillPoints[2])
 		{
 			ServerProcedure(InIndex);
+		}
+		else
+		{
+			OnSkillCoolTimeCheck.Broadcast(InIndex);
 		}
 		break;
 	default:

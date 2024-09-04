@@ -37,11 +37,19 @@ public:
 
 	UFUNCTION()
 	void StartCoolTimeAnim(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed);
-
 	UFUNCTION()
 	void SetSkillCost(int32 InIndex, const FString& InStr);
 	UFUNCTION()
 	void SetSoulCount(int32 InCount);
+	UFUNCTION()
+	void ShowCoolTimeAnnouncement(int32 InSkillIndex);
+
+	void SetCurrentAmmo(int32 InAmmo);
+	void SetMaxAmmo(int32 InAmmo);
+	void SetWeaponName(EWeaponName InWeaponName);
+	void SetGrenadeNum(int32 InGrenadeCount);
+	//void SetGrenadeName()
+
 
 	void HideTeamScores();
 	void InitTeamScores();
@@ -49,6 +57,7 @@ public:
 
 	void HighPingWarning();
 	void StopHighPingWarning();
+
 
 
 	UPROPERTY(meta = (BindWidget))
@@ -116,6 +125,9 @@ public:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> HighPingAnimation;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UCoolTimeAnnouncement> CoolTimeAnnouncement;
 
 private:
 	//void PollInit();

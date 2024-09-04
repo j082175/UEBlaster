@@ -3,6 +3,7 @@
 
 #include "HUD/OverlayModules/WeaponStatus.h"
 #include "Components/TextBlock.h"
+#include "Item/Pickable/Weapon/WeaponTypes.h"
 
 void UWeaponStatus::NativeConstruct()
 {
@@ -29,4 +30,24 @@ void UWeaponStatus::SetMaxTextBlock(UTextBlock* InTextBlock, int32 InMaxValue)
 void UWeaponStatus::SetName(UTextBlock* InTextBlock, const FString& InName)
 {
 	InTextBlock->SetText(FText::FromString(InName));
+}
+
+void UWeaponStatus::SetCurrentAmmo(int32 InAmmo)
+{
+	CurrentAmmo->SetText(FText::FromString(FString::FromInt(InAmmo)));
+}
+
+void UWeaponStatus::SetMaxAmmo(int32 InAmmo)
+{
+	MaxAmmo->SetText(FText::FromString(FString::FromInt(InAmmo)));
+}
+
+void UWeaponStatus::SetWeaponName(EWeaponName InWeaponName)
+{
+	WeaponName->SetText(FText::FromString(*UEnum::GetDisplayValueAsText(InWeaponName).ToString()));
+}
+
+void UWeaponStatus::SetGrenadeNum(int32 InGrenadeCount)
+{
+	GrenadeNum->SetText(FText::FromString(FString::FromInt(InGrenadeCount)));
 }

@@ -10,6 +10,7 @@
 #include "HUD/OverlayModules/AttributeStatus.h"
 #include "HUD/OverlayModules/SkillBar.h"
 #include "HUD/OverlayModules/WeaponStatus.h"
+#include "HUD/CoolTimeAnnouncement.h"
 #include "Blaster.h"
 
 //UCharacterOverlay::UCharacterOverlay(const FObjectInitializer& ObjectInitializer)
@@ -212,6 +213,31 @@ void UCharacterOverlay::StopHighPingWarning()
 	{
 		StopAnimation(HighPingAnimation);
 	}
+}
+
+void UCharacterOverlay::ShowCoolTimeAnnouncement(int32 InSkillIndex)
+{
+	CoolTimeAnnouncement->SetCoolTimeAnnouncementText(InSkillIndex);
+}
+
+void UCharacterOverlay::SetCurrentAmmo(int32 InAmmo)
+{
+	WeaponStatus->SetCurrentAmmo(InAmmo);
+}
+
+void UCharacterOverlay::SetMaxAmmo(int32 InAmmo)
+{
+	WeaponStatus->SetMaxAmmo(InAmmo);
+}
+
+void UCharacterOverlay::SetWeaponName(EWeaponName InWeaponName)
+{
+	WeaponStatus->SetWeaponName(InWeaponName);
+}
+
+void UCharacterOverlay::SetGrenadeNum(int32 InGrenadeCount)
+{
+	WeaponStatus->SetGrenadeNum(InGrenadeCount);
 }
 
 //void UCharacterOverlay::PollInit()

@@ -138,6 +138,8 @@ private:
 
 	UPROPERTY()
 	class ACharacterBase* Character;
+
+	TWeakObjectPtr<class UInventoryComponent> InventoryComponent;
 	//UPROPERTY()
 	//class ABlasterPlayerController* Controller;
 

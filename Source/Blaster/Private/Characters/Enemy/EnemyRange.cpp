@@ -13,18 +13,11 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "HUD/OverheadWidget.h"
 #include "PlayerState/BlasterPlayerState.h"
+#include "Components/InventoryComponent.h"
 
 AEnemyRange::AEnemyRange()
 {
 	InitializeDefaults();
-
-	StartingARAmmo = 10000;
-	StartingRocketAmmo = 10000;
-	StartingPistolAmmo = 10000;
-	StartingSMGAmmo = 10000;
-	StartingShotgunAmmo = 10000;
-	StartingSniperAmmo = 10000;
-	StartingGrenadeLauncherAmmo = 10000;
 
 	BaseWalkSpeed = 300.f;
 	AimWalkSpeed = 200.f;
@@ -45,7 +38,7 @@ void AEnemyRange::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	EquippedGun = EquippedGun == nullptr ? Cast<AWeapon_Gun>(EquippedWeapon) : EquippedGun;
+	EquippedGun = EquippedGun == nullptr ? Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon) : EquippedGun;
 
 	BaseAIController = BaseAIController == nullptr ? Cast<ABaseAIController>(GetController()) : BaseAIController.Get();
 

@@ -9,6 +9,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillCoolTimeStartedDelegate, const FString&, InPrefix, int32, InIndex, float, InPlaybackSpeed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillCostChangedDelegate, int32, NumCost, const FString&, InMessage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoulCountChangedDelegate, int32, NumCount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillCoolTimeCheckDelegate, int32, SkillIndex);
+
 
 USTRUCT(BlueprintType)
 struct FCoolTimeCheckStruct
@@ -64,6 +66,7 @@ public:
 	FOnSkillCoolTimeStartedDelegate OnSkillCoolTimeStarted;
 	FOnSkillCostChangedDelegate OnSkillCostChanged;
 	FOnSoulCountChangedDelegate OnSoulCountChanged;
+	FOnSkillCoolTimeCheckDelegate OnSkillCoolTimeCheck;
 
 	FORCEINLINE int32 GetSkillPoint() const { return SkillPoint; }
 	FORCEINLINE void SetSkillPoint(int32 InSkillPoint) { SkillPoint = InSkillPoint; }

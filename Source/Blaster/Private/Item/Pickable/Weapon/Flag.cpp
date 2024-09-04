@@ -8,6 +8,7 @@
 #include "Characters/BlasterCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Interfaces/OverlapItemInterface.h"
+#include "Components/InventoryComponent.h"
 #include "Components/WidgetComponent.h"
 
 
@@ -39,18 +40,19 @@ void AFlag::ResetFlag()
 		FlagBearer->UnCrouch();
 	}
 
+	InventoryComponent = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
 
 	if (!HasAuthority()) return; // the code below only executed when has authority
 
-	AWeapon* W = Cast<AFlag>(BlasterOwnerCharacter->GetEquippedWeapon());
+	AWeapon* W = Cast<AFlag>(InventoryComponent->GetEquippedWeapon());
 	if (W)
 	{
-		BlasterOwnerCharacter->SetEquippedWeapon(nullptr);
+		InventoryComponent->SetEquippedWeapon(nullptr);
 	}
-	W = Cast<AFlag>(BlasterOwnerCharacter->GetSecondaryEquippedWeapon());
+	W = Cast<AFlag>(InventoryComponent->GetSecondaryEquippedWeapon());
 	if (W)
 	{
-		BlasterOwnerCharacter->SetSecondaryEquippedWeapon(nullptr);
+		InventoryComponent->SetSecondaryEquippedWeapon(nullptr);
 	}
 
 	SetWeaponState(EWeaponState::EWS_Dropped);
@@ -79,15 +81,17 @@ void AFlag::MulticastResetFlag_Implementation()
 		FlagBearer->UnCrouch();
 	}
 
-	AWeapon* W = Cast<AFlag>(BlasterOwnerCharacter->GetEquippedWeapon());
+	InventoryComponent = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
+
+	AWeapon* W = Cast<AFlag>(InventoryComponent->GetEquippedWeapon());
 	if (W)
 	{
-		BlasterOwnerCharacter->SetEquippedWeapon(nullptr);
+		InventoryComponent->SetEquippedWeapon(nullptr);
 	}
-	W = Cast<AFlag>(BlasterOwnerCharacter->GetSecondaryEquippedWeapon());
+	W = Cast<AFlag>(InventoryComponent->GetSecondaryEquippedWeapon());
 	if (W)
 	{
-		BlasterOwnerCharacter->SetSecondaryEquippedWeapon(nullptr);
+		InventoryComponent->SetSecondaryEquippedWeapon(nullptr);
 	}
 
 
@@ -161,6 +165,7 @@ void AFlag::BeginPlay()
 	Super::BeginPlay();
 
 	InitialTransform = GetActorTransform();
+
 }
 
 void AFlag::Dropped()

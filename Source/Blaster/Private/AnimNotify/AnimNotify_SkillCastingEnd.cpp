@@ -11,7 +11,6 @@ void UAnimNotify_SkillCastingEnd::Notify(USkeletalMeshComponent* MeshComp, UAnim
 	
 	if (AActor* Owner = MeshComp->GetOwner())
 	{
-
 		if (USkillComponent* SC = Owner->GetComponentByClass<USkillComponent>())
 		{
 			SC->SkillCast(SC->CurrentIndex);

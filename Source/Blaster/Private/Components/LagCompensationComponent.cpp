@@ -7,6 +7,7 @@
 #include "Characters/BlasterCharacter.h"
 #include "Item/Pickable/Weapon/Weapon_Gun.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/InventoryComponent.h"
 #include "Blaster/Blaster.h"
 
 // Sets default values for this component's properties
@@ -47,8 +48,12 @@ void ULagCompensationComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	if (Character) HitCapsuleConstruction(Character->GetMesh());
+	if (Character)
+	{
+		HitCapsuleConstruction(Character->GetMesh());
 
+		InventoryComponent = Character->GetComponentByClass<UInventoryComponent>();
+	}
 	//FFramePackage Package;
 	//SaveFramePackage(Package);
 	//ShowFramePackage(Package, FColor::Orange);
@@ -61,13 +66,13 @@ void ULagCompensationComponent::ServerScoreRequest_Implementation(AActor* InHitC
 
 	FServerSideRewindResult Confirm = ServerSideRewind(HitCharacter, TraceStart, HitLocation, HitTime);
 
-	if (Character && HitCharacter && Confirm.bHitComfirmed && Character->GetEquippedWeapon())
+	if (Character && HitCharacter && Confirm.bHitComfirmed && InventoryComponent->GetEquippedWeapon())
 	{
 		//UE_LOG(LogTemp, Display, TEXT("HitCharacter : %s"), *HitCharacter->GetName());
-		const float Damage = Confirm.bHeadShot ? Character->GetEquippedWeapon()->GetHeadShotDamage() : Character->GetEquippedWeapon()->GetDamage();
+		const float Damage = Confirm.bHeadShot ? InventoryComponent->GetEquippedWeapon()->GetHeadShotDamage() : InventoryComponent->GetEquippedWeapon()->GetDamage();
 
 		//UE_LOG(LogTemp, Display, TEXT("Damage : %f"), Character->GetEquippedWeapon()->GetDamage());
-		UGameplayStatics::ApplyDamage(HitCharacter, Damage, Character->GetController(), Character->GetEquippedWeapon(), UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(HitCharacter, Damage, Character->GetController(), InventoryComponent->GetEquippedWeapon(), UDamageType::StaticClass());
 	}
 }
 
@@ -77,11 +82,11 @@ void ULagCompensationComponent::ProjectileServerScoreRequest_Implementation(ACha
 
 	//UE_LOG(LogTemp, Warning, TEXT("Confirm.bHitComfirmed : %d"), Confirm.bHitComfirmed);
 
-	if (Character && HitCharacter && Confirm.bHitComfirmed && Character->GetEquippedWeapon())
+	if (Character && HitCharacter && Confirm.bHitComfirmed && InventoryComponent->GetEquippedWeapon())
 	{
-		const float Damage = Confirm.bHeadShot ? Character->GetEquippedWeapon()->GetHeadShotDamage() : Character->GetEquippedWeapon()->GetDamage();
+		const float Damage = Confirm.bHeadShot ? InventoryComponent->GetEquippedWeapon()->GetHeadShotDamage() : InventoryComponent->GetEquippedWeapon()->GetDamage();
 
-		UGameplayStatics::ApplyDamage(HitCharacter, Damage, Character->GetController(), Character->GetEquippedWeapon(), UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(HitCharacter, Damage, Character->GetController(), InventoryComponent->GetEquippedWeapon(), UDamageType::StaticClass());
 	}
 }
 
@@ -93,20 +98,20 @@ void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const T
 
 	for (auto& HitCharacter : HitCharacters)
 	{
-		if (HitCharacter == nullptr || Character == nullptr || Character->GetEquippedWeapon() == nullptr) continue;
+		if (HitCharacter == nullptr || Character == nullptr || InventoryComponent->GetEquippedWeapon() == nullptr) continue;
 
 		float TotalDamage = 0.f;
 
 		if (Confirm.HeadShots.Contains(HitCharacter))
 		{
 
-			float HeadShotDamage = Confirm.HeadShots[HitCharacter] * Character->GetEquippedWeapon()->GetHeadShotDamage();
+			float HeadShotDamage = Confirm.HeadShots[HitCharacter] * InventoryComponent->GetEquippedWeapon()->GetHeadShotDamage();
 			TotalDamage += HeadShotDamage;
 		}
 		if (Confirm.BodyShots.Contains(HitCharacter))
 		{
 
-			float BodyShotDamage = Confirm.BodyShots[HitCharacter] * Character->GetEquippedWeapon()->GetDamage();
+			float BodyShotDamage = Confirm.BodyShots[HitCharacter] * InventoryComponent->GetEquippedWeapon()->GetDamage();
 			//UE_LOG(LogTemp, Display, TEXT("BodyShotDamage : %f"), BodyShotDamage);
 			TotalDamage += BodyShotDamage;
 
@@ -114,7 +119,7 @@ void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const T
 
 		//UE_LOG(LogTemp, Display, TEXT("TotalDamage : %f, %d"), TotalDamage, Confirm.BodyShots.Num());
 
-		UGameplayStatics::ApplyDamage(HitCharacter, TotalDamage, Character->GetController(), Character->GetEquippedWeapon(), UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(HitCharacter, TotalDamage, Character->GetController(), InventoryComponent->GetEquippedWeapon(), UDamageType::StaticClass());
 	}
 }
 

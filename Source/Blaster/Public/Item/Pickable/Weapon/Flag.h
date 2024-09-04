@@ -45,4 +45,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	ETeam Team;
+
+	TWeakObjectPtr<class UInventoryComponent> InventoryComponent;
 };

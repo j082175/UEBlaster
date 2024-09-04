@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+//#include "Blueprint/UserWidget.h"
+#include "HUD/MyUserWidget.h"
 #include "AttributeStatus.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BLASTER_API UAttributeStatus : public UUserWidget
+class BLASTER_API UAttributeStatus : public UMyUserWidget
 {
 	GENERATED_BODY()
 public:

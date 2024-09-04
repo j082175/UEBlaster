@@ -395,11 +395,11 @@ void ABlasterPlayerController::UpdateHUDAmmo()
 {
 	if (BlasterCharacter == nullptr) return;
 
-	if (BlasterCharacter->GetEquippedWeapon())
-	{
-		SetHUDCarriedAmmo(BlasterCharacter->GetCarriedAmmo());
-		SetHUDWeaponAmmo(Cast<AWeapon_Gun>(BlasterCharacter->GetEquippedWeapon())->GetAmmo());
-	}
+	//if (BlasterCharacter->GetEquippedWeapon())
+	//{
+	//	SetHUDCarriedAmmo(BlasterCharacter->GetCarriedAmmo());
+	//	SetHUDWeaponAmmo(Cast<AWeapon_Gun>(BlasterCharacter->GetEquippedWeapon())->GetAmmo());
+	//}
 
 }
 
@@ -645,13 +645,13 @@ void ABlasterPlayerController::PollInit(APawn* InPawn)
 		SetHUDShield(Att->GetCurrentShield(), Att->GetMaxShield());
 		SetHUDSp(Att->GetCurrentSp(), Att->GetMaxSp());
 		SetHUDParryGauge(0.f, Att->GetMaxParryGauge());
-		SetHUDGrenades(BlasterCharacter->GetGrenades());
-		SetHUDCarriedAmmo(BlasterCharacter->GetCarriedAmmo());
-		if (BlasterCharacter->GetEquippedWeapon())
-		{
-			SetHUDWeaponAmmo(Cast<AWeapon_Gun>(BlasterCharacter->GetEquippedWeapon())->GetAmmo());
-			SetHUDWeaponType(BlasterCharacter->GetEquippedWeapon()->GetWeaponName());
-		}
+		//SetHUDGrenades(BlasterCharacter->GetGrenades());
+		//SetHUDCarriedAmmo(BlasterCharacter->GetCarriedAmmo());
+		//if (BlasterCharacter->GetEquippedWeapon())
+		//{
+		//	SetHUDWeaponAmmo(Cast<AWeapon_Gun>(BlasterCharacter->GetEquippedWeapon())->GetAmmo());
+		//	SetHUDWeaponType(BlasterCharacter->GetEquippedWeapon()->GetWeaponName());
+		//}
 	}
 
 }

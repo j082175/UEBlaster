@@ -6,7 +6,7 @@
 // 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Components/InventoryComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "KismetAnimationLibrary.h"
@@ -62,12 +62,14 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 		}
 
+		TWeakObjectPtr<UInventoryComponent> IC = CharacterOwner->GetComponentByClass<UInventoryComponent>();
+
 		Speed = CharacterOwner->GetVelocity().Size2D();
 		bIsJumping = bIsInAir == true && CharacterOwner->GetVelocity().Z >= 0.f;
 		bIsCrouched = CharacterOwner->bIsCrouched;
 		bWeaponEquipped = CharacterOwner->IsWeaponEquipped();
 		bIsAiming = CharacterOwner->IsAiming();
-		EquippedWeapon = Cast<AWeapon_Gun>(CharacterOwner->GetEquippedWeapon());
+		EquippedWeapon = Cast<AWeapon_Gun>(IC->GetEquippedWeapon());
 		AnimState = CharacterOwner->GetAnimState();
 		bIsElimmed = CharacterOwner->IsElimmed();
 		CombatState = CharacterOwner->GetCombatState();

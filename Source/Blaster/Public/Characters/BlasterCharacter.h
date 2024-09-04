@@ -57,8 +57,8 @@ public:
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 
 
-	FORCEINLINE float GetGrenades() const { return Grenades; }
-	FORCEINLINE float GetCarriedAmmo() const { return CarriedAmmo; }
+
+
 
 	// Setters
 	FORCEINLINE void SetDisableGameplay(bool DisableGameplay) { bDisableGameplay = DisableGameplay; }
@@ -302,9 +302,9 @@ protected:
 	// Dash
 	uint32 MoveButtonPressedCount;
 
-	virtual void ThrowGrenadeFinished() override;
-	virtual void UpdateAmmoValues() override;
-	virtual void UpdateCarriedAmmo() override;
+	//virtual void ThrowGrenadeFinished() override;
+	//virtual void UpdateAmmoValues() override;
+	//virtual void UpdateCarriedAmmo() override;
 
 
 

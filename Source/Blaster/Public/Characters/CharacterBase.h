@@ -84,8 +84,8 @@ public:
 	FORCEINLINE class UOverheadWidget* GetOverheadWidget() const { return OverheadWidget; }
 
 	ECombatState GetCombatState() const;
-	class AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
-	class AWeapon* GetSecondaryEquippedWeapon() const { return SecondaryWeapon; }
+	//class AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
+	//class AWeapon* GetSecondaryEquippedWeapon() const { return SecondaryWeapon; }
 
 	ECharacterState GetCharacterState() const;
 	EAnimState GetAnimState() const { return AnimState; }
@@ -110,8 +110,8 @@ public:
 
 	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
 
-	void SetEquippedWeapon(class AWeapon* W) { EquippedWeapon = W; }
-	void SetSecondaryEquippedWeapon(class AWeapon* W) { SecondaryWeapon = W; }
+	//void SetEquippedWeapon(class AWeapon* W) { EquippedWeapon = W; }
+	//void SetSecondaryEquippedWeapon(class AWeapon* W) { SecondaryWeapon = W; }
 
 
 
@@ -122,7 +122,7 @@ protected:
 	virtual void InitializeDelegates();
 	virtual void InitializeDefaults();
 	virtual void PollInit();
-	void InitializeCarriedAmmo();
+	//void InitializeCarriedAmmo();
 
 	// For Binding
 protected:
@@ -665,17 +665,17 @@ public:
 	void PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount);
 
 protected:
-	virtual void UpdateCarriedAmmo();
-	UFUNCTION()
-	void OnRep_CarriedAmmo();
+	//virtual void UpdateCarriedAmmo();
+	//UFUNCTION()
+	//void OnRep_CarriedAmmo();
 
 	virtual void UpdateAmmoValues();
 	void UpdateShotgunAmmoValues();
 
-	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo, EditAnywhere)
-	int32 CarriedAmmo;
+	//UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo, EditAnywhere)
+	//int32 CarriedAmmo;
 
-	UPROPERTY(VisibleAnywhere)
+	/*UPROPERTY(VisibleAnywhere)
 	TMap<EWeaponType, int32> CarriedAmmoMap;
 
 	UPROPERTY(EditAnywhere)
@@ -691,7 +691,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int32 StartingSniperAmmo;
 	UPROPERTY(EditAnywhere)
-	int32 StartingGrenadeLauncherAmmo;
+	int32 StartingGrenadeLauncherAmmo;*/
 
 
 
@@ -718,8 +718,7 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerLaunchGrenade(const FVector_NetQuantize& Target);
 
-	UFUNCTION()
-	void OnRep_Grenades();
+
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectileGrenade> GrenadeClass;
@@ -729,11 +728,12 @@ protected:
 
 	void ThrowGrenade();
 
-
-	UPROPERTY(ReplicatedUsing = OnRep_Grenades, EditAnywhere)
-	float Grenades;
-	UPROPERTY(EditAnywhere)
-	float MaxGrenades;
+	//UFUNCTION()
+	//void OnRep_Grenades();
+	//UPROPERTY(ReplicatedUsing = OnRep_Grenades, EditAnywhere)
+	//float Grenades;
+	//UPROPERTY(EditAnywhere)
+	//float MaxGrenades;
 
 
 
@@ -805,23 +805,25 @@ protected:
 
 
 	// Weapon
+public:
+	void EquipSecondaryFunc();
+	virtual void EquipWeaponFunc();
 protected:
 
 	void EquipWeapon(AWeapon* InWeapon);
-	void EquipSecondaryFunc();
-	virtual void EquipWeaponFunc();
+
 	bool ShouldSwapWeapons();
 	void SwapWeapons();
-	UFUNCTION()
-	void OnRep_EquippedWeapon();
-	UFUNCTION()
-	void OnRep_SecondaryWeapon();
+	//UFUNCTION()
+	//void OnRep_EquippedWeapon();
+	//UFUNCTION()
+	//void OnRep_SecondaryWeapon();
 	void ReloadEmptyWeapon();
 
-	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon, EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<class AWeapon> EquippedWeapon;
-	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon, EditAnywhere)
-	TObjectPtr<class AWeapon> SecondaryWeapon;
+	//UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon, EditAnywhere, BlueprintReadOnly)
+	//TObjectPtr<class AWeapon> EquippedWeapon;
+	//UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon, EditAnywhere)
+	//TObjectPtr<class AWeapon> SecondaryWeapon;
 
 
 	// Weapon

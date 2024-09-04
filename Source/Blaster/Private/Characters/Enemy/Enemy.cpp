@@ -22,6 +22,7 @@
 #include "BlasterTypes/BlackboardKeys.h"
 #include "Components/ObjectPoolComponent.h"
 #include "GameState/BlasterGameState.h"
+#include "Components/InventoryComponent.h"
 
 
 // AI
@@ -222,10 +223,10 @@ void AEnemy::SetIsActive(bool InIsActive)
 
 	UE_LOG(LogTemp, Display, TEXT("SetIsActive : %d"), InIsActive);
 
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("hidden EquippedWeapon"));
-		EquippedWeapon->SetActorHiddenInGame(!InIsActive);
+		InventoryComponent->EquippedWeapon->SetActorHiddenInGame(!InIsActive);
 	}
 
 	if (InIsActive)

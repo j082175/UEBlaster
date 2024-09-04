@@ -15,6 +15,7 @@
 #include "Components/MantleVaultComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/SkillComponent.h"
+#include "Components/InventoryComponent.h"
 #include "HUD/OverheadWidgetComponent.h"
 
 // EnhancedInput
@@ -287,13 +288,6 @@ void ABlasterCharacter::BeginPlay()
 		CurrentFOV = DefaultFOV;
 	}
 
-	if (HasAuthority())
-	{
-		InitializeCarriedAmmo();
-	}
-
-	Grenades = MaxGrenades;
-
 
 	PollInit();
 }
@@ -305,9 +299,9 @@ void ABlasterCharacter::Destroyed()
 	BlasterGameMode = BlasterGameMode == nullptr ? Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this)) : BlasterGameMode;
 	bool bMatchNotInProgress = BlasterGameMode && BlasterGameMode->GetMatchState() != MatchState::InProgress;
 
-	if (EquippedWeapon && bMatchNotInProgress)
+	if (InventoryComponent->EquippedWeapon && bMatchNotInProgress)
 	{
-		EquippedWeapon->Destroy();
+		InventoryComponent->EquippedWeapon->Destroy();
 	}
 }
 
@@ -836,7 +830,7 @@ void ABlasterCharacter::Interact()
 void ABlasterCharacter::AimButtonToggle()
 {
 	if (bDisableGameplay) return;
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
 		if (bIsAiming)
 		{
@@ -859,7 +853,7 @@ void ABlasterCharacter::AimButtonPressed(const FInputActionValue& isPressed)
 	if (bDisableGameplay) return;
 	if (bHoldingTheFlag) return;
 
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Aiming"));
 		SetAiming(true);
@@ -871,7 +865,7 @@ void ABlasterCharacter::AimButtonReleased(const FInputActionValue& isPressed)
 	//UE_LOG(LogTemp, Display, TEXT("Released : %d"), isPressed.Get<bool>());
 	if (bDisableGameplay) return;
 	if (bHoldingTheFlag) return;
-	if (EquippedWeapon)
+	if (InventoryComponent->EquippedWeapon)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Not Aiming"));
 		SetAiming(false);
@@ -893,7 +887,7 @@ void ABlasterCharacter::FireButtonPressed(const FInputActionValue& isPressed)
 
 		Fire(true);
 
-		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 
 		if (Gun && !Gun->IsAutomatic()) bCheckIsSemi = true;
 	}
@@ -915,7 +909,7 @@ void ABlasterCharacter::FireButtonReleased(const FInputActionValue& isPressed)
 		NotifyFireButtonPressed(false);
 		Super::Fire(false);
 		bCheckIsSemi = false;
-	} 
+	}
 }
 
 void ABlasterCharacter::NotifyFireButtonPressed_Implementation(bool IsFired)
@@ -1257,7 +1251,7 @@ void ABlasterCharacter::SkillButtonPressed4()
 void ABlasterCharacter::HideCameraIfCharacterClose()
 {
 	if (!IsLocallyControlled()) return;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
 	if ((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
@@ -1457,7 +1451,7 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 	//	UGameplayStatics::SpawnSoundAtLocation(this, ElimBotSound, GetActorLocation());
 	//}
 
-	bool bHideSniperScope = IsLocallyControlled() && bIsAiming && EquippedWeapon && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
+	bool bHideSniperScope = IsLocallyControlled() && bIsAiming && InventoryComponent->EquippedWeapon && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
 
 	if (bHideSniperScope)
 	{
@@ -1571,7 +1565,7 @@ void ABlasterCharacter::SetAiming(bool InbIsAiming)
 	//UE_LOG(LogTemp, Display, TEXT("IsAiming : %d"), InbIsAiming);
 	Super::SetAiming(InbIsAiming);
 
-	if (IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	if (IsLocallyControlled() && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
 	{
 		ShowSniperScopeWidget(InbIsAiming);
 	}
@@ -1596,10 +1590,12 @@ void ABlasterCharacter::EquipWeaponFunc()
 	Super::EquipWeaponFunc();
 
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
-	if (BlasterPlayerController)
-	{
-		BlasterPlayerController->SetHUDWeaponType(EquippedWeapon->GetWeaponName());
-	}
+
+	InventoryComponent->OnWeaponNameChanged.ExecuteIfBound(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
+	//if (BlasterPlayerController)
+	//{
+	//	BlasterPlayerController->SetHUDWeaponType(InventoryComponent->EquippedWeapon->GetWeaponName());
+	//}
 }
 
 void ABlasterCharacter::EquipButtonFunc(AWeapon* InWeapon)
@@ -1628,7 +1624,7 @@ void ABlasterCharacter::SetHUDCrosshairs(float DeltaTime)
 	// 이 방법의 장점은 매프레임마다 호출될 때 캐스팅을 할 필요가 없다는 것임
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
 	if (BlasterPlayerController)
@@ -1638,7 +1634,7 @@ void ABlasterCharacter::SetHUDCrosshairs(float DeltaTime)
 		if (HUD)
 		{
 
-			if (EquippedWeapon)
+			if (InventoryComponent->EquippedWeapon)
 			{
 				HUDPackage.CrosshairCenter = Gun->CrosshairCenter;
 				HUDPackage.CrosshairLeft = Gun->CrosshairLeft;
@@ -1697,7 +1693,7 @@ void ABlasterCharacter::SetHUDCrosshairs(float DeltaTime)
 
 			HUDPackage.CrosshairSpread = TotalFactors;
 
-			if (EquippedWeapon)
+			if (InventoryComponent->EquippedWeapon)
 			{
 				float OriginRadius = Gun->GetSphereRadius();
 
@@ -1715,8 +1711,8 @@ void ABlasterCharacter::SetHUDCrosshairs(float DeltaTime)
 
 void ABlasterCharacter::InterpFOV(float DeltaTime)
 {
-	if (EquippedWeapon == nullptr) return;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(EquippedWeapon);
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
 	if (bIsAiming)
@@ -1772,7 +1768,7 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			{
 
 				ITeamInterface* T1 = Cast<ITeamInterface>(TraceHitResult.GetActor());
-				
+
 
 				FLinearColor Red(1.f, 0.13f, 0.19f);
 				FLinearColor Green(0.1f, 1.f, 0.f);
@@ -1809,7 +1805,7 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 
 
-		
+
 
 		ETraceTypeQuery IsPickable = UEngineTypes::ConvertToTraceType(ECC_IsPickable);
 		TArray<AActor*> IgnoreActors;
@@ -1838,45 +1834,45 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 	}
 }
 
-void ABlasterCharacter::ThrowGrenadeFinished()
-{
-	Super::ThrowGrenadeFinished();
+//void ABlasterCharacter::ThrowGrenadeFinished()
+//{
+//	Super::ThrowGrenadeFinished();
+//
+//	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
+//	if (BlasterPlayerController)
+//	{
+//		BlasterPlayerController->SetHUDGrenades(Grenades);
+//	}
+//}
 
-	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
-	if (BlasterPlayerController)
-	{
-		BlasterPlayerController->SetHUDGrenades(Grenades);
-	}
-}
+//void ABlasterCharacter::UpdateAmmoValues()
+//{
+//	Super::UpdateAmmoValues();
+//
+//	if (IsLocallyControlled())
+//	{
+//		BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
+//		if (BlasterPlayerController)
+//		{
+//			if (EquippedWeapon) BlasterPlayerController->SetHUDCarriedAmmo(CarriedAmmo);
+//		}
+//	}
+//
+//}
 
-void ABlasterCharacter::UpdateAmmoValues()
-{
-	Super::UpdateAmmoValues();
-
-	if (IsLocallyControlled())
-	{
-		BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
-		if (BlasterPlayerController)
-		{
-			if (EquippedWeapon) BlasterPlayerController->SetHUDCarriedAmmo(CarriedAmmo);
-		}
-	}
-
-}
-
-void ABlasterCharacter::UpdateCarriedAmmo()
-{
-	Super::UpdateCarriedAmmo();
-
-	if (IsLocallyControlled())
-	{
-		BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
-		if (BlasterPlayerController)
-		{
-			if (EquippedWeapon) BlasterPlayerController->SetHUDCarriedAmmo(CarriedAmmo);
-		}
-	}
-}
+//void ABlasterCharacter::UpdateCarriedAmmo()
+//{
+//	Super::UpdateCarriedAmmo();
+//
+//	if (IsLocallyControlled())
+//	{
+//		BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
+//		if (BlasterPlayerController)
+//		{
+//			if (EquippedWeapon) BlasterPlayerController->SetHUDCarriedAmmo(CarriedAmmo);
+//		}
+//	}
+//}
 
 void ABlasterCharacter::Test()
 {
