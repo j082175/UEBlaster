@@ -131,7 +131,7 @@ void UHpBarWidgetComponent::CheckHpBarWidget(float DeltaTime)
 {
 	if (!GetOwner()->HasAuthority()) return;
 
-	UE_LOG(LogTemp, Display, TEXT("HpCountdown : %f"), HpCountdown);
+	//UE_LOG(LogTemp, Display, TEXT("HpCountdown : %f"), HpCountdown);
 
 	if (IsVisible())
 	{

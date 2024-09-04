@@ -14,6 +14,7 @@ class BLASTER_API ADefenceActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADefenceActor();
+	virtual void PostLoad() override;
 
 protected:
 	// Called when the game starts or when spawned

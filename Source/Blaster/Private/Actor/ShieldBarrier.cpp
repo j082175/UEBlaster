@@ -7,6 +7,7 @@
 // Sets default values
 AShieldBarrier::AShieldBarrier()
 {
+
 }
 
 void AShieldBarrier::Destroyed()

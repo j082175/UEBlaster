@@ -56,6 +56,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION()
+	virtual void OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+
+
 	// Total Actives (Skill)
 	FOnSkillCoolTimeStartedDelegate OnSkillCoolTimeStarted;
 	FOnSkillCostChangedDelegate OnSkillCostChanged;
@@ -68,6 +72,10 @@ public:
 
 	void SkillButtonPressed(int32 InIndex);
 
+	void SkillCast(int32 InIndex);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastCastEnd(int32 InIndex);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerSpawnAttributeAssistant(ESkillAssistant InSkillAssistant);
@@ -77,7 +85,7 @@ public:
 private:
 	//////////////////
 	// Owner Settings
-	class ACharacterBase* CharacterOwner;
+	TWeakObjectPtr<class ACharacterBase> CharacterOwner;
 	///////////////////
 
 
@@ -88,6 +96,9 @@ private:
 	void SpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
+
+	UFUNCTION(Server, Reliable)
+	void ServerProcedure(int32 InIndex);
 
 	
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -126,8 +137,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TArray<int32> NeededSkillPoints;
 
+	UFUNCTION()
+	void OnRep_CurrentIndex();
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentIndex)
+	int32 CurrentIndex;
 private:
 	void InitForWaiting();
 
 	uint8 IsSkillCostChangedBroadcasted : 1;
+
+
+	// Anim
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UAnimMontage> SkillCastingMontage;
+
 };

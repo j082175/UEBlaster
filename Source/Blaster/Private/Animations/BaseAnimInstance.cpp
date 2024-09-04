@@ -36,6 +36,8 @@ void UBaseAnimInstance::NativeInitializeAnimation()
 	
 	
 	CharacterOwner = Cast<ACharacterBase>(TryGetPawnOwner());
+
+	bUseMultiThreadedAnimationUpdate = false;
 }
 
 void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)

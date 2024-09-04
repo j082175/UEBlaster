@@ -24,6 +24,13 @@ ADefenceActor::ADefenceActor()
 
 }
 
+void ADefenceActor::PostLoad()
+{
+	Super::PostLoad();
+	SetReplicates(true);
+}
+
+
 // Called when the game starts or when spawned
 void ADefenceActor::BeginPlay()
 {

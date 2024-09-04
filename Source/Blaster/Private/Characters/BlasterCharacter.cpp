@@ -1033,26 +1033,31 @@ void ABlasterCharacter::TestingButtonPressed()
 
 void ABlasterCharacter::SkillButtonPressed0()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	SkillComponent->SkillButtonPressed(0);
 }
 
 void ABlasterCharacter::SkillButtonPressed1()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	SkillComponent->SkillButtonPressed(1);
 }
 
 void ABlasterCharacter::SkillButtonPressed2()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	SkillComponent->SkillButtonPressed(2);
 }
 
 void ABlasterCharacter::SkillButtonPressed3()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	SkillComponent->SkillButtonPressed(3);
 }
 
 void ABlasterCharacter::SkillButtonPressed4()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	SkillComponent->SkillButtonPressed(4);
 }
 
