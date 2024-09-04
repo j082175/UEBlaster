@@ -1,25 +1,58 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Components/OverheadWidgetComponent.h"
+#include "HUD/OverheadWidgetComponent.h"
 #include "HUD/OverheadWidget.h"
 #include "Interfaces/TeamInterface.h"
 #include "Blaster.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UOverheadWidgetComponent::UOverheadWidgetComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.bStartWithTickEnabled = false;
-	PrimaryComponentTick.TickInterval = 0.1f;
+}
 
+void UOverheadWidgetComponent::PostLoad()
+{
+	Super::PostLoad();
 
+	SetComponentTickInterval(10000.f);
+}
+
+// InitWidget() called faster than BeginPlay()
+void UOverheadWidgetComponent::InitWidget()
+{
+	Super::InitWidget();
+
+	AB_SUBLOG(LogABBeginPlay, Warning, TEXT("End"));
 }
 
 void UOverheadWidgetComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AB_SUBLOG(LogABBeginPlay, Warning, TEXT("End"));
+
 	InitTextColor();
+}
+
+void UOverheadWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+
+	//if (APlayerCameraManager* PCM = UGameplayStatics::GetPlayerCameraManager(this, 0))
+	//{
+	//	if (USceneComponent* SC = PCM->GetTransformComponent())
+	//	{
+	//		FVector V = SC->GetComponentLocation();
+	//		FRotator R = UKismetMathLibrary::FindLookAtRotation(GetComponentLocation(), V);
+
+	//		SetWorldRotation(R);
+	//	}
+	//}
+
+	UE_LOG(LogTemp, Display, TEXT("UOverheadWidgetComponent::TickComponent"));
 }
 
 void UOverheadWidgetComponent::InitTextColor()
@@ -42,6 +75,7 @@ void UOverheadWidgetComponent::InitTextColor()
 				OverheadWidget->SetAllTextColor(Green);
 				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
 				InitHandle.Invalidate();
+				SetComponentTickEnabled(false);
 			}
 			else if (OverheadWidget && T1 && T2 && T1->IGetTeam() != T2->IGetTeam())
 			{
@@ -49,11 +83,13 @@ void UOverheadWidgetComponent::InitTextColor()
 				OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
 				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
 				InitHandle.Invalidate();
+				SetComponentTickEnabled(false);
 			}
 			else if (T2 && T2->IGetTeam() == ETeam::ET_NoTeam)
 			{
 				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
 				InitHandle.Invalidate();
+				SetComponentTickEnabled(false);
 				return;
 			}
 			else

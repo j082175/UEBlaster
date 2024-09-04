@@ -38,6 +38,11 @@ public:
 	UFUNCTION()
 	void StartCoolTimeAnim(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed);
 
+	UFUNCTION()
+	void SetSkillCost(int32 InIndex, const FString& InStr);
+	UFUNCTION()
+	void SetSoulCount(int32 InCount);
+
 	void HideTeamScores();
 	void InitTeamScores();
 		

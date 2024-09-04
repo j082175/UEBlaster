@@ -929,14 +929,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> UpMontageForMultiplayer;
-	// HpBarVisibility
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastHpBarVisible(bool InIsVisible);
-
-	void CheckHpBarWidget(float DeltaTime);
-
-	float HpCountdown;
-
 
 
 	// Team , for non-local players

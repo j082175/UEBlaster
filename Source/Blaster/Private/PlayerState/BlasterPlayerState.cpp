@@ -7,7 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "HUD/OverheadWidget.h"
 #include "Blaster.h"
-#include "Components/OverheadWidgetComponent.h"
+#include "HUD/OverheadWidgetComponent.h"
 
 ABlasterPlayerState::ABlasterPlayerState()
 {
@@ -37,6 +37,7 @@ void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(ThisClass, Defeats);
 	DOREPLIFETIME(ThisClass, Team);
+
 }
 
 void ABlasterPlayerState::OnRep_Score()

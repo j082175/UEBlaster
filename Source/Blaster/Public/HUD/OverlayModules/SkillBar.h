@@ -19,6 +19,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StartAnimation(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed);
+
+	UFUNCTION(BlueprintCallable)
+	void SetSkillCost(int32 InIndex, const FString& InStr);
+
+	UFUNCTION(BlueprintCallable)
+	void SetSoulCount(int32 InCount);
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UImage> SkillImage0;
@@ -67,6 +73,33 @@ public:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> ActiveCoolTimeAnim2;
 
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> SkillCost0;
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> SkillCost1;
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> SkillCost2;
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> SkillCost3;
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> SkillCost4;
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> ActiveCost0;
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> ActiveCost1;
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> ActiveCost2;
+
+	UPROPERTY(meta = (BindWidget), Transient)
+	TObjectPtr<class UTextBlock> SoulCount;
 private:
 	TMap<FString, class UWidgetAnimation*> FindWidgetAnimation;
 };

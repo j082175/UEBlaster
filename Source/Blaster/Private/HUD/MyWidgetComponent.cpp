@@ -12,6 +12,13 @@ UMyWidgetComponent::UMyWidgetComponent()
 	PrimaryComponentTick.TickInterval = 0.1f;
 }
 
+void UMyWidgetComponent::PostLoad()
+{
+	Super::PostLoad();
+
+	SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 void UMyWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

@@ -12,7 +12,7 @@
 #include "PlayerState/BlasterPlayerState.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "GameFramework/PlayerStart.h"
-#include "Components/OverheadWidgetComponent.h"
+#include "HUD/OverheadWidgetComponent.h"
 
 
 ATeamsGameMode::ATeamsGameMode()

@@ -7,6 +7,8 @@
 #include "SkillComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillCoolTimeStartedDelegate, const FString&, InPrefix, int32, InIndex, float, InPlaybackSpeed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillCostChangedDelegate, int32, NumCost, const FString&, InMessage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoulCountChangedDelegate, int32, NumCount);
 
 USTRUCT(BlueprintType)
 struct FCoolTimeCheckStruct
@@ -48,17 +50,21 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+	virtual void PostLoad() override;
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Total Actives (Skill)
 	FOnSkillCoolTimeStartedDelegate OnSkillCoolTimeStarted;
+	FOnSkillCostChangedDelegate OnSkillCostChanged;
+	FOnSoulCountChangedDelegate OnSoulCountChanged;
 
 	FORCEINLINE int32 GetSkillPoint() const { return SkillPoint; }
 	FORCEINLINE void SetSkillPoint(int32 InSkillPoint) { SkillPoint = InSkillPoint; }
 	FORCEINLINE void AddSkillPoint(int32 InAddAmount) { SkillPoint += InAddAmount; }
+
 
 	void SkillButtonPressed(int32 InIndex);
 
@@ -99,7 +105,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TWeakObjectPtr<class AEnemyRange> EnemyRange;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UFUNCTION()
+	void OnRep_SkillPoint();
+	UPROPERTY(ReplicatedUsing = OnRep_SkillPoint, EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	int32 SkillPoint;
 
 
@@ -115,4 +123,11 @@ public:
 
 	TArray<bool> SkillButtonPressedChecker;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TArray<int32> NeededSkillPoints;
+
+private:
+	void InitForWaiting();
+
+	uint8 IsSkillCostChangedBroadcasted : 1;
 };

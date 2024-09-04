@@ -29,7 +29,16 @@ public:
 
 	void ParryGaugeAnimStart(bool InCheck);
 
+	void ResetHpBarTimer();
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UHpBarWidget> HpBarWidget;
+
+
+	void CheckHpBarWidget(float DeltaTime);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastHpBarVisible(bool InIsVisible);
+
+	float HpCountdown;
 };

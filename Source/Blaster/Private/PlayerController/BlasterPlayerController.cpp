@@ -30,7 +30,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ChatSystemComponent.h"
-#include "Components/OverheadWidgetComponent.h"
+#include "HUD/OverheadWidgetComponent.h"
 #include "Blaster/Blaster.h"
 
 

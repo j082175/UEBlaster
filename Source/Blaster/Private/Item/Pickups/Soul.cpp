@@ -6,6 +6,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkillComponent.h"
+#include "Blaster.h"
 
 ASoul::ASoul()
 {
@@ -20,8 +21,10 @@ void ASoul::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, 
 	USkillComponent* SkillComponent = OtherActor->GetComponentByClass<USkillComponent>();
 	if (SkillComponent)
 	{
+		//AB_LOG(LogABDisplay, Log, TEXT(""));
 		UGameplayStatics::PlaySoundAtLocation(this, TakeSound, SoulEffect->GetComponentLocation());
 		SkillComponent->AddSkillPoint(Soul);
+		SkillComponent->OnSoulCountChanged.Broadcast(Soul);
 		MulticastSpawnEmitter();
 
 		Destroy();

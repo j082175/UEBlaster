@@ -25,7 +25,7 @@
 #include "Components/ObjectPoolComponent.h"
 #include "Components/SkillComponent.h"
 #include "Components/InventoryComponent.h"
-#include "Components/OverheadWidgetComponent.h"
+#include "HUD/OverheadWidgetComponent.h"
 
 // Interfaces
 #include "Interfaces/InteractWithCrosshairsInterface.h"
@@ -298,7 +298,6 @@ void ACharacterBase::Tick(float DeltaTime)
 	//	HpBarWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
 	//}
 
-	CheckHpBarWidget(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -370,6 +369,8 @@ void ACharacterBase::IBindWidget(UUserWidget* InUserWidget)
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 
 		SkillComponent->OnSkillCoolTimeStarted.AddUniqueDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
+		SkillComponent->OnSkillCostChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSkillCost);
+		SkillComponent->OnSoulCountChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSoulCount);
 	}
 
 
@@ -420,13 +421,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	//UE_LOG(LogTemp, Display, TEXT("DamageType : bCausedByWorld :%d, bScaleMomentumByMass : %d, bRadialDamageVelChange : %d, DamageImpulse : %f, DestructibleImpulse : %f, DestructibleDamageSpreadScale : %f, DamageFalloff : %f"), DamageType->bCausedByWorld, DamageType->bScaleMomentumByMass, DamageType->bRadialDamageVelChange, DamageType->DamageImpulse, DamageType->DestructibleImpulse, DamageType->DestructibleDamageSpreadScale, DamageType->DamageFalloff);
 
-	if (HasAuthority())
-	{
-		HpCountdown = 0.f;
-		MulticastHpBarVisible(true);
-
-
-	}
+	HpBarWidgetComponent->ResetHpBarTimer();
 
 
 	LastDamageCauser = DamageCauser;
@@ -1350,33 +1345,6 @@ void ACharacterBase::CheckCapsuleAndMeshEquals(float DeltaTime, float InAccuracy
 	LastCapsuleLocation = GetCapsuleComponent()->GetComponentLocation();
 
 	return;
-}
-
-void ACharacterBase::CheckHpBarWidget(float DeltaTime)
-{
-	if (!HasAuthority()) return;
-
-	if (HpBarWidgetComponent->IsVisible())
-	{
-		HpCountdown += DeltaTime;
-
-		if (HpCountdown >= 3.f)
-		{
-			MulticastHpBarVisible(false);
-			HpCountdown = 0.f;
-
-		}
-
-	}
-}
-
-void ACharacterBase::MulticastHpBarVisible_Implementation(bool InIsVisible)
-{
-	if (InIsVisible)
-	{
-		HpBarWidgetComponent->SetComponentTickEnabled(true);
-	}
-	HpBarWidgetComponent->SetVisibility(InIsVisible);
 }
 
 void ACharacterBase::MulticastRandomAttack_Implementation(int32 Index, const FString& AttackType)

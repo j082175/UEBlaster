@@ -15,7 +15,7 @@
 #include "Components/MantleVaultComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/SkillComponent.h"
-#include "Components/OverheadWidgetComponent.h"
+#include "HUD/OverheadWidgetComponent.h"
 
 // EnhancedInput
 #include "EnhancedInputSubsystems.h"
@@ -161,6 +161,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//{
 		//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	//}
+
 
 }
 
@@ -998,6 +999,7 @@ void ABlasterCharacter::DashButtonPressed()
 
 		if (S->bCanExecute)
 		{
+			//UE_LOG(LogTemp, Display, TEXT("Can Dash"));
 			if (!Dash(KeySectionName)) return;
 			S->bCanExecute = false;
 			SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Active"), 2, S->CoolTime);

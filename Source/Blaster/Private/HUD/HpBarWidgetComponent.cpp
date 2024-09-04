@@ -30,6 +30,8 @@ void UHpBarWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	//UE_LOG(LogTemp, Display, TEXT("%s : HasLocalNetOwner : %d"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString(), GetOwner()->HasLocalNetOwner());
 
 	//if (bShieldChanged) SetShieldBar(0, ShieldRate, DeltaTime);
+
+	CheckHpBarWidget(DeltaTime);
 }
 
 void UHpBarWidgetComponent::InitWidget()
@@ -40,8 +42,6 @@ void UHpBarWidgetComponent::InitWidget()
 	//NullChecker(HpBarWidget, TEXT("HpBarWidget"), *GetName());
 	SetHpBar(1.f, 1.f);
 	SetShieldBar(1.f, 1.f);
-
-
 
 	
 	//IWidgetBindDelegateInterface* WidgetOwner = Cast<IWidgetBindDelegateInterface>(GetOwner());
@@ -116,4 +116,42 @@ void UHpBarWidgetComponent::SetParryBar(float InCurrentP, float InMaxP)
 void UHpBarWidgetComponent::ParryGaugeAnimStart(bool InCheck)
 {
 	HpBarWidget->ParryGaugeAnimStart(InCheck);
+}
+
+void UHpBarWidgetComponent::ResetHpBarTimer()
+{
+	if (GetOwner()->HasAuthority())
+	{
+		HpCountdown = 0.f;
+		MulticastHpBarVisible(true);
+	}
+}
+
+void UHpBarWidgetComponent::CheckHpBarWidget(float DeltaTime)
+{
+	if (!GetOwner()->HasAuthority()) return;
+
+	UE_LOG(LogTemp, Display, TEXT("HpCountdown : %f"), HpCountdown);
+
+	if (IsVisible())
+	{
+		HpCountdown += DeltaTime;
+
+		if (HpCountdown >= 3.f)
+		{
+			MulticastHpBarVisible(false);
+			HpCountdown = 0.f;
+
+		}
+
+	}
+}
+
+void UHpBarWidgetComponent::MulticastHpBarVisible_Implementation(bool InIsVisible)
+{
+	if (InIsVisible)
+	{
+		SetComponentTickEnabled(true);
+	}
+	SetVisibility(InIsVisible);
 }

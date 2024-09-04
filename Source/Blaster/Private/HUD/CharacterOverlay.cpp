@@ -171,6 +171,16 @@ void UCharacterOverlay::StartCoolTimeAnim(const FString& InPrefix, int32 InIndex
 	SkillBar->StartAnimation(InPrefix, InIndex, InPlaybackSpeed);
 }
 
+void UCharacterOverlay::SetSkillCost(int32 InIndex, const FString& InStr)
+{
+	SkillBar->SetSkillCost(InIndex, InStr);
+}
+
+void UCharacterOverlay::SetSoulCount(int32 InCount)
+{
+	SkillBar->SetSoulCount(InCount);
+}
+
 void UCharacterOverlay::HideTeamScores()
 {
 	RedTeamScore->SetText(FText());

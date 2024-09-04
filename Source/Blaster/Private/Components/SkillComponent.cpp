@@ -6,6 +6,7 @@
 #include "Actor/HealArea.h"
 #include "Actor/ShieldBarrier.h"
 #include "Characters/Enemy/EnemyRange.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 USkillComponent::USkillComponent()
@@ -18,6 +19,7 @@ USkillComponent::USkillComponent()
 	// ...
 	InitializeCoolTimeMap();
 
+	
 }
 
 
@@ -26,13 +28,27 @@ void USkillComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetComponentTickEnabled(true);
-	SetComponentTickInterval(0.1f);
-
 	// ...
 
 	CharacterOwner = Cast<ACharacterBase>(GetOwner());
-	if (!CharacterOwner) UE_LOG(LogTemp, Error, TEXT("SkillComponent : Getting Owner Failed!"));
+	//if (!CharacterOwner) UE_LOG(LogTemp, Error, TEXT("SkillComponent : Getting Owner Failed!"));
+}
+
+void USkillComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, SkillPoint);
+
+}
+
+void USkillComponent::PostLoad()
+{
+	Super::PostLoad();
+
+	SetIsReplicated(true);
+	PrimaryComponentTick.bStartWithTickEnabled = true;
+	SetComponentTickInterval(0.01f);
 }
 
 
@@ -46,24 +62,27 @@ void USkillComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	CoolTimeChecker(DeltaTime);
 
+	InitForWaiting();
 }
 
 void USkillComponent::SkillButtonPressed(int32 InIndex)
 {
 	FCoolTimeCheckStruct* S = CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant(InIndex)).ToString());
 
+	//UE_LOG(LogTemp, Display, TEXT("SkillPoint : %d"), SkillPoint);
 
 	switch (InIndex)
 	{
 	case 0:
-		if (S->bCanExecute)
+		if (S->bCanExecute && SkillPoint >= NeededSkillPoints[0])
 		{
 			UE_LOG(LogTemp, Display, TEXT(""));
 			if (!SkillButtonPressedChecker[InIndex])
 			{
 				OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), InIndex, S->CoolTime);
 				S->bCanExecute = false;
-
+				SkillPoint -= NeededSkillPoints[InIndex];
+				OnSoulCountChanged.Broadcast(SkillPoint);
 				ServerSpawnAttributeAssistant((ESkillAssistant)InIndex);
 			}
 		}
@@ -76,29 +95,34 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 
 		break;
 	case 1:
-		if (S->bCanExecute)
+		if (S->bCanExecute && SkillPoint >= NeededSkillPoints[1])
 		{
 			UE_LOG(LogTemp, Display, TEXT("1 Executed"));
 			OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), InIndex, S->CoolTime);
 			S->bCanExecute = false;
-
+			SkillPoint -= NeededSkillPoints[InIndex];
+			OnSoulCountChanged.Broadcast(SkillPoint);
 			ServerSpawnAttributeAssistant((ESkillAssistant)InIndex);
 		}
 
 		break;
 	case 2:
-		if (S->bCanExecute)
+		if (S->bCanExecute && SkillPoint >= NeededSkillPoints[2])
 		{
 			UE_LOG(LogTemp, Display, TEXT("2 Executed"));
 			OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), InIndex, S->CoolTime);
 			S->bCanExecute = false;
-
+			SkillPoint -= NeededSkillPoints[InIndex];
+			OnSoulCountChanged.Broadcast(SkillPoint);
 			ServerSpawnAttributeAssistant((ESkillAssistant)InIndex);
 		}
 		break;
 	default:
 		break;
 	}
+
+
+
 }
 
 void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
@@ -216,19 +240,28 @@ void USkillComponent::MulticastSpawnAttributeAssistantDetach_Implementation(ESki
 	SpawnAttributeAssistantDetach(InSkillAssistant);
 }
 
+void USkillComponent::OnRep_SkillPoint()
+{
+	//UE_LOG(LogTemp, Display, TEXT("OnRep"));
+
+	OnSoulCountChanged.Broadcast(SkillPoint);
+}
+
 void USkillComponent::CoolTimeChecker(float DeltaTime)
 {
 
 	for (auto& Iter : CoolTimeMap)
 	{
 
-		//if (Iter.Key == UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())
-		//{
-		//	UE_LOG(LogTemp, Display, TEXT("cooltime : %f"), Iter.Value.CoolTime);
-		//}
-
 		if (!Iter.Value.bCanExecute)
 		{
+			//UE_LOG(LogTemp, Display, TEXT("CoolTimeChecker"));
+
+			//if (Iter.Key == UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())
+//{
+//	UE_LOG(LogTemp, Display, TEXT("cooltime : %f"), Iter.Value.CoolTime);
+//}
+
 			if (Iter.Value.CoolTimeCount > Iter.Value.CoolTime)
 			{
 				//UE_LOG(LogTemp, Display, TEXT("CoolTime : %f"), Iter.Value.CoolTime);
@@ -262,4 +295,20 @@ void USkillComponent::InitializeCoolTimeMap()
 	}
 
 
+}
+
+void USkillComponent::InitForWaiting()
+{
+	if (!IsSkillCostChangedBroadcasted && OnSkillCostChanged.IsBound() && OnSoulCountChanged.IsBound())
+	{
+		for (size_t i = 0; i < NeededSkillPoints.Num(); i++)
+		{
+			OnSkillCostChanged.Broadcast(i, FString::FromInt(NeededSkillPoints[i]));
+
+		}
+
+		OnSoulCountChanged.Broadcast(SkillPoint);
+
+		IsSkillCostChangedBroadcasted = true;
+	}
 }

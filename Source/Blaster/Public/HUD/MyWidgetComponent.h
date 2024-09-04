@@ -15,7 +15,9 @@ class BLASTER_API UMyWidgetComponent : public UWidgetComponent
 	GENERATED_BODY()
 public:
 	UMyWidgetComponent();
+	virtual void PostLoad() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 
 protected:
 	virtual void InitWidget() override;
