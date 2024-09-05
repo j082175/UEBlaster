@@ -65,9 +65,11 @@
 
 //#include "TimerManager.h"
 #include "Item/Pickable/Weapon/WeaponTypes.h"
+#include "Item/Pickable/Weapon/Flag.h"
 
 #include "PhysicsEngine/PhysicsAsset.h"
 #include "Blaster/Blaster.h"
+
 
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -1817,6 +1819,13 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 		if (OutHitResult.bBlockingHit)
 		{
+
+			AFlag* F = Cast<AFlag>(WeaponGun);
+			if (F && F->IGetTeam() != IGetTeam())
+			{
+				return;
+			}
+
 			HUDPackage.CrosshairsColor = FLinearColor::Green;
 
 			IGetItem(WeaponGun);

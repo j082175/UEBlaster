@@ -19,8 +19,8 @@ AEnemyRange::AEnemyRange()
 {
 	InitializeDefaults();
 
-	BaseWalkSpeed = 300.f;
-	AimWalkSpeed = 200.f;
+	//BaseWalkSpeed = 300.f;
+	//AimWalkSpeed = 200.f;
 
 }
 

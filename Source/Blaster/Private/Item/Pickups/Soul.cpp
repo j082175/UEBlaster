@@ -24,7 +24,6 @@ void ASoul::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, 
 		//AB_LOG(LogABDisplay, Log, TEXT(""));
 		UGameplayStatics::PlaySoundAtLocation(this, TakeSound, SoulEffect->GetComponentLocation());
 		SkillComponent->AddSkillPoint(Soul);
-		SkillComponent->OnSoulCountChanged.Broadcast(Soul);
 		MulticastSpawnEmitter();
 
 		Destroy();

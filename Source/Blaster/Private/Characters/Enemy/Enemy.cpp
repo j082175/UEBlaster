@@ -518,7 +518,7 @@ void AEnemy::SetDead()
 		ASoul* SpawnedSoul = GetWorld()->SpawnActorDeferred<ASoul>(SoulToSpawn, FTransform(GetActorLocation() + GetActorUpVector() * 70.f));
 		SpawnedSoul->SetOwner(this);
 		SpawnedSoul->SetInstigator(this);
-		SpawnedSoul->SetSoul(100.f);
+		SpawnedSoul->SetSoul(10.f);
 		SpawnedSoul->FinishSpawning(GetActorTransform());
 	}
 }

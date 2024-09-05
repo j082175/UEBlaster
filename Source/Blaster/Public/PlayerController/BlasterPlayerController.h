@@ -17,6 +17,9 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchCountdownDelegate, float);
+DECLARE_DELEGATE_OneParam(FOnRedTeamScoreChangedDelegate, const FString&);
+DECLARE_DELEGATE_OneParam(FOnBlueTeamScoreChangedDelegate, const FString&);
+
 
 
 /**
@@ -114,6 +117,8 @@ protected:
 public:
 	FHighPingDelegate HighPingDelegate;
 	FOnMatchCountdownDelegate MatchCountdown;
+	FOnRedTeamScoreChangedDelegate OnRedTeamScoreChanged;
+	FOnBlueTeamScoreChangedDelegate OnBlueTeamScoreChanged;
 
 	void CheckPing(float DeltaTime);
 

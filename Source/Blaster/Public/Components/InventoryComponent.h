@@ -30,10 +30,12 @@ public:
 	FORCEINLINE class AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 	FORCEINLINE class AWeapon* GetSecondaryEquippedWeapon() const { return SecondaryWeapon; }
 	FORCEINLINE float GetCarriedAmmo() const { return CarriedAmmo; }
+	FORCEINLINE class AFlag* GetFlag() const { return Flag; }
 
 	FORCEINLINE void SetEquippedWeapon(class AWeapon* W) { EquippedWeapon = W; }
 	FORCEINLINE void SetSecondaryEquippedWeapon(class AWeapon* W) { SecondaryWeapon = W; }
 	FORCEINLINE float GetGrenades() const { return Grenades; }
+	FORCEINLINE void SetFlag(class AFlag* InFlag) { Flag = InFlag; }
 
 	void SubtractCarriedAmmoMap(EWeaponType InWeaponType, int32 InDecreaseAmount);
 
@@ -94,9 +96,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	int32 StartingGrenadeLauncherAmmo;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class AFlag> Flag;
 
 private:
 	void Init();
+	void InitFunc();
 
 	FTimerHandle InitTimer;
+
 };

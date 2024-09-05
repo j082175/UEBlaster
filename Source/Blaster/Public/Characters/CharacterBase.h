@@ -808,6 +808,7 @@ protected:
 public:
 	void EquipSecondaryFunc();
 	virtual void EquipWeaponFunc();
+
 protected:
 
 	void EquipWeapon(AWeapon* InWeapon);

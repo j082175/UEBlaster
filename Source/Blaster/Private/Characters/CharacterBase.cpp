@@ -49,6 +49,7 @@
 #include "Item/Pickable/Weapon/Weapon_Gun.h"
 #include "Item/Pickable/Weapon/Weapon_Melee.h"
 #include "Item/Pickable/Weapon/Shotgun.h"
+#include "Item/Pickable/Weapon/Flag.h"
 #include "Actor/Projectile/ProjectileGrenade.h"
 
 // Math
@@ -206,16 +207,22 @@ void ACharacterBase::BeginPlay()
 	InitializeDelegates();
 	InitializeWidgets();
 
-	if (CharacterSpawnEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetTransform());
+	FTimerHandle H;
+	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+		{
+			if (CharacterSpawnEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetTransform());
+		}), 0.01f, false);
+
+
 
 	OverheadWidget = Cast<UOverheadWidget>(OverheadWidgetComponent->GetWidget());
 
+#if WITH_EDITOR
 	if (OverheadWidget)
 	{
 		OverheadWidget->ShowPlayerNetRole(this);
-
 	}
-	
+#endif // WITH_EDITOR
 
 
 
@@ -1638,6 +1645,9 @@ void ACharacterBase::PostLoad()
 {
 	Super::PostLoad();
 
+	GetCharacterMovement()->SetWalkableFloorAngle(60.f);
+	GetCharacterMovement()->MaxStepHeight = 80.f;
+
 	//StartingARAmmo = 300.f;
 	//StartingRocketAmmo = 10.f;
 	//StartingPistolAmmo = 300.f;
@@ -1996,6 +2006,11 @@ void ACharacterBase::Elim(bool bPlayerLeftGame)
 			DropOrDestroyWeapon(InventoryComponent->SecondaryWeapon);
 		}
 
+		if (InventoryComponent->GetFlag())
+		{
+			InventoryComponent->GetFlag()->Drop();
+		}
+
 		if (Flag)
 		{
 			bHoldingTheFlag = false;
@@ -2328,21 +2343,28 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 
 	if (InWeapon->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
+		
+		AFlag* ExistingFlag = InventoryComponent->GetFlag();
+		if (ExistingFlag) ExistingFlag->Drop();
+		AFlag* F = Cast<AFlag>(InWeapon);
+		F->Equip(this);
+		InventoryComponent->SetFlag(F);
 
 		//Crouch();
 		//bHoldingTheFlag = true;
 		//InWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		InWeapon->SetOwner(this);
+		//InWeapon->SetOwner(this);
 		//AttachFlagToLeftHand(InWeapon);
 		//Flag = InWeapon;
 
 		//GetCharacterMovement()->bOrientRotationToMovement = true;
 		//bUseControllerRotationYaw = false;
+
 	}
 
 
-	{
-		if (InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->SecondaryWeapon == nullptr) // Only Equipped One Weapon
+	
+		else if (InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->SecondaryWeapon == nullptr) // Only Equipped One Weapon
 		{
 			InventoryComponent->SecondaryWeapon = InWeapon;
 			EquipSecondaryFunc();
@@ -2357,7 +2379,7 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 
 		if (GetCharacterMovement()) GetCharacterMovement()->bOrientRotationToMovement = false;
 		bUseControllerRotationYaw = true;
-	}
+	
 
 	AnimState = EAnimState::EAS_Equipped;
 	bIsAiming = false;

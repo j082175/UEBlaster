@@ -31,6 +31,7 @@ public:
 	//FORCEINLINE class USoundBase* GetEquipSound() { return PickupSound; }
 	FORCEINLINE class UBoxComponent* GetBoxComponent() { return BoxComponent; }
 	FORCEINLINE void ClearActorsToIgnore() { ActorsToIgnore.Empty(); }
+	FORCEINLINE class UStaticMeshComponent* GetPickupMesh() const { return PickupMesh; }
 
 	virtual void ItemAttachToComponent(USceneComponent* SceneComponent, FAttachmentTransformRules& AttachmentRules, FName InSocketName) override;
 	virtual void ItemDetachToComponent(FDetachmentTransformRules& DetachmentRules) override;

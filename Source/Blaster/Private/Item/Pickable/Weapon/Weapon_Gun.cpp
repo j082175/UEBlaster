@@ -153,11 +153,15 @@ void AWeapon_Gun::OnRep_Owner()
 
 		BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 
-		TWeakObjectPtr<UInventoryComponent> IC = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
-		if (BlasterOwnerCharacter && IC->GetEquippedWeapon() && IC->GetEquippedWeapon() == this)
+		if (BlasterOwnerCharacter)
 		{
-			SetHUDAmmo();
+			TWeakObjectPtr<UInventoryComponent> IC = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
+			if (BlasterOwnerCharacter && IC->GetEquippedWeapon() && IC->GetEquippedWeapon() == this)
+			{
+				SetHUDAmmo();
+			}
 		}
+
 	}
 }
 
@@ -217,7 +221,16 @@ void AWeapon_Gun::SetHUDAmmo()
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 	if (BlasterOwnerCharacter) BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(BlasterOwnerCharacter->GetController()) : BlasterOwnerController;
 
-	UInventoryComponent* IC = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
+	if (BlasterOwnerCharacter)
+	{
+		UInventoryComponent* IC = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
+
+		if (IC)
+		{
+			IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo);
+		}
+	}
+
 
 	//if (BlasterOwnerController)
 	//{
@@ -227,10 +240,10 @@ void AWeapon_Gun::SetHUDAmmo()
 	//}
 	// 
 
-	if (IC)
-	{
-		IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo);
-	}
+	//if (IC)
+	//{
+	//	IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo);
+	//}
 	//if (IC && IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo))
 	//{
 	//}

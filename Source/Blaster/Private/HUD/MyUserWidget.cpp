@@ -3,6 +3,7 @@
 
 #include "HUD/MyUserWidget.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
+#include "Blaster.h"
 
 
 
@@ -14,6 +15,8 @@ UMyUserWidget::UMyUserWidget(const FObjectInitializer& ObjectInitializer)
 void UMyUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	//AB_CALLLOG(LogABDisplay, Error, TEXT(""));
 
 	PollInit();
 
@@ -40,31 +43,11 @@ void UMyUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UMyUserWidget::PollInit()
 {
-	//OPawn = GetOwningPlayerPawn();
+	GetWorld()->GetTimerManager().SetTimer(InitializeTimerHandle, this, &ThisClass::PollInitFunc, 0.2f, true);
+}
 
-	//FTimerHandle T;
-	//GetWorld()->GetTimerManager().SetTimer(T, FTimerDelegate::CreateLambda([&]()
-	//	{
-	//		if (OwingActor.IsValid())
-	//		{
-	//			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
-	//			if (WBDI)
-	//			{
-	//				WBDI->IBindWidget(this);
-	//			}
-	//			OPawn = OwingActor;
-	//		}
-	//		else if (GetOwningPlayer())
-	//		{
-	//			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer());
-	//			if (WBDI)
-	//			{
-	//				WBDI->IBindWidget(this);
-	//			}
-	//			//OPawn = GetOwningPlayer();
-	//		}
-	//	}), 0.01f, false);
-
+void UMyUserWidget::PollInitFunc()
+{
 	if (OwingActor.IsValid())
 	{
 		GetWorld()->GetTimerManager().SetTimer(InitializeTimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -80,23 +63,24 @@ void UMyUserWidget::PollInit()
 	}
 	else
 	{
-		GetWorld()->GetTimerManager().SetTimer(InitializeTimerHandle, FTimerDelegate::CreateLambda([&]()
+		if (GetOwningPlayer())
+		{
+			if (IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer()))
 			{
-				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayer());
-				if (WBDI)
-				{
-					WBDI->IBindWidget(this);
-					GetWorld()->GetTimerManager().ClearTimer(InitializeTimerHandle);
-					InitializeTimerHandle.Invalidate();
-				}
-			}), 0.01f, true);
+				WBDI->IBindWidget(this);
+				GetWorld()->GetTimerManager().ClearTimer(InitializeTimerHandle);
+				InitializeTimerHandle.Invalidate();
+			}
+			else
+			{
+				UE_LOG(LogTemp, Display, TEXT("IWidgetBindDelegateInterface Initializing"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Display, TEXT("Finding OwingPlayer"));
+		}
 	}
-
-
-
-
-
-
 }
 
 void UMyUserWidget::VisibilityChanged(ESlateVisibility InVisibility)

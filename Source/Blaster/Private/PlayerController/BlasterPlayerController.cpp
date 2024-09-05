@@ -765,6 +765,7 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindWidget"));
 		MatchCountdown.AddUObject(CO, &UCharacterOverlay::SetHUDMatchCountdown);
+		//OnTeamScoreChanged.BindUObject(CO, &UCharacterOverlay::)
 	}
 }
 

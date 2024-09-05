@@ -25,11 +25,14 @@ protected:
 	TWeakObjectPtr<AActor> OwingActor;
 
 	void PollInit();
+	void PollInitFunc();
 
 	//TWeakObjectPtr<AActor> OPawn;
 private:
+
 	UFUNCTION()
 	void VisibilityChanged(ESlateVisibility InVisibility);
 
+	
 	FTimerHandle InitializeTimerHandle;
 };

@@ -11,6 +11,8 @@
 #include "Components/InventoryComponent.h"
 #include "Components/WidgetComponent.h"
 
+#include "Net/UnrealNetwork.h"
+
 
 AFlag::AFlag()
 {
@@ -27,6 +29,13 @@ AFlag::AFlag()
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidgetComponent"));
 	PickupWidget->SetupAttachment(RootComponent);
 
+}
+
+void AFlag::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, InitialTransform);
 }
 
 void AFlag::ResetFlag()
@@ -70,45 +79,76 @@ void AFlag::ResetFlag()
 	SetActorTransform(InitialTransform);
 }
 
+void AFlag::Equip(ACharacter* NewOwner)
+{
+	WeaponState = EWeaponState::EWS_Equipped;
+	SetOwner(NewOwner);
+	SetInstigator(NewOwner);
+
+	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+	AttachToComponent(NewOwner->GetMesh(), Rules, TEXT("pelvisSocket"));
+	ShowPickupWidget(false);
+	//OverlapCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PickupMesh->SetSimulatePhysics(false);
+}
+
+void AFlag::Drop()
+{
+	if (UInventoryComponent* IC = GetOwner()->GetComponentByClass<UInventoryComponent>())
+	{
+		IC->SetFlag(nullptr);
+	}
+
+	WeaponState = EWeaponState::EWS_Dropped;
+	SetOwner(nullptr);
+	SetInstigator(nullptr);
+
+	FDetachmentTransformRules Rules(EDetachmentRule::KeepWorld, true);
+	DetachFromActor(Rules);
+	SetActorEnableCollision(true);
+	//OverlapCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	PickupMesh->SetSimulatePhysics(true);
+}
+
 void AFlag::MulticastResetFlag_Implementation()
 {
-	//if (!HasAuthority()) UE_LOG(LogTemp, Display, TEXT("MulticastResetFlag_Implementation"));
-	ABlasterCharacter* FlagBearer = Cast<ABlasterCharacter>(GetOwner());
-	if (FlagBearer)
-	{
-		FlagBearer->SetHoldingTheFlag(false);
-		FlagBearer->SetOverlappingWeapon(nullptr);
-		FlagBearer->UnCrouch();
-	}
 
-	InventoryComponent = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
+	//ABlasterCharacter* FlagBearer = Cast<ABlasterCharacter>(GetOwner());
+	//if (FlagBearer)
+	//{
+	//	FlagBearer->SetHoldingTheFlag(false);
+	//	FlagBearer->SetOverlappingWeapon(nullptr);
+	//	FlagBearer->UnCrouch();
+	//}
 
-	AWeapon* W = Cast<AFlag>(InventoryComponent->GetEquippedWeapon());
-	if (W)
-	{
-		InventoryComponent->SetEquippedWeapon(nullptr);
-	}
-	W = Cast<AFlag>(InventoryComponent->GetSecondaryEquippedWeapon());
-	if (W)
-	{
-		InventoryComponent->SetSecondaryEquippedWeapon(nullptr);
-	}
+	//InventoryComponent = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
 
-
-	SetWeaponState(EWeaponState::EWS_Dropped);
-	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-	PickupMesh->DetachFromComponent(DetachRules);
-
-	SetWeaponState(EWeaponState::EWS_Initial);
-	OverlapCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	OverlapCapsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-
-	if (!HasAuthority()) return; // the code below only executed when has authority
+	//AWeapon* W = Cast<AFlag>(InventoryComponent->GetEquippedWeapon());
+	//if (W)
+	//{
+	//	InventoryComponent->SetEquippedWeapon(nullptr);
+	//}
+	//W = Cast<AFlag>(InventoryComponent->GetSecondaryEquippedWeapon());
+	//if (W)
+	//{
+	//	InventoryComponent->SetSecondaryEquippedWeapon(nullptr);
+	//}
 
 
-	SetOwner(nullptr);
-	BlasterOwnerCharacter = nullptr;
-	BlasterOwnerController = nullptr;
+	//SetWeaponState(EWeaponState::EWS_Dropped);
+	//FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	//PickupMesh->DetachFromComponent(DetachRules);
+
+	//SetWeaponState(EWeaponState::EWS_Initial);
+	//OverlapCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	//OverlapCapsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	//if (!HasAuthority()) return; // the code below only executed when has authority
+
+
+
+	//Drop();
+	//PickupMesh->SetSimulatePhysics(false);
 
 	SetActorTransform(InitialTransform);
 }

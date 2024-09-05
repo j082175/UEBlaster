@@ -18,11 +18,18 @@ class BLASTER_API AFlag : public AWeapon_Melee
 	GENERATED_BODY()
 public:
 	AFlag();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+
 	void ResetFlag();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastResetFlag();
 
 	FORCEINLINE ETeam IGetTeam() const { return Team; }
+	FORCEINLINE FTransform GetInitialTransform() const { return InitialTransform; }
+
+	void Equip(ACharacter* NewOwner);
+	void Drop();
 
 protected:
 	//virtual void OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -35,12 +42,12 @@ protected:
 	virtual void OnEquipped() ;
 	virtual void OnDropped() ;
 	
-	FORCEINLINE FTransform GetInitialTransform() const { return InitialTransform; }
+
 private:
 	//UPROPERTY(VisibleAnywhere)
 	//TObjectPtr<UStaticMeshComponent> FlagMesh;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FTransform InitialTransform;
 
 	UPROPERTY(EditAnywhere)

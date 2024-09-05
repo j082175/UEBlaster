@@ -27,6 +27,8 @@ struct FCoolTimeCheckStruct
 	float CoolTime = 2.f;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	uint8 bCanExecute : 1 = true;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	uint8 bSkillPointEnough : 1 = true;
 };
 
 UENUM(BlueprintType)
@@ -40,12 +42,12 @@ enum class ESkillAssistant : uint8
 };
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class BLASTER_API USkillComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	USkillComponent();
 
@@ -54,7 +56,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void PostLoad() override;
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -69,8 +71,9 @@ public:
 	FOnSkillCoolTimeCheckDelegate OnSkillCoolTimeCheck;
 
 	FORCEINLINE int32 GetSkillPoint() const { return SkillPoint; }
-	FORCEINLINE void SetSkillPoint(int32 InSkillPoint) { SkillPoint = InSkillPoint; }
-	FORCEINLINE void AddSkillPoint(int32 InAddAmount) { SkillPoint += InAddAmount; }
+	void SetSkillPoint(int32 InSkillPoint);
+	void AddSkillPoint(int32 InAddAmount);
+
 
 
 	void SkillButtonPressed(int32 InIndex);
@@ -103,7 +106,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerProcedure(int32 InIndex);
 
-	
+
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AHealArea> HealAreaClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

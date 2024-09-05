@@ -82,16 +82,35 @@ void USkillComponent::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBran
 	}
 }
 
+void USkillComponent::SetSkillPoint(int32 InSkillPoint)
+{
+	SkillPoint = InSkillPoint;
+	OnSoulCountChanged.Broadcast(SkillPoint);
+}
+
+void USkillComponent::AddSkillPoint(int32 InAddAmount)
+{
+	SkillPoint += InAddAmount;
+	OnSoulCountChanged.Broadcast(SkillPoint);
+}
+
 void USkillComponent::SkillButtonPressed(int32 InIndex)
 {
 	FCoolTimeCheckStruct* S = CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant(InIndex)).ToString());
 
 	//UE_LOG(LogTemp, Display, TEXT("SkillPoint : %d"), SkillPoint);
 
+	if (S)
+	{
+		if (NeededSkillPoints.Num() <= InIndex) return;
+		S->bSkillPointEnough = SkillPoint >= NeededSkillPoints[InIndex] ? true : false;
+	}
+
 	switch (InIndex)
 	{
 	case 0:
-		if (S->bCanExecute && SkillPoint >= NeededSkillPoints[0])
+
+		if (S->bCanExecute && S->bSkillPointEnough)
 		{
 			ServerProcedure(InIndex);
 		}
@@ -105,18 +124,19 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 
 		break;
 	case 1:
-		if (S->bCanExecute && SkillPoint >= NeededSkillPoints[1])
+		if (S->bCanExecute && S->bSkillPointEnough)
 		{
 			ServerProcedure(InIndex);
 		}
 		else
 		{
 			OnSkillCoolTimeCheck.Broadcast(InIndex);
+
 		}
 
 		break;
 	case 2:
-		if (S->bCanExecute && SkillPoint >= NeededSkillPoints[2])
+		if (S->bCanExecute && S->bSkillPointEnough)
 		{
 			ServerProcedure(InIndex);
 		}
@@ -203,13 +223,14 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 			EnemyRange = GetWorld()->SpawnActorDeferred<AEnemyRange>(EnemyRangeClass, SpawnTo);
 			if (EnemyRange.IsValid())
 			{
+				EnemyRange->ISetTeam(CharacterOwner->IGetTeam());
+				EnemyRange->SetTeamColor(CharacterOwner->IGetTeam());
 				EnemyRange->FinishSpawning(SpawnTo);
 				EnemyRange->SpawnDefaultController();
 				EnemyRange->SetOwner(CharacterOwner.Get());
-				EnemyRange->SetInstigator(CharacterOwner.Get());
+				EnemyRange->SetInstigator(EnemyRange.Get());
 
-				EnemyRange->ISetTeam(CharacterOwner->IGetTeam());
-				EnemyRange->SetTeamColor(CharacterOwner->IGetTeam());
+
 
 			}
 		}

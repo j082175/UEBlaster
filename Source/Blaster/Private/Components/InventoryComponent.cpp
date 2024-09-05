@@ -138,24 +138,26 @@ void UInventoryComponent::OnRep_CarriedAmmo()
 
 void UInventoryComponent::Init()
 {
-	GetWorld()->GetTimerManager().SetTimer(InitTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			if (GetOwner()->GetInstigatorController() != GetWorld()->GetFirstPlayerController())
-			{
-				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
-				InitTimer.Invalidate();
-				return;
-			}
+	GetWorld()->GetTimerManager().SetTimer(InitTimer, this, &ThisClass::InitFunc, 0.2f, true);
+}
 
-			if (OnCarriedAmmoChanged.ExecuteIfBound(CarriedAmmo) && OnGrenadeCountChanged.ExecuteIfBound(Grenades))
-			{
-				GetWorld()->GetTimerManager().ClearTimer(InitTimer);
-				InitTimer.Invalidate();
-			}
-			else
-			{
-				UE_LOG(LogTemp, Display, TEXT("UInventoryComponent Initializing..."));
-			}
+void UInventoryComponent::InitFunc()
+{
+	if (GetOwner() && GetWorld() && GetOwner()->GetInstigatorController() != GetWorld()->GetFirstPlayerController())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+		InitTimer.Invalidate();
+		return;
+	}
 
-		}), 0.01f, true);
+	if (OnCarriedAmmoChanged.ExecuteIfBound(CarriedAmmo) && OnGrenadeCountChanged.ExecuteIfBound(Grenades))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+		InitTimer.Invalidate();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("UInventoryComponent Initializing..."));
+		UE_LOG(LogTemp, Display, TEXT("GetOwner()->GetInstigatorController() : %s"), *GetOwner()->GetInstigatorController()->GetName());
+	}
 }

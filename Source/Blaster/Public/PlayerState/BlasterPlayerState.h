@@ -51,6 +51,8 @@ private:
 
 
 private:
+	void SetTeamFunc();
+
 	FTimerHandle InitializeTimerHandle;
 
 

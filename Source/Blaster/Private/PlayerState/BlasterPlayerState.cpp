@@ -56,22 +56,7 @@ void ABlasterPlayerState::ISetTeam(ETeam TeamToSlot)
 {
 	//UE_LOG(LogTemp, Error, TEXT("TeamToSlot : %d"), (int)TeamToSlot);
 	Team = TeamToSlot;
-
-	GetWorldTimerManager().SetTimer(InitializeTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			ITeamInterface* BCharacter = Cast<ITeamInterface>(GetPawn());
-			if (BCharacter)
-			{
-				BCharacter->ISetTeam(Team);
-				GetWorldTimerManager().ClearTimer(InitializeTimerHandle);
-				InitializeTimerHandle.Invalidate();
-			}
-			else
-			{
-				AB_LOG(LogABDisplay, Log, TEXT("Initializing"));
-			}
-		}), 0.1f, true);
-
+	GetWorldTimerManager().SetTimer(InitializeTimerHandle, this, &ThisClass::SetTeamFunc, 0.3f, true);
 }
 
 void ABlasterPlayerState::AddToScore(float ScoreAmount)
@@ -125,5 +110,20 @@ void ABlasterPlayerState::OnRep_Team()
 	if (BCharacter)
 	{
 		BCharacter->SetTeamColor(Team);
+	}
+}
+
+void ABlasterPlayerState::SetTeamFunc()
+{
+	ITeamInterface* BCharacter = Cast<ITeamInterface>(GetPawn());
+	if (BCharacter)
+	{
+		BCharacter->ISetTeam(Team);
+		GetWorldTimerManager().ClearTimer(InitializeTimerHandle);
+		InitializeTimerHandle.Invalidate();
+	}
+	else
+	{
+		AB_LOG(LogABDisplay, Log, TEXT("Initializing"));
 	}
 }

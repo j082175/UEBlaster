@@ -38,7 +38,7 @@ void UCoolTimeAnnouncement::SetCoolTimeAnnouncementText(int32 InSkillIndex)
 	{
 		FCoolTimeCheckStruct* CTCS = SC->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant(InSkillIndex)).ToString());
 
-		if (CTCS && !CTCS->bCanExecute)
+		if (CTCS && !CTCS->bCanExecute || !CTCS->bSkillPointEnough)
 		{
 			FString Str = FString::Printf(TEXT("%s Is CoolTime or No Point"), *UEnum::GetDisplayValueAsText(ESkillAssistant(InSkillIndex)).ToString());
 
@@ -46,6 +46,10 @@ void UCoolTimeAnnouncement::SetCoolTimeAnnouncementText(int32 InSkillIndex)
 			SetVisibility(ESlateVisibility::Visible);
 			bIsActive = true;
 			DisableTimeCount = 0.f;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("SetCoolTimeAnnouncementText"));
 		}
 	}
 
