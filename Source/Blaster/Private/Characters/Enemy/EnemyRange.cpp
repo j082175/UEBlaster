@@ -294,3 +294,35 @@ void AEnemyRange::SetIsActive(bool InIsActive)
 		OnAttackEnded.ExecuteIfBound();
 	}
 }
+
+void AEnemyRange::StartFireTimer()
+{
+	if (InventoryComponent->EquippedWeapon == nullptr) return;
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
+	if (!Gun) return;
+
+	GetWorldTimerManager().SetTimer(FireTimer, this, &ThisClass::FireTimerFinished, Gun->GetFireDelay());
+}
+
+void AEnemyRange::FireTimerFinished()
+{
+
+	//if (InventoryComponent->EquippedWeapon == nullptr) return;
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
+	if (!Gun) return;
+	UE_LOG(LogTemp, Display, TEXT("FireTimerFinished"));
+
+	////UE_LOG(LogTemp, Display, TEXT("FireTimer : %d"), FireTimer.IsValid());
+
+
+	////bCanFire = true;
+
+	ReloadEmptyWeapon();
+	if (bFireButtonPressed && Gun->IsAutomatic())
+	{
+		Fire(true);
+	}
+	bIsFiring = false;
+	//GetWorldTimerManager().ClearTimer(FireTimer);
+	FireTimer.Invalidate();
+}

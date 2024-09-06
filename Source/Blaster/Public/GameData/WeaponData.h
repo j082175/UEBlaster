@@ -11,13 +11,21 @@ struct FWeaponData : public FTableRowBase
 	GENERATED_BODY()
 
 public:
-	FWeaponData() : Damage(0.0f), Recoil(0.0f), Range(0.0f), FireDelay(0.0f), MagCapacity(0.f){}
+	FWeaponData() 
+		: BodyDamage(0.0f), HeadDamage(0.f), RecoilPitch(0.0f), RecoilYaw(0.f), Range(0.0f), FireDelay(0.0f), MagCapacity(0.f)
+	{}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-	float Damage;
+	float BodyDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
-	float Recoil;
+	float HeadDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	float RecoilPitch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	float RecoilYaw;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	float Range;

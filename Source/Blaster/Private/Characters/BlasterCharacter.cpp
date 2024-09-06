@@ -880,24 +880,29 @@ void ABlasterCharacter::FireButtonPressed(const FInputActionValue& isPressed)
 	if (bDisableGameplay) return;
 	if (bHoldingTheFlag) return;
 
-	if (IsAiming() && !bIsFirebuttonPressed && !bCheckIsSemi && !bIsFiring)
+	//if (IsAiming() && !bIsFirebuttonPressed && !bCheckIsSemi && !bIsFiring)
+	//{
+
+	//	//UE_LOG(LogTemp, Display, TEXT("Fire"));
+	//	bIsFirebuttonPressed = true;
+	//	NotifyFireButtonPressed(true);
+
+	//	Fire(true);
+
+	//	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
+
+	//	if (Gun && !Gun->IsAutomatic()) bCheckIsSemi = true;
+	//}
+
+
+
+	if (IsAiming() && !bIsFirebuttonPressed && !bCheckIsSemi)
 	{
-
-		//UE_LOG(LogTemp, Display, TEXT("Fire"));
-		bIsFirebuttonPressed = true;
-		NotifyFireButtonPressed(true);
-
 		Fire(true);
-
-		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
-
-		if (Gun && !Gun->IsAutomatic()) bCheckIsSemi = true;
 	}
 
-	//if (IsAiming())
-	//{
-	//	Super::FireButtonPressed(true);
-	//}
+	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
+	if (Gun && !Gun->IsAutomatic()) bCheckIsSemi = true;
 }
 
 void ABlasterCharacter::FireButtonReleased(const FInputActionValue& isPressed)
@@ -905,6 +910,7 @@ void ABlasterCharacter::FireButtonReleased(const FInputActionValue& isPressed)
 	//UE_LOG(LogTemp, Display, TEXT("Released : %d"), isPressed.Get<bool>());
 	if (bDisableGameplay) return;
 	if (bHoldingTheFlag) return;
+
 	if (IsAiming())
 	{
 		bIsFirebuttonPressed = false;

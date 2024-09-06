@@ -34,11 +34,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UParticleSystem> BeamParticles;
 
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UParticleSystem> MuzzleFlash;
+	//UPROPERTY(EditAnywhere)
+	//TObjectPtr<class UParticleSystem> MuzzleFlash;
 
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class USoundCue> FireSound;
+	//UPROPERTY(EditAnywhere)
+	//TObjectPtr<class USoundCue> FireSound;
 
 
 };

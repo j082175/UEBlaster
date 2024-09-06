@@ -12,6 +12,7 @@
 #include "GameData/WeaponData.h"
 #include "Weapon_Gun.generated.h"
 
+
 UENUM(BlueprintType)
 enum class EFireType : uint8
 {
@@ -35,6 +36,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
 	virtual void OnRep_Owner() override;
+	virtual void PostLoad() override;
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -74,6 +76,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EjectCasing();
+
+
 
 protected:
 	virtual void InitializeCollisionStates() override;
@@ -130,13 +134,13 @@ private:
 
 	// Recoil System
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	float DefaultRecoilPitch = -0.5f;
 
 	UPROPERTY(EditAnywhere)
 	float PitchRange = 0.2f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	float DefaultRecoilYaw = 0.5f;
 
 	UPROPERTY(EditAnywhere)
@@ -170,6 +174,12 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<class UAnimationAsset> FireAnimation;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	TObjectPtr<class USoundBase> FireSound;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	TObjectPtr<class UParticleSystem> FireEffect;
 
 	//UFUNCTION()
 	//void OnRep_Ammo();
@@ -212,8 +222,5 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	float AdditionalSphereRadius = 0.f;
 
-	// Weapon Datas
-protected:
-	FWeaponData WeaponData;
 
 };

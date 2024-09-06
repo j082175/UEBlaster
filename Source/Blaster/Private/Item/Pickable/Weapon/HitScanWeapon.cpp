@@ -118,15 +118,15 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 			UAISense_Hearing::ReportNoiseEvent(this, FireHit.ImpactPoint, 1.f, GetInstigator());
 		}
 
-		if (MuzzleFlash)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
-		}
+		//if (MuzzleFlash)
+		//{
+		//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
+		//}
 
-		if (FireSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-		}
+		//if (FireSound)
+		//{
+		//	UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		//}
 	}
 }
 

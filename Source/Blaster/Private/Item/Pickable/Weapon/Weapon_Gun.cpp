@@ -80,15 +80,6 @@ AWeapon_Gun::AWeapon_Gun()
 void AWeapon_Gun::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	//WeaponData = 
-
-	WeaponData = UDataSingleton::Get().GetWeaponName(WeaponName);
-
-	//Damage = WeaponData.Damage;
-	//FireDelay = WeaponData.FireDelay;
-	//MagCapacity = WeaponData.MagCapacity;
-	//Ammo = WeaponData.MagCapacity;
 }
 
 //void AWeapon_Gun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -138,6 +129,7 @@ void AWeapon_Gun::BeginPlay()
 	//{
 	//	FireDelay = 0.001f;
 	//}
+	SetHUDAmmo();
 }
 
 void AWeapon_Gun::OnRep_Owner()
@@ -165,6 +157,24 @@ void AWeapon_Gun::OnRep_Owner()
 	}
 }
 
+void AWeapon_Gun::PostLoad()
+{
+	Super::PostLoad();
+
+	UDataSingleton& DataSingleton = UDataSingleton::Get();
+	FWeaponData WeaponData = DataSingleton.GetWeaponName(GetWeaponName());
+
+	Damage = WeaponData.BodyDamage;
+	HeadShotDamage = WeaponData.HeadDamage;
+	PitchRange = WeaponData.RecoilPitch;
+	YawRange = WeaponData.RecoilYaw;
+	//
+	FireDelay = WeaponData.FireDelay;
+	MagCapacity = WeaponData.MagCapacity;
+	Ammo = MagCapacity;
+
+}
+
 #if WITH_EDITOR
 void AWeapon_Gun::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -176,10 +186,13 @@ void AWeapon_Gun::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedE
 	// 변경된 프로퍼티에 따라 작업을 수행
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, DefaultRecoilPitch))
 	{
+		//DefaultRecoilPitch = FMath::Clamp(DefaultRecoilPitch, -1.f, 0.f);
+		//DefaultRecoilYaw = DefaultRecoilPitch < 0 ? DefaultRecoilYaw : -DefaultRecoilYaw;
 		DefaultRecoilYaw = FMath::Abs(DefaultRecoilPitch);
 	}
 	else if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, DefaultRecoilYaw))
 	{
+		//DefaultRecoilPitch = DefaultRecoilYaw < 0 ? DefaultRecoilPitch : -DefaultRecoilPitch;
 		DefaultRecoilPitch = -DefaultRecoilYaw;
 	}
 }
@@ -429,6 +442,11 @@ void AWeapon_Gun::Fire(const FVector& HitTarget)
 				CharacterOwner->PlayBoltActionMontage(TEXT("BoltAction"));
 			}
 		}
+	}
+	else
+	{
+		if (FireSound) UGameplayStatics::PlaySoundAtLocation(this, FireSound, WeaponSKMesh->GetSocketLocation(TEXT("MuzzleFlash")));
+		if (FireEffect) UGameplayStatics::SpawnEmitterAttached(FireEffect, WeaponSKMesh, TEXT("MuzzleFlash"), WeaponSKMesh->GetSocketLocation(TEXT("MuzzleFlash")), WeaponSKMesh->GetSocketRotation(TEXT("MuzzleFlash")), EAttachLocation::KeepWorldPosition);
 	}
 
 	if (WeaponType != EWeaponType::EWT_SniperRifle && WeaponType != EWeaponType::EWT_Shotgun) EjectCasing();

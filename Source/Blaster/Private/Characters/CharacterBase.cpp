@@ -2417,6 +2417,7 @@ void ACharacterBase::SwapWeapons()
 void ACharacterBase::Fire(bool bPressed)
 {
 	if (InventoryComponent->EquippedWeapon == nullptr) return;
+
 	bFireButtonPressed = bPressed;
 
 	if (CanFire())
@@ -2438,8 +2439,8 @@ void ACharacterBase::Fire(bool bPressed)
 			AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 			if (!Gun) return;
 
-			AddControllerPitchInput(Gun->GetRandomRecoilPitch());
-			AddControllerYawInput(Gun->GetRandomRecoilYaw());
+			AddControllerPitchInput(FMath::Lerp(0.f, Gun->GetRandomRecoilPitch(), 0.5f));
+			AddControllerYawInput(FMath::Lerp(0.f, Gun->GetRandomRecoilYaw(), 0.5f));
 
 			switch (Gun->GetFireType())
 			{
@@ -2457,9 +2458,7 @@ void ACharacterBase::Fire(bool bPressed)
 			}
 		}
 
-		//UE_LOG(LogTemp, Display, TEXT("FireTimer : %d"), FireTimer.IsValid());
 
-		//FireTimer.Invalidate();
 		StartFireTimer();
 	}
 }
@@ -2538,32 +2537,62 @@ void ACharacterBase::StartFireTimer()
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
-	GetWorldTimerManager().SetTimer(FireTimer, this, &ThisClass::FireTimerFinished, Gun->GetFireDelay());
+	GetWorldTimerManager().SetTimer(FireTimer, this, &ThisClass::FireTimerFinished, Gun->GetFireDelay(), false, Gun->GetFireDelay());
 	//UE_LOG(LogTemp, Display, TEXT("FireTimer : %d"), FireTimer.IsValid());
 
 }
 
 void ACharacterBase::FireTimerFinished()
 {
-	if (InventoryComponent->EquippedWeapon == nullptr) return;
-	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
-	if (!Gun) return;
-	//UE_LOG(LogTemp, Display, TEXT("FireTimerFinished"));
-
-	//UE_LOG(LogTemp, Display, TEXT("FireTimer : %d"), FireTimer.IsValid());
-
-
-	//bCanFire = true;
-
-	ReloadEmptyWeapon();
-	if (bFireButtonPressed && Gun->IsAutomatic())
-	{
-		Fire(true);
-	}
 	bIsFiring = false;
 
+	//if (InventoryComponent->EquippedWeapon == nullptr) return;
+	//AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
+	//if (!Gun) return;
+	//UE_LOG(LogTemp, Display, TEXT("FireTimerFinished"));
 
-	FireTimer.Invalidate();
+	////UE_LOG(LogTemp, Display, TEXT("FireTimer : %d"), FireTimer.IsValid());
+
+
+	////bCanFire = true;
+
+	//ReloadEmptyWeapon();
+	//if (bFireButtonPressed && Gun->IsAutomatic())
+	//{
+	//	//Fire(true);
+
+	//	if (InventoryComponent->EquippedWeapon)
+	//	{
+
+	//		CrosshairShootingFactor += 0.75;
+	//		CameraShake(FireCameraShakeClass, true);
+
+	//		AddControllerPitchInput(Gun->GetRandomRecoilPitch());
+	//		AddControllerYawInput(Gun->GetRandomRecoilYaw());
+
+	//		switch (Gun->GetFireType())
+	//		{
+	//		case EFireType::EFT_HitScan:
+	//			FireHitScanWeapon(true);
+	//			break;
+	//		case EFireType::EFT_Projectile:
+	//			FireProjectileWeapon(true);
+	//			break;
+	//		case EFireType::EFT_Shotgun:
+	//			FireShotgun(true);
+	//			break;
+	//		default:
+	//			break;
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	bIsFiring = false;
+	//	GetWorldTimerManager().ClearTimer(FireTimer);
+	//	FireTimer.Invalidate();
+	//}
+
 }
 
 void ACharacterBase::ServerFire_Implementation(bool bPressed, const FVector_NetQuantize& TraceHitTarget, float FireDelay)
@@ -2688,6 +2717,7 @@ bool ACharacterBase::CanFire()
 	if (!IsAiming()) return false;
 	if (!bFireButtonPressed) return false;
 	if (!IsLocallyControlled()) return false;
+	if (bIsFiring) return false;
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return false;
 

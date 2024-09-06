@@ -51,4 +51,8 @@ protected:
 	float TargetPointCheckThreshold = 2.f;
 	FVector TargetPointCheck;
 
+
+	virtual void StartFireTimer() override;
+	virtual void FireTimerFinished() override;
+
 };

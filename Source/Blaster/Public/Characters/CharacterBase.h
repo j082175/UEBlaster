@@ -553,8 +553,8 @@ protected:
 	virtual void FireHitScanWeapon(bool bPressed);
 	virtual void FireShotgun(bool bPressed);
 	void ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
-	void StartFireTimer();
-	void FireTimerFinished();
+	virtual void StartFireTimer();
+	virtual void FireTimerFinished();
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerFire(bool bPressed, const FVector_NetQuantize& TraceHitTarget, float FireDelay);
