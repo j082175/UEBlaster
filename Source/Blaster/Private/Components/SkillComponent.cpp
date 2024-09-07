@@ -341,8 +341,8 @@ void USkillComponent::CoolTimeChecker(float DeltaTime)
 
 void USkillComponent::InitializeCoolTimeMap()
 {
-	CoolTimeMap.Add(TEXT("Dodge"), FCoolTimeCheckStruct(3.f));
 	CoolTimeMap.Add(TEXT("Dash"), FCoolTimeCheckStruct(2.f));
+	CoolTimeMap.Add(TEXT("Dodge"), FCoolTimeCheckStruct(3.f));
 
 	CoolTimeMap.Reserve(5);
 	SkillButtonPressedChecker.Reserve(5);

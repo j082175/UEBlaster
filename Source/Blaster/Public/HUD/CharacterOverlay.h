@@ -26,11 +26,12 @@ public:
 	void SetParryGaugeBar(float InCurrent, float InMax);
 	void SetHUDScore(float Score);
 	void SetHUDDefeats(int32 Defeats);
-	void SetHUDWeaponAmmo(int32 CurrentAmmo);
-	void SetHUDCarriedAmmo(int32 CarriedAmmo);
-	void SetHUDWeaponType(EWeaponName InWeaponType);
 	void SetHUDMatchCountdown(float CountdownTime);
-	void SetHUDGrenades(int32 Grenades);
+
+	//void SetHUDWeaponAmmo(int32 CurrentAmmo);
+	//void SetHUDCarriedAmmo(int32 CarriedAmmo);
+	//void SetHUDWeaponType(EWeaponName InWeaponType);
+	//void SetHUDGrenades(int32 Grenades);
 
 	void SetHUDRedTeamScore(int32 RedScore);
 	void SetHUDBlueTeamScore(int32 BlueScore);
@@ -44,10 +45,10 @@ public:
 	UFUNCTION()
 	void ShowCoolTimeAnnouncement(int32 InSkillIndex);
 
-	void SetCurrentAmmo(int32 InAmmo);
-	void SetMaxAmmo(int32 InAmmo);
-	void SetWeaponName(EWeaponName InWeaponName);
-	void SetGrenadeNum(int32 InGrenadeCount);
+	//void SetCurrentAmmo(int32 InAmmo);
+	//void SetMaxAmmo(int32 InAmmo);
+	//void SetWeaponName(EWeaponName InWeaponName);
+	//void SetGrenadeNum(int32 InGrenadeCount);
 	//void SetGrenadeName()
 
 
@@ -60,8 +61,8 @@ public:
 
 
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UWeaponStatus> WeaponStatus;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UWeaponStatus> WeaponStatus;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class USkillBar> SkillBar;

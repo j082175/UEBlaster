@@ -7,6 +7,7 @@
 #include "Animation/WidgetAnimation.h"
 #include "Components/TextBlock.h"
 #include "Blaster/Blaster.h"
+#include "Components/ProgressBar.h"
 
 void USkillBar::NativeConstruct()
 {
@@ -38,4 +39,9 @@ void USkillBar::SetSoulCount(int32 InCount)
 {
 	//UE_LOG(LogTemp, Display, TEXT("SoulCountChanged"));
 	SoulCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), InCount)));
+}
+
+void USkillBar::SetSpBar(float InPercent)
+{
+	SpBar->SetPercent(InPercent);
 }

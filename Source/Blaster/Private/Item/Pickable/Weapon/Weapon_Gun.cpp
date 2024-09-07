@@ -30,6 +30,7 @@
 //#include "GameMode/BlasterGameMode.h"
 #include "GameState/BlasterGameState.h"
 #include "Components/ObjectPoolComponent.h"
+#include "Perception/AISense_Hearing.h"
 
 #include "GameData/DataSingleton.h"
 
@@ -160,6 +161,8 @@ void AWeapon_Gun::OnRep_Owner()
 void AWeapon_Gun::PostLoad()
 {
 	Super::PostLoad();
+
+	if (GetWeaponName() == EWeaponName::AI_Pistol) return;
 
 	UDataSingleton& DataSingleton = UDataSingleton::Get();
 	FWeaponData WeaponData = DataSingleton.GetWeaponName(GetWeaponName());
@@ -456,7 +459,7 @@ void AWeapon_Gun::Fire(const FVector& HitTarget)
 		SpendRound();
 	}
 
-	
+	UAISense_Hearing::ReportNoiseEvent(this, GetActorLocation(), 1.f, GetInstigator());
 }
 
 void AWeapon_Gun::AddAmmo(int32 AmmoToAdd)

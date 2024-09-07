@@ -9,3 +9,4 @@
 #define TARGET_ACTOR_LAST_POSITION (TEXT("TargetActorLastPosition"))
 #define TARGET_ACTOR_DISTANCE (TEXT("TargetActorDistance"))
 #define OWING_ACTOR TEXT("OwingActor")
+#define OWING_ACTOR_DISTANCE (TEXT("OwingActorDistance"))

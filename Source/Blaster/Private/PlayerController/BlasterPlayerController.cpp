@@ -494,7 +494,7 @@ void ABlasterPlayerController::SetHUDWeaponAmmo(int32 CurrentAmmo)
 		//	UE_LOG(LogTemp, Display, TEXT("SetHUDWeaponAmmo : %d"), CurrentAmmo);
 
 		//}
-		BlasterHUD->CharacterOverlay->SetHUDWeaponAmmo(CurrentAmmo);
+		//BlasterHUD->CharacterOverlay->SetHUDWeaponAmmo(CurrentAmmo);
 		bInitializedCurrentAmmo = true;
 	}
 }
@@ -505,7 +505,7 @@ void ABlasterPlayerController::SetHUDCarriedAmmo(int32 CarriedAmmo)
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 	if (bHUDValid)
 	{
-		BlasterHUD->CharacterOverlay->SetHUDCarriedAmmo(CarriedAmmo);
+		//BlasterHUD->CharacterOverlay->SetHUDCarriedAmmo(CarriedAmmo);
 		bInitializedCarriedAmmo = true;
 	}
 }
@@ -516,7 +516,7 @@ void ABlasterPlayerController::SetHUDWeaponType(EWeaponName InWeaponType)
 	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay;
 	if (bHUDValid)
 	{
-		BlasterHUD->CharacterOverlay->SetHUDWeaponType(InWeaponType);
+		//BlasterHUD->CharacterOverlay->SetHUDWeaponType(InWeaponType);
 	}
 }
 
@@ -575,7 +575,7 @@ void ABlasterPlayerController::SetHUDGrenades(int32 Grenades)
 		//UE_LOG(LogTemp, Warning, TEXT("SetHUDGrenades"));
 		//if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Magenta, FString::Printf(TEXT("SetHUDGrenades")));
 
-		BlasterHUD->CharacterOverlay->SetHUDGrenades(Grenades);
+		//BlasterHUD->CharacterOverlay->SetHUDGrenades(Grenades);
 		bInitializedGrenades = true;
 	}
 }

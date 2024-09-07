@@ -205,6 +205,7 @@ void ABaseAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Sti
 	}
 	else if (Result == AISense_Damage)
 	{
+		if (GetBlackboardComponent()) GetBlackboardComponent()->SetValueAsObject(TARGET_ACTOR, Actor);
 		//UE_LOG(LogTemp, Display, TEXT("AISense_Damage Detected"));
 
 	}

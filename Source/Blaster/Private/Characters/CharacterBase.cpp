@@ -102,6 +102,7 @@
 #include "Characters/Enemy/EnemyRange.h"
 
 #include "Perception/AISense_Damage.h"
+#include "Perception/AIPerceptionComponent.h"
 
 
 #include "BlasterTypes/KeyType.h"
@@ -380,13 +381,14 @@ void ACharacterBase::IBindWidget(UUserWidget* InUserWidget)
 		SkillComponent->OnSoulCountChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSoulCount);
 		SkillComponent->OnSkillCoolTimeCheck.AddUniqueDynamic(CO, &UCharacterOverlay::ShowCoolTimeAnnouncement);
 
-		InventoryComponent->OnCurrentAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetCurrentAmmo);
-		InventoryComponent->OnCarriedAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetMaxAmmo);
-		InventoryComponent->OnGrenadeCountChanged.BindUObject(CO, &UCharacterOverlay::SetGrenadeNum);
-		InventoryComponent->OnWeaponNameChanged.BindUObject(CO, &UCharacterOverlay::SetWeaponName);
+		//InventoryComponent->OnCurrentAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetCurrentAmmo);
+		//InventoryComponent->OnCarriedAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetMaxAmmo);
+		//InventoryComponent->OnGrenadeCountChanged.BindUObject(CO, &UCharacterOverlay::SetGrenadeNum);
+		//InventoryComponent->OnWeaponNameChanged.BindUObject(CO, &UCharacterOverlay::SetWeaponName);
 
-		InventoryComponent->OnWeaponNameChanged.ExecuteIfBound(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
-		InventoryComponent->OnCurrentAmmoChanged.ExecuteIfBound(Cast<AWeapon_Gun>(InventoryComponent->GetEquippedWeapon())->GetAmmo());
+		//InventoryComponent->OnWeaponNameChanged.ExecuteIfBound(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
+		//InventoryComponent->OnCurrentAmmoChanged.ExecuteIfBound(Cast<AWeapon_Gun>(InventoryComponent->GetEquippedWeapon())->GetAmmo());
+		//InventoryComponent->OnCarriedAmmoChanged.ExecuteIfBound(InventoryComponent->CarriedAmmo);
 	}
 
 
@@ -511,11 +513,12 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	if (CurrentHealth <= 0.f)
 	{
-		AEnemyAIController* EnemyAI = Cast<AEnemyAIController>(InstigatorController);
+		ABaseAIController* EnemyAI = Cast<ABaseAIController>(InstigatorController);
 		if (EnemyAI)
 		{
 			UE_LOG(LogTemp, Display, TEXT("TARGET_ACTOR"));
 			EnemyAI->GetBlackboardComponent()->SetValueAsObject(TARGET_ACTOR, nullptr);
+			//EnemyAI->SetFocus(nullptr);
 		}
 
 		bIsElimmed = true;
@@ -1645,8 +1648,8 @@ void ACharacterBase::PostLoad()
 {
 	Super::PostLoad();
 
-	GetCharacterMovement()->SetWalkableFloorAngle(60.f);
-	GetCharacterMovement()->MaxStepHeight = 80.f;
+	GetCharacterMovement()->SetWalkableFloorAngle(90.f);
+	GetCharacterMovement()->MaxStepHeight = 45.f;
 
 	//StartingARAmmo = 300.f;
 	//StartingRocketAmmo = 10.f;
@@ -2052,6 +2055,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	CombatState = ECombatState::ECS_Dead;
 	HpBarWidgetComponent->SetVisibility(false);
 	//AIPerceptionStimuliSource->UnregisterFromPerceptionSystem(); // This cause change blackboard key not work
+	AIPerceptionStimuliSource->UnregisterFromPerceptionSystem();
 
 
 	bIsElimmed = true;

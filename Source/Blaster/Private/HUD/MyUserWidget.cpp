@@ -50,16 +50,13 @@ void UMyUserWidget::PollInitFunc()
 {
 	if (OwingActor.IsValid())
 	{
-		GetWorld()->GetTimerManager().SetTimer(InitializeTimerHandle, FTimerDelegate::CreateLambda([&]()
-			{
-				IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
-				if (WBDI)
-				{
-					WBDI->IBindWidget(this);
-					GetWorld()->GetTimerManager().ClearTimer(InitializeTimerHandle);
-					InitializeTimerHandle.Invalidate();
-				}
-			}), 0.01f, true);
+		IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
+		if (WBDI)
+		{
+			WBDI->IBindWidget(this);
+			GetWorld()->GetTimerManager().ClearTimer(InitializeTimerHandle);
+			InitializeTimerHandle.Invalidate();
+		}
 	}
 	else
 	{

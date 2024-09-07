@@ -17,7 +17,9 @@ bool UBTDecorator_IsWithinIdealRange::CalculateRawConditionValue(UBehaviorTreeCo
 	UBlackboardComponent* BC = OwnerComp.GetBlackboardComponent();
 	if (BC == nullptr) return false;
 
-	float Distance = BC->GetValueAsFloat(TARGET_ACTOR_DISTANCE);
+	FString DistanceStr = Target == ETarget::ET_OwingActor ? OWING_ACTOR_DISTANCE : TARGET_ACTOR_DISTANCE;
+
+	float Distance = BC->GetValueAsFloat(*DistanceStr);
 
 	if (RangeThreshold < Distance)
 	{

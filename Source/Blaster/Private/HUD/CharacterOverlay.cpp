@@ -68,6 +68,7 @@ void UCharacterOverlay::SetSpBar(float InCurrent, float InMax)
 	AttributeStatus->SetCurrentTextBlock(AttributeStatus->CurrentSp, InCurrent);
 	AttributeStatus->SetMaxTextBlock(AttributeStatus->MaxSp, InMax);
 	AttributeStatus->SetProgressBar(AttributeStatus->SpBar, InCurrent / InMax);
+	SkillBar->SetSpBar(InCurrent / InMax);
 }
 
 void UCharacterOverlay::SetParryGaugeBar(float InCurrent, float InMax)
@@ -87,36 +88,20 @@ void UCharacterOverlay::SetHUDDefeats(int32 Defeats)
 	DefeatsAmount->SetText(FText::FromString(DefeatsText));
 }
 
-void UCharacterOverlay::SetHUDWeaponAmmo(int32 CurrentAmmo)
-{
-	//FString AmmoText = FString::Printf(TEXT("%d"), CurrentAmmo);
-	//WeaponAmmoAmount->SetText(FText::FromString(AmmoText));
-
-	WeaponStatus->SetCurrentTextBlock(WeaponStatus->CurrentAmmo, CurrentAmmo);
-
-	//bInitializedCurrentAmmo = true;
-}
-
-void UCharacterOverlay::SetHUDCarriedAmmo(int32 CarriedAmmo)
-{
-	//UE_LOG(LogTemp, Display, TEXT("SetHUDCarriedAmmo"));
-	//FString AmmoText = FString::Printf(TEXT("%d"), CarriedAmmo);
-	//CarriedAmmoAmount->SetText(FText::FromString(AmmoText));
-	// 
-
-	WeaponStatus->SetMaxTextBlock(WeaponStatus->MaxAmmo, CarriedAmmo);
-	// 
-	//bInitializedCarriedAmmo = true;
-}
-
-void UCharacterOverlay::SetHUDWeaponType(EWeaponName InWeaponType)
-{
-	//UE_LOG(LogTemp, Display, TEXT("SetHUDWeaponType"));
-	//FText WeaponTypeText = UEnum::GetDisplayValueAsText(InWeaponType);
-	//WeaponType->SetText(WeaponTypeText);
-
-	WeaponStatus->SetName(WeaponStatus->WeaponName, UEnum::GetDisplayValueAsText(InWeaponType).ToString());
-}
+//void UCharacterOverlay::SetHUDWeaponAmmo(int32 CurrentAmmo)
+//{
+//	WeaponStatus->SetCurrentTextBlock(WeaponStatus->CurrentAmmo, CurrentAmmo);
+//}
+//
+//void UCharacterOverlay::SetHUDCarriedAmmo(int32 CarriedAmmo)
+//{
+//	WeaponStatus->SetMaxTextBlock(WeaponStatus->MaxAmmo, CarriedAmmo);
+//}
+//
+//void UCharacterOverlay::SetHUDWeaponType(EWeaponName InWeaponType)
+//{
+//	WeaponStatus->SetName(WeaponStatus->WeaponName, UEnum::GetDisplayValueAsText(InWeaponType).ToString());
+//}
 
 void UCharacterOverlay::SetHUDMatchCountdown(float CountdownTime)
 {
@@ -138,19 +123,10 @@ void UCharacterOverlay::SetHUDMatchCountdown(float CountdownTime)
 	MatchCountdownText->SetText(FText::FromString(CountdownText));
 }
 
-void UCharacterOverlay::SetHUDGrenades(int32 Grenades)
-{
-	//UE_LOG(LogTemp, Warning, TEXT("SetHUDGrenades"));
-	//if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Magenta, FString::Printf(TEXT("SetHUDGrenades")));
-
-	//FString GT = FString::Printf(TEXT("%d"), Grenades);
-	//GrenadesText->SetText(FText::FromString(GT));
-
-	WeaponStatus->SetCurrentTextBlock(WeaponStatus->GrenadeNum, Grenades);
-
-
-	//bInitializedGrenades = true;
-}
+//void UCharacterOverlay::SetHUDGrenades(int32 Grenades)
+//{
+//	WeaponStatus->SetCurrentTextBlock(WeaponStatus->GrenadeNum, Grenades);
+//}
 
 void UCharacterOverlay::SetHUDRedTeamScore(int32 RedScore)
 {
@@ -220,51 +196,23 @@ void UCharacterOverlay::ShowCoolTimeAnnouncement(int32 InSkillIndex)
 	CoolTimeAnnouncement->SetCoolTimeAnnouncementText(InSkillIndex);
 }
 
-void UCharacterOverlay::SetCurrentAmmo(int32 InAmmo)
-{
-	WeaponStatus->SetCurrentAmmo(InAmmo);
-}
-
-void UCharacterOverlay::SetMaxAmmo(int32 InAmmo)
-{
-	WeaponStatus->SetMaxAmmo(InAmmo);
-}
-
-void UCharacterOverlay::SetWeaponName(EWeaponName InWeaponName)
-{
-	WeaponStatus->SetWeaponName(InWeaponName);
-}
-
-void UCharacterOverlay::SetGrenadeNum(int32 InGrenadeCount)
-{
-	WeaponStatus->SetGrenadeNum(InGrenadeCount);
-}
-
-//void UCharacterOverlay::PollInit()
+//void UCharacterOverlay::SetCurrentAmmo(int32 InAmmo)
 //{
+//	WeaponStatus->SetCurrentAmmo(InAmmo);
+//}
 //
-//	GetWorld()->GetTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-//		{
-//			IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(GetOwningPlayerPawn());
-//			if (WBDI)
-//			{
-//				WBDI->IBindWidget(this);
-//				GetWorld()->GetTimerManager().ClearTimer(H);
-//				H.Invalidate();
-//			}
-//			else
-//			{
-//				AB_CALLLOG(LogABDisplay, Error, TEXT("PollInit!"));
-//			}
-//		}), 0.01f, true);
+//void UCharacterOverlay::SetMaxAmmo(int32 InAmmo)
+//{
+//	WeaponStatus->SetMaxAmmo(InAmmo);
+//}
 //
+//void UCharacterOverlay::SetWeaponName(EWeaponName InWeaponName)
+//{
+//	WeaponStatus->SetWeaponName(InWeaponName);
+//}
 //
+//void UCharacterOverlay::SetGrenadeNum(int32 InGrenadeCount)
+//{
+//	WeaponStatus->SetGrenadeNum(InGrenadeCount);
 //}
 
-//void UCharacterOverlay::VisibilityChanged(ESlateVisibility InVisibility)
-//{
-//
-//	AB_CALLLOG(LogABDisplay, Warning, TEXT("Visibilitychanged"));
-//
-//	PollInit();
-//}

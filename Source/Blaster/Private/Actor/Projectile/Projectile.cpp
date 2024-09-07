@@ -29,7 +29,6 @@
 #include "NiagaraFunctionLibrary.h"
 
 #include "Blaster/Blaster.h"
-#include "Perception/AISense_Hearing.h"
 
 #include "PlayerController/BlasterPlayerController.h"
 
@@ -88,8 +87,6 @@ void AProjectile::Destroyed()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
 	}
-
-	UAISense_Hearing::ReportNoiseEvent(this, GetActorLocation(), 1.f, GetInstigator());
 
 	Deactivate();
 }

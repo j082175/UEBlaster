@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTDecorator.h"
+#include "BlasterTypes/Target.h"
 #include "BTDecorator_IsWithinIdealRange.generated.h"
 
 /**
@@ -18,4 +19,6 @@ class BLASTER_API UBTDecorator_IsWithinIdealRange : public UBTDecorator
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float RangeThreshold = 500.f;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	ETarget Target;
 };
