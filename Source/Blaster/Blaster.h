@@ -45,6 +45,6 @@ public:
 	static void FindWidgetAnimationName(class UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations);
 
 	UFUNCTION(BlueprintCallable)
-	static void StartAnimation(const FString& InPrefix, const FString& InName, int32 InIndex, float InPlaybackSpeed, class UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations);
+	static class UWidgetAnimation* StartAnimation(const FString& InPrefix, const FString& InName, int32 InIndex, float InPlaybackSpeed, class UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations);
 };
 

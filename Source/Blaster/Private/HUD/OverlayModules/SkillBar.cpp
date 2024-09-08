@@ -8,12 +8,15 @@
 #include "Components/TextBlock.h"
 #include "Blaster/Blaster.h"
 #include "Components/ProgressBar.h"
+#include "Components/SkillComponent.h"
 
 void USkillBar::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	WidgetAnimHelper::FindWidgetAnimationName(this, FindWidgetAnimation);
+
+
 }
 
 void USkillBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -23,7 +26,7 @@ void USkillBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void USkillBar::StartAnimation(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed)
 {
-	WidgetAnimHelper::StartAnimation(InPrefix, TEXT("CoolTime"), InIndex, InPlaybackSpeed, this, FindWidgetAnimation);
+	UWidgetAnimation* ResultAnim = WidgetAnimHelper::StartAnimation(InPrefix, TEXT("CoolTime"), InIndex, InPlaybackSpeed, this, FindWidgetAnimation);
 }
 
 void USkillBar::SetSkillCost(int32 InIndex, const FString& InStr)
@@ -44,4 +47,14 @@ void USkillBar::SetSoulCount(int32 InCount)
 void USkillBar::SetSpBar(float InPercent)
 {
 	SpBar->SetPercent(InPercent);
+}
+
+void USkillBar::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
+{
+	Super::OnAnimationFinished_Implementation(Animation);
+
+	if (USkillComponent* SC = GetOwningPlayerPawn()->GetComponentByClass<USkillComponent>())
+	{
+		SC->SkillCoolTimeEnded(Animation);
+	}
 }

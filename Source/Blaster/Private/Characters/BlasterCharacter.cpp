@@ -971,13 +971,13 @@ void ABlasterCharacter::DodgeButtonPressed()
 	//	OnSkillStarted.Broadcast(TEXT("Active"), 1, DodgeCoolTime);
 	//}
 
-	FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(TEXT("Dodge"));
+	FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::ESA_Dodge);
 
 	if (S->bCanExecute)
 	{
 		if (!Dodge(KeySectionName)) return;
 		S->bCanExecute = false;
-		SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Active"), 1, S->CoolTime);
+		SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), 6, S->CoolTime);
 	}
 
 }
@@ -1003,14 +1003,14 @@ void ABlasterCharacter::DashButtonPressed()
 		//	OnSkillStarted.Broadcast(TEXT("Active"), 2, DashCoolTime);
 		//}
 
-		FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(TEXT("Dash"));
+		FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::ESA_Dash);
 
 		if (S->bCanExecute)
 		{
 			//UE_LOG(LogTemp, Display, TEXT("Can Dash"));
 			if (!Dash(KeySectionName)) return;
 			S->bCanExecute = false;
-			SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Active"), 2, S->CoolTime);
+			SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), 5, S->CoolTime);
 		}
 	}
 
@@ -1060,6 +1060,9 @@ void ABlasterCharacter::SkillButtonPressed2()
 void ABlasterCharacter::SkillButtonPressed3()
 {
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
+
+	UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
+
 	SkillComponent->SkillButtonPressed(3);
 }
 

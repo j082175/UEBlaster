@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "HUD/MyUserWidget.h"
+#include "BlasterTypes/SkillAssistant.h"
 #include "CoolTimeAnnouncement.generated.h"
 
 /**
@@ -18,7 +19,7 @@ class BLASTER_API UCoolTimeAnnouncement : public UMyUserWidget
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
-	void SetCoolTimeAnnouncementText(int32 InSkillIndex);
+	void SetCoolTimeAnnouncementText(ESkillAssistant InSkillAssistant);
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> CoolTimeAnnouncementText;

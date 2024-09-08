@@ -27,7 +27,7 @@ void WidgetAnimHelper::FindWidgetAnimationName(UUserWidget* InUserWidget, TMap<F
 	}
 }
 
-void WidgetAnimHelper::StartAnimation(const FString& InPrefix, const FString& InName, int32 InIndex, float InPlaybackSpeed, UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations)
+UWidgetAnimation* WidgetAnimHelper::StartAnimation(const FString& InPrefix, const FString& InName, int32 InIndex, float InPlaybackSpeed, UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations)
 {
 	FString Str = "";
 	if (InIndex == -1)
@@ -49,12 +49,15 @@ void WidgetAnimHelper::StartAnimation(const FString& InPrefix, const FString& In
 		{
 			InUserWidget->StopAnimation(WidgetAnimation);
 			InUserWidget->PlayAnimation(WidgetAnimation, 0.f, 1, EUMGSequencePlayMode::Forward, 1.f / InPlaybackSpeed);
+			return WidgetAnimation;
 		}
 
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Blaster::StartAnimation Find WidgetAnimation Failed!!!"));
-	}
-}
 
+	}
+
+	return nullptr;
+}

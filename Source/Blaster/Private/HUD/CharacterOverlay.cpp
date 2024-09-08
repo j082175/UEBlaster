@@ -191,9 +191,9 @@ void UCharacterOverlay::StopHighPingWarning()
 	}
 }
 
-void UCharacterOverlay::ShowCoolTimeAnnouncement(int32 InSkillIndex)
+void UCharacterOverlay::ShowCoolTimeAnnouncement(ESkillAssistant InSkillAssistant)
 {
-	CoolTimeAnnouncement->SetCoolTimeAnnouncementText(InSkillIndex);
+	CoolTimeAnnouncement->SetCoolTimeAnnouncementText(InSkillAssistant);
 }
 
 //void UCharacterOverlay::SetCurrentAmmo(int32 InAmmo)

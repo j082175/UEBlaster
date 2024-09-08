@@ -4,43 +4,36 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "BlasterTypes/SkillAssistant.h"
 #include "SkillComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillCoolTimeStartedDelegate, const FString&, InPrefix, int32, InIndex, float, InPlaybackSpeed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillCostChangedDelegate, int32, NumCost, const FString&, InMessage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoulCountChangedDelegate, int32, NumCount);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillCoolTimeCheckDelegate, int32, SkillIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillCoolTimeCheckDelegate, ESkillAssistant, SkillIndex);
 
 
 USTRUCT(BlueprintType)
 struct FCoolTimeCheckStruct
 {
 	GENERATED_BODY()
-	FCoolTimeCheckStruct(float CoolTime = 10.f)
-		: CoolTime(CoolTime), CoolTimeCount(0.f), bCanExecute(true)
+	FCoolTimeCheckStruct(int32 InRequiredPoint = 0, float InCoolTime = 10.f)
+		: RequiredPoint(InRequiredPoint), CoolTime(InCoolTime), bCanExecute(true), bSkillPointEnough(true)
 	{
 	}
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float CoolTimeCount;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	//float CoolTimeCount;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float CoolTime = 2.f;
+	float CoolTime;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	uint8 bCanExecute : 1 = true;
+	int32 RequiredPoint;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	uint8 bSkillPointEnough : 1 = true;
+	uint8 bCanExecute : 1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	uint8 bSkillPointEnough : 1;
+
 };
-
-UENUM(BlueprintType)
-enum class ESkillAssistant : uint8
-{
-	ESA_HealArea = 0 UMETA(DisplayName = "HealArea"),
-	ESA_ShieldRecovery UMETA(DisplayName = "ShieldRecovery"),
-	ESA_Supporter UMETA(DisplayName = "Supporter"),
-
-	ESA_MAX UMETA(DisplayName = "Default_MAX")
-};
-
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class BLASTER_API USkillComponent : public UActorComponent
@@ -70,6 +63,7 @@ public:
 	FOnSoulCountChangedDelegate OnSoulCountChanged;
 	FOnSkillCoolTimeCheckDelegate OnSkillCoolTimeCheck;
 
+
 	FORCEINLINE int32 GetSkillPoint() const { return SkillPoint; }
 	void SetSkillPoint(int32 InSkillPoint);
 	void AddSkillPoint(int32 InAddAmount);
@@ -78,21 +72,27 @@ public:
 
 	void SkillButtonPressed(int32 InIndex);
 
-	void SkillCast(int32 InIndex);
+	void CastUltimate();
+
+	void SkillCast(ESkillAssistant InSkillAssistant);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastCastEnd(int32 InIndex);
+	void MulticastCastEnd(ESkillAssistant InSkillAssistant);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerSpawnAttributeAssistant(ESkillAssistant InSkillAssistant);
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerSpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
 
+
+	void SkillCoolTimeEnded(const class UWidgetAnimation* InWidgetAnimation);
 private:
 	//////////////////
 	// Owner Settings
 	TWeakObjectPtr<class ACharacterBase> CharacterOwner;
 	///////////////////
+
+
 
 
 	void SpawnAttributeAssistant(ESkillAssistant InSkillAssistant);
@@ -104,23 +104,23 @@ private:
 	void MulticastSpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
 
 	UFUNCTION(Server, Reliable)
-	void ServerProcedure(int32 InIndex);
+	void ServerProcedure(ESkillAssistant InSkillAssistant, class UAnimMontage* InMontage);
 
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AHealArea> HealAreaClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TWeakObjectPtr<class AHealArea> HealArea;
+	TObjectPtr<class AHealArea> HealArea;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AShieldBarrier> ShieldBarrierClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TWeakObjectPtr<class AShieldBarrier> ShieldBarrier;
+	TObjectPtr<class AShieldBarrier> ShieldBarrier;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AEnemyRange> EnemyRangeClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TWeakObjectPtr<class AEnemyRange> EnemyRange;
+	TObjectPtr<class AEnemyRange> EnemyRange;
 
 	UFUNCTION()
 	void OnRep_SkillPoint();
@@ -136,7 +136,10 @@ private:
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TMap<FString, FCoolTimeCheckStruct> CoolTimeMap;
+	TMap<int32, ESkillAssistant> SkillList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TMap<ESkillAssistant, FCoolTimeCheckStruct> CoolTimeMap;
 
 	TArray<bool> SkillButtonPressedChecker;
 
@@ -144,9 +147,11 @@ public:
 	TArray<int32> NeededSkillPoints;
 
 	UFUNCTION()
-	void OnRep_CurrentIndex();
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentIndex)
-	int32 CurrentIndex;
+	void OnRep_CurrentSkill();
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentSkill)
+
+	ESkillAssistant CurrentSkill;
+
 private:
 	void InitForWaiting();
 
@@ -158,4 +163,27 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> SkillCastingMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UAnimMontage> UltimateMontage;
+
+private:
+	void CastUltimateFinished();
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	int32 WeaponMaterialIndex = 4.f;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	int32 UltimateSustainingTime = 10.f;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UMaterial> UltimateWeaponMaterial_Red;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UMaterial> UltimateWeaponMaterial_Blue;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UMaterial> TransparentMaterial;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UNiagaraComponent> UltimateEffectComponent;
 };

@@ -28,6 +28,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetSpBar(float InPercent);
+
+
+	virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
+
+
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UImage> SkillImage0;
@@ -42,12 +47,14 @@ public:
 	TObjectPtr<class UImage> SkillImage3;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UImage> ActiveImage0;
+	TObjectPtr<class UImage> SkillImage4;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UImage> ActiveImage1;
+	TObjectPtr<class UImage> SkillImage5;
+
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UImage> ActiveImage2;
+	TObjectPtr<class UImage> SkillImage6;
+
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim0;
@@ -62,13 +69,13 @@ public:
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim3;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> ActiveCoolTimeAnim0;
+	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim4;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> ActiveCoolTimeAnim1;
+	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim5;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> ActiveCoolTimeAnim2;
+	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim6;
 
 
 	UPROPERTY(meta = (BindWidget), Transient)
@@ -84,13 +91,13 @@ public:
 	TObjectPtr<class UTextBlock> SkillCost3;
 
 	UPROPERTY(meta = (BindWidget), Transient)
-	TObjectPtr<class UTextBlock> ActiveCost0;
+	TObjectPtr<class UTextBlock> SkillCost4;
 
 	UPROPERTY(meta = (BindWidget), Transient)
-	TObjectPtr<class UTextBlock> ActiveCost1;
+	TObjectPtr<class UTextBlock> SkillCost5;
 
 	UPROPERTY(meta = (BindWidget), Transient)
-	TObjectPtr<class UTextBlock> ActiveCost2;
+	TObjectPtr<class UTextBlock> SkillCost6;
 
 	UPROPERTY(meta = (BindWidget), Transient)
 	TObjectPtr<class UTextBlock> SoulCount;

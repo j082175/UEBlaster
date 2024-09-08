@@ -6,6 +6,7 @@
 //#include "Blueprint/UserWidget.h"
 #include "HUD/MyUserWidget.h"
 #include "Item/Pickable/Weapon/Weapon.h"
+#include "BlasterTypes/SkillAssistant.h"
 #include "CharacterOverlay.generated.h"
 
 /**
@@ -43,7 +44,7 @@ public:
 	UFUNCTION()
 	void SetSoulCount(int32 InCount);
 	UFUNCTION()
-	void ShowCoolTimeAnnouncement(int32 InSkillIndex);
+	void ShowCoolTimeAnnouncement(ESkillAssistant InSkillAssistant);
 
 	//void SetCurrentAmmo(int32 InAmmo);
 	//void SetMaxAmmo(int32 InAmmo);
