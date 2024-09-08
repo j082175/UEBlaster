@@ -21,6 +21,7 @@ enum class ECombatState : uint8
 	ECS_RagdollForMulti UMETA(DisplayName = "RagdollForMulti"),
 	ECS_PhysicsRecoverForMulti UMETA(DisplayName = "PhysicsRecoverForMulti"),
 	ECS_SkillCasting UMETA(DisplayName = "SkillCasting"),
+	ECS_UltimateMode UMETA(DisplayName = "UltimateMode"),
 
 	ECS_Dead UMETA(DisplayName = "Dead"),
 

@@ -72,7 +72,8 @@ public:
 
 	void SkillButtonPressed(int32 InIndex);
 
-	void CastUltimate();
+
+	void UltimateCast();
 
 	void SkillCast(ESkillAssistant InSkillAssistant);
 
@@ -160,6 +161,12 @@ private:
 
 	// Anim
 public:
+	UFUNCTION()
+	void OnRep_CurrentMontage();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentMontage)
+	TObjectPtr<class UAnimMontage> CurrentMontage;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> SkillCastingMontage;
 
@@ -167,7 +174,7 @@ public:
 	TObjectPtr<class UAnimMontage> UltimateMontage;
 
 private:
-	void CastUltimateFinished();
+	void UltimateCastFinished();
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 WeaponMaterialIndex = 4.f;
@@ -186,4 +193,13 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UNiagaraComponent> UltimateEffectComponent;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<class AWeapon> TransparentWeaponClass;
+
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class AWeapon> TransparentWeapon;
+
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class AWeapon> TempWeapon;
 };

@@ -38,6 +38,8 @@ enum class EWeaponName : uint8
 	AKS_74U UMETA(DisplayName = "AKS_74U"),
 
 	AI_Pistol UMETA(DisplayName = "AI_Pistol"),
+
+	RailGun UMETA(DisplayName = "RailGun"),
 	MAX UMETA(DisplayName = "MAX")
 
 };

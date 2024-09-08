@@ -13,7 +13,7 @@ void UAnimNotify_CastUltimateFinished::Notify(USkeletalMeshComponent* MeshComp, 
 	{
 		if (USkillComponent* SC = Owner->GetComponentByClass<USkillComponent>())
 		{
-			SC->CastUltimate();
+			SC->UltimateCast();
 		}
 	}
 }

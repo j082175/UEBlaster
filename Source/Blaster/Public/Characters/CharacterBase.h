@@ -810,8 +810,8 @@ public:
 	virtual void EquipWeaponFunc();
 
 protected:
-
 	void EquipWeapon(AWeapon* InWeapon);
+
 
 	bool ShouldSwapWeapons();
 	void SwapWeapons();

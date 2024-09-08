@@ -168,6 +168,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	//}
 
+	UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
 }
 
@@ -793,6 +794,8 @@ void ABlasterCharacter::Interact()
 	//UE_LOG(LogTemp, Display, TEXT("Interact"));
 	if (bDisableGameplay) return;
 	if (bHoldingTheFlag) return;
+	if (CombatState == ECombatState::ECS_UltimateMode) return;
+
 	//if (HasAuthority())
 	//{
 	//	UE_LOG(LogTemp, Display, TEXT("HasAuthority"));
@@ -1608,7 +1611,10 @@ void ABlasterCharacter::EquipWeaponFunc()
 
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
-	InventoryComponent->OnWeaponNameChanged.Broadcast(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
+	if (InventoryComponent && InventoryComponent->GetEquippedWeapon())
+	{
+		InventoryComponent->OnWeaponNameChanged.Broadcast(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
+	}
 	//if (BlasterPlayerController)
 	//{
 	//	BlasterPlayerController->SetHUDWeaponType(InventoryComponent->EquippedWeapon->GetWeaponName());

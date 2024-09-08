@@ -851,6 +851,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 		//	AIController->GetBlackboardComponent()->SetValueAsEnum(E_COMBAT_STATE, (int)CombatState);
 		//}
 
+		if (CombatState == ECombatState::ECS_UltimateMode) return;
 		CombatState = ECombatState::ECS_Unoccupied;
 
 
@@ -875,7 +876,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 		}
 		else if (Montage == AttackMontage)
 		{
-			CombatState = ECombatState::ECS_Unoccupied;
+			if (CombatState != ECombatState::ECS_UltimateMode) CombatState = ECombatState::ECS_Unoccupied;
 			//CrosshairShootingFactor = 0.75f;
 		}
 		else if (CombatState == ECombatState::ECS_SwappingWeapon)
@@ -2304,6 +2305,7 @@ void ACharacterBase::EquipWeaponFunc()
 		AttachActorToRightHand(InventoryComponent->EquippedWeapon);
 		PlayEquipWeaponSound();
 
+		InventoryComponent->EquippedWeapon->SetActorHiddenInGame(false);
 		InventoryComponent->EquippedWeapon->ShowPickupWidget(false);
 		InventoryComponent->EquippedWeapon->EnableCustomDepth(false);
 
@@ -2687,7 +2689,7 @@ void ACharacterBase::LocalFire(bool bPressed, const FVector_NetQuantize& TraceHi
 
 	if (bPressed)
 	{
-		CombatState = ECombatState::ECS_Attacking;
+		if (CombatState != ECombatState::ECS_UltimateMode) CombatState = ECombatState::ECS_Attacking;
 		PlayFireMontage(bIsAiming);
 		Gun->Fire(TraceHitTarget);
 	}
@@ -2737,7 +2739,7 @@ bool ACharacterBase::CanFire()
 
 	if (Gun->IsEmpty()) Reload();
 
-	return !Gun->IsEmpty() && (CombatState == ECombatState::ECS_Unoccupied || CombatState == ECombatState::ECS_HitReact || CombatState == ECombatState::ECS_Attacking);
+	return !Gun->IsEmpty() && (CombatState == ECombatState::ECS_Unoccupied || CombatState == ECombatState::ECS_HitReact || CombatState == ECombatState::ECS_Attacking || CombatState == ECombatState::ECS_UltimateMode);
 }
 
 void ACharacterBase::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)

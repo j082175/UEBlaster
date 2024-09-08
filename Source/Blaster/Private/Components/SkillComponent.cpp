@@ -10,6 +10,8 @@
 #include "Animation/WidgetAnimation.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Components/InventoryComponent.h"
+#include "Item/Pickable/Weapon/Weapon_Gun.h"
 #include "Blaster.h"
 
 // Sets default values for this component's properties
@@ -39,6 +41,12 @@ void USkillComponent::BeginPlay()
 
 	CharacterOwner->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ThisClass::OnPlayMontageNotifyBeginFunc);
 
+	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+	UltimateEffectComponent->AttachToComponent(CharacterOwner->GetMesh(), Rules, TEXT("pelvis"));
+	UltimateEffectComponent->AddRelativeRotation(FRotator(90.f, 0.f, 0.f));
+
+	UltimateEffectComponent->Deactivate();
+
 	// 
 	//if (!CharacterOwner) UE_LOG(LogTemp, Error, TEXT("SkillComponent : Getting Owner Failed!"));
 }
@@ -49,6 +57,7 @@ void USkillComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME(ThisClass, SkillPoint);
 	DOREPLIFETIME(ThisClass, CurrentSkill);
+	DOREPLIFETIME(ThisClass, CurrentMontage);
 
 }
 
@@ -185,21 +194,55 @@ void USkillComponent::SkillCast(ESkillAssistant InSkillAssistant)
 	SpawnAttributeAssistant(InSkillAssistant);
 }
 
-void USkillComponent::CastUltimate()
+void USkillComponent::UltimateCast()
 {
-	if (!CharacterOwner->HasAuthority()) return;
+	CharacterOwner->SetCombatState(ECombatState::ECS_UltimateMode);
 
-	UMaterial* M = CharacterOwner->IGetTeam() == ETeam::ET_RedTeam ? UltimateWeaponMaterial_Red : UltimateWeaponMaterial_Blue;
+	UMaterial* M = TransparentMaterial;
+
+	if (CharacterOwner->IGetTeam() == ETeam::ET_RedTeam)
+	{
+		M = UltimateWeaponMaterial_Red;
+		WeaponMaterialIndex = 4;
+	}
+	else if (CharacterOwner->IGetTeam() == ETeam::ET_BlueTeam)
+	{
+		M = UltimateWeaponMaterial_Blue;
+		WeaponMaterialIndex = 5;
+	}
+
 
 	if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
 
 	FTimerHandle H;
-	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::CastUltimateFinished, UltimateSustainingTime);
+	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinished, UltimateSustainingTime);
 
 	MulticastCastEnd(ESkillAssistant::ESA_Ultimate);
 
-	UltimateEffectComponent->SetActive(true);
-	//UNiagaraFunctionLibrary::SpawnSystemAttached(UltimateEffect, CharacterOwner->GetMesh(), TEXT("pelvis"), CharacterOwner->GetActorLocation(), CharacterOwner->GetActorRotation(), EAttachLocation::KeepWorldPosition, true);
+	UltimateEffectComponent->Activate();
+
+	if (CharacterOwner->HasAuthority())
+	{
+		if (UInventoryComponent* IC = CharacterOwner->GetComponentByClass<UInventoryComponent>())
+		{
+			TransparentWeapon = TransparentWeapon == nullptr ? TransparentWeapon = GetWorld()->SpawnActor<AWeapon>(TransparentWeaponClass) : TransparentWeapon;
+			if (TransparentWeapon)
+			{
+				TransparentWeapon->SetOwner(GetOwner());
+				TransparentWeapon->SetInstigator(CharacterOwner.Get());
+
+				TempWeapon = IC->GetEquippedWeapon();
+				TempWeapon->SetActorHiddenInGame(true);
+
+				IC->SetEquippedWeapon(TransparentWeapon);
+				CharacterOwner->EquipWeaponFunc();
+			}
+		}
+	}
+
+
+
+
 }
 
 void USkillComponent::SkillCoolTimeEnded(const UWidgetAnimation* InWidgetAnimation)
@@ -330,7 +373,9 @@ void USkillComponent::SpawnAttributeAssistantDetach(ESkillAssistant InSkillAssis
 
 void USkillComponent::ServerProcedure_Implementation(ESkillAssistant InSkillAssistant, UAnimMontage* InMontage)
 {
-	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(InMontage);
+	CurrentMontage = InMontage;
+
+	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(CurrentMontage);
 	CharacterOwner->SetCombatState(ECombatState::ECS_SkillCasting);
 	CurrentSkill = InSkillAssistant;
 }
@@ -409,18 +454,24 @@ void USkillComponent::InitializeCoolTimeMap()
 
 void USkillComponent::OnRep_CurrentSkill()
 {
-	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(SkillCastingMontage);
 }
 
 void USkillComponent::InitForWaiting()
 {
 	if (!IsSkillCostChangedBroadcasted && OnSkillCostChanged.IsBound() && OnSoulCountChanged.IsBound())
 	{
-		for (size_t i = 0; i < NeededSkillPoints.Num(); i++)
-		{
-			OnSkillCostChanged.Broadcast(i, FString::FromInt(NeededSkillPoints[i]));
 
+		for (const auto& i : CoolTimeMap)
+		{
+			OnSkillCostChanged.Broadcast(*SkillList.FindKey(i.Key), FString::FromInt(i.Value.RequiredPoint));
 		}
+
+
+
+		//for (size_t i = 0; i < NeededSkillPoints.Num(); i++)
+		//{
+		//	OnSkillCostChanged.Broadcast(i, FString::FromInt(NeededSkillPoints[i]));
+		//}
 
 		OnSoulCountChanged.Broadcast(SkillPoint);
 
@@ -428,9 +479,23 @@ void USkillComponent::InitForWaiting()
 	}
 }
 
-void USkillComponent::CastUltimateFinished()
+void USkillComponent::OnRep_CurrentMontage()
+{
+	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(CurrentMontage);
+}
+
+void USkillComponent::UltimateCastFinished()
 {
 	CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, TransparentMaterial);
 	CharacterOwner->SetCombatState(ECombatState::ECS_Unoccupied);
-	UltimateEffectComponent->SetActive(false);
+	UltimateEffectComponent->Deactivate();
+
+	if (UInventoryComponent* IC = CharacterOwner->GetComponentByClass<UInventoryComponent>())
+	{
+		IC->SetEquippedWeapon(TempWeapon);
+		CharacterOwner->EquipWeaponFunc();
+		CharacterOwner->Fire(false);
+	}
+
+	//UltimateEffect->activate
 }
