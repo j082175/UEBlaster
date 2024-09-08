@@ -72,11 +72,17 @@ public:
 
 
 	void SetHUDAmmo();
+	virtual void SetHUD() override;
+
 	virtual void Dropped() override;
 
 	UFUNCTION(BlueprintCallable)
 	void EjectCasing();
 
+
+
+	// Interfaces
+	virtual void IBindWidget(class UUserWidget* InUserWidget) override;
 
 
 protected:

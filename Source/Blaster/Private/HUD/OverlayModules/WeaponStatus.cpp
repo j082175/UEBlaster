@@ -34,6 +34,9 @@ void UWeaponStatus::SetName(UTextBlock* InTextBlock, const FString& InName)
 
 void UWeaponStatus::SetCurrentAmmo(int32 InAmmo)
 {
+	//UE_LOG(LogTemp, Display, TEXT("UWeaponStatus::SetCurrentAmmo : %d"), InAmmo);
+
+
 	CurrentAmmo->SetText(FText::FromString(FString::FromInt(InAmmo)));
 }
 

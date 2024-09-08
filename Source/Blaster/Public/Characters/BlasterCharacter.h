@@ -83,8 +83,6 @@ protected:
 	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	// Interfaces
-public:
-	virtual void IBindWidget(class UUserWidget* InUserWidget) override;
 private:
 	virtual void IGetItem(class AItem* InItem) override;
 
@@ -202,8 +200,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class UWeaponHUDComponent> WeaponHUDComponent;
+
 
 
 	UPROPERTY(Replicated)

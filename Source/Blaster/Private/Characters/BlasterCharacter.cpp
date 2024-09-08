@@ -17,7 +17,6 @@
 #include "Components/SkillComponent.h"
 #include "Components/InventoryComponent.h"
 #include "HUD/OverheadWidgetComponent.h"
-#include "Components/WeaponHUDComponent.h"
 
 // EnhancedInput
 #include "EnhancedInputSubsystems.h"
@@ -85,7 +84,6 @@ ABlasterCharacter::ABlasterCharacter()
 	BuffComponent = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
 	DissolveTimelineComponent = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 	AttachedGrenade = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttachedGrenade"));
-	WeaponHUDComponent = CreateDefaultSubobject<UWeaponHUDComponent>(TEXT("WeaponHUDComponent"));
 
 
 
@@ -226,14 +224,7 @@ void ABlasterCharacter::BeginPlay()
 
 	SpawnDefaultWeapon();
 
-	if (IsLocallyControlled())
-	{
-		WeaponHUDComponent->SetVisibility(true);
-	}
-	else
-	{
-		WeaponHUDComponent->SetVisibility(false);
-	}
+
 
 	//FTimerHandle H;
 	//GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
@@ -489,7 +480,6 @@ void ABlasterCharacter::InitializeDefaults()
 	AttachedGrenade->SetupAttachment(GetMesh(), TEXT("GrenadeSocket"));
 	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	WeaponHUDComponent->SetupAttachment(GetRootComponent());
 
 	// Hit boxes for server-side rewind
 	//head = CreateDefaultSubobject<UBoxComponent>(TEXT("head"));
@@ -646,31 +636,6 @@ void ABlasterCharacter::IGetItem(AItem* InWeapon)
 	}
 
 	OverlappingWeapon = Cast<AWeapon>(InWeapon);
-}
-
-void ABlasterCharacter::IBindWidget(UUserWidget* InUserWidget)
-{
-	Super::IBindWidget(InUserWidget);
-
-	if (UWeaponStatus* CO = Cast<UWeaponStatus>(InUserWidget))
-	{
-		InventoryComponent->OnCurrentAmmoChanged.BindUObject(CO, &UWeaponStatus::SetCurrentAmmo);
-		InventoryComponent->OnCarriedAmmoChanged.BindUObject(CO, &UWeaponStatus::SetMaxAmmo);
-		InventoryComponent->OnGrenadeCountChanged.BindUObject(CO, &UWeaponStatus::SetGrenadeNum);
-		InventoryComponent->OnWeaponNameChanged.BindUObject(CO, &UWeaponStatus::SetWeaponName);
-
-		if (InventoryComponent->GetEquippedWeapon())
-		{
-			InventoryComponent->OnWeaponNameChanged.ExecuteIfBound(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
-			InventoryComponent->OnCurrentAmmoChanged.ExecuteIfBound(Cast<AWeapon_Gun>(InventoryComponent->GetEquippedWeapon())->GetAmmo());
-			InventoryComponent->OnCarriedAmmoChanged.ExecuteIfBound(InventoryComponent->CarriedAmmo);
-		}
-	}
-
-
-
-
-
 }
 
 // Called to bind functionality to input
@@ -1640,7 +1605,7 @@ void ABlasterCharacter::EquipWeaponFunc()
 
 	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
 
-	InventoryComponent->OnWeaponNameChanged.ExecuteIfBound(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
+	InventoryComponent->OnWeaponNameChanged.Broadcast(InventoryComponent->GetEquippedWeapon()->GetWeaponName());
 	//if (BlasterPlayerController)
 	//{
 	//	BlasterPlayerController->SetHUDWeaponType(InventoryComponent->EquippedWeapon->GetWeaponName());

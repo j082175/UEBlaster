@@ -17,6 +17,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InventoryComponent.h"
+#include "Components/WeaponHUDComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Blaster/Blaster.h"
 
 // Niagara
@@ -76,6 +78,8 @@ AWeapon_Gun::AWeapon_Gun()
 	AdditionalSphereRadius = SphereRadius;
 
 	DefaultRecoilYaw = FMath::Abs(DefaultRecoilPitch);
+
+	WeaponHUDComponent->SetupAttachment(WeaponSKMesh, TEXT("AmmoEject"));
 }
 
 void AWeapon_Gun::PostInitializeComponents()
@@ -243,7 +247,7 @@ void AWeapon_Gun::SetHUDAmmo()
 
 		if (IC)
 		{
-			IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo);
+			IC->OnCurrentAmmoChanged.Broadcast(Ammo);
 		}
 	}
 
@@ -258,9 +262,9 @@ void AWeapon_Gun::SetHUDAmmo()
 
 	//if (IC)
 	//{
-	//	IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo);
+	//	IC->OnCurrentAmmoChanged.Broadcast(Ammo);
 	//}
-	//if (IC && IC->OnCurrentAmmoChanged.ExecuteIfBound(Ammo))
+	//if (IC && IC->OnCurrentAmmoChanged.Broadcast(Ammo))
 	//{
 	//}
 	//else
@@ -272,6 +276,21 @@ void AWeapon_Gun::SetHUDAmmo()
 	//		GetWorldTimerManager().SetTimer(Timerhandle, this, &ThisClass::SetHUDAmmo, 0.1f);
 	//	}
 	//}
+}
+
+void AWeapon_Gun::SetHUD()
+{
+	Super::SetHUD();
+
+	if (BlasterOwnerCharacter && BlasterOwnerCharacter->IsLocallyControlled())
+	{
+		OwnerInventory = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
+		if (OwnerInventory.IsValid())
+		{
+			OwnerInventory->OnCurrentAmmoChanged.Broadcast(GetAmmo());
+			OwnerInventory->OnCarriedAmmoChanged.Broadcast(OwnerInventory->GetCarriedAmmo());
+		}
+	}
 }
 
 void AWeapon_Gun::Dropped()
@@ -311,6 +330,16 @@ void AWeapon_Gun::EjectCasing()
 				}
 			}
 		}
+	}
+}
+
+void AWeapon_Gun::IBindWidget(UUserWidget* InUserWidget)
+{
+	Super::IBindWidget(InUserWidget);
+
+	if (OwnerInventory.IsValid() && OwnerInventory->GetEquippedWeapon())
+	{
+		OwnerInventory->OnCurrentAmmoChanged.Broadcast(Cast<AWeapon_Gun>(OwnerInventory->GetEquippedWeapon())->GetAmmo());
 	}
 }
 

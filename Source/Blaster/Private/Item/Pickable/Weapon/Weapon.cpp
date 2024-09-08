@@ -9,6 +9,9 @@
 
 #include "Net/UnrealNetwork.h"
 
+#include "Components/WeaponHUDComponent.h"
+#include "HUD/OverlayModules/WeaponStatus.h"
+#include "Components/InventoryComponent.h"
 
 #include "Characters/BlasterCharacter.h"
 #include "PlayerController/BlasterPlayerController.h"
@@ -25,6 +28,9 @@ AWeapon::AWeapon()
 	FieldSystemComponent = CreateDefaultSubobject<UFieldSystemComponent>(TEXT("FieldSystemComponent"));
 	ensure(FieldSystemComponent);
 	FieldSystemComponent->SetupAttachment(RootComponent);
+
+	WeaponHUDComponent = CreateDefaultSubobject<UWeaponHUDComponent>(TEXT("WeaponHUDComponent"));
+
 
 	//OverlapCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 	//ensure(OverlapCapsule);
@@ -52,6 +58,15 @@ void AWeapon::BeginPlay()
 		PickupWidget->SetVisibility(false);
 	}
 
+	if (BlasterOwnerCharacter && BlasterOwnerCharacter->IsLocallyControlled())
+	{
+		WeaponHUDComponent->SetVisibility(true);
+	}
+	else
+	{
+		WeaponHUDComponent->SetVisibility(false);
+	}
+
 	NullChecker(FieldSystemComponent, TEXT("FieldSystemComponent"), GetName());
 }
 
@@ -67,6 +82,34 @@ void AWeapon::OnRep_Owner()
 	Super::OnRep_Owner();
 	
 	
+}
+
+void AWeapon::SetHUDVisibility(bool IsVisible)
+{
+	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
+
+	if (BlasterOwnerCharacter && BlasterOwnerCharacter->IsLocallyControlled())
+	{
+		WeaponHUDComponent->SetVisibility(IsVisible);
+	}
+}
+
+void AWeapon::SetHUD()
+{
+	//UE_LOG(LogTemp, Display, TEXT("SetHUD"));
+	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
+
+	BindInit();
+
+	if (BlasterOwnerCharacter && BlasterOwnerCharacter->IsLocallyControlled())
+	{
+		OwnerInventory = BlasterOwnerCharacter->GetComponentByClass<UInventoryComponent>();
+		if (OwnerInventory.IsValid())
+		{
+			OwnerInventory->OnWeaponNameChanged.Broadcast(GetWeaponName());
+			OwnerInventory->OnGrenadeCountChanged.Broadcast(OwnerInventory->GetGrenades());
+		}
+	}
 }
 
 void AWeapon::ItemAttachToComponent(USceneComponent* SceneComponent, FAttachmentTransformRules& AttachmentRules, FName InSocketName)
@@ -117,7 +160,7 @@ void AWeapon::ItemDetachToComponent(FDetachmentTransformRules& DetachmentRules)
 void AWeapon::Dropped()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Dropped"));
-
+	SetHUDVisibility(false);
 }
 
 void AWeapon::OnPingTooHigh(bool bPingTooHigh)
@@ -237,6 +280,33 @@ void AWeapon::OnEquippedSecondary()
 void AWeapon::EnableCustomDepth(bool bEnable)
 {
 
+}
+
+void AWeapon::BindInit()
+{
+	IBindWidget(WeaponHUDComponent->GetWidget());
+}
+
+void AWeapon::IBindWidget(UUserWidget* InUserWidget)
+{
+	if (UWeaponStatus* CO = Cast<UWeaponStatus>(InUserWidget))
+	{
+		if (!GetOwner()) return;
+
+		OwnerInventory = GetOwner()->GetComponentByClass<UInventoryComponent>();
+		if (!OwnerInventory.IsValid()) return;
+
+		OwnerInventory->OnCurrentAmmoChanged.AddUObject(CO, &UWeaponStatus::SetCurrentAmmo);
+		OwnerInventory->OnCarriedAmmoChanged.AddUObject(CO, &UWeaponStatus::SetMaxAmmo);
+		OwnerInventory->OnGrenadeCountChanged.AddUObject(CO, &UWeaponStatus::SetGrenadeNum);
+		OwnerInventory->OnWeaponNameChanged.AddUObject(CO, &UWeaponStatus::SetWeaponName);
+
+		if (OwnerInventory->GetEquippedWeapon())
+		{
+			OwnerInventory->OnWeaponNameChanged.Broadcast(OwnerInventory->GetEquippedWeapon()->GetWeaponName());
+			OwnerInventory->OnCarriedAmmoChanged.Broadcast(OwnerInventory->CarriedAmmo);
+		}
+	}
 }
 
 void AWeapon::InitializeCollisionStates()

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Item/Pickable/Pickable.h"
 #include "Item/Pickable/Weapon/WeaponTypes.h"
+#include "Interfaces/WidgetBindDelegateInterface.h"
 #include "Weapon.generated.h"
 
 
@@ -23,7 +24,7 @@ enum class EWeaponState : uint8
  */
 
 UCLASS()
-class BLASTER_API AWeapon : public APickable
+class BLASTER_API AWeapon : public APickable, public IWidgetBindDelegateInterface
 {
 	GENERATED_BODY()
 public:
@@ -40,6 +41,9 @@ public:
 	FORCEINLINE class USoundCue* GetTakeSound() { return PickupSound; }
 	FORCEINLINE EWeaponName GetWeaponName() const { return WeaponName; }
 
+	void SetHUDVisibility(bool IsVisible);
+	virtual void SetHUD();
+
 	virtual void ItemAttachToComponent(USceneComponent* SceneComponent, FAttachmentTransformRules& AttachmentRules, FName InSocketName);
 	virtual void ItemDetachToComponent(FDetachmentTransformRules& DetachmentRules);
 
@@ -48,6 +52,12 @@ public:
 
 	bool bDestroyWeapon = false;
 
+	void BindInit();
+	// Interfaces
+	virtual void IBindWidget(class UUserWidget* InUserWidget) override;
+
+
+	TWeakObjectPtr<class UInventoryComponent> OwnerInventory;
 protected:
 	virtual void InitializeCollisionStates();
 
@@ -57,9 +67,11 @@ protected:
 	UPROPERTY()
 	class ABlasterPlayerController* BlasterOwnerController;
 
-	// components
+	 //components
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
 	//TObjectPtr<class UCapsuleComponent> OverlapCapsule;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UWeaponHUDComponent> WeaponHUDComponent;
 
 
 protected:

@@ -15,8 +15,11 @@ class BLASTER_API UWeaponHUDComponent : public UMyWidgetComponent
 	GENERATED_BODY()
 public:
 	UWeaponHUDComponent();
+	virtual void PostLoad() override;
+	virtual void InitWidget() override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-
+	
 
 private:
 	UPROPERTY(VisibleAnywhere)

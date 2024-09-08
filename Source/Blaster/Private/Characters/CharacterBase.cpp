@@ -2223,9 +2223,14 @@ void ACharacterBase::SpawnDefaultWeapon()
 	UWorld* World = GetWorld();
 	if (BlasterGameMode && World && !bIsElimmed && DefaultWeaponClass)
 	{
-		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);
+		AWeapon* StartingWeapon = World->SpawnActorDeferred<AWeapon>(DefaultWeaponClass, GetTransform());
 
 		StartingWeapon->bDestroyWeapon = true;
+		StartingWeapon->SetOwner(this);
+		StartingWeapon->SetInstigator(this);
+
+		StartingWeapon->FinishSpawning(GetTransform());
+
 		EquipWeapon(StartingWeapon);
 	}
 }
@@ -2285,6 +2290,8 @@ void ACharacterBase::EquipWeaponFunc()
 {
 	if (InventoryComponent->EquippedWeapon)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Equip"));
+
 		bUseControllerRotationYaw = true;
 		//GetCharacterMovement()->bOrientRotationToMovement = false;
 		//bUseControllerRotationYaw = true;
@@ -2302,6 +2309,9 @@ void ACharacterBase::EquipWeaponFunc()
 
 		InventoryComponent->EquippedWeapon->SetOwner(this);
 		InventoryComponent->EquippedWeapon->SetInstigator(this);
+		InventoryComponent->EquippedWeapon->SetHUDVisibility(true);
+		InventoryComponent->EquippedWeapon->SetHUD();
+
 		if (AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon)) Gun->SetHUDAmmo();
 		InventoryComponent->UpdateCarriedAmmo();
 		ReloadEmptyWeapon();
@@ -3192,7 +3202,7 @@ void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantiz
 			AProjectileGrenade* Grenade = World->SpawnActor<AProjectileGrenade>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParams);
 			Grenade->SetReplicates(true);
 
-			InventoryComponent->OnGrenadeCountChanged.ExecuteIfBound(InventoryComponent->GetGrenades());
+			InventoryComponent->OnGrenadeCountChanged.Broadcast(InventoryComponent->GetGrenades());
 			//AProjectileGrenade* Grenade = Cast<AProjectileGrenade>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(T, GrenadeClass));
 			//if (Grenade)
 			//{

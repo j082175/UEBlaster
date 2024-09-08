@@ -79,7 +79,7 @@ void UInventoryComponent::SubtractCarriedAmmoMap(EWeaponType InWeaponType, int32
 	if (CarriedAmmoMap.Contains(InWeaponType))
 	{
 		CarriedAmmoMap[InWeaponType] -= InDecreaseAmount;
-		OnCarriedAmmoChanged.ExecuteIfBound(CarriedAmmoMap[InWeaponType]);
+		OnCarriedAmmoChanged.Broadcast(CarriedAmmoMap[InWeaponType]);
 	}
 }
 
@@ -101,7 +101,7 @@ void UInventoryComponent::UpdateCarriedAmmo()
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
-		OnCarriedAmmoChanged.ExecuteIfBound(CarriedAmmo);
+		OnCarriedAmmoChanged.Broadcast(CarriedAmmo);
 
 	}
 }
@@ -120,7 +120,7 @@ void UInventoryComponent::OnRep_SecondaryWeapon()
 
 void UInventoryComponent::OnRep_Grenades()
 {
-	OnGrenadeCountChanged.ExecuteIfBound(GetGrenades());
+	OnGrenadeCountChanged.Broadcast(GetGrenades());
 }
 
 void UInventoryComponent::OnRep_CarriedAmmo()
@@ -131,7 +131,7 @@ void UInventoryComponent::OnRep_CarriedAmmo()
 		OwingCharacter->JumpToShotgunEnd();
 	}
 
-	OnCarriedAmmoChanged.ExecuteIfBound(CarriedAmmo);
+	OnCarriedAmmoChanged.Broadcast(CarriedAmmo);
 
 	//UpdateCarriedAmmo();
 }
@@ -150,8 +150,11 @@ void UInventoryComponent::InitFunc()
 		return;
 	}
 
-	if (OnCarriedAmmoChanged.ExecuteIfBound(CarriedAmmo) && OnGrenadeCountChanged.ExecuteIfBound(Grenades))
+	if (OnCarriedAmmoChanged.IsBound() && OnGrenadeCountChanged.IsBound())
 	{
+		OnCarriedAmmoChanged.Broadcast(CarriedAmmo);
+		OnGrenadeCountChanged.Broadcast(Grenades);
+
 		GetWorld()->GetTimerManager().ClearTimer(InitTimer);
 		InitTimer.Invalidate();
 	}

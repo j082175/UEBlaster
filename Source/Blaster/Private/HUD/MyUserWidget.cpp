@@ -57,6 +57,10 @@ void UMyUserWidget::PollInitFunc()
 			GetWorld()->GetTimerManager().ClearTimer(InitializeTimerHandle);
 			InitializeTimerHandle.Invalidate();
 		}
+		else
+		{
+			UE_LOG(LogTemp, Display, TEXT("Finding OwingActor"));
+		}
 	}
 	else
 	{

@@ -10,13 +10,15 @@ UMyWidgetComponent::UMyWidgetComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	PrimaryComponentTick.TickInterval = 0.1f;
+
+
+	SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void UMyWidgetComponent::PostLoad()
 {
 	Super::PostLoad();
 
-	SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void UMyWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

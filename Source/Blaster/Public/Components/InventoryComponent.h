@@ -7,10 +7,10 @@
 #include "Item/Pickable/Weapon/WeaponTypes.h"
 #include "InventoryComponent.generated.h"
 
-DECLARE_DELEGATE_OneParam(FOnCurrentAmmoChangedDelegate, int32 /*InAmmo*/);
-DECLARE_DELEGATE_OneParam(FOnCarriedAmmoChangedDelegate, int32);
-DECLARE_DELEGATE_OneParam(FOnGrenadeCountChangedDelegate, int32);
-DECLARE_DELEGATE_OneParam(FOnWeaponNameChangedDelegate, EWeaponName);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCurrentAmmoChangedDelegate, int32 /*InAmmo*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCarriedAmmoChangedDelegate, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGrenadeCountChangedDelegate, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponNameChangedDelegate, EWeaponName);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
