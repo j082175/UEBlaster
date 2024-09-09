@@ -93,6 +93,9 @@ protected:
 	virtual void OnDropped() override;
 	virtual void OnEquippedSecondary() override;
 
+private:
+	void InitData();
+
 	// Else ETC.
 public:
 	UPROPERTY(EditAnywhere)

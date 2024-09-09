@@ -38,6 +38,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UChatViewer> ChatViewerClass;
 private:
+	void SwitchOnChatViewer();
 
 	UPROPERTY()
 	APlayerController* OwningController;

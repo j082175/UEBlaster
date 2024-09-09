@@ -56,25 +56,25 @@ public:
 	TObjectPtr<class UImage> SkillImage6;
 
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim0;
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim1;
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim2;
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim3;
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim4;
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim5;
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
 	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim6;
 
 

@@ -67,26 +67,8 @@ FReply UChatBox::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyE
 		FInputModeGameOnly InputModeGameOnly;
 		if (GetOwningPlayer()) GetOwningPlayer()->SetInputMode(InputModeGameOnly);
 
-		
-		GetWorld()->GetTimerManager().ClearTimer(ChatViewerReleaseTimerHandle);
-		ChatViewerReleaseTimerHandle.Invalidate();
+		SwitchOnChatViewer();
 
-		if (!ChatViewerReleaseTimerHandle.IsValid())
-		{
-			//UE_LOG(LogTemp, Display, TEXT("Set ReleaseTimer"));
-		    GetWorld()->GetTimerManager().SetTimer(ChatViewerReleaseTimerHandle, FTimerDelegate::CreateLambda([&]()
-		        {
-		            //UE_LOG(LogTemp, Display, TEXT("Chatbox Disabled"));
-		            ChatViewer->SetVisibility(ESlateVisibility::Collapsed);
-		            FInputModeGameOnly InputModeGameOnly;
-		            if (GetOwningPlayer()) GetOwningPlayer()->SetInputMode(InputModeGameOnly);
-		            ChatViewerReleaseTimerHandle.Invalidate();
-		        }), ChatViewerReleaseTime, false);
-		}
-
-
-
-		
 
 		//Result = FReply::Handled().ClearUserFocus();
 	}
@@ -138,6 +120,10 @@ void UChatBox::OnTextCommitted(const FText& Text, const FString& PlayerName)
 		{
 			if (!ChatViewer->IsInViewport()) ChatViewer->AddToViewport();
 
+
+			SwitchOnChatViewer();
+
+
 			int32 LastIndex = ChatViewer->ChatTextBlocks.Num();
 
 			UChatTextBlock* ChatTextBlock = CreateWidget<UChatTextBlock>(GetOwningPlayer(), ChatTextBlockClass);
@@ -153,4 +139,24 @@ void UChatBox::OnTextCommitted(const FText& Text, const FString& PlayerName)
 		}
 	}
 	ChatInput->SetText(FText::FromString(""));
+}
+
+void UChatBox::SwitchOnChatViewer()
+{
+	ChatViewer->SetVisibility(ESlateVisibility::Visible);
+	GetWorld()->GetTimerManager().ClearTimer(ChatViewerReleaseTimerHandle);
+	ChatViewerReleaseTimerHandle.Invalidate();
+
+	if (!ChatViewerReleaseTimerHandle.IsValid())
+	{
+		//UE_LOG(LogTemp, Display, TEXT("Set ReleaseTimer"));
+		GetWorld()->GetTimerManager().SetTimer(ChatViewerReleaseTimerHandle, FTimerDelegate::CreateLambda([&]()
+			{
+				//UE_LOG(LogTemp, Display, TEXT("Chatbox Disabled"));
+				ChatViewer->SetVisibility(ESlateVisibility::Collapsed);
+				FInputModeGameOnly InputModeGameOnly;
+				if (GetOwningPlayer()) GetOwningPlayer()->SetInputMode(InputModeGameOnly);
+				ChatViewerReleaseTimerHandle.Invalidate();
+			}), ChatViewerReleaseTime, false);
+	}
 }

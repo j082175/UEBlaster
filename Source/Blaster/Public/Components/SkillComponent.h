@@ -86,6 +86,7 @@ public:
 	void ServerSpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
 
 
+
 	void SkillCoolTimeEnded(const class UWidgetAnimation* InWidgetAnimation);
 private:
 	//////////////////

@@ -49,6 +49,7 @@ UWidgetAnimation* WidgetAnimHelper::StartAnimation(const FString& InPrefix, cons
 		{
 			InUserWidget->StopAnimation(WidgetAnimation);
 			InUserWidget->PlayAnimation(WidgetAnimation, 0.f, 1, EUMGSequencePlayMode::Forward, 1.f / InPlaybackSpeed);
+
 			return WidgetAnimation;
 		}
 

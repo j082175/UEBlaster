@@ -135,6 +135,7 @@ void AWeapon_Gun::BeginPlay()
 	//	FireDelay = 0.001f;
 	//}
 	SetHUDAmmo();
+
 }
 
 void AWeapon_Gun::OnRep_Owner()
@@ -166,20 +167,7 @@ void AWeapon_Gun::PostLoad()
 {
 	Super::PostLoad();
 
-	if (GetWeaponName() == EWeaponName::AI_Pistol) return;
-
-	UDataSingleton& DataSingleton = UDataSingleton::Get();
-	FWeaponData WeaponData = DataSingleton.GetWeaponName(GetWeaponName());
-
-	Damage = WeaponData.BodyDamage;
-	HeadShotDamage = WeaponData.HeadDamage;
-	PitchRange = WeaponData.RecoilPitch;
-	YawRange = WeaponData.RecoilYaw;
-	//
-	FireDelay = WeaponData.FireDelay;
-	MagCapacity = WeaponData.MagCapacity;
-	Ammo = MagCapacity;
-
+	InitData();
 }
 
 #if WITH_EDITOR
@@ -432,6 +420,23 @@ void AWeapon_Gun::OnEquippedSecondary()
 		WeaponSKMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_TAN);
 		WeaponSKMesh->MarkRenderStateDirty();
 	}
+}
+
+void AWeapon_Gun::InitData()
+{
+	if (GetWeaponName() == EWeaponName::AI_Pistol) return;
+
+	UDataSingleton& DataSingleton = UDataSingleton::Get();
+	FWeaponData WeaponData = DataSingleton.GetWeaponName(GetWeaponName());
+
+	Damage = WeaponData.BodyDamage;
+	HeadShotDamage = WeaponData.HeadDamage;
+	PitchRange = WeaponData.RecoilPitch;
+	YawRange = WeaponData.RecoilYaw;
+	//
+	FireDelay = WeaponData.FireDelay;
+	MagCapacity = WeaponData.MagCapacity;
+	Ammo = MagCapacity;
 }
 
 //void AWeapon_Gun::ShowPickupWidget(bool bShowWidget)

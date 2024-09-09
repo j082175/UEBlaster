@@ -100,7 +100,7 @@ void UChatSystemComponent::OpenChatBox()
 
 void UChatSystemComponent::OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod)
 {
-	UE_LOG(LogTemp, Error, TEXT("OnChatCommittedFunc : %s"), *UEnum::GetDisplayValueAsText(CommitMethod).ToString());
+	//UE_LOG(LogTemp, Error, TEXT("OnChatCommittedFunc : %s"), *UEnum::GetDisplayValueAsText(CommitMethod).ToString());
 
 	if (CommitMethod == ETextCommit::OnCleared || CommitMethod == ETextCommit::OnUserMovedFocus)
 	{
