@@ -13,12 +13,13 @@ UMyWidgetComponent::UMyWidgetComponent()
 
 
 	SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	bDrawAtDesiredSize = true;
 }
 
 void UMyWidgetComponent::PostLoad()
 {
 	Super::PostLoad();
-
+	
 }
 
 void UMyWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

@@ -199,6 +199,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UInventoryComponent> InventoryComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UReceiveDamageHUDComponent> ReceiveDamageHUDComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class USphereComponent> DamageHUDAxisComponent;
+
 	// Sounds
 protected:
 	void PlayEquipWeaponSound();
@@ -949,5 +955,5 @@ protected:
 	TObjectPtr<class UOverheadWidgetComponent> OverheadWidgetComponent;
 
 
-
+	FLinearColor ReceiveDamageColor;
 };

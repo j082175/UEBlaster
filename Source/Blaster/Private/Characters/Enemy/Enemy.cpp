@@ -279,28 +279,7 @@ void AEnemy::InitializeDefaults()
 
 void AEnemy::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult)
 {
-	CharacterHitPoint = InHitPoint;
-
-	CalculateHitDirection(InHitPoint);
-
-	if (HitSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
-	}
-
-	if (BloodEffect)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodEffect, CharacterHitPoint);
-	}
-
-
-	if (bIsElimmed)
-		return SetDead();
-
-
-	if (CombatState == ECombatState::ECS_Dodging || CombatState == ECombatState::ECS_VaultOrMantle) return;
-
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	Super::IGetHit(InHitPoint, InHitResult);
 
 	float Rand = FMath::RandRange(0.f, 1.f);
 	if (Rand < 0.1f)

@@ -25,6 +25,8 @@
 #include "Components/ObjectPoolComponent.h"
 #include "Components/SkillComponent.h"
 #include "Components/InventoryComponent.h"
+#include "Components/ReceiveDamageHUDComponent.h"
+#include "Components/SphereComponent.h"
 #include "HUD/OverheadWidgetComponent.h"
 
 // Interfaces
@@ -143,6 +145,15 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 	OverheadWidgetComponent = CreateDefaultSubobject<UOverheadWidgetComponent>(TEXT("OverheadWidgetComponent"));
 	OverheadWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	DamageHUDAxisComponent = CreateDefaultSubobject<USphereComponent>(TEXT("DamageHUDAxisComponent"));
+	DamageHUDAxisComponent->SetupAttachment(GetRootComponent());
+	DamageHUDAxisComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	ReceiveDamageHUDComponent = CreateDefaultSubobject<UReceiveDamageHUDComponent>(TEXT("ReceiveDamageHUDComponent"));
+	ReceiveDamageHUDComponent->SetupAttachment(DamageHUDAxisComponent);
+	ReceiveDamageHUDComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
 	//UE_LOG(LogTemp, Display, TEXT("Base Constructor"));
 
 	InitializeCollisionStates();
@@ -226,7 +237,8 @@ void ACharacterBase::BeginPlay()
 #endif // WITH_EDITOR
 
 
-
+	FAttachmentTransformRules Rules(EAttachmentRule::KeepRelative, true);
+	ReceiveDamageHUDComponent->AttachToComponent(DamageHUDAxisComponent, Rules);
 }
 
 void ACharacterBase::PossessedBy(AController* NewController)
@@ -317,8 +329,13 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ACharacterBase::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult)
 {
+	//UE_LOG(LogTemp, Display, TEXT("IGetHit"));
+
 	//DrawDebugSphere(GetWorld(), CharacterHitPoint, 10.f, 12, FColor::Cyan, false, 5.f);
 	//EnemyAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
+
+	ReceiveDamageColor = InHitResult.BoneName == TEXT("head") ? FLinearColor::Red : FLinearColor(0.f, 1.f, 1.f);
+	//ReceiveDamageColor
 
 	CharacterHitPoint = InHitPoint;
 
@@ -426,6 +443,7 @@ bool ACharacterBase::ICheckParry(AActor* OtherActor)
 
 void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
+	//UE_LOG(LogTemp, Display, TEXT("ReceiveDamage"));
 
 	ITeamInterface* T1 = Cast<ITeamInterface>(InstigatorController->GetPawn());
 	if (T1->IGetTeam() == IGetTeam() && Cast<UDamageType_Projectile>(DamageType))
@@ -443,6 +461,9 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 
 	LastDamageCauser = DamageCauser;
+
+	ReceiveDamageHUDComponent->MulticastSetDamageInfo(Damage, InstigatorController, ReceiveDamageColor);
+
 
 
 
@@ -2359,7 +2380,7 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 
 	if (InWeapon->GetWeaponType() == EWeaponType::EWT_Flag)
 	{
-		
+
 		AFlag* ExistingFlag = InventoryComponent->GetFlag();
 		if (ExistingFlag) ExistingFlag->Drop();
 		AFlag* F = Cast<AFlag>(InWeapon);
@@ -2379,23 +2400,23 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 	}
 
 
-	
-		else if (InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->SecondaryWeapon == nullptr) // Only Equipped One Weapon
-		{
-			InventoryComponent->SecondaryWeapon = InWeapon;
-			EquipSecondaryFunc();
-		}
-		else // First Slot and Secondary Slot is all full
-		{
-			//UE_LOG(LogTemp, Display, TEXT("EquipWeapon"));
-			DropEquippedWeapon();
-			InventoryComponent->EquippedWeapon = InWeapon;
-			EquipWeaponFunc();
-		}
 
-		if (GetCharacterMovement()) GetCharacterMovement()->bOrientRotationToMovement = false;
-		bUseControllerRotationYaw = true;
-	
+	else if (InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->SecondaryWeapon == nullptr) // Only Equipped One Weapon
+	{
+		InventoryComponent->SecondaryWeapon = InWeapon;
+		EquipSecondaryFunc();
+	}
+	else // First Slot and Secondary Slot is all full
+	{
+		//UE_LOG(LogTemp, Display, TEXT("EquipWeapon"));
+		DropEquippedWeapon();
+		InventoryComponent->EquippedWeapon = InWeapon;
+		EquipWeaponFunc();
+	}
+
+	if (GetCharacterMovement()) GetCharacterMovement()->bOrientRotationToMovement = false;
+	bUseControllerRotationYaw = true;
+
 
 	AnimState = EAnimState::EAS_Equipped;
 	bIsAiming = false;
