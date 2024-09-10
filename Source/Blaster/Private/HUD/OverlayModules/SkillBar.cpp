@@ -10,6 +10,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/SkillComponent.h"
 
+
 void USkillBar::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -24,9 +25,11 @@ void USkillBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
-void USkillBar::StartAnimation(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed)
+void USkillBar::StartAnimation(ESkillAnimType InPrefix, int32 InIndex, float InPlaybackSpeed)
 {
-	UWidgetAnimation* ResultAnim = WidgetAnimHelper::StartAnimation(InPrefix, TEXT("CoolTime"), InIndex, InPlaybackSpeed, this, FindWidgetAnimation);
+	FString Prefix = *UEnum::GetDisplayValueAsText(InPrefix).ToString();
+
+	UWidgetAnimation* ResultAnim = WidgetAnimHelper::StartAnimation(Prefix, TEXT("Skill"), InIndex, InPlaybackSpeed, this, FindWidgetAnimation);
 }
 
 void USkillBar::SetSkillCost(int32 InIndex, const FString& InStr)
@@ -55,6 +58,6 @@ void USkillBar::OnAnimationFinished_Implementation(const UWidgetAnimation* Anima
 
 	if (USkillComponent* SC = GetOwningPlayerPawn()->GetComponentByClass<USkillComponent>())
 	{
-		SC->SkillCoolTimeEnded(Animation);
+		SC->SkillAnimFinished(Animation);
 	}
 }

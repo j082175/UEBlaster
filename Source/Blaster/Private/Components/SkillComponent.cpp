@@ -58,6 +58,7 @@ void USkillComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(ThisClass, SkillPoint);
 	DOREPLIFETIME(ThisClass, CurrentSkill);
 	DOREPLIFETIME(ThisClass, CurrentMontage);
+	DOREPLIFETIME(ThisClass, TempWeapon);
 
 }
 
@@ -203,7 +204,7 @@ void USkillComponent::UltimateCast()
 	if (CharacterOwner->IGetTeam() == ETeam::ET_RedTeam)
 	{
 		M = UltimateWeaponMaterial_Red;
-		WeaponMaterialIndex = 4;
+		WeaponMaterialIndex = 4; // suppose to...
 	}
 	else if (CharacterOwner->IGetTeam() == ETeam::ET_BlueTeam)
 	{
@@ -211,11 +212,13 @@ void USkillComponent::UltimateCast()
 		WeaponMaterialIndex = 5;
 	}
 
+	FCoolTimeCheckStruct* S = CoolTimeMap.Find(ESkillAssistant::ESA_Ultimate);
+
 
 	if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
 
 	FTimerHandle H;
-	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinished, UltimateSustainingTime);
+	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinished, S->MaintainTime);
 
 	MulticastCastEnd(ESkillAssistant::ESA_Ultimate);
 
@@ -245,33 +248,75 @@ void USkillComponent::UltimateCast()
 
 }
 
-void USkillComponent::SkillCoolTimeEnded(const UWidgetAnimation* InWidgetAnimation)
+void USkillComponent::SkillAnimFinished(const UWidgetAnimation* InWidgetAnimation)
 {
-	UE_LOG(LogTemp, Warning, TEXT("USkillComponent::SkillCoolTimeEnded : %s"), *InWidgetAnimation->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("USkillComponent::SkillAnimFinished : %s"), *InWidgetAnimation->GetName());
 
 	FString Str = InWidgetAnimation->GetName();
 
 	Str.RemoveFromEnd(TEXT("_INST"));
 
 	wchar_t LastStr = Str[Str.Len() - 1];
-	
+
 	int32 Index = static_cast<int32>(LastStr);
 	Index -= 48;
-
 	FCoolTimeCheckStruct* S = CoolTimeMap.Find(SkillList[Index]);
+
 	if (S)
 	{
-		S->bCanExecute = true;
+
+		if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::ESAT_CoolTime).ToString()))
+		{
+			S->bCanExecute = true;
+		}
+		else if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::ESAT_Maintain).ToString()))
+		{
+			OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, Index, S->CoolTime);
+		}
 	}
+
+
+
+
+
+
+
 }
 
 void USkillComponent::MulticastCastEnd_Implementation(ESkillAssistant InSkillAssistant)
 {
 	FCoolTimeCheckStruct* S = CoolTimeMap.Find(InSkillAssistant);
 
-	OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+	switch (InSkillAssistant)
+	{
+	case ESkillAssistant::ESA_Dash:
+		break;
+	case ESkillAssistant::ESA_Dodge:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+		break;
+	case ESkillAssistant::ESA_Slide:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+		break;
+	case ESkillAssistant::ESA_HealArea:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+		break;
+	case ESkillAssistant::ESA_ShieldRecovery:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+		break;
+	case ESkillAssistant::ESA_Supporter:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+		break;
+	case ESkillAssistant::ESA_Ultimate:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+		break;
+	case ESkillAssistant::ESA_MAX:
+		break;
+	default:
+		break;
+	}
+
+
 	S->bCanExecute = false;
-	//SkillPoint -= NeededSkillPoints[InIndex];
 	SkillPoint -= S->RequiredPoint;
 	OnSoulCountChanged.Broadcast(SkillPoint);
 }
@@ -279,6 +324,8 @@ void USkillComponent::MulticastCastEnd_Implementation(ESkillAssistant InSkillAss
 void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 {
 	if (!CharacterOwner.Get()) return;
+
+	FCoolTimeCheckStruct* S = CoolTimeMap.Find(InSkillAssistant);
 
 	switch (InSkillAssistant)
 	{
@@ -289,6 +336,7 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 		{
 			HealArea->SetOwner(CharacterOwner.Get());
 			HealArea->SetInstigator(CharacterOwner.Get());
+			HealArea->SetLifeSpan(S->MaintainTime);
 
 			FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, true);
 			HealArea->AttachToComponent(CharacterOwner->GetMesh(), Rules, TEXT("pelvis"));
@@ -305,6 +353,7 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 			ShieldBarrier->SetInstigator(CharacterOwner.Get());
 
 			ShieldBarrier->FinishSpawning(CharacterOwner->GetTransform());
+			ShieldBarrier->SetLifeSpan(S->MaintainTime);
 
 			FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, true);
 			ShieldBarrier->AttachToComponent(CharacterOwner->GetMesh(), Rules, TEXT("pelvis"));
@@ -434,14 +483,14 @@ void USkillComponent::InitializeCoolTimeMap()
 	CoolTimeMap.Reserve((int)ESkillAssistant::ESA_MAX);
 	SkillButtonPressedChecker.Reserve((int)ESkillAssistant::ESA_MAX);
 
-	CoolTimeMap.Add(ESkillAssistant::ESA_HealArea, FCoolTimeCheckStruct(3, 20.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_ShieldRecovery, FCoolTimeCheckStruct(3, 25.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_Supporter, FCoolTimeCheckStruct(5, 20.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_Ultimate, FCoolTimeCheckStruct(20, 50.f));
+	CoolTimeMap.Add(ESkillAssistant::ESA_HealArea, FCoolTimeCheckStruct(3, 5.f, 20.f));
+	CoolTimeMap.Add(ESkillAssistant::ESA_ShieldRecovery, FCoolTimeCheckStruct(3, 5.f, 25.f));
+	CoolTimeMap.Add(ESkillAssistant::ESA_Supporter, FCoolTimeCheckStruct(5, 0.f, 20.f));
+	CoolTimeMap.Add(ESkillAssistant::ESA_Ultimate, FCoolTimeCheckStruct(20, 10.f, 50.f));
 
-	CoolTimeMap.Add(ESkillAssistant::ESA_Slide, FCoolTimeCheckStruct(0, 1.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_Dash, FCoolTimeCheckStruct(0, 2.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_Dodge, FCoolTimeCheckStruct(0, 3.f));
+	CoolTimeMap.Add(ESkillAssistant::ESA_Slide, FCoolTimeCheckStruct(0, 0.f, 1.f));
+	CoolTimeMap.Add(ESkillAssistant::ESA_Dash, FCoolTimeCheckStruct(0, 0.f, 2.f));
+	CoolTimeMap.Add(ESkillAssistant::ESA_Dodge, FCoolTimeCheckStruct(0, 0.f, 3.f));
 
 	int32 Count = 0;
 	for (const auto& i : CoolTimeMap)
@@ -492,10 +541,24 @@ void USkillComponent::UltimateCastFinished()
 
 	if (UInventoryComponent* IC = CharacterOwner->GetComponentByClass<UInventoryComponent>())
 	{
+		AWeapon* CurrentWeapon = IC->GetEquippedWeapon();
+		CurrentWeapon->Dropped();
+		CurrentWeapon->Destroy();
+
+		FTimerHandle H;
+		GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinishedDelay, 0.1f, false);
+	}
+
+
+}
+
+void USkillComponent::UltimateCastFinishedDelay()
+{
+	if (UInventoryComponent* IC = CharacterOwner->GetComponentByClass<UInventoryComponent>())
+	{
 		IC->SetEquippedWeapon(TempWeapon);
 		CharacterOwner->EquipWeaponFunc();
 		CharacterOwner->Fire(false);
 	}
 
-	//UltimateEffect->activate
 }

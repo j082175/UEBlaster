@@ -168,7 +168,11 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	//}
 
-	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
+	//if (!HasAuthority())
+	//{
+	//	UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
+
+	//}
 
 }
 
@@ -980,7 +984,7 @@ void ABlasterCharacter::DodgeButtonPressed()
 	{
 		if (!Dodge(KeySectionName)) return;
 		S->bCanExecute = false;
-		SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), 6, S->CoolTime);
+		SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, 6, S->CoolTime);
 	}
 
 }
@@ -1013,7 +1017,7 @@ void ABlasterCharacter::DashButtonPressed()
 			//UE_LOG(LogTemp, Display, TEXT("Can Dash"));
 			if (!Dash(KeySectionName)) return;
 			S->bCanExecute = false;
-			SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), 5, S->CoolTime);
+			SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, 5, S->CoolTime);
 		}
 	}
 

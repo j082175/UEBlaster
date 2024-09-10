@@ -38,8 +38,5 @@ public:
 	TObjectPtr<class UNiagaraComponent> ShieldEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float LifeSpan = 5.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	int32 Index = 0;
 };

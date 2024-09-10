@@ -38,8 +38,6 @@ void ADefenceActor::BeginPlay()
 
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::SphereBeginOverlap);
 	SphereCollision->OnComponentEndOverlap.AddDynamic(this, &ThisClass::SphereEndOverlap);
-
-	SetLifeSpan(LifeSpan);
 }
 
 // Called every frame
@@ -58,7 +56,7 @@ void ADefenceActor::Destroyed()
 		//USkillComponent* SkillComponent = GetOwner()->GetComponentByClass<USkillComponent>();
 		//if (SkillComponent)
 		//{
-		//	SkillComponent->OnSkillCoolTimeStarted.Broadcast(TEXT("Skill"), Index, SkillComponent->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())->CoolTime);
+		//	SkillComponent->OnSkillAnimStarted.Broadcast(TEXT("Skill"), Index, SkillComponent->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString())->CoolTime);
 		//}
 	}
 }

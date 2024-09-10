@@ -25,6 +25,8 @@ public:
 
 private:
 	void InitTextColor();
+	void InitTextColorFunc();
+
 
 	FTimerHandle InitHandle;
 

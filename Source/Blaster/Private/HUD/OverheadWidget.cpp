@@ -90,27 +90,8 @@ void UOverheadWidget::ShowPlayerName(APawn* InPawn)
 	//so smetimes it's not initialized yet so we get the name once on tick 
 
 	PawnToInit = InPawn;
-
-	GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			if (PawnToInit.IsValid())
-			{
-				APlayerState* PlayerState = PawnToInit->GetPlayerState();
-				
-				if (PlayerState)
-				{
-					FString PlayerName = PlayerState->GetPlayerName();
-					FString PlayerNameToDisplay = FString::Printf(TEXT("%s"), *PlayerName);
-
-					PlayerIDText->SetText(FText::FromString(PlayerNameToDisplay));
-					GetWorld()->GetTimerManager().ClearTimer(InitHandle);
-					InitHandle.Invalidate();
-				}
-			}
-
-			
-		}), 0.1f, true);
-
+	
+	GetWorld()->GetTimerManager().SetTimer(InitHandle, this, &ThisClass::ShowPlayerNameInitFunc, 0.1f, true);
 }
 
 void UOverheadWidget::ShowPlayerName(const FString& InName)
@@ -122,4 +103,22 @@ void UOverheadWidget::NativeDestruct()
 {
 	RemoveFromParent();
 	Super::NativeDestruct();
+}
+
+void UOverheadWidget::ShowPlayerNameInitFunc()
+{
+	if (PawnToInit.IsValid())
+	{
+		APlayerState* PlayerState = PawnToInit->GetPlayerState();
+
+		if (PlayerState)
+		{
+			FString PlayerName = PlayerState->GetPlayerName();
+			FString PlayerNameToDisplay = FString::Printf(TEXT("%s"), *PlayerName);
+
+			PlayerIDText->SetText(FText::FromString(PlayerNameToDisplay));
+			GetWorld()->GetTimerManager().ClearTimer(InitHandle);
+			InitHandle.Invalidate();
+		}
+	}
 }

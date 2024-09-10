@@ -18,7 +18,7 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	void StartAnimation(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed);
+	void StartAnimation(ESkillAnimType InPrefix, int32 InIndex, float InPlaybackSpeed);
 
 	UFUNCTION(BlueprintCallable)
 	void SetSkillCost(int32 InIndex, const FString& InStr);
@@ -56,26 +56,26 @@ public:
 	TObjectPtr<class UImage> SkillImage6;
 
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim0;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	//TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim0;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim1;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	//TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim1;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim2;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	//TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim2;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim3;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	//TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim3;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim4;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	//TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim4;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim5;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	//TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim5;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim6;
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	//TObjectPtr<class UWidgetAnimation> SkillCoolTimeAnim6;
 
 
 	UPROPERTY(meta = (BindWidget), Transient)

@@ -7,7 +7,8 @@
 #include "BlasterTypes/SkillAssistant.h"
 #include "SkillComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillCoolTimeStartedDelegate, const FString&, InPrefix, int32, InIndex, float, InPlaybackSpeed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillAnimStartedDelegate, ESkillAnimType, InPrefix, int32, InIndex, float, InPlaybackSpeed);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillCostChangedDelegate, int32, NumCost, const FString&, InMessage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoulCountChangedDelegate, int32, NumCount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillCoolTimeCheckDelegate, ESkillAssistant, SkillIndex);
@@ -17,8 +18,10 @@ USTRUCT(BlueprintType)
 struct FCoolTimeCheckStruct
 {
 	GENERATED_BODY()
-	FCoolTimeCheckStruct(int32 InRequiredPoint = 0, float InCoolTime = 10.f)
-		: RequiredPoint(InRequiredPoint), CoolTime(InCoolTime), bCanExecute(true), bSkillPointEnough(true)
+	FCoolTimeCheckStruct(){}
+
+	FCoolTimeCheckStruct(int32 InRequiredPoint, float InMaintainTime, float InCoolTime)
+		: RequiredPoint(InRequiredPoint), MaintainTime(InMaintainTime), CoolTime(InCoolTime), bCanExecute(true), bSkillPointEnough(true)
 	{
 	}
 
@@ -26,6 +29,8 @@ struct FCoolTimeCheckStruct
 	//float CoolTimeCount;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float CoolTime;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float MaintainTime;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	int32 RequiredPoint;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -58,11 +63,10 @@ public:
 
 
 	// Total Actives (Skill)
-	FOnSkillCoolTimeStartedDelegate OnSkillCoolTimeStarted;
+	FOnSkillAnimStartedDelegate OnSkillAnimStarted;
 	FOnSkillCostChangedDelegate OnSkillCostChanged;
 	FOnSoulCountChangedDelegate OnSoulCountChanged;
 	FOnSkillCoolTimeCheckDelegate OnSkillCoolTimeCheck;
-
 
 	FORCEINLINE int32 GetSkillPoint() const { return SkillPoint; }
 	void SetSkillPoint(int32 InSkillPoint);
@@ -87,7 +91,7 @@ public:
 
 
 
-	void SkillCoolTimeEnded(const class UWidgetAnimation* InWidgetAnimation);
+	void SkillAnimFinished(const class UWidgetAnimation* InWidgetAnimation);
 private:
 	//////////////////
 	// Owner Settings
@@ -176,12 +180,11 @@ public:
 
 private:
 	void UltimateCastFinished();
+	void UltimateCastFinishedDelay();
+
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 WeaponMaterialIndex = 4.f;
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	int32 UltimateSustainingTime = 10.f;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UMaterial> UltimateWeaponMaterial_Red;
@@ -201,6 +204,6 @@ private:
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class AWeapon> TransparentWeapon;
 
-	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
+	UPROPERTY(Replicated, VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class AWeapon> TempWeapon;
 };

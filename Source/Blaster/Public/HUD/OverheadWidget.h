@@ -41,6 +41,7 @@ protected:
 
 
 private:
+	void ShowPlayerNameInitFunc();
 
 	TWeakObjectPtr<APawn> PawnToInit;
 

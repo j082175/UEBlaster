@@ -142,9 +142,9 @@ void UCharacterOverlay::SetHUDBlueTeamScore(int32 BlueScore)
 	BlueTeamScore->SetText(FText::FromString(ScoreText));
 }
 
-void UCharacterOverlay::StartCoolTimeAnim(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed)
+void UCharacterOverlay::StartSkillAnim(ESkillAnimType InPrefix, int32 InIndex, float InPlaybackSpeed)
 {
-	UE_LOG(LogTemp, Display, TEXT("StartCoolTimeAnim"));
+	UE_LOG(LogTemp, Display, TEXT("StartSkillAnim"));
 	SkillBar->StartAnimation(InPrefix, InIndex, InPlaybackSpeed);
 }
 

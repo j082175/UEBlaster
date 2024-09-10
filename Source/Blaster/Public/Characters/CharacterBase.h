@@ -94,6 +94,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual ETeam IGetTeam() const override;
 
+
 	FORCEINLINE bool IsSprint() const { return bIsSprint; }
 	FORCEINLINE bool IsElimmed() const { return bIsElimmed; }
 	bool IsWeaponEquipped();
@@ -106,7 +107,7 @@ public:
 	void ISetTeam(ETeam InNewTeam) override;
 	void SetHoldingTheFlag(bool bHolding);
 	FORCEINLINE void SetOverlappingWeapon(class AWeapon* InWeapon) { OverlappingWeapon = InWeapon; }
-
+	FORCEINLINE void SetDisableGameplay(bool IsDisable) { bDisableGameplay = IsDisable; }
 
 	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
 

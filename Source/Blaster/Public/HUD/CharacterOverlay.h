@@ -38,7 +38,7 @@ public:
 	void SetHUDBlueTeamScore(int32 BlueScore);
 
 	UFUNCTION()
-	void StartCoolTimeAnim(const FString& InPrefix, int32 InIndex, float InPlaybackSpeed);
+	void StartSkillAnim(ESkillAnimType InPrefix, int32 InIndex, float InPlaybackSpeed);
 	UFUNCTION()
 	void SetSkillCost(int32 InIndex, const FString& InStr);
 	UFUNCTION()

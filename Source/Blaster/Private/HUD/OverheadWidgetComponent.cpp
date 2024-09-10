@@ -57,46 +57,47 @@ void UOverheadWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UOverheadWidgetComponent::InitTextColor()
 {
-	GetWorld()->GetTimerManager().SetTimer(InitHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			FLinearColor Green(0.1f, 1.f, 0.f);
-			FLinearColor Red(1.f, 0.13f, 0.19f);
+	GetWorld()->GetTimerManager().SetTimer(InitHandle, this, &ThisClass::InitTextColorFunc, 0.1f, true);
+}
 
-			OverheadWidget = Cast<UOverheadWidget>(GetWidget());
+void UOverheadWidgetComponent::InitTextColorFunc()
+{
+	FLinearColor Green(0.1f, 1.f, 0.f);
+	FLinearColor Red(1.f, 0.13f, 0.19f);
 
-			//ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>());
-			//ITeamInterface* T2 = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
+	OverheadWidget = Cast<UOverheadWidget>(GetWidget());
 
-			ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPawn());
-			ITeamInterface* T2 = Cast<ITeamInterface>(GetOwner());
+	//ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>());
+	//ITeamInterface* T2 = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
 
-			if (OverheadWidget && T1 && T2 && T1->IGetTeam() == T2->IGetTeam())
-			{
-				OverheadWidget->SetAllTextColor(Green);
-				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
-				InitHandle.Invalidate();
-				SetComponentTickEnabled(false);
-			}
-			else if (OverheadWidget && T1 && T2 && T1->IGetTeam() != T2->IGetTeam())
-			{
-				OverheadWidget->SetAllTextColor(Red);
-				OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
-				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
-				InitHandle.Invalidate();
-				SetComponentTickEnabled(false);
-			}
-			else if (T2 && T2->IGetTeam() == ETeam::ET_NoTeam)
-			{
-				GetWorld()->GetTimerManager().ClearTimer(InitHandle);
-				InitHandle.Invalidate();
-				SetComponentTickEnabled(false);
-				return;
-			}
-			else
-			{
-				AB_CALLLOG(LogTemp, Log, TEXT("%s : Initializing"), *GetOwner()->GetName());
-				//UE_LOG(LogTemp, Error, TEXT("Blaster: Failed ShowPlayerName"));
-			}
+	ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ITeamInterface* T2 = Cast<ITeamInterface>(GetOwner());
 
-		}), 0.1f, true);
+	if (OverheadWidget && T1 && T2 && T1->IGetTeam() == T2->IGetTeam())
+	{
+		OverheadWidget->SetAllTextColor(Green);
+		GetWorld()->GetTimerManager().ClearTimer(InitHandle);
+		InitHandle.Invalidate();
+		SetComponentTickEnabled(false);
+	}
+	else if (OverheadWidget && T1 && T2 && T1->IGetTeam() != T2->IGetTeam())
+	{
+		OverheadWidget->SetAllTextColor(Red);
+		OverheadWidget->SetVisibility(ESlateVisibility::Collapsed);
+		GetWorld()->GetTimerManager().ClearTimer(InitHandle);
+		InitHandle.Invalidate();
+		SetComponentTickEnabled(false);
+	}
+	else if (T2 && T2->IGetTeam() == ETeam::ET_NoTeam)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(InitHandle);
+		InitHandle.Invalidate();
+		SetComponentTickEnabled(false);
+		return;
+	}
+	else
+	{
+		AB_CALLLOG(LogTemp, Log, TEXT("%s : Initializing"), *GetOwner()->GetName());
+		//UE_LOG(LogTemp, Error, TEXT("Blaster: Failed ShowPlayerName"));
+	}
 }

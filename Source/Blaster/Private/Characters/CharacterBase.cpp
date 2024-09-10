@@ -393,7 +393,7 @@ void ACharacterBase::IBindWidget(UUserWidget* InUserWidget)
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 
-		SkillComponent->OnSkillCoolTimeStarted.AddUniqueDynamic(CO, &UCharacterOverlay::StartCoolTimeAnim);
+		SkillComponent->OnSkillAnimStarted.AddUniqueDynamic(CO, &UCharacterOverlay::StartSkillAnim);
 		SkillComponent->OnSkillCostChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSkillCost);
 		SkillComponent->OnSoulCountChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSoulCount);
 		SkillComponent->OnSkillCoolTimeCheck.AddUniqueDynamic(CO, &UCharacterOverlay::ShowCoolTimeAnnouncement);
