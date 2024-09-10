@@ -49,7 +49,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		//AO_Yaw = BlasterCharacter->GetAO_Yaw();
 		//AO_Pitch = BlasterCharacter->GetAO_Pitch();
 
-		//bUseAimOffsets = CharacterOwner->GetCombatState() != ECombatState::ECS_Reloading && !bDisableGameplay;
+		//bUseAimOffsets = CharacterOwner->GetCombatState() != ECombatState::Reloading && !bDisableGameplay;
 
 	}
 }

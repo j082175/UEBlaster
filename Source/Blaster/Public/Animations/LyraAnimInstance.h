@@ -141,10 +141,10 @@ private:
 	float AO_Pitch;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterState", meta = (AllowPrivateAccess = true))
-	ETurningInPlace TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+	ETurningInPlace TurningInPlace = ETurningInPlace::NotTurning;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterState", meta = (AllowPrivateAccess = true))
-	EAnimState CharacterState = EAnimState::EAS_UnEquipped;
+	EAnimState CharacterState = EAnimState::UnEquipped;
 
 	float InterpAO_Yaw;
 	FRotator StartingAimRotation;

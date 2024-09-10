@@ -27,12 +27,12 @@ void ACaptureTheFlagGameMode::FlagCaptured(AFlag* Flag, AFlagZone* Zone)
 	ABlasterGameState* BGameState = GetGameState<ABlasterGameState>();
 	if (BGameState)
 	{
-		if (Zone->Team == ETeam::ET_BlueTeam)
+		if (Zone->Team == ETeam::BlueTeam)
 		{
 			BGameState->BlueTeamScores();
 		}
 
-		if (Zone->Team == ETeam::ET_RedTeam)
+		if (Zone->Team == ETeam::RedTeam)
 		{
 			BGameState->RedTeamScores();
 		}

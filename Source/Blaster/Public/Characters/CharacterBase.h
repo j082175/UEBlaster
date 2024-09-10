@@ -356,13 +356,13 @@ protected:
 	void SetState(ECharacterState InCharacterState, ECombatState InCombatState);
 
 	UPROPERTY(Replicated, VisibleInstanceOnly, BlueprintReadWrite, Category = "State", meta = (AllowPrivateAccess = true))
-	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+	ECharacterState CharacterState = ECharacterState::Unequipped;
 
 	UFUNCTION()
 	void OnRep_CombatState();
 
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState, VisibleInstanceOnly, BlueprintReadWrite, Category = "State", meta = (AllowPrivateAccess = true))
-	ECombatState CombatState = ECombatState::ECS_Unoccupied;
+	ECombatState CombatState = ECombatState::Unoccupied;
 
 	// For Calculate
 protected:
@@ -396,7 +396,7 @@ protected:
 
 	FRotator StartingAimRotation;
 
-	ETurningInPlace TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+	ETurningInPlace TurningInPlace = ETurningInPlace::NotTurning;
 	// 
 public:
 	UFUNCTION(NetMulticast, Reliable)
@@ -485,7 +485,7 @@ protected:
 
 
 	UPROPERTY(Replicated)
-	EAnimState AnimState = EAnimState::EAS_UnEquipped;
+	EAnimState AnimState = EAnimState::UnEquipped;
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsSprint : 1;
@@ -943,7 +943,7 @@ protected:
 
 	// Team , for non-local players
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	ETeam Team = ETeam::ET_NoTeam;
+	ETeam Team = ETeam::NoTeam;
 
 	// Widgets
 protected:

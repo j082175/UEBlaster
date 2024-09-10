@@ -174,19 +174,19 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 		}
 
-		//bUseFABRIK = CharacterOwner->GetCombatState() != ECombatState::ECS_Reloading;
-		//bool bFABRIKOverride = CharacterOwner->IsLocallyControlled() && CharacterOwner->GetCombatState() != ECombatState::ECS_ThrowingGrenade && CharacterOwner->bFinishedSwapping;
+		//bUseFABRIK = CharacterOwner->GetCombatState() != ECombatState::Reloading;
+		//bool bFABRIKOverride = CharacterOwner->IsLocallyControlled() && CharacterOwner->GetCombatState() != ECombatState::ThrowingGrenade && CharacterOwner->bFinishedSwapping;
 		//if (bFABRIKOverride)
 		//{
 		//	bUseFABRIK = !CharacterOwner->IsLocallyReloading();
 		//}
 
-		if (AnimState != EAnimState::EAS_UnEquipped)
+		if (AnimState != EAnimState::UnEquipped)
 		{
-			bUseFABRIK = (int)CharacterOwner->GetCombatState() <= (int)ECombatState::ECS_Attacking;
+			bUseFABRIK = (int)CharacterOwner->GetCombatState() <= (int)ECombatState::Attacking;
 		}
 
-		//bUseFABRIK = (int)CharacterOwner->GetCombatState() <= (int)ECombatState::ECS_Attacking && AnimState == EAnimState::EAS_Combat || AnimState == EAnimState::EAS_Equipped;
+		//bUseFABRIK = (int)CharacterOwner->GetCombatState() <= (int)ECombatState::Attacking && AnimState == EAnimState::Combat || AnimState == EAnimState::Equipped;
 
 		//UE_LOG(LogTemp, Display, TEXT("CombatState: %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 		//UE_LOG(LogTemp, Display, TEXT("bUseFABRIK: %d"), bUseFABRIK);

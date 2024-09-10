@@ -356,9 +356,9 @@ void ACharacterBase::IGetHit(const FVector& InHitPoint, const FHitResult& InHitR
 		return SetDead();
 
 
-	if (CombatState == ECombatState::ECS_Dodging || CombatState == ECombatState::ECS_VaultOrMantle) return;
+	if (CombatState == ECombatState::Dodging || CombatState == ECombatState::VaultOrMantle) return;
 
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 	PlayHitReactMontage(InHitPoint);
 
 
@@ -443,13 +443,16 @@ bool ACharacterBase::ICheckParry(AActor* OtherActor)
 
 void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
-	//UE_LOG(LogTemp, Display, TEXT("ReceiveDamage"));
+	UE_LOG(LogTemp, Display, TEXT("ReceiveDamage"));
+
 
 	ITeamInterface* T1 = Cast<ITeamInterface>(InstigatorController->GetPawn());
 	if (T1->IGetTeam() == IGetTeam() && Cast<UDamageType_Projectile>(DamageType))
 	{
 		return;
 	}
+
+
 
 	UAISense_Damage::ReportDamageEvent(this, this, InstigatorController->GetPawn(), Damage, DamageCauser->GetActorLocation(), GetActorLocation());
 
@@ -501,7 +504,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageToHealth, 0.f, MaxHealth);
 
-	if (CombatState == ECombatState::ECS_Parried)
+	if (CombatState == ECombatState::Parried)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Not Process ParryGauge"));
 	}
@@ -583,7 +586,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 void ACharacterBase::SetDead()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Dead"));
-	CombatState = ECombatState::ECS_Unoccupied;
+	CombatState = ECombatState::Unoccupied;
 
 	//HpBarWidgetComponent->SetVisibility(false);
 	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -767,13 +770,13 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 	else if (DODGE_END == NotifyName)
 	{
 		//bIsDodge = false;
-		//CombatState = ECombatState::ECS_Unoccupied;
+		//CombatState = ECombatState::Unoccupied;
 		UnCrouch();
 	}
 	else if (VAULT_OR_MANTLE_END == NotifyName)
 	{
 		bIsMorV = false;
-		SetCombatState(ECombatState::ECS_Unoccupied);
+		SetCombatState(ECombatState::Unoccupied);
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		//bUseControllerRotationYaw = true;
@@ -827,7 +830,7 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 		GetCharacterMovement()->bUseControllerDesiredRotation = true;
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 		GetMesh()->GetAnimInstance()->Montage_Stop(0.25f);
-		CombatState = ECombatState::ECS_Unoccupied;
+		CombatState = ECombatState::Unoccupied;
 		bDisableGameplay = false;
 		GetMesh()->SetCollisionResponseToChannel(ECC_CanDamagedByWeapon, ECR_Block);
 
@@ -836,7 +839,7 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 	{
 		UE_LOG(LogTemp, Display, TEXT("SweepFallEnd"));
 		//GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
-		CombatState = ECombatState::ECS_PhysicsRecoverForMulti;
+		CombatState = ECombatState::PhysicsRecoverForMulti;
 		GetMesh()->GetAnimInstance()->Montage_Play(UpMontageForMultiplayer);
 	}
 }
@@ -853,7 +856,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 
 		//if (Montage == AttackMontage || Montage == HitReactMontage)
 		//{
-		//	CombatState = ECombatState::ECS_Unoccupied;
+		//	CombatState = ECombatState::Unoccupied;
 		//}
 
 		if (Montage == ReloadMontage)
@@ -864,7 +867,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 
 	if (!bInterrupted)
 	{
-		if (CombatState == ECombatState::ECS_Parried) return;
+		if (CombatState == ECombatState::Parried) return;
 
 		//AAIController* AIController = Cast<AAIController>(GetController());
 		//if (AIController && AIController->GetBlackboardComponent())
@@ -872,49 +875,49 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 		//	AIController->GetBlackboardComponent()->SetValueAsEnum(E_COMBAT_STATE, (int)CombatState);
 		//}
 
-		if (CombatState == ECombatState::ECS_UltimateMode) return;
-		CombatState = ECombatState::ECS_Unoccupied;
+		if (CombatState == ECombatState::UltimateMode) return;
+		CombatState = ECombatState::Unoccupied;
 
 
 
 		if (Montage == HitReactMontage)
 		{
 			//UE_LOG(LogTemp, Display, TEXT("HitEnded"));
-			CombatState = ECombatState::ECS_Unoccupied;
+			CombatState = ECombatState::Unoccupied;
 		}
 		else if (Montage == DodgeMontage)
 		{
 			//UnCrouch();
 			bIsDodge = false;
-			CombatState = ECombatState::ECS_Unoccupied;
+			CombatState = ECombatState::Unoccupied;
 
 		}
 		else if (Montage == SlideMontage)
 		{
 			bIsSliding = false;
-			CombatState = ECombatState::ECS_Unoccupied;
+			CombatState = ECombatState::Unoccupied;
 
 		}
 		else if (Montage == AttackMontage)
 		{
-			if (CombatState != ECombatState::ECS_UltimateMode) CombatState = ECombatState::ECS_Unoccupied;
+			if (CombatState != ECombatState::UltimateMode) CombatState = ECombatState::Unoccupied;
 			//CrosshairShootingFactor = 0.75f;
 		}
-		else if (CombatState == ECombatState::ECS_SwappingWeapon)
+		else if (CombatState == ECombatState::SwappingWeapon)
 		{
-			UE_LOG(LogTemp, Display, TEXT("ECS_SwappingWeapon finished"));
-			//CombatComponent->CombatState = ECombatState::ECS_Unoccupied;
+			UE_LOG(LogTemp, Display, TEXT("SwappingWeapon finished"));
+			//CombatComponent->CombatState = ECombatState::Unoccupied;
 			bFinishedSwapping = true;
 			if (InventoryComponent->SecondaryWeapon) InventoryComponent->SecondaryWeapon->EnableCustomDepth(true);
-			CombatState = ECombatState::ECS_Unoccupied;
+			CombatState = ECombatState::Unoccupied;
 		}
 		else if (Montage == VaultMontage || Montage == MantleMontage)
 		{
 			bUseControllerRotationYaw = true;
 
-			//UE_LOG(LogTemp, Display, TEXT("OnMontageEnded : ECS_VaultOrMantle"));
+			//UE_LOG(LogTemp, Display, TEXT("OnMontageEnded : VaultOrMantle"));
 			//CombatComponent->bIsDodge = false;
-			//CombatComponent->CombatState = ECombatState::ECS_Unoccupied;
+			//CombatComponent->CombatState = ECombatState::Unoccupied;
 			//GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 			//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		}
@@ -935,14 +938,14 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 
 void ACharacterBase::PlayHitReactMontage(const FVector& InHitPoint)
 {
-	if (HitReactMontage == nullptr || CombatState != ECombatState::ECS_Unoccupied) return;
+	if (HitReactMontage == nullptr || CombatState != ECombatState::Unoccupied) return;
 	//UE_LOG(LogTemp, Display, TEXT("CharacterHitPoint : %f, %f, %f"), CharacterHitPoint.X, CharacterHitPoint.Y, CharacterHitPoint.Z);
 	//UE_LOG(LogTemp, Display, TEXT("Combatstate : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	FName Section = CalculateHitDirection(InHitPoint);
 	//UE_LOG(LogTemp, Display, TEXT("PlayHitReactMontage Point : %s"), *Section.ToString());
 
 	PlayMontage(GetMesh()->GetAnimInstance(), HitReactMontage, Section, -1);
-	//SetState(CharacterState, ECombatState::ECS_HitReact);
+	//SetState(CharacterState, ECombatState::HitReact);
 
 }
 
@@ -1058,14 +1061,14 @@ void ACharacterBase::UpdateMotionWarpingTransform()
 
 void ACharacterBase::RandomAttack(int32 Index, const FString& AttackType)
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 
 	//UE_LOG(LogTemp, Display, TEXT("RandomAttack"));
 
 	bool ArmedAndOneHanded =
-		CharacterState == ECharacterState::ECS_EquippedOnehandedWeapon ||
-		CharacterState == ECharacterState::ECS_EquippedTwoHandedWeapon ||
-		CharacterState == ECharacterState::ECS_EquippedCapsuleWeapon;
+		CharacterState == ECharacterState::EquippedOnehandedWeapon ||
+		CharacterState == ECharacterState::EquippedTwoHandedWeapon ||
+		CharacterState == ECharacterState::EquippedCapsuleWeapon;
 
 	if (ArmedAndOneHanded)
 	{
@@ -1092,13 +1095,13 @@ void ACharacterBase::RandomAttack(int32 Index, const FString& AttackType)
 		FString SectionName = AttackType + TEXT("Attack");
 
 		PlayMontage(GetMesh()->GetAnimInstance(), AttackMontage, *SectionName, Index);
-		SetState(CharacterState, ECombatState::ECS_Attacking);
+		SetState(CharacterState, ECombatState::Attacking);
 	}
-	else if (CharacterState == ECharacterState::ECS_EquippedGun)
+	else if (CharacterState == ECharacterState::EquippedGun)
 	{
 		Fire(true);
 		//PlayMontage(GetMesh()->GetAnimInstance(), AttackMontage, TEXT("RifleAim"), -1);
-		SetState(CharacterState, ECombatState::ECS_Attacking);
+		SetState(CharacterState, ECombatState::Attacking);
 	}
 }
 
@@ -1206,7 +1209,7 @@ void ACharacterBase::ServerExecuteRagdollForMulti_Implementation()
 
 void ACharacterBase::ExecuteRagdollForMulti()
 {
-	CombatState = ECombatState::ECS_RagdollForMulti;
+	CombatState = ECombatState::RagdollForMulti;
 	bDisableGameplay = true;
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
@@ -1235,7 +1238,7 @@ void ACharacterBase::ExecuteRagdollFunc()
 	FireTimer.Invalidate();
 	bDisableGameplay = true;
 	bRagdollInProgress = true;
-	CombatState = ECombatState::ECS_Ragdoll;
+	CombatState = ECombatState::Ragdoll;
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
 	GetMesh()->SetCollisionResponseToChannel(ECC_CanDamagedByWeapon, ECR_Ignore);
@@ -1268,7 +1271,7 @@ void ACharacterBase::ExecutePhysicsRecover()
 
 void ACharacterBase::ExecutePhysicsRecoverFunc()
 {
-	CombatState = ECombatState::ECS_PhysicsRecover;
+	CombatState = ECombatState::PhysicsRecover;
 	bRagdollInProgress = false;
 
 	bUseControllerRotationYaw = false;
@@ -1407,16 +1410,16 @@ void ACharacterBase::OnRep_CombatState()
 
 	switch (CombatState)
 	{
-	case ECombatState::ECS_Unoccupied:
+	case ECombatState::Unoccupied:
 		if (bFireButtonPressed)
 		{
 			Fire(true);
 		}
 		break;
-	case ECombatState::ECS_Reloading:
+	case ECombatState::Reloading:
 		//if (!IsLocallyControlled()) HandleReload();
 		break;
-	case ECombatState::ECS_ThrowingGrenade:
+	case ECombatState::ThrowingGrenade:
 		//if (Character && !IsLocallyControlled()) // Simulate Proxy 만 재생하게 혹시 모르니 조건문 걸은거임
 		//{
 		//	PlayThrowGrenadeMontage();
@@ -1425,34 +1428,34 @@ void ACharacterBase::OnRep_CombatState()
 		ShowAttachedGrenade(true);
 
 		break;
-	case ECombatState::ECS_SwappingWeapon:
+	case ECombatState::SwappingWeapon:
 		PlaySwapMontage();
 		break;
-	case ECombatState::ECS_Dodging:
+	case ECombatState::Dodging:
 		if (!HasAuthority() && !IsLocallyControlled())
 		{
 			DodgeFunc(KeySectionName);
 		}
 		break;
-	case ECombatState::ECS_VaultOrMantle:
+	case ECombatState::VaultOrMantle:
 		if (!HasAuthority() && !IsLocallyControlled())
 		{
 			VaultOrMantleFunc();
 		}
 		break;
-	case ECombatState::ECS_Ragdoll:
-		//UE_LOG(LogTemp, Display, TEXT("Role : %s, OnRep ECS_Ragdoll"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
+	case ECombatState::Ragdoll:
+		//UE_LOG(LogTemp, Display, TEXT("Role : %s, OnRep Ragdoll"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
 		//if (!HasAuthority() && !IsLocallyControlled())
 		ExecuteRagdollFunc();
 		break;
-	case ECombatState::ECS_PhysicsRecover:
+	case ECombatState::PhysicsRecover:
 		//if (!HasAuthority() && !IsLocallyControlled())
 		ExecutePhysicsRecoverFunc();
 		break;
-	case ECombatState::ECS_RagdollForMulti:
+	case ECombatState::RagdollForMulti:
 		ExecuteRagdollForMulti();
 		break;
-	case ECombatState::ECS_PhysicsRecoverForMulti:
+	case ECombatState::PhysicsRecoverForMulti:
 		PlayAnimMontage(UpMontageForMultiplayer);
 		break;
 	case ECombatState::ECS_MAX:
@@ -1732,13 +1735,13 @@ ETeam ACharacterBase::IGetTeam() const
 
 	if (TeamPlayerState == nullptr)
 	{
-		if (Team != ETeam::ET_NoTeam)
+		if (Team != ETeam::NoTeam)
 		{
 			return Team;
 		}
 		else
 		{
-			return ETeam::ET_NoTeam;
+			return ETeam::NoTeam;
 		}
 	}
 
@@ -1834,39 +1837,39 @@ void ACharacterBase::PlayReloadMontage()
 		FName SectionName;
 		switch (InventoryComponent->EquippedWeapon->GetWeaponType())
 		{
-		case EWeaponType::EWT_AssaultRifle:
-			//UE_LOG(LogTemp, Display, TEXT("%s"), *UEnum::GetDisplayValueAsText(EWeaponType::EWT_AssaultRifle).ToString());
+		case EWeaponType::AssaultRifle:
+			//UE_LOG(LogTemp, Display, TEXT("%s"), *UEnum::GetDisplayValueAsText(EWeaponType::AssaultRifle).ToString());
 			//SectionName = TEXT("Rifle");
-			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::EWT_AssaultRifle).ToString();
+			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::AssaultRifle).ToString();
 			break;
-		case EWeaponType::EWT_RocketLauncher:
+		case EWeaponType::RocketLauncher:
 			//SectionName = TEXT("RocketLauncher");
-			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::EWT_RocketLauncher).ToString();
+			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::RocketLauncher).ToString();
 
 			break;
-		case EWeaponType::EWT_Pistol:
+		case EWeaponType::Pistol:
 			//SectionName = TEXT("Pistol");
-			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::EWT_Pistol).ToString();
+			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::Pistol).ToString();
 
 			break;
-		case EWeaponType::EWT_SMG:
+		case EWeaponType::SMG:
 			//SectionName = TEXT("SMG");
-			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::EWT_Pistol).ToString();
+			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::Pistol).ToString();
 
 			break;
-		case EWeaponType::EWT_Shotgun:
+		case EWeaponType::Shotgun:
 			//SectionName = TEXT("Shotgun");
-			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::EWT_Shotgun).ToString();
+			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::Shotgun).ToString();
 
 			break;
-		case EWeaponType::EWT_SniperRifle:
+		case EWeaponType::SniperRifle:
 			//SectionName = TEXT("SniperRifle");
-			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::EWT_SniperRifle).ToString();
+			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::SniperRifle).ToString();
 
 			break;
-		case EWeaponType::EWT_GrenadeLauncher:
+		case EWeaponType::GrenadeLauncher:
 			//SectionName = TEXT("GrenadeLauncher");
-			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::EWT_GrenadeLauncher).ToString();
+			SectionName = *UEnum::GetDisplayValueAsText(EWeaponType::GrenadeLauncher).ToString();
 
 			break;
 		default:
@@ -1945,7 +1948,7 @@ void ACharacterBase::PlayBoltActionMontage(FName SectionName)
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && BoltActionMontage)
 	{
-		CombatState = ECombatState::ECS_Reloading;
+		CombatState = ECombatState::Reloading;
 		AttachActorToLeftHand(InventoryComponent->EquippedWeapon);
 
 		AnimInstance->Montage_Play(BoltActionMontage);
@@ -1979,11 +1982,11 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 	//if (!IsValid(GetMesh()) || !IsValid(OriginalMaterial)) return;
 	switch (InTeam)
 	{
-	case ETeam::ET_NoTeam:
+	case ETeam::NoTeam:
 		//GetMesh()->SetMaterial(1, OriginalMaterial);
 		//DissolveMaterialInstance = BlueDissolveMatInst;
 		break;
-	case ETeam::ET_RedTeam:
+	case ETeam::RedTeam:
 		//GetMesh()->SetMaterial(1, RedMaterial);
 		//DissolveMaterialInstance = RedDissolveMatInst;
 		if (RedTeamSKMesh) GetMesh()->SetSkeletalMesh(RedTeamSKMesh);
@@ -1997,7 +2000,7 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 
 
 		break;
-	case ETeam::ET_BlueTeam:
+	case ETeam::BlueTeam:
 		//GetMesh()->SetMaterial(1, BlueMaterial);
 		//DissolveMaterialInstance = BlueDissolveMatInst;
 		if (BlueTeamSKMesh) GetMesh()->SetSkeletalMesh(BlueTeamSKMesh);
@@ -2074,7 +2077,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 	//	BlasterPlayerController->SetHUDWeaponAmmo(0);
 	//}
 
-	CombatState = ECombatState::ECS_Dead;
+	CombatState = ECombatState::Dead;
 	HpBarWidgetComponent->SetVisibility(false);
 	//AIPerceptionStimuliSource->UnregisterFromPerceptionSystem(); // This cause change blackboard key not work
 	AIPerceptionStimuliSource->UnregisterFromPerceptionSystem();
@@ -2152,7 +2155,7 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 		UGameplayStatics::SpawnSoundAtLocation(this, ElimBotSound, GetActorLocation());
 	}
 
-	//bool bHideSniperScope = IsLocallyControlled() && CombatComponent && CombatComponent->bIsAiming && CombatComponent->InventoryComponent->EquippedWeapon && CombatComponent->InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
+	//bool bHideSniperScope = IsLocallyControlled() && CombatComponent && CombatComponent->bIsAiming && CombatComponent->InventoryComponent->EquippedWeapon && CombatComponent->InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle;
 
 	//if (bHideSniperScope)
 	//{
@@ -2187,7 +2190,7 @@ void ACharacterBase::Recover()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	CombatState = ECombatState::ECS_Unoccupied;
+	CombatState = ECombatState::Unoccupied;
 	bIsElimmed = false;
 	bDisableGameplay = false;
 	AIPerceptionStimuliSource->RegisterWithPerceptionSystem();
@@ -2197,7 +2200,7 @@ void ACharacterBase::Recover()
 
 void ACharacterBase::SetSpawnPoint()
 {
-	if (HasAuthority() && BlasterPlayerState->IGetTeam() != ETeam::ET_NoTeam)
+	if (HasAuthority() && BlasterPlayerState->IGetTeam() != ETeam::NoTeam)
 	{
 		TArray<AActor*> PlayerStarts;
 		UGameplayStatics::GetAllActorsOfClass(this, ATeamPlayerStart::StaticClass(), PlayerStarts);
@@ -2321,7 +2324,7 @@ void ACharacterBase::EquipWeaponFunc()
 		//InventoryComponent->EquippedWeapon->ItemAttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, );
 
 		InventoryComponent->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		//CharacterState = ECharacterState::EAS_Equipped;
+		//CharacterState = ECharacterState::Equipped;
 
 		AttachActorToRightHand(InventoryComponent->EquippedWeapon);
 		PlayEquipWeaponSound();
@@ -2374,11 +2377,11 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 {
 
 	if (InWeapon == nullptr) return;
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 
 	//UE_LOG(LogTemp, Display, TEXT("LocalRole : %s"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString());
 
-	if (InWeapon->GetWeaponType() == EWeaponType::EWT_Flag)
+	if (InWeapon->GetWeaponType() == EWeaponType::Flag)
 	{
 
 		AFlag* ExistingFlag = InventoryComponent->GetFlag();
@@ -2418,20 +2421,20 @@ void ACharacterBase::EquipWeapon(AWeapon* InWeapon)
 	bUseControllerRotationYaw = true;
 
 
-	AnimState = EAnimState::EAS_Equipped;
+	AnimState = EAnimState::Equipped;
 	bIsAiming = false;
 }
 
 void ACharacterBase::SwapWeapons()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 
-	CombatState = ECombatState::ECS_SwappingWeapon;
+	CombatState = ECombatState::SwappingWeapon;
 	PlaySwapMontage();
 	bFinishedSwapping = false;
 	bIsFiring = false;
 
-	//CombatState = ECombatState::ECS_SwappingWeapon;
+	//CombatState = ECombatState::SwappingWeapon;
 
 	//AWeapon* TempWeapon = InventoryComponent->EquippedWeapon;
 	//InventoryComponent->EquippedWeapon = SecondaryWeapon;
@@ -2555,13 +2558,13 @@ void ACharacterBase::ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHi
 {
 	AShotgun* Shotgun = Cast<AShotgun>(InventoryComponent->EquippedWeapon);
 	if (Shotgun == nullptr) return;
-	if (CombatState == ECombatState::ECS_Reloading || CombatState == ECombatState::ECS_Unoccupied)
+	if (CombatState == ECombatState::Reloading || CombatState == ECombatState::Unoccupied)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("ShotgunLocalFire"));
 		bLocallyReloading = false;
 		PlayFireMontage(bIsAiming);
 		Shotgun->FireShotgun(TraceHitTargets);
-		CombatState = ECombatState::ECS_Unoccupied;
+		CombatState = ECombatState::Unoccupied;
 	}
 
 }
@@ -2700,17 +2703,17 @@ void ACharacterBase::LocalFire(bool bPressed, const FVector_NetQuantize& TraceHi
 	if (InventoryComponent->EquippedWeapon == nullptr) return;
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
-	//if (Character && CombatState == ECombatState::ECS_Reloading && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun)
+	//if (Character && CombatState == ECombatState::Reloading && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::Shotgun)
 	//{
 	//	PlayFireMontage(bIsAiming);
 	//	InventoryComponent->EquippedWeapon->Fire(TraceHitTarget);
-	//	CombatState = ECombatState::ECS_Unoccupied;
+	//	CombatState = ECombatState::Unoccupied;
 	//	return;
 	//}
 
 	if (bPressed)
 	{
-		if (CombatState != ECombatState::ECS_UltimateMode) CombatState = ECombatState::ECS_Attacking;
+		if (CombatState != ECombatState::UltimateMode) CombatState = ECombatState::Attacking;
 		PlayFireMontage(bIsAiming);
 		Gun->Fire(TraceHitTarget);
 	}
@@ -2760,7 +2763,7 @@ bool ACharacterBase::CanFire()
 
 	if (Gun->IsEmpty()) Reload();
 
-	return !Gun->IsEmpty() && (CombatState == ECombatState::ECS_Unoccupied || CombatState == ECombatState::ECS_HitReact || CombatState == ECombatState::ECS_Attacking || CombatState == ECombatState::ECS_UltimateMode);
+	return !Gun->IsEmpty() && (CombatState == ECombatState::Unoccupied || CombatState == ECombatState::HitReact || CombatState == ECombatState::Attacking || CombatState == ECombatState::UltimateMode);
 }
 
 void ACharacterBase::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)
@@ -2783,13 +2786,13 @@ void ACharacterBase::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)
 
 //void ACharacterBase::InitializeCarriedAmmo()
 //{
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_Pistol, StartingPistolAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_GrenadeLauncher, StartingGrenadeLauncherAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::AssaultRifle, StartingARAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::RocketLauncher, StartingRocketAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::Pistol, StartingPistolAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::SMG, StartingSMGAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::Shotgun, StartingShotgunAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::SniperRifle, StartingSniperAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::GrenadeLauncher, StartingGrenadeLauncherAmmo);
 //
 //}
 
@@ -2797,7 +2800,7 @@ void ACharacterBase::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)
 //{
 //	//UE_LOG(LogTemp, Display, TEXT("OnRep_CarriedAmmo"));
 //
-//	bool bJumpToShoutgunEnd = CombatState == ECombatState::ECS_Reloading && InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun && CarriedAmmo == 0;
+//	bool bJumpToShoutgunEnd = CombatState == ECombatState::Reloading && InventoryComponent->EquippedWeapon != nullptr && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::Shotgun && CarriedAmmo == 0;
 //	if (CarriedAmmo == 0)
 //	{
 //		UE_LOG(LogTemp, Display, TEXT("JumpToShotgunEnd"));
@@ -2810,7 +2813,7 @@ void ACharacterBase::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)
 void ACharacterBase::UpdateAmmoValues()
 {
 	if (InventoryComponent->EquippedWeapon == nullptr) return;
-	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun) return;
+	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::Shotgun) return;
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
@@ -2875,7 +2878,7 @@ void ACharacterBase::Reload()
 
 void ACharacterBase::HandleReload()
 {
-	CombatState = ECombatState::ECS_Reloading;
+	CombatState = ECombatState::Reloading;
 	PlayReloadMontage();
 }
 
@@ -2922,7 +2925,7 @@ void ACharacterBase::FinishReloading()
 	bLocallyReloading = false;
 	if (true)
 	{
-		CombatState = ECombatState::ECS_Unoccupied;
+		CombatState = ECombatState::Unoccupied;
 		UpdateAmmoValues();
 	}
 }
@@ -2956,7 +2959,7 @@ void ACharacterBase::MulticastBolt_Implementation()
 
 void ACharacterBase::Bolt()
 {
-	if (InventoryComponent->EquippedWeapon && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	if (InventoryComponent->EquippedWeapon && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle)
 	{
 		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 		if (!Gun) return;
@@ -2969,9 +2972,9 @@ void ACharacterBase::Bolt()
 
 void ACharacterBase::Melee()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied)
+	if (CombatState != ECombatState::Unoccupied)
 	{
-		if (CombatState != ECombatState::ECS_Reloading) return;
+		if (CombatState != ECombatState::Reloading) return;
 	}
 
 	UE_LOG(LogTemp, Display, TEXT("Melee"));
@@ -2985,7 +2988,7 @@ void ACharacterBase::Melee()
 
 void ACharacterBase::MeleeFunc()
 {
-	CombatState = ECombatState::ECS_MeleeAttack;
+	CombatState = ECombatState::MeleeAttack;
 	if (MeleeMontage) PlayMontage(GetMesh()->GetAnimInstance(), MeleeMontage, TEXT("MeleeAttack"), -1);
 }
 
@@ -3011,16 +3014,16 @@ void ACharacterBase::SetMovementSpeed(float WalkSpeed, float CrouchSpeed)
 //{
 //	switch (CombatState)
 //	{
-//	case ECombatState::ECS_Unoccupied:
+//	case ECombatState::Unoccupied:
 //		if (bFireButtonPressed)
 //		{
 //			FireButtonPressed(true);
 //		}
 //		break;
-//	case ECombatState::ECS_Reloading:
+//	case ECombatState::Reloading:
 //		if (Character && !IsLocallyControlled()) HandleReload();
 //		break;
-//	case ECombatState::ECS_ThrowingGrenade:
+//	case ECombatState::ThrowingGrenade:
 //		//if (Character && !IsLocallyControlled()) // Simulate Proxy 만 재생하게 혹시 모르니 조건문 걸은거임
 //		//{
 //		//	PlayThrowGrenadeMontage();
@@ -3029,7 +3032,7 @@ void ACharacterBase::SetMovementSpeed(float WalkSpeed, float CrouchSpeed)
 //		ShowAttachedGrenade(true);
 //
 //		break;
-//	case ECombatState::ECS_SwappingWeapon:
+//	case ECombatState::SwappingWeapon:
 //		if (Character && !IsLocallyControlled())
 //		{
 //			PlaySwapMontage();
@@ -3044,8 +3047,8 @@ void ACharacterBase::SetMovementSpeed(float WalkSpeed, float CrouchSpeed)
 
 void ACharacterBase::ThrowGrenade()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied || AnimState == EAnimState::EAS_UnEquipped) return;
-	//CombatState = ECombatState::ECS_ThrowingGrenade;
+	if (CombatState != ECombatState::Unoccupied || AnimState == EAnimState::UnEquipped) return;
+	//CombatState = ECombatState::ThrowingGrenade;
 	//if (Character)
 	//{
 	//	PlayThrowGrenadeMontage();
@@ -3068,7 +3071,7 @@ void ACharacterBase::ThrowGrenade()
 void ACharacterBase::ThrowGrenadeFinished()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("ThrowGrenadeFinished"));
-	CombatState = ECombatState::ECS_Unoccupied;
+	CombatState = ECombatState::Unoccupied;
 	AttachActorToRightHand(InventoryComponent->EquippedWeapon);
 }
 
@@ -3106,10 +3109,10 @@ void ACharacterBase::AttachActorToLeftHand(AActor* ActorToAttach)
 {
 	if (GetMesh() == nullptr || ActorToAttach == nullptr || InventoryComponent->EquippedWeapon == nullptr) return;
 	//UE_LOG(LogTemp, Display, TEXT("AttachActorToRightHand"));
-	bool bUsePistolSocket = InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol || InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SMG;
+	bool bUsePistolSocket = InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::Pistol || InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SMG;
 	FName SocketName = bUsePistolSocket ? TEXT("hand_lSocket_Pistol") : TEXT("hand_lSocket");
 
-	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle)
 	{
 		SocketName = TEXT("hand_lSocket_Rifle");
 	}
@@ -3136,7 +3139,7 @@ void ACharacterBase::ServerThrowGrenade_Implementation()
 {
 	if (InventoryComponent->Grenades == 0) return;
 	//UE_LOG(LogTemp, Display, TEXT("ServerThrowGrenade_Implementation"));
-	CombatState = ECombatState::ECS_ThrowingGrenade;
+	CombatState = ECombatState::ThrowingGrenade;
 	ShowAttachedGrenade(true);
 	AttachActorToLeftHand(InventoryComponent->EquippedWeapon);
 	PlayThrowGrenadeMontage();
@@ -3261,7 +3264,7 @@ void ACharacterBase::Slide()
 
 	if (GetVelocity().Length() > 500.f && CanJump())
 	{
-		CombatState = ECombatState::ECS_Sliding;
+		CombatState = ECombatState::Sliding;
 		if (!HasAuthority()) SlideFunc();
 		ServerSlide();
 	}
@@ -3290,17 +3293,17 @@ void ACharacterBase::OnRep_Sliding()
 bool ACharacterBase::Dodge(FName InSectionName)
 {
 	//UE_LOG(LogTemp, Display, TEXT("Dodge : CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
-	if (CombatState != ECombatState::ECS_Unoccupied || GetCharacterMovement()->IsFalling())
+	if (CombatState != ECombatState::Unoccupied || GetCharacterMovement()->IsFalling())
 	{
-		if (CombatState != ECombatState::ECS_Reloading)
+		if (CombatState != ECombatState::Reloading)
 		{
-			if (CombatState != ECombatState::ECS_Attacking) return false;
+			if (CombatState != ECombatState::Attacking) return false;
 		}
 	}
 
 	if (!CheckSpUnder(AttributeComponent->GetCurrentSp(), AttributeComponent->GetDodgeCost())) return false;
 
-	//CombatState = ECombatState::ECS_Dodging;
+	//CombatState = ECombatState::Dodging;
 
 	//bIsDodge = true;
 
@@ -3315,7 +3318,7 @@ bool ACharacterBase::Dodge(FName InSectionName)
 
 void ACharacterBase::DodgeFunc(FName InSectionName)
 {
-	CombatState = ECombatState::ECS_Dodging;
+	CombatState = ECombatState::Dodging;
 	Crouch();
 	PlayDodgeMontage(InSectionName);
 }
@@ -3336,7 +3339,7 @@ void ACharacterBase::OnRep_Dodge()
 
 void ACharacterBase::VaultOrMantle()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 	//UE_LOG(LogTemp, Display, TEXT("VaultOrMantle"));
 
 
@@ -3356,7 +3359,7 @@ bool ACharacterBase::VaultOrMantleFunc()
 	if (MantleVaultComponent->GetInitialObjectLocation_C())
 	{
 		//if (!HasAuthority()) UE_LOG(LogTemp, Error, TEXT("VaultOrMantleFunc"));
-		CombatState = ECombatState::ECS_VaultOrMantle;
+		CombatState = ECombatState::VaultOrMantle;
 		bUseControllerRotationYaw = false;
 		return true;
 	}
@@ -3400,7 +3403,7 @@ void ACharacterBase::SetAimingFunc(bool InbIsAiming)
 
 
 		//SetMovementSpeed(AimWalkSpeed, AimCrouchSpeed);
-		AnimState = EAnimState::EAS_Combat;
+		AnimState = EAnimState::Combat;
 	}
 	else
 	{
@@ -3420,7 +3423,7 @@ void ACharacterBase::SetAimingFunc(bool InbIsAiming)
 
 
 		//SetMovementSpeed(BaseWalkSpeed, BaseCrouchSpeed);
-		AnimState = EAnimState::EAS_Equipped;
+		AnimState = EAnimState::Equipped;
 	}
 }
 
@@ -3443,7 +3446,7 @@ void ACharacterBase::OnRep_Aiming_Finished()
 	if (IsLocallyControlled())
 	{
 		bIsAiming = bAimButtonPressed;
-		AnimState = EAnimState::EAS_Equipped;
+		AnimState = EAnimState::Equipped;
 	}
 }
 
@@ -3484,7 +3487,7 @@ void ACharacterBase::SimProxiesTurn()
 	float Speed = CalculateSpeed();
 	if (Speed > 0.f)
 	{
-		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		TurningInPlace = ETurningInPlace::NotTurning;
 		return;
 	}
 
@@ -3500,20 +3503,20 @@ void ACharacterBase::SimProxiesTurn()
 	{
 		if (ProxyYawDelta > TurnThreshold)
 		{
-			TurningInPlace = ETurningInPlace::ETIP_TurningRight;
+			TurningInPlace = ETurningInPlace::TurningRight;
 		}
 		else if (ProxyYawDelta < -TurnThreshold)
 		{
-			TurningInPlace = ETurningInPlace::ETIP_TurningLeft;
+			TurningInPlace = ETurningInPlace::TurningLeft;
 		}
 		else
 		{
-			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			TurningInPlace = ETurningInPlace::NotTurning;
 		}
 	}
 	else
 	{
-		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		TurningInPlace = ETurningInPlace::NotTurning;
 	}
 }
 
@@ -3523,20 +3526,20 @@ void ACharacterBase::TurnInPlace(float DeltaTime)
 
 	if (AO_Yaw > TurningThreshold) // Right Turning Threshold
 	{
-		TurningInPlace = ETurningInPlace::ETIP_TurningRight;
+		TurningInPlace = ETurningInPlace::TurningRight;
 	}
 	else if (AO_Yaw < -TurningThreshold) // Left Turning Threshold
 	{
-		TurningInPlace = ETurningInPlace::ETIP_TurningLeft;
+		TurningInPlace = ETurningInPlace::TurningLeft;
 	}
 
-	if (TurningInPlace != ETurningInPlace::ETIP_NotTurning)
+	if (TurningInPlace != ETurningInPlace::NotTurning)
 	{
 		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 6.f);
 		AO_Yaw = InterpAO_Yaw;
 		if (FMath::Abs(AO_Yaw) < 15.f)
 		{
-			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			TurningInPlace = ETurningInPlace::NotTurning;
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		}
 	}
@@ -3555,7 +3558,7 @@ void ACharacterBase::AimOffset(float DeltaTime)
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
 
 
-	if (AnimState != EAnimState::EAS_UnEquipped)
+	if (AnimState != EAnimState::UnEquipped)
 	{
 		// Manage Left and Right
 		if (Speed <= 0.f && !bIsInAir)
@@ -3573,7 +3576,7 @@ void ACharacterBase::AimOffset(float DeltaTime)
 			AO_Yaw = DeltaAimRotation.Yaw;
 			//if (IsAiming()) bUseControllerRotationYaw = false;
 
-			if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
+			if (TurningInPlace == ETurningInPlace::NotTurning)
 			{
 				InterpAO_Yaw = AO_Yaw;
 			}
@@ -3584,14 +3587,14 @@ void ACharacterBase::AimOffset(float DeltaTime)
 
 		if (Speed > 0.f || bIsInAir)
 		{
-			if (AnimState == EAnimState::EAS_Combat)
+			if (AnimState == EAnimState::Combat)
 			{
 				bRotateRootBone = false;
 			}
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 			AO_Yaw = 0.f;
 			//if (IsAiming()) bUseControllerRotationYaw = true;
-			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			TurningInPlace = ETurningInPlace::NotTurning;
 		}
 		//
 	}
@@ -3751,7 +3754,7 @@ void ACharacterBase::MulticastDash_Implementation(FName InSectionName)
 
 void ACharacterBase::DashFunc(FName InSectionName)
 {
-	CombatState = ECombatState::ECS_Dash;
+	CombatState = ECombatState::Dash;
 
 	PlayMontage(GetMesh()->GetAnimInstance(), DashMontage, InSectionName, -1);
 
@@ -3767,11 +3770,11 @@ bool ACharacterBase::Dash(FName InSectionName)
 {
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
-	if (CombatState != ECombatState::ECS_Unoccupied)
+	if (CombatState != ECombatState::Unoccupied)
 	{
-		if (CombatState != ECombatState::ECS_Reloading)
+		if (CombatState != ECombatState::Reloading)
 		{
-			if (CombatState != ECombatState::ECS_Attacking) return false;
+			if (CombatState != ECombatState::Attacking) return false;
 		}
 	}
 
@@ -3845,8 +3848,8 @@ void ACharacterBase::AO_PitchMappingForClient()
 void ACharacterBase::RotateInPlace(float DeltaTime)
 {
 	//if (IsLocallyControlled()) UE_LOG(LogTemp, Display, TEXT("Role : %s, CombatState : %s"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), *UEnum::GetDisplayValueAsText(CombatState).ToString());
-	if (CombatState == ECombatState::ECS_VaultOrMantle) return;
-	if (CombatState == ECombatState::ECS_Dash) return;
+	if (CombatState == ECombatState::VaultOrMantle) return;
+	if (CombatState == ECombatState::Dash) return;
 
 	if (GetController() == nullptr) return;
 
@@ -3866,7 +3869,7 @@ void ACharacterBase::RotateInPlace(float DeltaTime)
 	{
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		TurningInPlace = ETurningInPlace::NotTurning;
 		return;
 	}
 
@@ -3879,7 +3882,7 @@ void ACharacterBase::RotateInPlace(float DeltaTime)
 	if (bDisableGameplay)
 	{
 		bUseControllerRotationYaw = false;
-		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		TurningInPlace = ETurningInPlace::NotTurning;
 		return;
 	}
 
@@ -3950,7 +3953,7 @@ void ACharacterBase::MulticastCheckParry_Implementation(AActor* OtherActor)
 //		UE_LOG(LogTemp, Warning, TEXT("Blocking"));
 //		if (OtherCharacterBase->ParriedMontage) PlayMontage(GetMesh()->GetAnimInstance(), OtherCharacterBase->ParriedMontage, TEXT("Parried"), -1);
 //		OtherCharacterBase->DisableHitCapsulesCollision();
-//		OtherCharacterBase->CombatState = ECombatState::ECS_Parried;
+//		OtherCharacterBase->CombatState = ECombatState::Parried;
 //		//if (EnemyAIController) EnemyAIController->GetBlackboardComponent()->SetValueAsBool(IS_PARRIED, true);
 //		if (EnemyAIController) EnemyAIController->StopAI();
 //

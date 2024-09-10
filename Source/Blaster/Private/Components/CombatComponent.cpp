@@ -154,13 +154,13 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	//else if (TEXT("DodgeEnd") == NotifyName)
 	//{
 	//	//bIsDodge = false;
-	//	//Character->CombatState = ECombatState::ECS_Unoccupied;
+	//	//Character->CombatState = ECombatState::Unoccupied;
 	//	Character->UnCrouch();
 	//}
 	//else if (TEXT("VaultOrMantleEnd") == NotifyName)
 	//{
 	//	bIsMorV = false;
-	//	Character->SetCombatState(ECombatState::ECS_Unoccupied);
+	//	Character->SetCombatState(ECombatState::Unoccupied);
 	//	Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	//	Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	//}
@@ -191,7 +191,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //
 //		//SetMovementSpeed(AimWalkSpeed, AimCrouchSpeed);
-//		CharacterState = ECharacterState::EAS_Combat;
+//		CharacterState = ECharacterState::Combat;
 //	}
 //	else
 //	{
@@ -211,7 +211,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //
 //		//SetMovementSpeed(BaseWalkSpeed, BaseCrouchSpeed);
-//		CharacterState = ECharacterState::EAS_Equipped;
+//		CharacterState = ECharacterState::Equipped;
 //	}
 //}
 //
@@ -226,7 +226,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //	ServerSetAiming(InbIsAiming);
 //
-//	if (Character->IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+//	if (Character->IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle)
 //	{
 //		Character->ShowSniperScopeWidget(InbIsAiming);
 //	}
@@ -237,7 +237,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //	if (Character && Character->IsLocallyControlled())
 //	{
 //		bIsAiming = bAimButtonPressed;
-//		CharacterState = ECharacterState::EAS_Equipped;
+//		CharacterState = ECharacterState::Equipped;
 //	}
 //}
 //
@@ -280,7 +280,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //		//UE_LOG(LogTemp, Display, TEXT("Equipped!"));
 //
 //		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-//		//CharacterState = ECharacterState::EAS_Equipped;
+//		//CharacterState = ECharacterState::Equipped;
 //
 //		AttachActorToRightHand(EquippedWeapon);
 //		PlayEquipWeaponSound();
@@ -331,11 +331,11 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //
 //	if (Character == nullptr || InWeapon == nullptr) return;
-//	if (Character->CombatState != ECombatState::ECS_Unoccupied) return;
+//	if (Character->CombatState != ECombatState::Unoccupied) return;
 //
 //	//UE_LOG(LogTemp, Display, TEXT("LocalRole : %s"), *UEnum::GetDisplayValueAsText(Character->GetLocalRole()).ToString());
 //
-//	if (InWeapon->GetWeaponType() == EWeaponType::EWT_Flag)
+//	if (InWeapon->GetWeaponType() == EWeaponType::Flag)
 //	{
 //
 //		Character->Crouch();
@@ -372,11 +372,11 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //void UCombatComponent::SwapWeapons()
 //{
-//	if (Character == nullptr || Character->CombatState != ECombatState::ECS_Unoccupied) return;
+//	if (Character == nullptr || Character->CombatState != ECombatState::Unoccupied) return;
 //
 //	Character->PlaySwapMontage();
 //	Character->bFinishedSwapping = false;
-//	Character->CombatState = ECombatState::ECS_SwappingWeapon;
+//	Character->CombatState = ECombatState::SwappingWeapon;
 //
 //	AWeapon_Gun* TempWeapon = EquippedWeapon;
 //	EquippedWeapon = SecondaryWeapon;
@@ -492,13 +492,13 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //{
 //	AShotgun* Shotgun = Cast<AShotgun>(EquippedWeapon);
 //	if (Shotgun == nullptr || Character == nullptr) return;
-//	if (Character->CombatState == ECombatState::ECS_Reloading || Character->CombatState == ECombatState::ECS_Unoccupied)
+//	if (Character->CombatState == ECombatState::Reloading || Character->CombatState == ECombatState::Unoccupied)
 //	{
 //		//UE_LOG(LogTemp, Display, TEXT("ShotgunLocalFire"));
 //		bLocallyReloading = false;
 //		Character->PlayFireMontage(bIsAiming);
 //		Shotgun->FireShotgun(TraceHitTargets);
-//		Character->CombatState = ECombatState::ECS_Unoccupied;
+//		Character->CombatState = ECombatState::Unoccupied;
 //	}
 //
 //}
@@ -597,15 +597,15 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //	//UE_LOG(LogTemp, Warning, TEXT("%s : LocalFire"), *RoleStr);
 //
 //	if (EquippedWeapon == nullptr) return;
-//	//if (Character && CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun)
+//	//if (Character && CombatState == ECombatState::Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::Shotgun)
 //	//{
 //	//	Character->PlayFireMontage(bIsAiming);
 //	//	EquippedWeapon->Fire(TraceHitTarget);
-//	//	CombatState = ECombatState::ECS_Unoccupied;
+//	//	CombatState = ECombatState::Unoccupied;
 //	//	return;
 //	//}
 //
-//	if (Character && Character->CombatState == ECombatState::ECS_Unoccupied)
+//	if (Character && Character->CombatState == ECombatState::Unoccupied)
 //	{
 //		if (bPressed)
 //		{
@@ -649,14 +649,14 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //
 //	//UE_LOG(LogTemp, Display, TEXT("CombatState : %d"), CombatState);
-//	//return !EquippedWeapon->IsEmpty() && !bCanFire && CombatState == ECombatState::ECS_Unoccupied;
-//	if (!EquippedWeapon->IsEmpty() && Character->CombatState == ECombatState::ECS_Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun)
+//	//return !EquippedWeapon->IsEmpty() && !bCanFire && CombatState == ECombatState::Unoccupied;
+//	if (!EquippedWeapon->IsEmpty() && Character->CombatState == ECombatState::Reloading && EquippedWeapon->GetWeaponType() == EWeaponType::Shotgun)
 //	{
 //
 //	}
 //	if (bLocallyReloading) return false;
 //
-//	return !EquippedWeapon->IsEmpty() && Character->CombatState == ECombatState::ECS_Unoccupied;
+//	return !EquippedWeapon->IsEmpty() && Character->CombatState == ECombatState::Unoccupied;
 //}
 //
 //void UCombatComponent::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)
@@ -676,13 +676,13 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //void UCombatComponent::InitializeCarriedAmmo()
 //{
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_Pistol, StartingPistolAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperAmmo);
-//	CarriedAmmoMap.Emplace(EWeaponType::EWT_GrenadeLauncher, StartingGrenadeLauncherAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::AssaultRifle, StartingARAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::RocketLauncher, StartingRocketAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::Pistol, StartingPistolAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::SMG, StartingSMGAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::Shotgun, StartingShotgunAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::SniperRifle, StartingSniperAmmo);
+//	CarriedAmmoMap.Emplace(EWeaponType::GrenadeLauncher, StartingGrenadeLauncherAmmo);
 //
 //}
 //
@@ -694,7 +694,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //		Controller->SetHUDCarriedAmmo(CarriedAmmo);
 //	}
 //
-//	bool bJumpToShoutgunEnd = Character->CombatState == ECombatState::ECS_Reloading && EquippedWeapon != nullptr && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Shotgun && CarriedAmmo == 0;
+//	bool bJumpToShoutgunEnd = Character->CombatState == ECombatState::Reloading && EquippedWeapon != nullptr && EquippedWeapon->GetWeaponType() == EWeaponType::Shotgun && CarriedAmmo == 0;
 //	if (bJumpToShoutgunEnd)
 //	{
 //		JumpToShotgunEnd();
@@ -747,7 +747,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //void UCombatComponent::Reload()
 //{
 //	//UE_LOG(LogTemp, Display, TEXT("CombatState : %d"), CombatState);
-//	if (CarriedAmmo > 0 && Character->CombatState == ECombatState::ECS_Unoccupied && !EquippedWeapon->IsFull() && !bLocallyReloading)
+//	if (CarriedAmmo > 0 && Character->CombatState == ECombatState::Unoccupied && !EquippedWeapon->IsFull() && !bLocallyReloading)
 //	{
 //		ServerReload();
 //		HandleReload();
@@ -758,7 +758,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //void UCombatComponent::HandleReload()
 //{
 //	if (Character == nullptr) return;
-//	Character->CombatState = ECombatState::ECS_Reloading;
+//	Character->CombatState = ECombatState::Reloading;
 //	Character->PlayReloadMontage();
 //}
 //
@@ -801,7 +801,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //	bLocallyReloading = false;
 //	if (true)
 //	{
-//		Character->CombatState = ECombatState::ECS_Unoccupied;
+//		Character->CombatState = ECombatState::Unoccupied;
 //		UpdateAmmoValues();
 //	}
 //}
@@ -964,16 +964,16 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 ////{
 ////	switch (CombatState)
 ////	{
-////	case ECombatState::ECS_Unoccupied:
+////	case ECombatState::Unoccupied:
 ////		if (bFireButtonPressed)
 ////		{
 ////			FireButtonPressed(true);
 ////		}
 ////		break;
-////	case ECombatState::ECS_Reloading:
+////	case ECombatState::Reloading:
 ////		if (Character && !Character->IsLocallyControlled()) HandleReload();
 ////		break;
-////	case ECombatState::ECS_ThrowingGrenade:
+////	case ECombatState::ThrowingGrenade:
 ////		//if (Character && !Character->IsLocallyControlled()) // Simulate Proxy 만 재생하게 혹시 모르니 조건문 걸은거임
 ////		//{
 ////		//	Character->PlayThrowGrenadeMontage();
@@ -982,7 +982,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 ////		ShowAttachedGrenade(true);
 ////
 ////		break;
-////	case ECombatState::ECS_SwappingWeapon:
+////	case ECombatState::SwappingWeapon:
 ////		if (Character && !Character->IsLocallyControlled())
 ////		{
 ////			Character->PlaySwapMontage();
@@ -997,8 +997,8 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //void UCombatComponent::ThrowGrenade()
 //{
-//	if (Character->CombatState != ECombatState::ECS_Unoccupied || CharacterState == ECharacterState::EAS_UnEquipped) return;
-//	//CombatState = ECombatState::ECS_ThrowingGrenade;
+//	if (Character->CombatState != ECombatState::Unoccupied || CharacterState == ECharacterState::UnEquipped) return;
+//	//CombatState = ECombatState::ThrowingGrenade;
 //	//if (Character)
 //	//{
 //	//	Character->PlayThrowGrenadeMontage();
@@ -1021,7 +1021,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //void UCombatComponent::ThrowGrenadeFinished()
 //{
 //	//UE_LOG(LogTemp, Warning, TEXT("ThrowGrenadeFinished"));
-//	Character->CombatState = ECombatState::ECS_Unoccupied;
+//	Character->CombatState = ECombatState::Unoccupied;
 //	AttachActorToRightHand(EquippedWeapon);
 //}
 //
@@ -1059,7 +1059,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //{
 //	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr || EquippedWeapon == nullptr) return;
 //	//UE_LOG(LogTemp, Display, TEXT("AttachActorToRightHand"));
-//	bool bUsePistolSocket = EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol || EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SMG;
+//	bool bUsePistolSocket = EquippedWeapon->GetWeaponType() == EWeaponType::Pistol || EquippedWeapon->GetWeaponType() == EWeaponType::SMG;
 //	FName SocketName = bUsePistolSocket ? TEXT("hand_lSocket_Pistol") : TEXT("hand_lSocket");
 //	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(SocketName);
 //	if (HandSocket)
@@ -1083,7 +1083,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //{
 //	if (Character == nullptr || Grenades == 0) return;
 //	//UE_LOG(LogTemp, Display, TEXT("ServerThrowGrenade_Implementation"));
-//	Character->CombatState = ECombatState::ECS_ThrowingGrenade;
+//	Character->CombatState = ECombatState::ThrowingGrenade;
 //	ShowAttachedGrenade(true);
 //	AttachActorToLeftHand(EquippedWeapon);
 //	Character->PlayThrowGrenadeMontage();
@@ -1234,10 +1234,10 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //void UCombatComponent::Dodge()
 //{
 //	//UE_LOG(LogTemp, Display, TEXT("Dodge : CombatState : %s"), *UEnum::GetDisplayValueAsText(Character->CombatState).ToString());
-//	if (Character == nullptr || Character->CombatState != ECombatState::ECS_Unoccupied) return;
+//	if (Character == nullptr || Character->CombatState != ECombatState::Unoccupied) return;
 //	if (Character->GetCharacterMovement()->IsFalling()) return;
 //
-//	Character->CombatState = ECombatState::ECS_Dodging;
+//	Character->CombatState = ECombatState::Dodging;
 //
 //	if (!Character->HasAuthority())
 //	{
@@ -1258,16 +1258,16 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //	switch (Character->KeyType)
 //	{
-//	case EKeyType::EKT_Fwd:
+//	case EKeyType::Fwd:
 //		SectionName = TEXT("Front");
 //		break;
-//	case EKeyType::EKT_Bwd:
+//	case EKeyType::Bwd:
 //		SectionName = TEXT("Back");
 //		break;
-//	case EKeyType::EKT_Left:
+//	case EKeyType::Left:
 //		SectionName = TEXT("Left");
 //		break;
-//	case EKeyType::EKT_Right:
+//	case EKeyType::Right:
 //		SectionName = TEXT("Right");
 //		break;
 //	default:
@@ -1295,7 +1295,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //void UCombatComponent::VaultOrMantle()
 //{
-//	if (Character->CombatState != ECombatState::ECS_Unoccupied) return;
+//	if (Character->CombatState != ECombatState::Unoccupied) return;
 //	//UE_LOG(LogTemp, Display, TEXT("VaultOrMantle"));
 //
 //
@@ -1309,7 +1309,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //	if (Character->MantleVaultComponent->GetInitialObjectLocation_C())
 //	{
 //		if (!Character->HasAuthority()) UE_LOG(LogTemp, Error, TEXT("VaultOrMantleFunc"));
-//		Character->CombatState = ECombatState::ECS_VaultOrMantle;
+//		Character->CombatState = ECombatState::VaultOrMantle;
 //		Character->bUseControllerRotationYaw = false;
 //	}
 //}

@@ -8,16 +8,16 @@
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	EWT_AssaultRifle = 0 UMETA(DisplayName = "AssaultRifle"),
-	EWT_RocketLauncher UMETA(DisplayName = "RocketLauncher"),
-	EWT_Pistol UMETA(DisplayName = "Pistol"),
-	EWT_SMG UMETA(DisplayName = "SMG"),
-	EWT_Shotgun UMETA(DisplayName = "Shotgun"),
-	EWT_SniperRifle UMETA(DisplayName = "SniperRifle"),
-	EWT_GrenadeLauncher UMETA(DisplayName = "GrenadeLauncher"),
-	EWT_Flag UMETA(DisplayName = "Flag"),
-	EWT_OneHanded UMETA(DisplayName = "OneHanded"),
-	EWT_TwoHanded UMETA(DisplayName = "TwoHanded"),
+	AssaultRifle = 0 UMETA(DisplayName = "AssaultRifle"),
+	RocketLauncher UMETA(DisplayName = "RocketLauncher"),
+	Pistol UMETA(DisplayName = "Pistol"),
+	SMG UMETA(DisplayName = "SMG"),
+	Shotgun UMETA(DisplayName = "Shotgun"),
+	SniperRifle UMETA(DisplayName = "SniperRifle"),
+	GrenadeLauncher UMETA(DisplayName = "GrenadeLauncher"),
+	Flag UMETA(DisplayName = "Flag"),
+	OneHanded UMETA(DisplayName = "OneHanded"),
+	TwoHanded UMETA(DisplayName = "TwoHanded"),
 	EWT_MAX UMETA(DisplayName = "MAX")
 
 };

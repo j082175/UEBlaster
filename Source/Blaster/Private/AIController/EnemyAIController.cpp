@@ -57,7 +57,7 @@ void AEnemyAIController::OnTargetPerceptionForgotten(AActor* Actor)
 	{
 		GetBlackboardComponent()->SetValueAsObject(TARGET_ACTOR, nullptr);
 		SetFocus(nullptr);
-		if (AIPawn) AIPawn->ISetAIState(EAIState::EAI_Passive);
+		if (AIPawn) AIPawn->ISetAIState(EAIState::Passive);
 	}
 
 }

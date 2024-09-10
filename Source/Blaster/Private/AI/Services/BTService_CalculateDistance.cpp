@@ -16,8 +16,8 @@ void UBTService_CalculateDistance::TickNode(UBehaviorTreeComponent& OwnerComp, u
 	UBlackboardComponent* BC = OwnerComp.GetBlackboardComponent();
 	if (BC == nullptr) return;
 
-	FString DistanceStr = Target == ETarget::ET_OwingActor ? OWING_ACTOR_DISTANCE : TARGET_ACTOR_DISTANCE;
-	FString Actor = Target == ETarget::ET_OwingActor ? OWING_ACTOR : TARGET_ACTOR;
+	FString DistanceStr = Target == ETarget::OwingActor ? OWING_ACTOR_DISTANCE : TARGET_ACTOR_DISTANCE;
+	FString Actor = Target == ETarget::OwingActor ? OWING_ACTOR : TARGET_ACTOR;
 
 	AActor* TargetActor = Cast<AActor>(BC->GetValueAsObject(*Actor));
 	if (TargetActor == nullptr) return;

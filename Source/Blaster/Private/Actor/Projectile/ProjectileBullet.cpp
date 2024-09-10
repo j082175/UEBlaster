@@ -123,6 +123,8 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	//UE_LOG(LogTemp, Display, TEXT("GetOwner : %s"), *GetOwner()->GetName());
 
 	ITeamInterface* TI = Cast<ITeamInterface>(OtherActor);
+
+	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
 	ITeamInterface* T2 = Cast<ITeamInterface>(GetOwner());
 	if (TI && T2 && TI->IGetTeam() == T2->IGetTeam())
 	{
@@ -143,7 +145,6 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 
 
-	ACharacterBase* OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (OwnerCharacter)
 	{
 
@@ -154,8 +155,7 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 			float DamageToCause = Hit.BoneName.ToString() == TEXT("head") ? HeadShotDamage : Damage;
 
 			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType_Projectile::StaticClass());
-			Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
-			
+
 			return;
 		}
 
@@ -164,11 +164,11 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		if (OwnerController)
 		{
 			ACharacterBase* HitCharacter = Cast<ACharacterBase>(OtherActor);
-			if (bUseServerSideRewind && OwnerCharacter->GetLagCompensationComponent() && OwnerCharacter->IsLocallyControlled() && HitCharacter)
+			if (bUseServerSideRewind && OwnerCharacter->GetComponentByClass<ULagCompensationComponent>() && OwnerCharacter->IsLocallyControlled() && HitCharacter)
 			{
 				//UE_LOG(LogTemp, Warning, TEXT("Autonomous : ProjectileBullet OnHit"));
 
-				OwnerCharacter->GetLagCompensationComponent()->ProjectileServerScoreRequest(HitCharacter, TraceStart, InitialVelocity, OwnerController->GetServerTime() - OwnerController->SingleTripTime);
+				OwnerCharacter->GetComponentByClass<ULagCompensationComponent>()->ProjectileServerScoreRequest(HitCharacter, TraceStart, InitialVelocity, OwnerController->GetServerTime() - OwnerController->SingleTripTime);
 			}
 		}
 	}

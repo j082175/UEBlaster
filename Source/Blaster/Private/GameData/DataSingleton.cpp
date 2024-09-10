@@ -8,10 +8,29 @@ DEFINE_LOG_CATEGORY(LogABGameSingleton);
 
 UDataSingleton::UDataSingleton()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableRef(TEXT("/Script/Engine.DataTable'/Game/A_Blaster/GameData/DA_WeaponData.DA_WeaponData'"));
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableRef(TEXT("/Script/Engine.DataTable'/Game/A_Blaster/GameData/DA_WeaponStat.DA_WeaponStat'"));
 	if (nullptr != DataTableRef.Object)
 	{
 		const UDataTable* DataTable = DataTableRef.Object;
+		check(DataTable->GetRowMap().Num() > 0);
+
+		TArray<uint8*> ValueArray;
+		DataTable->GetRowMap().GenerateValueArray(ValueArray);
+		TArray<FName> WeaponTypeArray;
+		DataTable->GetRowMap().GenerateKeyArray(WeaponTypeArray);
+
+		WeaponStatMap.Reserve(ValueArray.Num());
+		for (size_t i = 0; i < ValueArray.Num(); i++)
+		{
+			WeaponStatMap.Emplace(WeaponTypeArray[i], *reinterpret_cast<FWeaponStat*>(ValueArray[i]));
+		}
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableRef2(TEXT("/Script/Engine.DataTable'/Game/A_Blaster/GameData/DA_WeaponData.DA_WeaponData'"));
+	if (nullptr != DataTableRef2.Object)
+	{
+		const UDataTable* DataTable = DataTableRef2.Object;
 		check(DataTable->GetRowMap().Num() > 0);
 
 		TArray<uint8*> ValueArray;
@@ -24,16 +43,12 @@ UDataSingleton::UDataSingleton()
 		{
 			WeaponDataMap.Emplace(WeaponTypeArray[i], *reinterpret_cast<FWeaponData*>(ValueArray[i]));
 		}
-
-		//Algo::Transform(ValueArray, WeaponDataMap,
-		//	[](uint8* Value)
-		//	{
-		//		return *reinterpret_cast<FWeaponData*>(Value);
-		//	}
-		//);
 	}
 
-	CharacterMaxLevel = WeaponDataMap.Num();
+
+
+
+	CharacterMaxLevel = WeaponStatMap.Num();
 	ensure(CharacterMaxLevel > 0);
 
 	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
@@ -51,7 +66,14 @@ UDataSingleton& UDataSingleton::Get()
 	return *NewObject<UDataSingleton>();
 }
 
-FWeaponData UDataSingleton::GetWeaponName(EWeaponName InWeaponType) const
+FWeaponStat UDataSingleton::GetWeaponName(EWeaponName InWeaponType) const
+{
+	FName EnumName = FName(UEnum::GetDisplayValueAsText(InWeaponType).ToString());
+
+	return WeaponStatMap.Contains(EnumName) ? WeaponStatMap[EnumName] : FWeaponStat();
+}
+
+FWeaponData UDataSingleton::GetWeaponData(EWeaponName InWeaponType) const
 {
 	FName EnumName = FName(UEnum::GetDisplayValueAsText(InWeaponType).ToString());
 

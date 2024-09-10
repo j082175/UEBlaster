@@ -56,7 +56,7 @@ UWidgetAnimation* WidgetAnimHelper::StartAnimation(const FString& InPrefix, cons
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Blaster::StartAnimation Find WidgetAnimation Failed!!!"));
+		UE_LOG(LogTemp, Error, TEXT("Blaster::StartAnimation Find WidgetAnimation Failed!!! : %s"), *Str);
 
 	}
 

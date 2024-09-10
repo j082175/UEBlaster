@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+
+#include "GameData/WeaponStat.h"
 #include "GameData/WeaponData.h"
 
 // Enum
@@ -26,12 +28,16 @@ public:
 
 	// Character Stat Data Section
 public:
-	FWeaponData GetWeaponName(EWeaponName InWeaponType) const;
+	FWeaponStat GetWeaponName(EWeaponName InWeaponType) const;
+	FWeaponData GetWeaponData(EWeaponName InWeaponType) const;
+
 
 	UPROPERTY()
 	int32 CharacterMaxLevel;
 
 private:
+
+	TMap<FName, FWeaponStat> WeaponStatMap;
 	TMap<FName, FWeaponData> WeaponDataMap;
 
 };

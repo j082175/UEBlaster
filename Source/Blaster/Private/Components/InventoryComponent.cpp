@@ -85,13 +85,13 @@ void UInventoryComponent::SubtractCarriedAmmoMap(EWeaponType InWeaponType, int32
 
 void UInventoryComponent::InitializeCarriedAmmo()
 {
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_Pistol, StartingPistolAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_GrenadeLauncher, StartingGrenadeLauncherAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::AssaultRifle, StartingARAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::RocketLauncher, StartingRocketAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::Pistol, StartingPistolAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::SMG, StartingSMGAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::Shotgun, StartingShotgunAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::SniperRifle, StartingSniperAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::GrenadeLauncher, StartingGrenadeLauncherAmmo);
 
 }
 

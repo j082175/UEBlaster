@@ -9,7 +9,7 @@
 #include "WeaponTypes.h"
 #include "BlasterTypes/Team.h"
 
-#include "GameData/WeaponData.h"
+#include "GameData/WeaponStat.h"
 #include "Weapon_Gun.generated.h"
 
 

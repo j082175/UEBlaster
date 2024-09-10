@@ -104,7 +104,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 
 	//GetMesh()->SetComponentTickInterval(0.001);
-	GetCharacterMovement()->SetComponentTickInterval(0.001f);
+	GetCharacterMovement()->SetComponentTickInterval(0.f);
 
 	//UE_LOG(LogTemp, Display, TEXT("Team : %s"), *UEnum::GetDisplayValueAsText(Team).ToString());
 
@@ -145,7 +145,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		InterpFOV(DeltaTime);
 
 
-		if (CombatState != ECombatState::ECS_Attacking)
+		if (CombatState != ECombatState::Attacking)
 		{
 			bIsFirebuttonPressed = false;
 		}
@@ -225,7 +225,7 @@ void ABlasterCharacter::BeginPlay()
 
 	//UE_LOG(LogTemp, Display, TEXT("ABlasterCharacter::BeginPlay()"));
 
-	SetActorTickInterval(0.01f);
+	SetActorTickInterval(0.f);
 
 	SpawnDefaultWeapon();
 
@@ -346,7 +346,7 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 //
 //EAnimState ABlasterCharacter::GetAnimState() const
 //{
-//	return  == nullptr ? EAnimState::EAS_MAX : ->AnimState;
+//	return  == nullptr ? EAnimState::MAX : ->AnimState;
 //}
 //
 //FVector ABlasterCharacter::GetHitTarget() const
@@ -357,7 +357,7 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 //ETeam ABlasterCharacter::GetTeam()
 //{
 //	BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
-//	if (BlasterPlayerState == nullptr) return ETeam::ET_NoTeam;
+//	if (BlasterPlayerState == nullptr) return ETeam::NoTeam;
 //
 //	return BlasterPlayerState->GetTeam();
 //}
@@ -744,7 +744,7 @@ void ABlasterCharacter::Look(const FInputActionValue& Value)
 void ABlasterCharacter::Move(const FInputActionValue& Value)
 {
 	if (bDisableGameplay) return;
-	if (CombatState == ECombatState::ECS_Ragdoll) return;
+	if (CombatState == ECombatState::Ragdoll) return;
 	//UE_LOG(LogTemp, Display, TEXT("Move"));
 	FVector2D Vec = Value.Get<FVector2d>();
 
@@ -757,22 +757,22 @@ void ABlasterCharacter::Move(const FInputActionValue& Value)
 
 	if (Vec.X > 0.5f)
 	{
-		KeyType = EKeyType::EKT_Fwd;
+		KeyType = EKeyType::Fwd;
 		KeySectionName = TEXT("Forward");
 	}
 	else if (Vec.X < -0.5f)
 	{
-		KeyType = EKeyType::EKT_Bwd;
+		KeyType = EKeyType::Bwd;
 		KeySectionName = TEXT("Backward");
 	}
 	else if (Vec.Y > 0.5f)
 	{
-		KeyType = EKeyType::EKT_Right;
+		KeyType = EKeyType::Right;
 		KeySectionName = TEXT("Right");
 	}
 	else if (Vec.Y < 0.5f)
 	{
-		KeyType = EKeyType::EKT_Left;
+		KeyType = EKeyType::Left;
 		KeySectionName = TEXT("Left");
 	}
 
@@ -798,7 +798,7 @@ void ABlasterCharacter::Interact()
 	//UE_LOG(LogTemp, Display, TEXT("Interact"));
 	if (bDisableGameplay) return;
 	if (bHoldingTheFlag) return;
-	if (CombatState == ECombatState::ECS_UltimateMode) return;
+	if (CombatState == ECombatState::UltimateMode) return;
 
 	//if (HasAuthority())
 	//{
@@ -831,13 +831,13 @@ void ABlasterCharacter::Interact()
 	}
 
 
-	//if (CombatState == ECombatState::ECS_Unoccupied) ServerEquipButtonPressed();
-	//bool bSwap = ShouldSwapWeapons() && !HasAuthority() && CombatState == ECombatState::ECS_Unoccupied && OverlappingWeapon == nullptr;
+	//if (CombatState == ECombatState::Unoccupied) ServerEquipButtonPressed();
+	//bool bSwap = ShouldSwapWeapons() && !HasAuthority() && CombatState == ECombatState::Unoccupied && OverlappingWeapon == nullptr;
 	//if (bSwap)
 	//{
 	//	//UE_LOG(LogTemp, Display, TEXT("Swap"));
 	//	PlaySwapMontage();
-	//	CombatState = ECombatState::ECS_SwappingWeapon;
+	//	CombatState = ECombatState::SwappingWeapon;
 	//	bFinishedSwapping = false;
 	//}
 }
@@ -978,13 +978,13 @@ void ABlasterCharacter::DodgeButtonPressed()
 	//	OnSkillStarted.Broadcast(TEXT("Active"), 1, DodgeCoolTime);
 	//}
 
-	FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::ESA_Dodge);
+	FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::Dodge);
 
 	if (S->bCanExecute)
 	{
 		if (!Dodge(KeySectionName)) return;
 		S->bCanExecute = false;
-		SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, 6, S->CoolTime);
+		SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, 6, S->CoolTime);
 	}
 
 }
@@ -1010,14 +1010,14 @@ void ABlasterCharacter::DashButtonPressed()
 		//	OnSkillStarted.Broadcast(TEXT("Active"), 2, DashCoolTime);
 		//}
 
-		FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::ESA_Dash);
+		FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::Dash);
 
 		if (S->bCanExecute)
 		{
 			//UE_LOG(LogTemp, Display, TEXT("Can Dash"));
 			if (!Dash(KeySectionName)) return;
 			S->bCanExecute = false;
-			SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, 5, S->CoolTime);
+			SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, 5, S->CoolTime);
 		}
 	}
 
@@ -1048,25 +1048,25 @@ void ABlasterCharacter::TestingButtonPressed()
 
 void ABlasterCharacter::SkillButtonPressed0()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 	SkillComponent->SkillButtonPressed(0);
 }
 
 void ABlasterCharacter::SkillButtonPressed1()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 	SkillComponent->SkillButtonPressed(1);
 }
 
 void ABlasterCharacter::SkillButtonPressed2()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 	SkillComponent->SkillButtonPressed(2);
 }
 
 void ABlasterCharacter::SkillButtonPressed3()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 
 	UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
@@ -1075,7 +1075,7 @@ void ABlasterCharacter::SkillButtonPressed3()
 
 void ABlasterCharacter::SkillButtonPressed4()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::Unoccupied) return;
 	SkillComponent->SkillButtonPressed(4);
 }
 
@@ -1181,25 +1181,25 @@ void ABlasterCharacter::SkillButtonPressed4()
 //		FName SectionName;
 //		switch (->EquippedWeapon->GetWeaponType())
 //		{
-//		case EWeaponType::EWT_AssaultRifle:
+//		case EWeaponType::AssaultRifle:
 //			SectionName = TEXT("Rifle");
 //			break;
-//		case EWeaponType::EWT_RocketLauncher:
+//		case EWeaponType::RocketLauncher:
 //			SectionName = TEXT("RocketLauncher");
 //			break;
-//		case EWeaponType::EWT_Pistol:
+//		case EWeaponType::Pistol:
 //			SectionName = TEXT("Pistol");
 //			break;
-//		case EWeaponType::EWT_SMG:
+//		case EWeaponType::SMG:
 //			SectionName = TEXT("SMG");
 //			break;
-//		case EWeaponType::EWT_Shotgun:
+//		case EWeaponType::Shotgun:
 //			SectionName = TEXT("Shotgun");
 //			break;
-//		case EWeaponType::EWT_SniperRifle:
+//		case EWeaponType::SniperRifle:
 //			SectionName = TEXT("SniperRifle");
 //			break;
-//		case EWeaponType::EWT_GrenadeLauncher:
+//		case EWeaponType::GrenadeLauncher:
 //			SectionName = TEXT("GrenadeLauncher");
 //			break;
 //		default:
@@ -1356,15 +1356,15 @@ void ABlasterCharacter::HideCameraIfCharacterClose()
 //	if (!IsValid(GetMesh()) || !IsValid(OriginalMaterial)) return;
 //	switch (Team)
 //	{
-//	case ETeam::ET_NoTeam:
+//	case ETeam::NoTeam:
 //		GetMesh()->SetMaterial(1, OriginalMaterial);
 //		DissolveMaterialInstance = BlueDissolveMatInst;
 //		break;
-//	case ETeam::ET_RedTeam:
+//	case ETeam::RedTeam:
 //		GetMesh()->SetMaterial(1, RedMaterial);
 //		DissolveMaterialInstance = RedDissolveMatInst;
 //		break;
-//	case ETeam::ET_BlueTeam:
+//	case ETeam::BlueTeam:
 //		GetMesh()->SetMaterial(1, BlueMaterial);
 //		DissolveMaterialInstance = BlueDissolveMatInst;
 //		break;
@@ -1475,7 +1475,7 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 	//	UGameplayStatics::SpawnSoundAtLocation(this, ElimBotSound, GetActorLocation());
 	//}
 
-	bool bHideSniperScope = IsLocallyControlled() && bIsAiming && InventoryComponent->EquippedWeapon && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
+	bool bHideSniperScope = IsLocallyControlled() && bIsAiming && InventoryComponent->EquippedWeapon && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle;
 
 	if (bHideSniperScope)
 	{
@@ -1494,7 +1494,7 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 //
 //void ABlasterCharacter::SetSpawnPoint()
 //{
-//	if (HasAuthority() && BlasterPlayerState->GetTeam() != ETeam::ET_NoTeam)
+//	if (HasAuthority() && BlasterPlayerState->GetTeam() != ETeam::NoTeam)
 //	{
 //		TArray<AActor*> PlayerStarts;
 //		UGameplayStatics::GetAllActorsOfClass(this, ATeamPlayerStart::StaticClass(), PlayerStarts);
@@ -1589,7 +1589,7 @@ void ABlasterCharacter::SetAiming(bool InbIsAiming)
 	//UE_LOG(LogTemp, Display, TEXT("IsAiming : %d"), InbIsAiming);
 	Super::SetAiming(InbIsAiming);
 
-	if (IsLocallyControlled() && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	if (IsLocallyControlled() && InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle)
 	{
 		ShowSniperScopeWidget(InbIsAiming);
 	}
@@ -1956,7 +1956,7 @@ void ABlasterCharacter::Test()
 //
 //	for (size_t i = 0; i < 5; i++)
 //	{
-//		FString Str = UEnum::GetDisplayValueAsText(ESkillAssistant::ESA_HealArea).ToString();
+//		FString Str = UEnum::GetDisplayValueAsText(ESkillAssistant::HealArea).ToString();
 //		CoolTimeMap.Add(Str);
 //		SkillButtonPressedChecker.Add(false);
 //	}

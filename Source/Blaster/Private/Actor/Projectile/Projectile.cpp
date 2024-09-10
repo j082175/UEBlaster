@@ -31,7 +31,7 @@
 #include "Blaster/Blaster.h"
 
 #include "PlayerController/BlasterPlayerController.h"
-
+#include "GameData/WeaponData.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -183,7 +183,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 			//UE_LOG(LogTemp, Error, TEXT("Component : %s"), *Hit.Component->GetName());
 
 
-			if (Hit.BoneName.ToString() == TEXT("neck_02") || Hit.BoneName.ToString() == TEXT("head"))
+			if (Hit.BoneName.ToString() == TEXT("head"))
 			{
 				BPC->PlayHitNoticeAnim(TEXT("Head"));
 			}

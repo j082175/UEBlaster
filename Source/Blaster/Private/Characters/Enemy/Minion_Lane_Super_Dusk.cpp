@@ -70,7 +70,7 @@ void AMinion_Lane_Super_Dusk::OnMontageEndedFunc(UAnimMontage* Montage, bool bIn
 
 	if (!bInterrupted)
 	{
-		//if (CombatState == ECombatState::ECS_Unoccupied)
+		//if (CombatState == ECombatState::Unoccupied)
 		//{
 		//	bCheckLeftRightAttack = false;
 		//}
@@ -92,7 +92,7 @@ void AMinion_Lane_Super_Dusk::InitializeDefaults()
 {
 	Super::InitializeDefaults();
 
-	CharacterState = ECharacterState::ECS_EquippedCapsuleWeapon;
+	CharacterState = ECharacterState::EquippedCapsuleWeapon;
 }
 
 void AMinion_Lane_Super_Dusk::InitializeDelegates()
@@ -109,7 +109,7 @@ void AMinion_Lane_Super_Dusk::InitializeDelegates()
 void AMinion_Lane_Super_Dusk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (CombatState == ECombatState::ECS_Unoccupied) bCheckLeftRightAttack = false;
+	if (CombatState == ECombatState::Unoccupied) bCheckLeftRightAttack = false;
 
 	//UE_LOG(LogTemp, Display, TEXT("bCheckLeftRightAttack : %d"), bCheckLeftRightAttack);
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());

@@ -223,7 +223,7 @@ void ABaseAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Sti
 	}
 	else if (Result != nullptr)
 	{
-		if (AIPawn) AIPawn->ISetAIState(EAIState::EAI_Attacking);
+		if (AIPawn) AIPawn->ISetAIState(EAIState::Attacking);
 
 	}
 	else
@@ -255,7 +255,7 @@ void ABaseAIController::OnTargetPerceptionForgotten(AActor* Actor)
 	{
 		GetBlackboardComponent()->SetValueAsObject(TARGET_ACTOR, nullptr);
 		SetFocus(nullptr);
-		if (AIPawn) AIPawn->ISetAIState(EAIState::EAI_Passive);
+		if (AIPawn) AIPawn->ISetAIState(EAIState::Passive);
 	}
 
 }

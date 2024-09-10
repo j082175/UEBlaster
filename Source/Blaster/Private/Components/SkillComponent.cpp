@@ -188,7 +188,7 @@ void USkillComponent::SkillCast(ESkillAssistant InSkillAssistant)
 
 
 	//UE_LOG(LogTemp, Display, TEXT("SkillCast"));
-	CharacterOwner->SetCombatState(ECombatState::ECS_Unoccupied);
+	CharacterOwner->SetCombatState(ECombatState::Unoccupied);
 
 
 	MulticastCastEnd(InSkillAssistant);
@@ -197,22 +197,22 @@ void USkillComponent::SkillCast(ESkillAssistant InSkillAssistant)
 
 void USkillComponent::UltimateCast()
 {
-	CharacterOwner->SetCombatState(ECombatState::ECS_UltimateMode);
+	CharacterOwner->SetCombatState(ECombatState::UltimateMode);
 
 	UMaterial* M = TransparentMaterial;
 
-	if (CharacterOwner->IGetTeam() == ETeam::ET_RedTeam)
+	if (CharacterOwner->IGetTeam() == ETeam::RedTeam)
 	{
 		M = UltimateWeaponMaterial_Red;
 		WeaponMaterialIndex = 4; // suppose to...
 	}
-	else if (CharacterOwner->IGetTeam() == ETeam::ET_BlueTeam)
+	else if (CharacterOwner->IGetTeam() == ETeam::BlueTeam)
 	{
 		M = UltimateWeaponMaterial_Blue;
 		WeaponMaterialIndex = 5;
 	}
 
-	FCoolTimeCheckStruct* S = CoolTimeMap.Find(ESkillAssistant::ESA_Ultimate);
+	FCoolTimeCheckStruct* S = CoolTimeMap.Find(ESkillAssistant::Ultimate);
 
 
 	if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
@@ -220,7 +220,7 @@ void USkillComponent::UltimateCast()
 	FTimerHandle H;
 	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinished, S->MaintainTime);
 
-	MulticastCastEnd(ESkillAssistant::ESA_Ultimate);
+	MulticastCastEnd(ESkillAssistant::Ultimate);
 
 	UltimateEffectComponent->Activate();
 
@@ -265,13 +265,13 @@ void USkillComponent::SkillAnimFinished(const UWidgetAnimation* InWidgetAnimatio
 	if (S)
 	{
 
-		if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::ESAT_CoolTime).ToString()))
+		if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::CoolTime).ToString()))
 		{
 			S->bCanExecute = true;
 		}
-		else if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::ESAT_Maintain).ToString()))
+		else if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::Maintain).ToString()))
 		{
-			OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, Index, S->CoolTime);
+			OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, Index, S->CoolTime);
 		}
 	}
 
@@ -289,25 +289,25 @@ void USkillComponent::MulticastCastEnd_Implementation(ESkillAssistant InSkillAss
 
 	switch (InSkillAssistant)
 	{
-	case ESkillAssistant::ESA_Dash:
+	case ESkillAssistant::Dash:
 		break;
-	case ESkillAssistant::ESA_Dodge:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+	case ESkillAssistant::Dodge:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
 		break;
-	case ESkillAssistant::ESA_Slide:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+	case ESkillAssistant::Slide:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
 		break;
-	case ESkillAssistant::ESA_HealArea:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+	case ESkillAssistant::HealArea:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
 		break;
-	case ESkillAssistant::ESA_ShieldRecovery:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+	case ESkillAssistant::ShieldRecovery:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
 		break;
-	case ESkillAssistant::ESA_Supporter:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+	case ESkillAssistant::Supporter:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
 		break;
-	case ESkillAssistant::ESA_Ultimate:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::ESAT_Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+	case ESkillAssistant::Ultimate:
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
 		break;
 	case ESkillAssistant::ESA_MAX:
 		break;
@@ -329,7 +329,7 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 
 	switch (InSkillAssistant)
 	{
-	case ESkillAssistant::ESA_HealArea:
+	case ESkillAssistant::HealArea:
 	{
 		HealArea = GetWorld()->SpawnActor<AHealArea>(HealAreaClass, CharacterOwner->GetTransform());
 		if (HealArea)
@@ -344,7 +344,7 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 	}
 
 	break;
-	case ESkillAssistant::ESA_ShieldRecovery:
+	case ESkillAssistant::ShieldRecovery:
 	{
 		ShieldBarrier = GetWorld()->SpawnActorDeferred<AShieldBarrier>(ShieldBarrierClass, CharacterOwner->GetTransform());
 		if (ShieldBarrier)
@@ -361,7 +361,7 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 	}
 
 		break;
-	case ESkillAssistant::ESA_Supporter:
+	case ESkillAssistant::Supporter:
 	{
 		if (CharacterOwner->HasAuthority())
 		{
@@ -399,7 +399,7 @@ void USkillComponent::SpawnAttributeAssistantDetach(ESkillAssistant InSkillAssis
 
 	switch (InSkillAssistant)
 	{
-	case ESkillAssistant::ESA_HealArea:
+	case ESkillAssistant::HealArea:
 	{
 		if (HealArea)
 		{
@@ -411,7 +411,7 @@ void USkillComponent::SpawnAttributeAssistantDetach(ESkillAssistant InSkillAssis
 	}
 
 	break;
-	case ESkillAssistant::ESA_ShieldRecovery:
+	case ESkillAssistant::ShieldRecovery:
 		break;
 	case ESkillAssistant::ESA_MAX:
 		break;
@@ -425,7 +425,7 @@ void USkillComponent::ServerProcedure_Implementation(ESkillAssistant InSkillAssi
 	CurrentMontage = InMontage;
 
 	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(CurrentMontage);
-	CharacterOwner->SetCombatState(ECombatState::ECS_SkillCasting);
+	CharacterOwner->SetCombatState(ECombatState::SkillCasting);
 	CurrentSkill = InSkillAssistant;
 }
 
@@ -483,14 +483,14 @@ void USkillComponent::InitializeCoolTimeMap()
 	CoolTimeMap.Reserve((int)ESkillAssistant::ESA_MAX);
 	SkillButtonPressedChecker.Reserve((int)ESkillAssistant::ESA_MAX);
 
-	CoolTimeMap.Add(ESkillAssistant::ESA_HealArea, FCoolTimeCheckStruct(3, 5.f, 20.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_ShieldRecovery, FCoolTimeCheckStruct(3, 5.f, 25.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_Supporter, FCoolTimeCheckStruct(5, 0.f, 20.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_Ultimate, FCoolTimeCheckStruct(20, 10.f, 50.f));
+	CoolTimeMap.Add(ESkillAssistant::HealArea, FCoolTimeCheckStruct(3, 5.f, 20.f));
+	CoolTimeMap.Add(ESkillAssistant::ShieldRecovery, FCoolTimeCheckStruct(3, 5.f, 25.f));
+	CoolTimeMap.Add(ESkillAssistant::Supporter, FCoolTimeCheckStruct(5, 0.f, 20.f));
+	CoolTimeMap.Add(ESkillAssistant::Ultimate, FCoolTimeCheckStruct(20, 10.f, 50.f));
 
-	CoolTimeMap.Add(ESkillAssistant::ESA_Slide, FCoolTimeCheckStruct(0, 0.f, 1.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_Dash, FCoolTimeCheckStruct(0, 0.f, 2.f));
-	CoolTimeMap.Add(ESkillAssistant::ESA_Dodge, FCoolTimeCheckStruct(0, 0.f, 3.f));
+	CoolTimeMap.Add(ESkillAssistant::Slide, FCoolTimeCheckStruct(0, 0.f, 1.f));
+	CoolTimeMap.Add(ESkillAssistant::Dash, FCoolTimeCheckStruct(0, 0.f, 2.f));
+	CoolTimeMap.Add(ESkillAssistant::Dodge, FCoolTimeCheckStruct(0, 0.f, 3.f));
 
 	int32 Count = 0;
 	for (const auto& i : CoolTimeMap)
@@ -536,7 +536,7 @@ void USkillComponent::OnRep_CurrentMontage()
 void USkillComponent::UltimateCastFinished()
 {
 	CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, TransparentMaterial);
-	CharacterOwner->SetCombatState(ECombatState::ECS_Unoccupied);
+	CharacterOwner->SetCombatState(ECombatState::Unoccupied);
 	UltimateEffectComponent->Deactivate();
 
 	if (UInventoryComponent* IC = CharacterOwner->GetComponentByClass<UInventoryComponent>())

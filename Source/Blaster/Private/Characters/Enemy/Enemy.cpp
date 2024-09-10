@@ -266,7 +266,7 @@ void AEnemy::InitializeDefaults()
 {
 	Super::InitializeDefaults();
 
-	CharacterState = ECharacterState::ECS_EquippedOnehandedWeapon;
+	CharacterState = ECharacterState::EquippedOnehandedWeapon;
 
 	//GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationPitch = false;
@@ -330,22 +330,22 @@ void AEnemy::ISetAIState(EAIState InAIState)
 
 	switch (InAIState)
 	{
-	case EAIState::EAI_Passive:
+	case EAIState::Passive:
 		SetAiming(true);
-		//UE_LOG(LogTemp, Display, TEXT("ISetAIState : EAI_Passive"));
+		//UE_LOG(LogTemp, Display, TEXT("ISetAIState : Passive"));
 		break;
-	case EAIState::EAI_Attacking:
+	case EAIState::Attacking:
 		SetAiming(true);
 		break;
-	case EAIState::EAI_Frozen:
+	case EAIState::Frozen:
 		break;
-	case EAIState::EAI_Investigating:
+	case EAIState::Investigating:
 		SetAiming(false);
 
 		break;
-	case EAIState::EAI_Dead:
+	case EAIState::Dead:
 		break;
-	case EAIState::EAI_MAX:
+	case EAIState::MAX:
 		break;
 	default:
 		break;
@@ -552,7 +552,7 @@ bool AEnemy::CheckParryFunc(AActor* OtherActor)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Blocking"));
 		DisableHitCapsulesCollision();
-		CombatState = ECombatState::ECS_Parried;
+		CombatState = ECombatState::Parried;
 		//if (EnemyAIController) EnemyAIController->StopAI();
 
 		if (ParryEffect)
@@ -588,7 +588,7 @@ bool AEnemy::CheckParryFunc(AActor* OtherActor)
 			{
 				//UE_LOG(LogTemp, Display, TEXT("End, Stun Time : %f"), StunTime);
 				if (StunMontage) StopAnimMontage(StunMontage);
-				CombatState = ECombatState::ECS_Unoccupied;
+				CombatState = ECombatState::Unoccupied;
 				if (BaseAIController) BaseAIController->GetBlackboardComponent()->SetValueAsEnum(E_COMBAT_STATE, (int)CombatState);
 				//if (EnemyAIController) EnemyAIController->RunAI();
 			}), StunTime, false);

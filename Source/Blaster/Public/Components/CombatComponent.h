@@ -211,10 +211,10 @@ public:
 //	//void OnRep_CombatState();
 //
 //	//UPROPERTY(ReplicatedUsing = OnRep_CombatState)
-//	//ECombatState CombatState = ECombatState::ECS_Unoccupied;
+//	//ECombatState CombatState = ECombatState::Unoccupied;
 //
 //	UPROPERTY(Replicated, VisibleAnywhere, Category = "Combat", meta = (AllowPrivateAccess = true))
-//	ECharacterState CharacterState = ECharacterState::EAS_UnEquipped;
+//	ECharacterState CharacterState = ECharacterState::UnEquipped;
 //
 //	//bool bCanFire = false;
 //

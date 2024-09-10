@@ -88,7 +88,7 @@ void UOverheadWidgetComponent::InitTextColorFunc()
 		InitHandle.Invalidate();
 		SetComponentTickEnabled(false);
 	}
-	else if (T2 && T2->IGetTeam() == ETeam::ET_NoTeam)
+	else if (T2 && T2->IGetTeam() == ETeam::NoTeam)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(InitHandle);
 		InitHandle.Invalidate();

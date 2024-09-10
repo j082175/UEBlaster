@@ -32,7 +32,7 @@ public:
 	//virtual void ItemDetachToComponent(FDetachmentTransformRules& DetachmentRules);
 
 
-	FORCEINLINE class USoundCue* GetTakeSound() { return PickupSound; }
+	FORCEINLINE class USoundBase* GetTakeSound() { return PickupSound; }
 	//FORCEINLINE class UCapsuleComponent* GetCapsuleComponent() { return OverlapCapsule; }
 	FORCEINLINE class UCapsuleComponent* GetAreaCapsule() const { return OverlapCapsule; }
 	FORCEINLINE class UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
@@ -97,7 +97,7 @@ protected:
 	// Sound
 protected:
 	UPROPERTY(EditAnywhere, Category = "Sound", meta = (AllowPrivateAccess = true))
-	TObjectPtr<class USoundCue> PickupSound;
+	TObjectPtr<class USoundBase> PickupSound;
 
 	// Widgets
 protected:

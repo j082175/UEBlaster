@@ -14,8 +14,8 @@
  //UENUM(BlueprintType)
  //enum class EWeaponType : uint8
  //{
- //	EWT_OneHanded = 0 UMETA(DisplayName = "OneHanded"),
- //	EWT_TwoHanded UMETA(DisplayName = "TwoHanded"),
+ //	OneHanded = 0 UMETA(DisplayName = "OneHanded"),
+ //	TwoHanded UMETA(DisplayName = "TwoHanded"),
  //	EWT_None UMETA(DisplayName = "None")
  //};
 

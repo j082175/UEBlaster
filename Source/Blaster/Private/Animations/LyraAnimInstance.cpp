@@ -61,19 +61,19 @@ void ULyraAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	if (UKismetMathLibrary::InRange_FloatFloat(Direction, -70.f, 70.f, true, true))
 	{
-		MovementInput = EMovementInput::EMI_Fwd;
+		MovementInput = EMovementInput::Fwd;
 	}
 	else if (UKismetMathLibrary::InRange_FloatFloat(Direction, 70.f, 110.f, true, true))
 	{
-		MovementInput = EMovementInput::EMI_Right;
+		MovementInput = EMovementInput::Right;
 	}
 	else if (UKismetMathLibrary::InRange_FloatFloat(Direction, -110.f, -70.f, true, true))
 	{
-		MovementInput = EMovementInput::EMI_Left;
+		MovementInput = EMovementInput::Left;
 	}
 	else
 	{
-		MovementInput = EMovementInput::EMI_Bwd;
+		MovementInput = EMovementInput::Bwd;
 	}
 
 	UE_LOG(LogTemp, Display, TEXT("MovementInput : %s"), *UEnum::GetDisplayValueAsText(MovementInput).ToString());
@@ -220,20 +220,20 @@ void ULyraAnimInstance::TurnInPlace(float DeltaTime)
 //
 //	if (AO_Yaw > TurningThreshold) // Right Turning Threshold
 //	{
-//		TurningInPlace = ETurningInPlace::ETIP_TurningRight;
+//		TurningInPlace = ETurningInPlace::TurningRight;
 //	}
 //	else if (AO_Yaw < -TurningThreshold) // Left Turning Threshold
 //	{
-//		TurningInPlace = ETurningInPlace::ETIP_TurningLeft;
+//		TurningInPlace = ETurningInPlace::TurningLeft;
 //	}
 //
-//	if (TurningInPlace != ETurningInPlace::ETIP_NotTurning)
+//	if (TurningInPlace != ETurningInPlace::NotTurning)
 //	{
 //		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 6.f);
 //		AO_Yaw = InterpAO_Yaw;
 //		if (FMath::Abs(AO_Yaw) < 15.f)
 //		{
-//			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+//			TurningInPlace = ETurningInPlace::NotTurning;
 //			StartingAimRotation = FRotator(0.f, CharacterRef->GetBaseAimRotation().Yaw, 0.f);
 //		}
 //	}
@@ -248,7 +248,7 @@ void ULyraAnimInstance::TurnInPlace(float DeltaTime)
 //	float Speed = Velocity.Size2D();
 //	if (Speed > 0.f)
 //	{
-//		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+//		TurningInPlace = ETurningInPlace::NotTurning;
 //		return;
 //	}
 //
@@ -262,20 +262,20 @@ void ULyraAnimInstance::TurnInPlace(float DeltaTime)
 //	{
 //		if (ProxyYawDelta > TurnThreshold)
 //		{
-//			TurningInPlace = ETurningInPlace::ETIP_TurningRight;
+//			TurningInPlace = ETurningInPlace::TurningRight;
 //		}
 //		else if (ProxyYawDelta < -TurnThreshold)
 //		{
-//			TurningInPlace = ETurningInPlace::ETIP_TurningLeft;
+//			TurningInPlace = ETurningInPlace::TurningLeft;
 //		}
 //		else
 //		{
-//			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+//			TurningInPlace = ETurningInPlace::NotTurning;
 //		}
 //	}
 //	else
 //	{
-//		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+//		TurningInPlace = ETurningInPlace::NotTurning;
 //	}
 //}
 //
@@ -289,7 +289,7 @@ void ULyraAnimInstance::TurnInPlace(float DeltaTime)
 //	bool bIsInAir = CharacterMovement->IsFalling();
 //
 //
-//	if (CombatComponent && CombatComponent->CharacterState != ECharacterState::EAS_UnEquipped)
+//	if (CombatComponent && CombatComponent->CharacterState != ECharacterState::UnEquipped)
 //	{
 //		// Manage Left and Right
 //		if (Speed <= 0.f && !bIsInAir)
@@ -307,7 +307,7 @@ void ULyraAnimInstance::TurnInPlace(float DeltaTime)
 //			AO_Yaw = DeltaAimRotation.Yaw;
 //			//if (IsAiming()) bUseControllerRotationYaw = false;
 //
-//			if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
+//			if (TurningInPlace == ETurningInPlace::NotTurning)
 //			{
 //				InterpAO_Yaw = AO_Yaw;
 //			}
@@ -318,14 +318,14 @@ void ULyraAnimInstance::TurnInPlace(float DeltaTime)
 //
 //		if (Speed > 0.f || bIsInAir)
 //		{
-//			if (CombatComponent->CharacterState == ECharacterState::EAS_Combat)
+//			if (CombatComponent->CharacterState == ECharacterState::Combat)
 //			{
 //				bRotateRootBone = false;
 //			}
 //			StartingAimRotation = FRotator(0.f, CharacterRef->GetBaseAimRotation().Yaw, 0.f);
 //			AO_Yaw = 0.f;
 //			//if (IsAiming()) bUseControllerRotationYaw = true;
-//			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+//			TurningInPlace = ETurningInPlace::NotTurning;
 //		}
 //		//
 //	}
@@ -354,7 +354,7 @@ void ULyraAnimInstance::TurnInPlace(float DeltaTime)
 //	{
 //		CharacterRef->bUseControllerRotationYaw = false;
 //		CharacterMovement->bOrientRotationToMovement = true;
-//		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+//		TurningInPlace = ETurningInPlace::NotTurning;
 //		return;
 //	}
 //
@@ -368,7 +368,7 @@ void ULyraAnimInstance::TurnInPlace(float DeltaTime)
 //	if (bDisableGameplay)
 //	{
 //		CharacterRef->bUseControllerRotationYaw = false;
-//		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+//		TurningInPlace = ETurningInPlace::NotTurning;
 //		return;
 //	}
 //	if (CharacterRef->GetLocalRole() > ENetRole::ROLE_SimulatedProxy && CharacterRef->IsLocallyControlled())

@@ -19,6 +19,7 @@
 #include "Components/InventoryComponent.h"
 #include "Components/WeaponHUDComponent.h"
 #include "Components/InventoryComponent.h"
+#include "Sound/SoundCue.h"
 #include "Blaster/Blaster.h"
 
 // Niagara
@@ -366,7 +367,7 @@ void AWeapon_Gun::OnEquipped()
 	WeaponSKMesh->SetSimulatePhysics(false);
 	WeaponSKMesh->SetEnableGravity(false);
 	WeaponSKMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	if (WeaponType == EWeaponType::EWT_SMG)
+	if (WeaponType == EWeaponType::SMG)
 	{
 		WeaponSKMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		WeaponSKMesh->SetEnableGravity(true);
@@ -407,7 +408,7 @@ void AWeapon_Gun::OnEquippedSecondary()
 	WeaponSKMesh->SetSimulatePhysics(false);
 	WeaponSKMesh->SetEnableGravity(false);
 	WeaponSKMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	if (WeaponType == EWeaponType::EWT_SMG)
+	if (WeaponType == EWeaponType::SMG)
 	{
 		WeaponSKMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		WeaponSKMesh->SetEnableGravity(true);
@@ -427,16 +428,29 @@ void AWeapon_Gun::InitData()
 	if (GetWeaponName() == EWeaponName::AI_Pistol) return;
 
 	UDataSingleton& DataSingleton = UDataSingleton::Get();
-	FWeaponData WeaponData = DataSingleton.GetWeaponName(GetWeaponName());
+	FWeaponStat WeaponStat = DataSingleton.GetWeaponName(WeaponName);
 
-	Damage = WeaponData.BodyDamage;
-	HeadShotDamage = WeaponData.HeadDamage;
-	PitchRange = WeaponData.RecoilPitch;
-	YawRange = WeaponData.RecoilYaw;
+	Damage = WeaponStat.BodyDamage;
+	HeadShotDamage = WeaponStat.HeadDamage;
+	PitchRange = WeaponStat.RecoilPitch;
+	YawRange = WeaponStat.RecoilYaw;
 	//
-	FireDelay = WeaponData.FireDelay;
-	MagCapacity = WeaponData.MagCapacity;
+	FireDelay = WeaponStat.FireDelay;
+	MagCapacity = WeaponStat.MagCapacity; 
 	Ammo = MagCapacity;
+
+
+	FWeaponData WeaponData = DataSingleton.GetWeaponData(WeaponName);
+
+	//if (WeaponData.FireSound.IsPending()) FireSound = WeaponData.FireSound.LoadSynchronous();
+	//if (WeaponData.FireEffect.IsPending()) FireEffect = WeaponData.FireEffect.LoadSynchronous();
+	//if (WeaponData.FireAnimation.IsPending()) FireAnimation = WeaponData.FireAnimation.LoadSynchronous();
+	//if (WeaponData.PickupSound.IsPending()) PickupSound = WeaponData.PickupSound.LoadSynchronous();
+
+	FireSound = WeaponData.FireSound;
+	FireEffect = WeaponData.FireEffect;
+	FireAnimation = WeaponData.FireAnimation;
+	PickupSound = WeaponData.PickupSound;
 }
 
 //void AWeapon_Gun::ShowPickupWidget(bool bShowWidget)
@@ -470,7 +484,7 @@ void AWeapon_Gun::Fire(const FVector& HitTarget)
 		//UE_LOG(LogTemp, Display, TEXT("Fire"));
 		WeaponSKMesh->PlayAnimation(FireAnimation, false);
 
-		if (WeaponType == EWeaponType::EWT_SniperRifle)
+		if (WeaponType == EWeaponType::SniperRifle)
 		{
 			ACharacterBase* CharacterOwner = Cast<ACharacterBase>(GetOwner());
 			if (CharacterOwner)
@@ -486,7 +500,7 @@ void AWeapon_Gun::Fire(const FVector& HitTarget)
 		if (FireEffect) UGameplayStatics::SpawnEmitterAttached(FireEffect, WeaponSKMesh, TEXT("MuzzleFlash"), WeaponSKMesh->GetSocketLocation(TEXT("MuzzleFlash")), WeaponSKMesh->GetSocketRotation(TEXT("MuzzleFlash")), EAttachLocation::KeepWorldPosition);
 	}
 
-	if (WeaponType != EWeaponType::EWT_SniperRifle && WeaponType != EWeaponType::EWT_Shotgun) EjectCasing();
+	if (WeaponType != EWeaponType::SniperRifle && WeaponType != EWeaponType::Shotgun) EjectCasing();
 
 	if (true) // HasAutority 를 지움으로서 Client-Side Prediction 구현 하지만 Jitter 발생 => Replicated 가 아닌 RPC 로 해결
 	{

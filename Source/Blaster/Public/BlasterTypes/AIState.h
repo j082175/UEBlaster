@@ -3,11 +3,11 @@
 UENUM(BlueprintType)
 enum class EAIState : uint8
 {
-	EAI_Passive = 0 UMETA(DisplayName = "Passive"),
-	EAI_Attacking UMETA(DisplayName = "Attacking"),
-	EAI_Frozen UMETA(DisplayName = "Frozen"),
-	EAI_Investigating UMETA(DisplayName = "Investigating"),
-	EAI_Dead UMETA(DisplayName = "Dead"),
+	Passive = 0 UMETA(DisplayName = "Passive"),
+	Attacking UMETA(DisplayName = "Attacking"),
+	Frozen UMETA(DisplayName = "Frozen"),
+	Investigating UMETA(DisplayName = "Investigating"),
+	Dead UMETA(DisplayName = "Dead"),
 
-	EAI_MAX UMETA(DisplayName = "Default_MAX")
+	MAX UMETA(DisplayName = "Default_MAX")
 };

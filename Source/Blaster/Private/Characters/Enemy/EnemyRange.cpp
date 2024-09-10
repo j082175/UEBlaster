@@ -94,7 +94,7 @@ void AEnemyRange::InitializeDefaults()
 {
 	Super::InitializeDefaults();
 
-	CharacterState = ECharacterState::ECS_EquippedGun;
+	CharacterState = ECharacterState::EquippedGun;
 
 	bIsAiming = true;
 
@@ -114,7 +114,7 @@ void AEnemyRange::Fire(bool bPressed)
 	//UE_LOG(LogTemp, Display, TEXT("AI Firing"));
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
-	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Attacking)
+	if (CombatState != ECombatState::Unoccupied && CombatState != ECombatState::Attacking)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("AEnemyRange::FireButtonPressed : CombatState is not unoccupied : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 		return;
