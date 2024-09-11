@@ -30,4 +30,7 @@ private:
 	float DisableTimeCount = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float DisableTimeThreshold = 2.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class USoundBase> PressedSound;
 };

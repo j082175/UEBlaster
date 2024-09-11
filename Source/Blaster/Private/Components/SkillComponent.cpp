@@ -12,6 +12,8 @@
 #include "NiagaraComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Item/Pickable/Weapon/Weapon_Gun.h"
+#include "GameData/DataSingleton.h"
+#include "Kismet/GameplayStatics.h"
 #include "Blaster.h"
 
 // Sets default values for this component's properties
@@ -23,7 +25,6 @@ USkillComponent::USkillComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 
 	// ...
-	InitializeCoolTimeMap();
 
 	UltimateEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("UltimateEffect"));
 }
@@ -65,6 +66,8 @@ void USkillComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 void USkillComponent::PostLoad()
 {
 	Super::PostLoad();
+
+	InitializeCoolTimeMap();
 
 	SetIsReplicated(true);
 	PrimaryComponentTick.bStartWithTickEnabled = true;
@@ -112,7 +115,7 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 
 	ESkillAssistant Skill = SkillList[InIndex];
 
-	FCoolTimeCheckStruct* S = &CoolTimeMap[Skill];
+	FSkillManagementStruct* S = &CoolTimeMap[Skill];
 
 
 	if (S)
@@ -120,14 +123,14 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 		//if (NeededSkillPoints.Num() <= InIndex) return;
 		//S->bSkillPointEnough = SkillPoint >= NeededSkillPoints[InIndex] ? true : false;
 
-		S->bSkillPointEnough = SkillPoint >= S->RequiredPoint ? true : false;
+		S->CoolTimeCheckStruct.bSkillPointEnough = SkillPoint >= S->SkillStat.RequiredPoint ? true : false;
 	}
 
 	switch (InIndex)
 	{
 	case 0:
 
-		if (S->bCanExecute && S->bSkillPointEnough)
+		if (S->CoolTimeCheckStruct.bCanExecute && S->CoolTimeCheckStruct.bSkillPointEnough)
 		{
 			ServerProcedure(Skill, SkillCastingMontage);
 		}
@@ -141,7 +144,7 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 
 		break;
 	case 1:
-		if (S->bCanExecute && S->bSkillPointEnough)
+		if (S->CoolTimeCheckStruct.bCanExecute && S->CoolTimeCheckStruct.bSkillPointEnough)
 		{
 			ServerProcedure(Skill, SkillCastingMontage);
 		}
@@ -153,7 +156,7 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 
 		break;
 	case 2:
-		if (S->bCanExecute && S->bSkillPointEnough)
+		if (S->CoolTimeCheckStruct.bCanExecute && S->CoolTimeCheckStruct.bSkillPointEnough)
 		{
 			ServerProcedure(Skill, SkillCastingMontage);
 		}
@@ -163,7 +166,7 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 		}
 		break;
 	case 3:
-		if (S->bCanExecute && S->bSkillPointEnough)
+		if (S->CoolTimeCheckStruct.bCanExecute && S->CoolTimeCheckStruct.bSkillPointEnough)
 		{
 			ServerProcedure(Skill, UltimateMontage);
 		}
@@ -212,13 +215,13 @@ void USkillComponent::UltimateCast()
 		WeaponMaterialIndex = 5;
 	}
 
-	FCoolTimeCheckStruct* S = CoolTimeMap.Find(ESkillAssistant::Ultimate);
+	FSkillManagementStruct* S = CoolTimeMap.Find(ESkillAssistant::Ultimate);
 
 
 	if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
 
 	FTimerHandle H;
-	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinished, S->MaintainTime);
+	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinished, S->SkillStat.MaintainTime);
 
 	MulticastCastEnd(ESkillAssistant::Ultimate);
 
@@ -260,18 +263,18 @@ void USkillComponent::SkillAnimFinished(const UWidgetAnimation* InWidgetAnimatio
 
 	int32 Index = static_cast<int32>(LastStr);
 	Index -= 48;
-	FCoolTimeCheckStruct* S = CoolTimeMap.Find(SkillList[Index]);
+	FSkillManagementStruct* S = CoolTimeMap.Find(SkillList[Index]);
 
 	if (S)
 	{
 
 		if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::CoolTime).ToString()))
 		{
-			S->bCanExecute = true;
+			S->CoolTimeCheckStruct.bCanExecute = true;
 		}
 		else if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::Maintain).ToString()))
 		{
-			OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, Index, S->CoolTime);
+			OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, Index, S->SkillStat.CoolTime);
 		}
 	}
 
@@ -285,29 +288,36 @@ void USkillComponent::SkillAnimFinished(const UWidgetAnimation* InWidgetAnimatio
 
 void USkillComponent::MulticastCastEnd_Implementation(ESkillAssistant InSkillAssistant)
 {
-	FCoolTimeCheckStruct* S = CoolTimeMap.Find(InSkillAssistant);
+	FSkillManagementStruct* S = CoolTimeMap.Find(InSkillAssistant);
+	S->SkillData.SkillCastingSound;
+
+	UGameplayStatics::PlaySoundAtLocation(this, S->SkillData.SkillCastingSound, CharacterOwner->GetActorLocation());
 
 	switch (InSkillAssistant)
 	{
 	case ESkillAssistant::Dash:
 		break;
 	case ESkillAssistant::Dodge:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->SkillStat.CoolTime);
 		break;
 	case ESkillAssistant::Slide:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->SkillStat.CoolTime);
 		break;
 	case ESkillAssistant::HealArea:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->SkillStat.MaintainTime);
+
 		break;
 	case ESkillAssistant::ShieldRecovery:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->SkillStat.MaintainTime);
+
 		break;
 	case ESkillAssistant::Supporter:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->CoolTime);
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->SkillStat.CoolTime);
+
 		break;
 	case ESkillAssistant::Ultimate:
-		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->MaintainTime);
+		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->SkillStat.MaintainTime);
+
 		break;
 	case ESkillAssistant::ESA_MAX:
 		break;
@@ -315,9 +325,9 @@ void USkillComponent::MulticastCastEnd_Implementation(ESkillAssistant InSkillAss
 		break;
 	}
 
+	S->CoolTimeCheckStruct.bCanExecute = false;
 
-	S->bCanExecute = false;
-	SkillPoint -= S->RequiredPoint;
+	SkillPoint -= S->SkillStat.RequiredPoint;
 	OnSoulCountChanged.Broadcast(SkillPoint);
 }
 
@@ -325,7 +335,7 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 {
 	if (!CharacterOwner.Get()) return;
 
-	FCoolTimeCheckStruct* S = CoolTimeMap.Find(InSkillAssistant);
+	FSkillManagementStruct* S = CoolTimeMap.Find(InSkillAssistant);
 
 	switch (InSkillAssistant)
 	{
@@ -336,7 +346,7 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 		{
 			HealArea->SetOwner(CharacterOwner.Get());
 			HealArea->SetInstigator(CharacterOwner.Get());
-			HealArea->SetLifeSpan(S->MaintainTime);
+			HealArea->SetLifeSpan(S->SkillStat.MaintainTime);
 
 			FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, true);
 			HealArea->AttachToComponent(CharacterOwner->GetMesh(), Rules, TEXT("pelvis"));
@@ -353,14 +363,14 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 			ShieldBarrier->SetInstigator(CharacterOwner.Get());
 
 			ShieldBarrier->FinishSpawning(CharacterOwner->GetTransform());
-			ShieldBarrier->SetLifeSpan(S->MaintainTime);
+			ShieldBarrier->SetLifeSpan(S->SkillStat.MaintainTime);
 
 			FAttachmentTransformRules Rules(EAttachmentRule::KeepWorld, true);
 			ShieldBarrier->AttachToComponent(CharacterOwner->GetMesh(), Rules, TEXT("pelvis"));
 		}
 	}
 
-		break;
+	break;
 	case ESkillAssistant::Supporter:
 	{
 		if (CharacterOwner->HasAuthority())
@@ -385,7 +395,7 @@ void USkillComponent::SpawnAttributeAssistant(ESkillAssistant InSkillAssistant)
 
 	}
 
-		break;
+	break;
 	case ESkillAssistant::ESA_MAX:
 		break;
 	default:
@@ -406,7 +416,7 @@ void USkillComponent::SpawnAttributeAssistantDetach(ESkillAssistant InSkillAssis
 			FDetachmentTransformRules Rules(EDetachmentRule::KeepWorld, true);
 			HealArea->DetachFromActor(Rules);
 
-			
+
 		}
 	}
 
@@ -483,21 +493,49 @@ void USkillComponent::InitializeCoolTimeMap()
 	CoolTimeMap.Reserve((int)ESkillAssistant::ESA_MAX);
 	SkillButtonPressedChecker.Reserve((int)ESkillAssistant::ESA_MAX);
 
-	CoolTimeMap.Add(ESkillAssistant::HealArea, FCoolTimeCheckStruct(3, 5.f, 20.f));
-	CoolTimeMap.Add(ESkillAssistant::ShieldRecovery, FCoolTimeCheckStruct(3, 5.f, 25.f));
-	CoolTimeMap.Add(ESkillAssistant::Supporter, FCoolTimeCheckStruct(5, 0.f, 20.f));
-	CoolTimeMap.Add(ESkillAssistant::Ultimate, FCoolTimeCheckStruct(20, 10.f, 50.f));
+	UDataSingleton& DataSingleton = UDataSingleton::Get();
 
-	CoolTimeMap.Add(ESkillAssistant::Slide, FCoolTimeCheckStruct(0, 0.f, 1.f));
-	CoolTimeMap.Add(ESkillAssistant::Dash, FCoolTimeCheckStruct(0, 0.f, 2.f));
-	CoolTimeMap.Add(ESkillAssistant::Dodge, FCoolTimeCheckStruct(0, 0.f, 3.f));
 
-	int32 Count = 0;
-	for (const auto& i : CoolTimeMap)
+
+	//CoolTimeMap.Add(ESkillAssistant::HealArea, FCoolTimeCheckStruct(3, 5.f, 20.f));
+	//CoolTimeMap.Add(ESkillAssistant::ShieldRecovery, FCoolTimeCheckStruct(3, 5.f, 25.f));
+	//CoolTimeMap.Add(ESkillAssistant::Supporter, FCoolTimeCheckStruct(5, 0.f, 20.f));
+	//CoolTimeMap.Add(ESkillAssistant::Ultimate, FCoolTimeCheckStruct(20, 10.f, 50.f));
+
+	//CoolTimeMap.Add(ESkillAssistant::Slide, FCoolTimeCheckStruct(0, 0.f, 1.f));
+	//CoolTimeMap.Add(ESkillAssistant::Dash, FCoolTimeCheckStruct(0, 0.f, 2.f));
+	//CoolTimeMap.Add(ESkillAssistant::Dodge, FCoolTimeCheckStruct(0, 0.f, 3.f));
+
+
+	int count = 0;
+	for (size_t i = 3; i < (int)ESkillAssistant::ESA_MAX; i++)
 	{
-		SkillList.Add(Count, i.Key);
+		ESkillAssistant SA = (ESkillAssistant)i;
+
+		FSkillManagementStruct Management;
+		Management.SkillStat = DataSingleton.GetSkillStat(SA);
+		Management.SkillData = DataSingleton.GetSkillData(SA);
+
+		CoolTimeMap.Add(SA, Management);
+
+		SkillList.Add(count, SA);
 		SkillButtonPressedChecker.Add(false);
-		++Count;
+		++count;
+	}
+
+	for (size_t i = 0; i <= (int)ESkillAssistant::Dodge; i++)
+	{
+		ESkillAssistant SA = (ESkillAssistant)i;
+
+		FSkillManagementStruct Management;
+		Management.SkillStat = DataSingleton.GetSkillStat(SA);
+		Management.SkillData = DataSingleton.GetSkillData(SA);
+
+		CoolTimeMap.Add(SA, Management);
+
+		SkillList.Add(count, SA);
+		SkillButtonPressedChecker.Add(false);
+		++count;
 	}
 }
 
@@ -512,7 +550,7 @@ void USkillComponent::InitForWaiting()
 
 		for (const auto& i : CoolTimeMap)
 		{
-			OnSkillCostChanged.Broadcast(*SkillList.FindKey(i.Key), FString::FromInt(i.Value.RequiredPoint));
+			OnSkillCostChanged.Broadcast(*SkillList.FindKey(i.Key), FString::FromInt(i.Value.SkillStat.RequiredPoint));
 		}
 
 

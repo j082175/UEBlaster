@@ -13,8 +13,13 @@ UCLASS()
 class BLASTER_API UMyCharacterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
+	UMyCharacterMovementComponent();
 public:
+	virtual void PostLoad() override;
+
+
 	FORCEINLINE void SetUseAccelerationForPaths(bool InParam) { bUseAccelerationForPaths = InParam; }
 
-	UMyCharacterMovementComponent();
+
+
 };

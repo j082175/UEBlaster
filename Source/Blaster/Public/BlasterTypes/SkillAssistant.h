@@ -13,9 +13,9 @@ enum class ESkillAnimType : uint8
 UENUM(BlueprintType)
 enum class ESkillAssistant : uint8
 {
-	Dash = 0 UMETA(DisplayName = "Dash"),
+	Slide = 0 UMETA(DisplayName = "Slide"),
+	Dash UMETA(DisplayName = "Dash"),
 	Dodge UMETA(DisplayName = "Dodge"),
-	Slide UMETA(DisplayName = "Slide"),
 
 	HealArea UMETA(DisplayName = "HealArea"),
 	ShieldRecovery UMETA(DisplayName = "ShieldRecovery"),

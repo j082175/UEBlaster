@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "BlasterTypes/SkillAssistant.h"
+#include "GameData/SkillStat.h"
+#include "GameData/SkillData.h"
 #include "SkillComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillAnimStartedDelegate, ESkillAnimType, InPrefix, int32, InIndex, float, InPlaybackSpeed);
@@ -18,26 +20,30 @@ USTRUCT(BlueprintType)
 struct FCoolTimeCheckStruct
 {
 	GENERATED_BODY()
-	FCoolTimeCheckStruct(){}
 
-	FCoolTimeCheckStruct(int32 InRequiredPoint, float InMaintainTime, float InCoolTime)
-		: RequiredPoint(InRequiredPoint), MaintainTime(InMaintainTime), CoolTime(InCoolTime), bCanExecute(true), bSkillPointEnough(true)
+	FCoolTimeCheckStruct()
+		: bCanExecute(true), bSkillPointEnough(true)
 	{
 	}
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	//float CoolTimeCount;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float CoolTime;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	float MaintainTime;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	int32 RequiredPoint;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	uint8 bCanExecute : 1;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	uint8 bSkillPointEnough : 1;
 
+};
+
+USTRUCT(BlueprintType)
+struct FSkillManagementStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FSkillData SkillData;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FSkillStat SkillStat;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FCoolTimeCheckStruct CoolTimeCheckStruct;
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -145,8 +151,9 @@ public:
 	TMap<int32, ESkillAssistant> SkillList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TMap<ESkillAssistant, FCoolTimeCheckStruct> CoolTimeMap;
+	TMap<ESkillAssistant, FSkillManagementStruct> CoolTimeMap;
 
+	UPROPERTY()
 	TArray<bool> SkillButtonPressedChecker;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -163,7 +170,6 @@ private:
 
 	uint8 IsSkillCostChangedBroadcasted : 1;
 
-
 	// Anim
 public:
 	UFUNCTION()
@@ -178,6 +184,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> UltimateMontage;
 
+	// Ultimate Skill
 private:
 	void UltimateCastFinished();
 	void UltimateCastFinishedDelay();

@@ -8,8 +8,12 @@
 #include "GameData/WeaponStat.h"
 #include "GameData/WeaponData.h"
 
+#include "GameData/SkillStat.h"
+#include "GameData/SkillData.h"
+
 // Enum
 #include "Item/Pickable/Weapon/WeaponTypes.h"
+#include "BlasterTypes/SkillAssistant.h"
 
 #include "DataSingleton.generated.h"
 
@@ -28,8 +32,12 @@ public:
 
 	// Character Stat Data Section
 public:
+
 	FWeaponStat GetWeaponName(EWeaponName InWeaponType) const;
 	FWeaponData GetWeaponData(EWeaponName InWeaponType) const;
+
+	FSkillStat GetSkillStat(ESkillAssistant InWeaponType) const;
+	FSkillData GetSkillData(ESkillAssistant InWeaponType) const;
 
 
 	UPROPERTY()
@@ -40,4 +48,6 @@ private:
 	TMap<FName, FWeaponStat> WeaponStatMap;
 	TMap<FName, FWeaponData> WeaponDataMap;
 
+	TMap<FName, FSkillStat> SkillStatMap;
+	TMap<FName, FSkillData> SkillDataMap;
 };

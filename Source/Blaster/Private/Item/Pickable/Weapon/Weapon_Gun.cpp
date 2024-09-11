@@ -451,6 +451,8 @@ void AWeapon_Gun::InitData()
 	FireEffect = WeaponData.FireEffect;
 	FireAnimation = WeaponData.FireAnimation;
 	PickupSound = WeaponData.PickupSound;
+
+	ZoomedFOV = 60.f;
 }
 
 //void AWeapon_Gun::ShowPickupWidget(bool bShowWidget)

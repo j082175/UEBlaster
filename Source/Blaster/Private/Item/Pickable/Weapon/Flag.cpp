@@ -38,6 +38,13 @@ void AFlag::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ThisClass, InitialTransform);
 }
 
+void AFlag::PostLoad()
+{
+	Super::PostLoad();
+
+	WeaponType = EWeaponType::Flag;
+}
+
 void AFlag::ResetFlag()
 {
 

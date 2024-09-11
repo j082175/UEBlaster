@@ -136,7 +136,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//}
 
 
-	if (IsLocallyControlled())
+	if (IsLocallyControlled() && !bDisableGameplay)
 	{
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
@@ -173,6 +173,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//	UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
 	//}
+
 
 }
 
@@ -978,13 +979,17 @@ void ABlasterCharacter::DodgeButtonPressed()
 	//	OnSkillStarted.Broadcast(TEXT("Active"), 1, DodgeCoolTime);
 	//}
 
-	FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::Dodge);
+	FSkillManagementStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::Dodge);
 
-	if (S->bCanExecute)
+	if (S->CoolTimeCheckStruct.bCanExecute)
 	{
-		if (!Dodge(KeySectionName)) return;
-		S->bCanExecute = false;
-		SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, 6, S->CoolTime);
+		if (Dodge(KeySectionName))
+		{
+			S->CoolTimeCheckStruct.bCanExecute = false;
+			SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, 6, S->SkillStat.CoolTime);
+		}
+
+
 	}
 
 }
@@ -1010,14 +1015,14 @@ void ABlasterCharacter::DashButtonPressed()
 		//	OnSkillStarted.Broadcast(TEXT("Active"), 2, DashCoolTime);
 		//}
 
-		FCoolTimeCheckStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::Dash);
+		FSkillManagementStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::Dash);
 
-		if (S->bCanExecute)
+		if (S->CoolTimeCheckStruct.bCanExecute)
 		{
 			//UE_LOG(LogTemp, Display, TEXT("Can Dash"));
 			if (!Dash(KeySectionName)) return;
-			S->bCanExecute = false;
-			SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, 5, S->CoolTime);
+			S->CoolTimeCheckStruct.bCanExecute = false;
+			SkillComponent->OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, 5, S->SkillStat.CoolTime);
 		}
 	}
 
@@ -1423,6 +1428,13 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 
 
 	bLeftGame = bPlayerLeftGame;
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		DisableInput(PC);
+		FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+		FollowCamera->AttachToComponent(GetMesh(), Rules, TEXT("neck_02"));
+	}
 
 	//if (BlasterPlayerController)
 	//{
@@ -1844,7 +1856,6 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 		if (OutHitResult.bBlockingHit)
 		{
-
 			AFlag* F = Cast<AFlag>(WeaponGun);
 			if (F && F->IGetTeam() != IGetTeam())
 			{

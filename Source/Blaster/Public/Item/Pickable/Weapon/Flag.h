@@ -19,7 +19,7 @@ class BLASTER_API AFlag : public AWeapon_Melee
 public:
 	AFlag();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	virtual void PostLoad() override;
 
 	void ResetFlag();
 	UFUNCTION(NetMulticast, Reliable)

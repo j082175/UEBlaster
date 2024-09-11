@@ -1673,8 +1673,7 @@ void ACharacterBase::PostLoad()
 {
 	Super::PostLoad();
 
-	GetCharacterMovement()->SetWalkableFloorAngle(90.f);
-	GetCharacterMovement()->MaxStepHeight = 45.f;
+
 
 	//StartingARAmmo = 300.f;
 	//StartingRocketAmmo = 10.f;

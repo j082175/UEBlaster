@@ -4,6 +4,7 @@
 #include "HUD/CoolTimeAnnouncement.h"
 #include "Components/SkillComponent.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 
 void UCoolTimeAnnouncement::NativeConstruct()
 {
@@ -36,9 +37,9 @@ void UCoolTimeAnnouncement::SetCoolTimeAnnouncementText(ESkillAssistant InSkillA
 {
 	if (USkillComponent* SC = GetOwningPlayerPawn()->GetComponentByClass<USkillComponent>())
 	{
-		FCoolTimeCheckStruct* CTCS = SC->CoolTimeMap.Find(InSkillAssistant);
+		FSkillManagementStruct* CTCS = SC->CoolTimeMap.Find(InSkillAssistant);
 
-		if (CTCS && !CTCS->bCanExecute || !CTCS->bSkillPointEnough)
+		if (CTCS && !CTCS->CoolTimeCheckStruct.bCanExecute || !CTCS->CoolTimeCheckStruct.bSkillPointEnough)
 		{
 			FString Str = FString::Printf(TEXT("%s Is CoolTime or No Point"), *UEnum::GetDisplayValueAsText(InSkillAssistant).ToString());
 
@@ -46,6 +47,7 @@ void UCoolTimeAnnouncement::SetCoolTimeAnnouncementText(ESkillAssistant InSkillA
 			SetVisibility(ESlateVisibility::Visible);
 			bIsActive = true;
 			DisableTimeCount = 0.f;
+			UGameplayStatics::PlaySound2D(this, PressedSound);
 		}
 		else
 		{
