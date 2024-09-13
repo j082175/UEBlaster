@@ -74,6 +74,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 						PO->SetInstigator(InstigatorPawn);
 						PO->Damage = Damage;
 						PO->HeadShotDamage = HeadShotDamage;
+						PO->DamageDeviation = DamageDeviation;
 					}
 
 				}
@@ -91,6 +92,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 						PO->SetInstigator(InstigatorPawn);
 						PO->Damage = Damage;
 						PO->HeadShotDamage = HeadShotDamage;
+						PO->DamageDeviation = DamageDeviation;
 					}
 				}
 			}
@@ -113,6 +115,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 						PO->SetInstigator(InstigatorPawn);
 						PO->Damage = Damage;
 						PO->HeadShotDamage = HeadShotDamage;
+						PO->DamageDeviation = DamageDeviation;
 					}
 				}
 				else // client, not locally controlled - spawn non-replicated projectile, no SSR
@@ -130,6 +133,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 						PO->SetInstigator(InstigatorPawn);
 						PO->Damage = Damage;
 						PO->HeadShotDamage = HeadShotDamage;
+						PO->DamageDeviation = DamageDeviation;
 					}
 				}
 			}
@@ -156,6 +160,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					PO->SetInstigator(InstigatorPawn);
 					PO->Damage = Damage;
 					PO->HeadShotDamage = HeadShotDamage;
+					PO->DamageDeviation = DamageDeviation;
 				}
 			}
 		}

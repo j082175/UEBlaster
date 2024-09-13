@@ -15,6 +15,7 @@
 #include "Blaster/Blaster.h"
 #include "Interfaces/HitInterface.h"
 #include "Interfaces/TeamInterface.h"
+#include "Components/ReceiveDamageHUDComponent.h"
 
 #include "Perception/AISense_Damage.h"
 #include "Perception/AISense_Hearing.h"
@@ -42,6 +43,10 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 		if (FireHit.bBlockingHit)
 		{
 
+			float DamageToCause = FireHit.BoneName.ToString() == TEXT("head") ? HeadShotDamage : Damage;
+
+			DamageToCause = FMath::RandRange(DamageToCause - DamageDeviation, DamageToCause + DamageDeviation);
+
 			IHitInterface* HitActor = Cast<IHitInterface>(FireHit.GetActor());
 			if (HitActor)
 			{
@@ -54,12 +59,14 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 				}
 				
 
+
 				//if (HasAuthority()) UE_LOG(LogTemp, Error, TEXT("HitActor : %s"), *FireHit.GetActor()->GetName());
 				HitActor->IGetHit(HitTarget, FireHit);
 				//ApplyForce(FieldSystemComponent, FireHit);
 				//UAISense_Damage::ReportDamageEvent(this, FireHit.GetActor(), GetInstigator(), Damage, GetActorLocation(), HitTarget);
 				
 				ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(GetInstigatorController());
+				UReceiveDamageHUDComponent* DHUD = FireHit.GetActor()->GetComponentByClass<UReceiveDamageHUDComponent>();
 
 				if (BPC && BPC->IsLocalPlayerController())
 				{
@@ -68,10 +75,12 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 					if (FireHit.BoneName.ToString() == TEXT("head"))
 					{
 						BPC->PlayHitNoticeAnim(TEXT("Head"));
+						if (DHUD) DHUD->SetDamageInfo(DamageToCause, GetInstigatorController(), FLinearColor::Red);
 					}
 					else
 					{
 						BPC->PlayHitNoticeAnim(TEXT("Body"));
+						if (DHUD) DHUD->SetDamageInfo(DamageToCause, GetInstigatorController(), FLinearColor(0.f, 1.f, 1.f));
 					}
 				}
 			}
@@ -82,8 +91,6 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 				bool bCauseAuthDamage = !bUseServerSideRewind || OwnerPawn->IsLocallyControlled();
 				if (HasAuthority() && bCauseAuthDamage)
 				{
-
-					const float DamageToCause = FireHit.BoneName.ToString() == TEXT("head") ? HeadShotDamage : Damage;
 
 					//UE_LOG(LogTemp, Display, TEXT("HitScanWeapon : HasAuthority, %s, Damage : %f"), *FireHit.GetActor()->GetName(), DamageToCause);
 
@@ -163,7 +170,7 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& Hi
 		if (BeamParticles)
 		{
 			
-			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(World, BeamParticles, TraceStart, (End - TraceStart).GetSafeNormal().Rotation(), true);
+			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(World, BeamParticles, TraceStart, (End - TraceStart).GetSafeNormal().Rotation(), FVector(1.f, 0.2f, 0.2f), true);
 
 			if (Beam)
 			{

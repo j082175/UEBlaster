@@ -438,7 +438,7 @@ void AWeapon_Gun::InitData()
 	FireDelay = WeaponStat.FireDelay;
 	MagCapacity = WeaponStat.MagCapacity; 
 	Ammo = MagCapacity;
-
+	DamageDeviation = WeaponStat.DamageDeviation;
 
 	FWeaponData WeaponData = DataSingleton.GetWeaponData(WeaponName);
 
@@ -523,7 +523,7 @@ void AWeapon_Gun::AddAmmo(int32 AmmoToAdd)
 
 	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
 	SetHUDAmmo();
-	ClientAddAmmo(AmmoToAdd);
+	//ClientAddAmmo(AmmoToAdd);
 }
 
 void AWeapon_Gun::ClientAddAmmo_Implementation(int32 AmmoToAdd)

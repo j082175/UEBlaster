@@ -165,12 +165,12 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 
 
-
+#if WITH_EDITOR
 			// Rotation Matrix 으로부터 X축 벡터를 얻는 방법.
 			FVector MuzzleX(FRotationMatrix(MuzzleTipTransform.GetRotation().Rotator()).GetUnitAxis(EAxis::X));
-			DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
-			DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), CharacterOwner->GetHitTarget(), FColor::Orange);
-
+			//DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
+			//DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), CharacterOwner->GetHitTarget(), FColor::Orange);
+#endif
 
 		}
 

@@ -19,9 +19,7 @@ class BLASTER_API UReceiveDamageHUDComponent : public UMyWidgetComponent
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastSetDamageInfo(int32 InDamage, class AController* InController,const FLinearColor& InColor);
-
+	void SetDamageInfo(int32 InDamage, class AController* InController, const FLinearColor& InColor);
 private:
 
 	TWeakObjectPtr<class UDamageScroll> DamageScroll;

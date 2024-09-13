@@ -232,7 +232,7 @@ private:
 
 	// Elim
 public:
-	virtual void MulticastElim(bool bPlayerLeftGame) override;
+	virtual void MulticastElim_Implementation(bool bPlayerLeftGame) override;
 private:
 	virtual void ElimTimerFinished() override;
 
@@ -256,9 +256,9 @@ private:
 	//TObjectPtr<class UStaticMeshComponent> AttachedGrenade;
 
 public:
-	virtual void MulticastGainedTheLead() override;
+	virtual void MulticastGainedTheLead_Implementation() override;
 
-	virtual void MulticastLostTheLead() override;
+	virtual void MulticastLostTheLead_Implementation() override;
 
 
 	// Crosshair & Zoom
@@ -299,6 +299,9 @@ private:
 protected:
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UParticleSystem> HitHUDEffect;
+
 
 	// Dash
 	uint32 MoveButtonPressedCount;
@@ -338,4 +341,19 @@ protected:
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	//float DashCoolTime = 2.f;
 	//uint8 bCanDash : 1 = true;
+	
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void MulticastTesting();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void ServerTesting();
+
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientTesting();
+
+	UFUNCTION()
+	void OnRep_TestingBool();
+
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRep_TestingBool)
+	bool TestingBool;
 };

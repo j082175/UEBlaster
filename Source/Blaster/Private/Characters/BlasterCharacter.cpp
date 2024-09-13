@@ -89,10 +89,6 @@ ABlasterCharacter::ABlasterCharacter()
 
 	InitializeDefaults();
 
-
-	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
-
-
 	//UE_LOG(LogTemp, Display, TEXT("BlasterCharacter Constructor"));
 	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
@@ -188,6 +184,7 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	//DOREPLIFETIME(ABlasterCharacter, CurrentShield);
 	DOREPLIFETIME(ABlasterCharacter, KeyType);
 
+	DOREPLIFETIME(ABlasterCharacter, TestingBool);
 
 }
 
@@ -599,6 +596,9 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 		BlasterGameMode->PlayerEliminated(this, BlasterPlayerController, AttackerController);
 	}
 
+
+	UGameplayStatics::SpawnEmitterAttached(HitHUDEffect, FollowCamera, NAME_Camera);
+
 }
 
 //float ABlasterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -746,6 +746,8 @@ void ABlasterCharacter::Move(const FInputActionValue& Value)
 {
 	if (bDisableGameplay) return;
 	if (CombatState == ECombatState::Ragdoll) return;
+
+
 	//UE_LOG(LogTemp, Display, TEXT("Move"));
 	FVector2D Vec = Value.Get<FVector2d>();
 
@@ -1422,19 +1424,22 @@ void ABlasterCharacter::HideCameraIfCharacterClose()
 //	}
 //}
 //
-void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
+void ABlasterCharacter::MulticastElim_Implementation(bool bPlayerLeftGame)
 {
-	//UE_LOG(LogTemp, Display, TEXT("MulticastElim_Implementation"));
+	//AB_LOG(LogABDisplay, Warning, TEXT(""));
+	Super::MulticastElim_Implementation(bPlayerLeftGame);
 
 
 	bLeftGame = bPlayerLeftGame;
+
 
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
 		DisableInput(PC);
 		FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
-		FollowCamera->AttachToComponent(GetMesh(), Rules, TEXT("neck_02"));
+		FollowCamera->AttachToComponent(GetMesh(), Rules, TEXT("head"));
 	}
+
 
 	//if (BlasterPlayerController)
 	//{
@@ -1501,7 +1506,7 @@ void ABlasterCharacter::MulticastElim(bool bPlayerLeftGame)
 
 	//GetWorldTimerManager().SetTimer(ElimTimer, this, &ThisClass::ElimTimerFinished, ElimDelay);
 
-	Super::MulticastElim(bPlayerLeftGame);
+
 }
 //
 //void ABlasterCharacter::SetSpawnPoint()
@@ -1574,7 +1579,7 @@ void ABlasterCharacter::ServerLeaveGame_Implementation()
 //	}
 //}
 
-void ABlasterCharacter::MulticastGainedTheLead()
+void ABlasterCharacter::MulticastGainedTheLead_Implementation()
 {
 	if (CrownNiagaraSystem == nullptr) return;
 	if (CrownNiagaraComponent == nullptr)
@@ -1588,7 +1593,7 @@ void ABlasterCharacter::MulticastGainedTheLead()
 	}
 }
 
-void ABlasterCharacter::MulticastLostTheLead()
+void ABlasterCharacter::MulticastLostTheLead_Implementation()
 {
 	if (CrownNiagaraComponent)
 	{
@@ -1922,6 +1927,32 @@ void ABlasterCharacter::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 void ABlasterCharacter::Test()
 {
 	ServerTest();
+
+}
+
+void ABlasterCharacter::ServerTesting_Implementation()
+{
+	AB_LOG(LogABDisplay, Warning, TEXT(""));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetActorTransform());
+	ClientTesting();
+}
+
+void ABlasterCharacter::OnRep_TestingBool()
+{
+	AB_LOG(LogABDisplay, Warning, TEXT(""));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetActorTransform());
+}
+
+void ABlasterCharacter::MulticastTesting_Implementation()
+{
+	AB_LOG(LogABDisplay, Warning, TEXT(""));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetActorTransform());
+}
+
+void ABlasterCharacter::ClientTesting_Implementation()
+{
+	AB_LOG(LogABDisplay, Warning, TEXT(""));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetActorTransform());
 }
 
 

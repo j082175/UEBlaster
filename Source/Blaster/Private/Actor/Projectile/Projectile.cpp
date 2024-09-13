@@ -6,6 +6,7 @@
 // Components
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/ReceiveDamageHUDComponent.h"
 
 // Kismets
 #include "Kismet/GameplayStatics.h"
@@ -174,22 +175,26 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		ApplyForce(FieldSystemComponent, Hit);
 
 		ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(GetInstigatorController());
+		UReceiveDamageHUDComponent* DHUD = OtherActor->GetComponentByClass<UReceiveDamageHUDComponent>();
 
 		if (BPC && BPC->IsLocalPlayerController())
 		{
+			RandomDamage = FMath::RandRange(Damage - DamageDeviation, Damage + DamageDeviation);
+			RandomHeadShotDamage = FMath::RandRange(HeadShotDamage - DamageDeviation, HeadShotDamage + DamageDeviation);
 
 			//UE_LOG(LogTemp, Error, TEXT("BoneName : %s"), *Hit.BoneName.ToString());
 			//UE_LOG(LogTemp, Error, TEXT("MyBoneName : %s"), *Hit.MyBoneName.ToString());
 			//UE_LOG(LogTemp, Error, TEXT("Component : %s"), *Hit.Component->GetName());
 
-
 			if (Hit.BoneName.ToString() == TEXT("head"))
 			{
 				BPC->PlayHitNoticeAnim(TEXT("Head"));
+				if (DHUD) DHUD->SetDamageInfo(RandomHeadShotDamage, GetInstigatorController(), FLinearColor::Red);
 			}
 			else
 			{
 				BPC->PlayHitNoticeAnim(TEXT("Body"));
+				if (DHUD) DHUD->SetDamageInfo(RandomDamage, GetInstigatorController(), FLinearColor(0.f, 1.f, 1.f));
 			}
 		}
 	}
@@ -227,7 +232,10 @@ void AProjectile::ExplodeDamage()
 
 			TArray<AActor*> ActorsToIgnore;
 			//ActorsToIgnore.Add(GetInstigator());
-			UGameplayStatics::ApplyRadialDamageWithFalloff(this, Damage, 10.f, GetActorLocation(), DamageInnerRadius, DamageOuterRadius, 1.f, UDamageType::StaticClass(), ActorsToIgnore, this, FiringController);
+
+			float FinalDamage = FMath::RandRange(Damage - DamageDeviation, Damage + DamageDeviation);
+
+			UGameplayStatics::ApplyRadialDamageWithFalloff(this, FinalDamage, 10.f, GetActorLocation(), DamageInnerRadius, DamageOuterRadius, 1.f, UDamageType::StaticClass(), ActorsToIgnore, this, FiringController);
 		}
 		else
 		{

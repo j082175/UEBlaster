@@ -70,6 +70,7 @@ void UOverheadWidgetComponent::InitTextColorFunc()
 	//ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>());
 	//ITeamInterface* T2 = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
 
+	if (!GetWorld()->GetFirstPlayerController()) return;
 	ITeamInterface* T1 = Cast<ITeamInterface>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ITeamInterface* T2 = Cast<ITeamInterface>(GetOwner());
 

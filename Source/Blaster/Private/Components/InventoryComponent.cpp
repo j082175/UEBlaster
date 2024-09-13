@@ -28,6 +28,8 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ThisClass, EquippedWeapon);
 	DOREPLIFETIME(ThisClass, SecondaryWeapon);
 	DOREPLIFETIME(ThisClass, Grenades);
+	DOREPLIFETIME_CONDITION(ThisClass, CarriedAmmoMap, COND_OwnerOnly);
+
 }
 
 void UInventoryComponent::PostLoad()
@@ -71,36 +73,37 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	UE_LOG(LogTemp, Display, TEXT("UInventoryComponent::TickComponent"));
 	// ...
 }
 
 void UInventoryComponent::SubtractCarriedAmmoMap(EWeaponType InWeaponType, int32 InDecreaseAmount)
 {
-	if (CarriedAmmoMap.Contains(InWeaponType))
+	if (CarriedAmmoMap.IsValidIndex((int)InWeaponType))
 	{
-		CarriedAmmoMap[InWeaponType] -= InDecreaseAmount;
-		OnCarriedAmmoChanged.Broadcast(CarriedAmmoMap[InWeaponType]);
+		CarriedAmmoMap[(int)InWeaponType] -= InDecreaseAmount;
+		OnCarriedAmmoChanged.Broadcast(CarriedAmmoMap[(int)InWeaponType]);
 	}
 }
 
 void UInventoryComponent::InitializeCarriedAmmo()
 {
-	CarriedAmmoMap.Emplace(EWeaponType::AssaultRifle, StartingARAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::RocketLauncher, StartingRocketAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::Pistol, StartingPistolAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::SMG, StartingSMGAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::Shotgun, StartingShotgunAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::SniperRifle, StartingSniperAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::GrenadeLauncher, StartingGrenadeLauncherAmmo);
+	CarriedAmmoMap.Add(static_cast<int>(EWeaponType::AssaultRifle, StartingARAmmo));
+	CarriedAmmoMap.Add(static_cast<int>(EWeaponType::RocketLauncher, StartingRocketAmmo));
+	CarriedAmmoMap.Add(static_cast<int>(EWeaponType::Pistol, StartingPistolAmmo));
+	CarriedAmmoMap.Add(static_cast<int>(EWeaponType::SMG, StartingSMGAmmo));
+	CarriedAmmoMap.Add(static_cast<int>(EWeaponType::Shotgun, StartingShotgunAmmo));
+	CarriedAmmoMap.Add(static_cast<int>(EWeaponType::SniperRifle, StartingSniperAmmo));
+	CarriedAmmoMap.Add(static_cast<int>(EWeaponType::GrenadeLauncher, StartingGrenadeLauncherAmmo));
 
 }
 
 void UInventoryComponent::UpdateCarriedAmmo()
 {
 	if (EquippedWeapon == nullptr) return;
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+	if (CarriedAmmoMap.IsValidIndex((int)EquippedWeapon->GetWeaponType()))
 	{
-		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
+		CarriedAmmo = CarriedAmmoMap[(int)EquippedWeapon->GetWeaponType()];
 		OnCarriedAmmoChanged.Broadcast(CarriedAmmo);
 
 	}

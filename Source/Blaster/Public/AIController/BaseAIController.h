@@ -24,6 +24,8 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
+
 
 public:
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn) override;

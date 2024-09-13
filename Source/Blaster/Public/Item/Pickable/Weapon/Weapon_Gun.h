@@ -174,7 +174,7 @@ private:
 public:
 	virtual void Fire(const FVector& HitTarget);
 	void AddAmmo(int32 AmmoToAdd);
-private:
+protected:
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateAmmo(int32 ServerAmmo);
 

@@ -15,6 +15,7 @@ class BLASTER_API UMyCharacterMovementComponent : public UCharacterMovementCompo
 	GENERATED_BODY()
 	UMyCharacterMovementComponent();
 public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void PostLoad() override;
 
 

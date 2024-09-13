@@ -259,16 +259,16 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	//DOREPLIFETIME(ThisClass, InventoryComponent->EquippedWeapon);
 	//DOREPLIFETIME(ThisClass, SecondaryWeapon);
-	DOREPLIFETIME(ThisClass, bIsAiming);
+	DOREPLIFETIME_CONDITION(ThisClass, bIsAiming, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, CharacterState);
 	//DOREPLIFETIME_CONDITION(ThisClass, CarriedAmmo, COND_OwnerOnly);
 	//DOREPLIFETIME(ThisClass, Grenades);
 	DOREPLIFETIME(ThisClass, bHoldingTheFlag);
 	DOREPLIFETIME(ThisClass, Flag);
-	DOREPLIFETIME(ThisClass, bIsSliding);
+	DOREPLIFETIME_CONDITION(ThisClass, bIsSliding, COND_SimulatedOnly);
 	DOREPLIFETIME_CONDITION(ThisClass, bIsDodge, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, bIsMorV);
-	DOREPLIFETIME(ThisClass, AnimState);
+	DOREPLIFETIME_CONDITION(ThisClass, AnimState, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, bParryResultCheck);
 	DOREPLIFETIME_CONDITION(ThisClass, bDisableGameplay, COND_OwnerOnly);
 	DOREPLIFETIME(ThisClass, KeySectionName);
@@ -334,8 +334,6 @@ void ACharacterBase::IGetHit(const FVector& InHitPoint, const FHitResult& InHitR
 	//DrawDebugSphere(GetWorld(), CharacterHitPoint, 10.f, 12, FColor::Cyan, false, 5.f);
 	//EnemyAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
 
-	ReceiveDamageColor = InHitResult.BoneName == TEXT("head") ? FLinearColor::Red : FLinearColor(0.f, 1.f, 1.f);
-	//ReceiveDamageColor
 
 	CharacterHitPoint = InHitPoint;
 
@@ -443,7 +441,7 @@ bool ACharacterBase::ICheckParry(AActor* OtherActor)
 
 void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
-	UE_LOG(LogTemp, Display, TEXT("ReceiveDamage"));
+	//UE_LOG(LogTemp, Display, TEXT("ReceiveDamage : %f"), Damage);
 
 
 	ITeamInterface* T1 = Cast<ITeamInterface>(InstigatorController->GetPawn());
@@ -465,9 +463,6 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	LastDamageCauser = DamageCauser;
 
-	ReceiveDamageHUDComponent->MulticastSetDamageInfo(Damage, InstigatorController, ReceiveDamageColor);
-
-
 
 
 	if (AttributeComponent == nullptr || BlasterGameMode == nullptr)
@@ -477,7 +472,7 @@ void ACharacterBase::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 
 	if (bIsElimmed || BlasterGameMode == nullptr) return;
 	Damage = BlasterGameMode->CalculateDamage(InstigatorController, Controller, Damage);
-	UE_LOG(LogTemp, Display, TEXT("ReceiveDamage Damage : %f"), Damage);
+	//UE_LOG(LogTemp, Display, TEXT("ReceiveDamage Damage : %f"), Damage);
 	float DamageToHealth = Damage;
 
 	float CurrentShield = AttributeComponent->GetCurrentShield();
@@ -757,7 +752,8 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 	else if (GRENADE_LAUNCH == NotifyName)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("GrenadeLaunch"));
-		DisableAttachedGrenade();
+		if (IsLocallyControlled()) DisableAttachedGrenade();
+
 	}
 	else if (SWAP_ATTACHED_WEAPON == NotifyName)
 	{
@@ -896,7 +892,6 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 		{
 			bIsSliding = false;
 			CombatState = ECombatState::Unoccupied;
-
 		}
 		else if (Montage == AttackMontage)
 		{
@@ -1420,12 +1415,12 @@ void ACharacterBase::OnRep_CombatState()
 		//if (!IsLocallyControlled()) HandleReload();
 		break;
 	case ECombatState::ThrowingGrenade:
-		//if (Character && !IsLocallyControlled()) // Simulate Proxy 만 재생하게 혹시 모르니 조건문 걸은거임
-		//{
-		//	PlayThrowGrenadeMontage();
-		//}
-		PlayThrowGrenadeMontage();
-		ShowAttachedGrenade(true);
+		if (!IsLocallyControlled()) // Simulate Proxy 만 재생하게 혹시 모르니 조건문 걸은거임
+		{
+			PlayThrowGrenadeMontage();
+			ShowAttachedGrenade(true);
+		}
+
 
 		break;
 	case ECombatState::SwappingWeapon:
@@ -1555,7 +1550,7 @@ void ACharacterBase::InitializeDefaults()
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
 	OverheadWidgetComponent->SetComponentTickInterval(1.f);
 
-	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
@@ -2069,6 +2064,8 @@ void ACharacterBase::DropOrDestroyWeapon(AWeapon* InWeapon)
 
 void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 {
+	//AB_LOG(LogABDisplay, Warning, TEXT(""));
+
 	//UE_LOG(LogTemp, Display, TEXT("MulticastElim_Implementation"));
 	//bLeftGame = bPlayerLeftGame;
 	//if (BlasterPlayerController && CombatComponent)
@@ -2234,6 +2231,7 @@ void ACharacterBase::ElimTimerFinished()
 	}
 	else
 	{
+		GetController()->Destroy();
 		Destroy();
 		//Recover();
 		//SetIsActive(false);
@@ -2328,6 +2326,9 @@ void ACharacterBase::EquipWeaponFunc()
 		AttachActorToRightHand(InventoryComponent->EquippedWeapon);
 		PlayEquipWeaponSound();
 
+		InventoryComponent->UpdateCarriedAmmo();
+		ReloadEmptyWeapon();
+
 		InventoryComponent->EquippedWeapon->SetActorHiddenInGame(false);
 		InventoryComponent->EquippedWeapon->ShowPickupWidget(false);
 		InventoryComponent->EquippedWeapon->EnableCustomDepth(false);
@@ -2336,10 +2337,10 @@ void ACharacterBase::EquipWeaponFunc()
 		InventoryComponent->EquippedWeapon->SetInstigator(this);
 		InventoryComponent->EquippedWeapon->SetHUDVisibility(true);
 		InventoryComponent->EquippedWeapon->SetHUD();
+		AnimState = EAnimState::Equipped;
 
 		if (AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon)) Gun->SetHUDAmmo();
-		InventoryComponent->UpdateCarriedAmmo();
-		ReloadEmptyWeapon();
+
 	}
 
 }
@@ -2361,6 +2362,8 @@ void ACharacterBase::EquipSecondaryFunc()
 		InventoryComponent->SecondaryWeapon->SetInstigator(this);
 		InventoryComponent->SecondaryWeapon->ShowPickupWidget(false);
 		InventoryComponent->SecondaryWeapon->EnableCustomDepth(false);
+
+		InventoryComponent->SecondaryWeapon->SetHUDVisibility(false);
 
 		//Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(GetController()) : Controller;
 		//if (Controller)
@@ -2767,9 +2770,9 @@ bool ACharacterBase::CanFire()
 
 void ACharacterBase::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)
 {
-	if (InventoryComponent->CarriedAmmoMap.Contains(InWeaponType))
+	if (InventoryComponent->CarriedAmmoMap.IsValidIndex((int)InWeaponType))
 	{
-		InventoryComponent->CarriedAmmoMap[InWeaponType] = FMath::Clamp(InventoryComponent->CarriedAmmoMap[InWeaponType] + AmmoAmount, 0, INT32_MAX);
+		InventoryComponent->CarriedAmmoMap[(int)InWeaponType] = FMath::Clamp(InventoryComponent->CarriedAmmoMap[(int)InWeaponType] + AmmoAmount, 0, INT32_MAX);
 
 		InventoryComponent->UpdateCarriedAmmo();
 	}
@@ -2817,15 +2820,19 @@ void ACharacterBase::UpdateAmmoValues()
 	if (!Gun) return;
 
 	int32 ReloadAmount = AmountToReload();
+	//UE_LOG(LogTemp, Display, TEXT("ReloadAmount : %d"), ReloadAmount);
 
-	if (InventoryComponent->CarriedAmmoMap.Contains(InventoryComponent->EquippedWeapon->GetWeaponType()))
+	if (InventoryComponent->CarriedAmmoMap.IsValidIndex((int)InventoryComponent->EquippedWeapon->GetWeaponType()))
 	{
 		//InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()] -= ReloadAmount;
 		InventoryComponent->SubtractCarriedAmmoMap(InventoryComponent->EquippedWeapon->GetWeaponType(), ReloadAmount);
 
-		InventoryComponent->CarriedAmmo = InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()];
+		InventoryComponent->CarriedAmmo = InventoryComponent->CarriedAmmoMap[(int)InventoryComponent->EquippedWeapon->GetWeaponType()];
+
 		//UE_LOG(LogTemp, Display, TEXT("CarriedAmmo : %d"), CarriedAmmo);
 	}
+
+
 	Gun->AddAmmo(ReloadAmount);
 
 
@@ -2839,12 +2846,12 @@ void ACharacterBase::UpdateShotgunAmmoValues()
 {
 	//UE_LOG(LogTemp, Display, TEXT("UpdateShotgunAmmoValues : %d"), bReloadStopCheck);
 	if (InventoryComponent->EquippedWeapon == nullptr) return;
-	if (InventoryComponent->CarriedAmmoMap.Contains(InventoryComponent->EquippedWeapon->GetWeaponType()))
+	if (InventoryComponent->CarriedAmmoMap.IsValidIndex((int)InventoryComponent->EquippedWeapon->GetWeaponType()))
 	{
 		//InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()] -= 1;
 		InventoryComponent->SubtractCarriedAmmoMap(InventoryComponent->EquippedWeapon->GetWeaponType(), 1);
 
-		InventoryComponent->CarriedAmmo = InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()];
+		InventoryComponent->CarriedAmmo = InventoryComponent->CarriedAmmoMap[(int)InventoryComponent->EquippedWeapon->GetWeaponType()];
 	}
 
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
@@ -2891,7 +2898,6 @@ void ACharacterBase::ShotgunShellReload()
 
 void ACharacterBase::JumpToShotgunEnd_Implementation()
 {
-
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && GetReloadMontage())
 	{
@@ -2906,25 +2912,27 @@ void ACharacterBase::ServerReload_Implementation()
 	//UpdateAmmoValues();
 
 	//if (!IsLocallyControlled()) HandleReload();
+	HandleReload();
 	MulticastReload();
 }
 
 void ACharacterBase::MulticastReload_Implementation()
 {
-	if (!HasAuthority() && IsLocallyControlled()) return;
+	if (!HasAuthority() && !IsLocallyControlled())
 	HandleReload();
 }
 
 void ACharacterBase::FinishReloading()
 {
 
-	//FString Str = UEnum::GetDisplayValueAsText(GetLocalRole()).ToString();
-	//UE_LOG(LogTemp, Display, TEXT("FinishReloading %s : %d"), *Str, bLocallyReloading);
+	FString Str = UEnum::GetDisplayValueAsText(GetLocalRole()).ToString();
+	UE_LOG(LogTemp, Display, TEXT("FinishReloading %s : %d"), *Str, bLocallyReloading);
 
 	bLocallyReloading = false;
 	if (true)
 	{
 		CombatState = ECombatState::Unoccupied;
+
 		UpdateAmmoValues();
 	}
 }
@@ -2937,9 +2945,9 @@ int32 ACharacterBase::AmountToReload()
 
 	int32 RoomInMag = Gun->GetMagCapacity() - Gun->GetAmmo();
 
-	if (InventoryComponent->CarriedAmmoMap.Contains(InventoryComponent->EquippedWeapon->GetWeaponType()))
+	if (InventoryComponent->CarriedAmmoMap.IsValidIndex((int)InventoryComponent->EquippedWeapon->GetWeaponType()))
 	{
-		int32 AmountCarried = InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()];
+		int32 AmountCarried = InventoryComponent->CarriedAmmoMap[(int)InventoryComponent->EquippedWeapon->GetWeaponType()];
 		int32 Least = FMath::Min(RoomInMag, AmountCarried);
 		return FMath::Clamp(RoomInMag, 0, Least); // 사실 클램프는 없어도 되는데 GetAmmo 가 MagCapacity 보다 클 경우를 대비한 거임. 즉 실수가 생겼을 시 예방책
 	}
@@ -3044,6 +3052,19 @@ void ACharacterBase::SetMovementSpeed(float WalkSpeed, float CrouchSpeed)
 //	}
 //}
 
+void ACharacterBase::ThrowGrenadeFunc()
+{
+	if (InventoryComponent->Grenades == 0) return;
+	//UE_LOG(LogTemp, Display, TEXT("ServerThrowGrenade_Implementation"));
+	CombatState = ECombatState::ThrowingGrenade;
+	ShowAttachedGrenade(true);
+	AttachActorToLeftHand(InventoryComponent->EquippedWeapon);
+	PlayThrowGrenadeMontage();
+
+	InventoryComponent->Grenades = FMath::Clamp(InventoryComponent->Grenades - 1, 0, InventoryComponent->MaxGrenades);
+
+}
+
 void ACharacterBase::ThrowGrenade()
 {
 	if (CombatState != ECombatState::Unoccupied || AnimState == EAnimState::UnEquipped) return;
@@ -3063,6 +3084,8 @@ void ACharacterBase::ThrowGrenade()
 	//	Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);
 	//	UpdateHUDGrenades();
 	//}
+
+	if (!HasAuthority() && IsLocallyControlled()) ThrowGrenadeFunc();
 
 	ServerThrowGrenade();
 }
@@ -3136,21 +3159,13 @@ void ACharacterBase::AttachFlagToLeftHand(AWeapon* InFlag)
 
 void ACharacterBase::ServerThrowGrenade_Implementation()
 {
-	if (InventoryComponent->Grenades == 0) return;
-	//UE_LOG(LogTemp, Display, TEXT("ServerThrowGrenade_Implementation"));
-	CombatState = ECombatState::ThrowingGrenade;
-	ShowAttachedGrenade(true);
-	AttachActorToLeftHand(InventoryComponent->EquippedWeapon);
-	PlayThrowGrenadeMontage();
-
-	InventoryComponent->Grenades = FMath::Clamp(InventoryComponent->Grenades - 1, 0, InventoryComponent->MaxGrenades);
-
+	ThrowGrenadeFunc();
 }
 
 //void ACharacterBase::UpdateCarriedAmmo()
 //{
 //	if (InventoryComponent->EquippedWeapon == nullptr) return;
-//	if (InventoryComponent->CarriedAmmoMap.Contains(InventoryComponent->EquippedWeapon->GetWeaponType()))
+//	if (InventoryComponent->CarriedAmmoMap.IsValidIndex(InventoryComponent->EquippedWeapon->GetWeaponType()))
 //	{
 //		CarriedAmmo = InventoryComponent->CarriedAmmoMap[InventoryComponent->EquippedWeapon->GetWeaponType()];
 //	}
@@ -3180,6 +3195,7 @@ void ACharacterBase::ReloadEmptyWeapon()
 	if (!Gun) return;
 	if (InventoryComponent->EquippedWeapon && Gun->IsEmpty())
 	{
+		UE_LOG(LogTemp, Display, TEXT("AI Reload"));
 		Reload();
 	}
 }
@@ -3192,28 +3208,12 @@ void ACharacterBase::ShowAttachedGrenade(bool bShowGrenade)
 	}
 }
 
-void ACharacterBase::LaunchGrenade()
-{
-	if (IsLocallyControlled())
-	{
-		//UE_LOG(LogTemp, Display, TEXT("LaunchGrenade"));
-		ServerLaunchGrenade(HitTarget);
-
-	}
-}
-
-
-//void ACharacterBase::OnRep_Grenades()
-//{
-//
-//
-//}
-
-void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantize& Target)
+void ACharacterBase::LaunchGrenadeFunc(const FVector_NetQuantize& Target)
 {
 	if (GrenadeClass && GetAttachedGrenade())
 	{
-		//UE_LOG(LogTemp, Display, TEXT("ServerLaunchGrenade_Implementation"));
+		AB_LOG(LogABDisplay, Warning, TEXT(""));
+
 		const FVector StartingLocation = GetAttachedGrenade()->GetComponentLocation();
 		FVector ToTarget = Target - StartingLocation;
 		FActorSpawnParameters SpawnParams;
@@ -3224,8 +3224,9 @@ void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantiz
 		{
 			DrawDebugLine(World, StartingLocation, Target, FColor::Magenta, false, 5.f);
 			FTransform T(ToTarget.Rotation(), StartingLocation);
-			AProjectileGrenade* Grenade = World->SpawnActor<AProjectileGrenade>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParams);
-			Grenade->SetReplicates(true);
+			AProjectileGrenade* Grenade = World->SpawnActorDeferred<AProjectileGrenade>(GrenadeClass, T, this, this);
+			//Grenade->SetReplicates(true);
+			Grenade->FinishSpawning(T);
 
 			InventoryComponent->OnGrenadeCountChanged.Broadcast(InventoryComponent->GetGrenades());
 			//AProjectileGrenade* Grenade = Cast<AProjectileGrenade>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(T, GrenadeClass));
@@ -3242,10 +3243,41 @@ void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantiz
 	}
 }
 
+void ACharacterBase::LaunchGrenade()
+{
+	if (IsLocallyControlled())
+	{
+		LaunchGrenadeFunc(HitTarget);
+	}
+}
+
+void ACharacterBase::MulticastLaunchGrenade_Implementation(const FVector_NetQuantize& Target)
+{
+	if (!HasAuthority() && !IsLocallyControlled())
+	LaunchGrenadeFunc(Target);
+}
+
+
+//void ACharacterBase::OnRep_Grenades()
+//{
+//
+//
+//}
+
+void ACharacterBase::ServerLaunchGrenade_Implementation(const FVector_NetQuantize& Target)
+{
+	MulticastLaunchGrenade(Target);
+	LaunchGrenadeFunc(Target);
+}
+
 void ACharacterBase::DisableAttachedGrenade()
 {
+
 	ShowAttachedGrenade(false);
-	LaunchGrenade();
+
+	if (!HasAuthority() && IsLocallyControlled()) LaunchGrenadeFunc(HitTarget);
+	ServerLaunchGrenade(HitTarget);
+
 }
 
 void ACharacterBase::OnRep_HoldingTheFlag()
@@ -3263,7 +3295,6 @@ void ACharacterBase::Slide()
 
 	if (GetVelocity().Length() > 500.f && CanJump())
 	{
-		CombatState = ECombatState::Sliding;
 		if (!HasAuthority()) SlideFunc();
 		ServerSlide();
 	}
@@ -3271,6 +3302,8 @@ void ACharacterBase::Slide()
 
 void ACharacterBase::SlideFunc()
 {
+	bUseControllerRotationYaw = false;
+	CombatState = ECombatState::Sliding;
 	PlaySlideMontage();
 	Crouch();
 }
@@ -3317,6 +3350,7 @@ bool ACharacterBase::Dodge(FName InSectionName)
 
 void ACharacterBase::DodgeFunc(FName InSectionName)
 {
+	bUseControllerRotationYaw = false;
 	CombatState = ECombatState::Dodging;
 	Crouch();
 	PlayDodgeMontage(InSectionName);
@@ -3403,6 +3437,7 @@ void ACharacterBase::SetAimingFunc(bool InbIsAiming)
 
 		//SetMovementSpeed(AimWalkSpeed, AimCrouchSpeed);
 		AnimState = EAnimState::Combat;
+
 	}
 	else
 	{
@@ -3423,6 +3458,7 @@ void ACharacterBase::SetAimingFunc(bool InbIsAiming)
 
 		//SetMovementSpeed(BaseWalkSpeed, BaseCrouchSpeed);
 		AnimState = EAnimState::Equipped;
+
 	}
 }
 
@@ -3433,11 +3469,9 @@ void ACharacterBase::SetAiming(bool InbIsAiming)
 
 	if (IsLocallyControlled()) bAimButtonPressed = InbIsAiming;
 
-	SetAimingFunc(InbIsAiming);
+	if (GetLocalRole() == ENetRole::ROLE_AutonomousProxy) SetAimingFunc(InbIsAiming);
 
 	ServerSetAiming(InbIsAiming);
-
-
 }
 
 void ACharacterBase::OnRep_Aiming_Finished()
@@ -3451,8 +3485,6 @@ void ACharacterBase::OnRep_Aiming_Finished()
 
 void ACharacterBase::ServerSetAiming_Implementation(bool InbIsAiming)
 {
-	if (!HasAuthority()) return;
-
 	SetAimingFunc(InbIsAiming);
 }
 
@@ -3849,6 +3881,9 @@ void ACharacterBase::RotateInPlace(float DeltaTime)
 	//if (IsLocallyControlled()) UE_LOG(LogTemp, Display, TEXT("Role : %s, CombatState : %s"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	if (CombatState == ECombatState::VaultOrMantle) return;
 	if (CombatState == ECombatState::Dash) return;
+	if (CombatState == ECombatState::Sliding) return;
+	if (CombatState == ECombatState::Dodging) return;
+
 
 	if (GetController() == nullptr) return;
 

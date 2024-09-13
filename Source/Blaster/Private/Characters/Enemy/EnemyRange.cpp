@@ -14,6 +14,7 @@
 #include "HUD/OverheadWidget.h"
 #include "PlayerState/BlasterPlayerState.h"
 #include "Components/InventoryComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AEnemyRange::AEnemyRange()
 {
@@ -21,6 +22,12 @@ AEnemyRange::AEnemyRange()
 
 	//BaseWalkSpeed = 300.f;
 	//AimWalkSpeed = 200.f;
+
+}
+
+void AEnemyRange::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 }
 
@@ -77,11 +84,13 @@ void AEnemyRange::Tick(float DeltaTime)
 
 	}
 
+#if WITH_EDITOR
 	if (EquippedGun)
 	{
 		FTransform MuzzleTipTransform = EquippedGun->GetWeaponMesh()->GetSocketTransform(TEXT("MuzzleFlash"));
 		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), TargetPoint, FColor::Red, false);
 	}
+#endif
 
 	//UE_LOG(LogTemp, Display, TEXT("EnemyRange Tick"));
 
@@ -203,7 +212,7 @@ void AEnemyRange::BeginPlay()
 		}), 0.1f, false);
 
 
-
+	SetActorTickInterval(1.f);
 }
 
 void AEnemyRange::IAttack(FAttackEndedDelegate Delegate, const FString& AttackType)
@@ -223,7 +232,6 @@ void AEnemyRange::ISetAIState(EAIState InAIState)
 void AEnemyRange::FinishReloading()
 {
 	Super::FinishReloading();
-
 	AttackFunc();
 }
 
@@ -269,7 +277,7 @@ void AEnemyRange::AttackFunc()
 	TargetPoint = EquippedGun->bUseScatter ? EquippedGun->TraceEndWithScatter(TargetPoint) : TargetPoint;
 	//MulticastFire(true, TargetPoint);
 	Fire(true);
-	SetAiming(true);
+	SetAimingFunc(true);
 	EquippedGun->SetIsAutomatic(true);
 
 
@@ -310,14 +318,18 @@ void AEnemyRange::FireTimerFinished()
 	//if (InventoryComponent->EquippedWeapon == nullptr) return;
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
-	UE_LOG(LogTemp, Display, TEXT("FireTimerFinished"));
+	//UE_LOG(LogTemp, Display, TEXT("FireTimerFinished"));
 
 	////UE_LOG(LogTemp, Display, TEXT("FireTimer : %d"), FireTimer.IsValid());
 
+	//ReloadEmptyWeapon();
 
-	////bCanFire = true;
+	if (InventoryComponent->EquippedWeapon && Gun->IsEmpty())
+	{
+		ServerReload();
+		return;
+	}
 
-	ReloadEmptyWeapon();
 	if (bFireButtonPressed && Gun->IsAutomatic())
 	{
 		Fire(true);

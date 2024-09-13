@@ -15,4 +15,7 @@ class BLASTER_API UMyAIPerceptionStimuliSource : public UAIPerceptionStimuliSour
 	GENERATED_BODY()
 public:
 	UMyAIPerceptionStimuliSource(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 };

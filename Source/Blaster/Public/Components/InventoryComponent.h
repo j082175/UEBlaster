@@ -78,8 +78,8 @@ public:
 	int32 CarriedAmmo;
 
 
-	UPROPERTY(VisibleAnywhere)
-	TMap<EWeaponType, int32> CarriedAmmoMap;
+	UPROPERTY(Replicated, VisibleAnywhere)
+	TArray<int32> CarriedAmmoMap;
 
 	UPROPERTY(EditAnywhere)
 	int32 StartingARAmmo;

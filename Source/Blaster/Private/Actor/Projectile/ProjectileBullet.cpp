@@ -151,8 +151,7 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		if (OwnerCharacter->HasAuthority() && !bUseServerSideRewind)
 		{
 
-
-			float DamageToCause = Hit.BoneName.ToString() == TEXT("head") ? HeadShotDamage : Damage;
+			float DamageToCause = Hit.BoneName.ToString() == TEXT("head") ? RandomHeadShotDamage : RandomDamage;
 
 			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType_Projectile::StaticClass());
 

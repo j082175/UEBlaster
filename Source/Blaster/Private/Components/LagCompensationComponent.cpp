@@ -16,7 +16,7 @@ ULagCompensationComponent::ULagCompensationComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickInterval = 0.1f;
+	//PrimaryComponentTick.TickInterval = 0.1f;
 
 	// ...
 }
@@ -26,8 +26,14 @@ void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	SaveFramePackage();
-	Draw(bDrawPhysAssets);
+	//if (Character && Character->GetController() && Character->GetController()->IsLocalPlayerController())
+	{
+		SaveFramePackage();
+		Draw(bDrawPhysAssets);
+
+		//AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
+	}
+
 
 	//if (Character && Character->HasAuthority() && Character->IsLocallyControlled() && HitCollisionCapsules.Contains(TEXT("head")))
 	//{
@@ -170,6 +176,8 @@ void ULagCompensationComponent::SetupHitCapsule(FPhysAssetInformation PhysicsAss
 	HitCapsule->SetCollisionObjectType(ECC_HitCapsule);
 	HitCapsule->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	HitCapsule->SetCollisionResponseToChannel(ECC_HitCapsule, ECollisionResponse::ECR_Block);
+	HitCapsule->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Block);
+
 
 
 	HitCapsule->SetWorldTransform(PhysicsAssetInfo.BoneWorldTransform);
@@ -537,8 +545,12 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 
 	UCapsuleComponent* HeadCapsule = HitCharacter->HitCollisionCapsules[TEXT("head")];
 	//if (HeadCapsule->GetOwner()) UE_LOG(LogTemp, Error, TEXT("Owner : %s"), *HeadCapsule->GetOwner()->GetName());
+
 	HeadCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
 	HeadCapsule->SetCollisionResponseToChannel(ECC_HitCapsule, ECollisionResponse::ECR_Block);
+	HeadCapsule->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Block);
+
 
 	UE_LOG(LogTemp, Display, TEXT("ProjectileConfirmHit Getowner : %s"), *GetOwner()->GetName());
 
@@ -581,9 +593,11 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 			{
 				HitCapsulePair.Value->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 				HitCapsulePair.Value->SetCollisionResponseToChannel(ECC_HitCapsule, ECollisionResponse::ECR_Block);
+				HitCapsulePair.Value->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Block);
 			}
 		}
 
+		//PathParams.TraceChannel = ECC_HitCapsule;
 		UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
 
 		//UE_LOG(LogTemp, Display, TEXT("ProjectileConfirmHit : %s"), *PathResult.HitResult.GetActor()->GetName());
@@ -602,6 +616,10 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 			ResetHitCapsules(HitCharacter, CurrentFrame);
 			EnableCharacterMeshCollision(HitCharacter, ECollisionEnabled::QueryOnly);
 			return FServerSideRewindResult{ true, false };
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("PathResult.HitResult.bBlockingHit is 0"));
 		}
 	}
 

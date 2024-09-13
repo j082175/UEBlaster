@@ -3,9 +3,13 @@
 
 #include "Components/WeaponHUDComponent.h"
 #include "HUD/OverlayModules/WeaponStatus.h"
+#include "Blaster.h"
 
 UWeaponHUDComponent::UWeaponHUDComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 0.1f;
+
 	static ConstructorHelpers::FClassFinder<UWeaponStatus> WeaponStatusRef(TEXT("/Game/A_Blaster/Blueprints/HUD/OverlayModules/WBP_WeaponStatus.WBP_WeaponStatus_C"));
 	if (WeaponStatusRef.Succeeded()) SetWidgetClass(WeaponStatusRef.Class);
 	else ensure(false);
@@ -28,11 +32,13 @@ void UWeaponHUDComponent::InitWidget()
 	Super::InitWidget();
 
 	WeaponStatus = Cast<UWeaponStatus>(GetWidget());
+
+
 }
 
 void UWeaponHUDComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//UE_LOG(LogTemp, Display, TEXT("UWeaponHUDComponent::TickComponent"));
+	//AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
 }

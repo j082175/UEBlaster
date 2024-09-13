@@ -12,7 +12,7 @@ struct FWeaponStat : public FTableRowBase
 
 public:
 	FWeaponStat() 
-		: BodyDamage(0.0f), HeadDamage(0.f), RecoilPitch(0.0f), RecoilYaw(0.f), Range(0.0f), FireDelay(0.0f), MagCapacity(0.f)
+		: BodyDamage(0.0f), HeadDamage(0.f), DamageDeviation(0.f), RecoilPitch(0.0f), RecoilYaw(0.f), Range(0.0f), FireDelay(0.0f), MagCapacity(0.f)
 	{}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
@@ -20,6 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	float HeadDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	float DamageDeviation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	float RecoilPitch;

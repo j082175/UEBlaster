@@ -34,6 +34,7 @@ UCombatComponent::UCombatComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 	PrimaryComponentTick.TickInterval = 0.1f;
 	 
 	// ...
@@ -89,6 +90,8 @@ void UCombatComponent::BeginPlay()
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	UE_LOG(LogTemp, Display, TEXT("UCombatComponent::TickComponent"));
 
 	// ...
 
@@ -661,7 +664,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //void UCombatComponent::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)
 //{
-//	if (CarriedAmmoMap.Contains(InWeaponType))
+//	if (CarriedAmmoMap.IsValidIndex(InWeaponType))
 //	{
 //		CarriedAmmoMap[InWeaponType] = FMath::Clamp(CarriedAmmoMap[InWeaponType] + AmmoAmount, 0, INT32_MAX);
 //
@@ -707,7 +710,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //
 //	int32 ReloadAmount = AmountToReload();
 //
-//	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+//	if (CarriedAmmoMap.IsValidIndex(EquippedWeapon->GetWeaponType()))
 //	{
 //		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
 //		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
@@ -725,7 +728,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //void UCombatComponent::UpdateShotgunAmmoValues()
 //{
 //	if (Character == nullptr || EquippedWeapon == nullptr) return;
-//	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+//	if (CarriedAmmoMap.IsValidIndex(EquippedWeapon->GetWeaponType()))
 //	{
 //		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= 1;
 //		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
@@ -811,7 +814,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //	if (EquippedWeapon == nullptr) return 0;
 //	int32 RoomInMag = EquippedWeapon->GetMagCapacity() - EquippedWeapon->GetAmmo();
 //
-//	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+//	if (CarriedAmmoMap.IsValidIndex(EquippedWeapon->GetWeaponType()))
 //	{
 //		int32 AmountCarried = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 //		int32 Least = FMath::Min(RoomInMag, AmountCarried);
@@ -1095,7 +1098,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 //void UCombatComponent::UpdateCarriedAmmo()
 //{
 //	if (EquippedWeapon == nullptr) return;
-//	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+//	if (CarriedAmmoMap.IsValidIndex(EquippedWeapon->GetWeaponType()))
 //	{
 //		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 //	}

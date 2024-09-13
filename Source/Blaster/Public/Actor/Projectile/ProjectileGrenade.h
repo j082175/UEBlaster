@@ -15,6 +15,7 @@ class BLASTER_API AProjectileGrenade : public AProjectile
 	GENERATED_BODY()
 public:
 	AProjectileGrenade();
+	virtual void PostLoad() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void Destroyed() override;

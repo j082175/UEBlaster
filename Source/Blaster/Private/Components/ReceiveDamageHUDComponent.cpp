@@ -24,30 +24,28 @@ void UReceiveDamageHUDComponent::BeginPlay()
 	Super::BeginPlay();
 
 	DamageScroll = Cast<UDamageScroll>(GetWidget());
+
+
 }
 
 void UReceiveDamageHUDComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	SetComponentTickInterval(100.f);
-	//UE_LOG(LogTemp, Display, TEXT("UReceiveDamageHUDComponent Tick"));
+	UE_LOG(LogTemp, Display, TEXT("UReceiveDamageHUDComponent Tick"));
 
+	SetComponentTickInterval(100.f);
 }
 
-void UReceiveDamageHUDComponent::MulticastSetDamageInfo_Implementation(int32 InDamage, AController* InController, const FLinearColor& InColor)
+void UReceiveDamageHUDComponent::SetDamageInfo(int32 InDamage, class AController* InController, const FLinearColor& InColor)
 {
-	if (InController && InController->IsLocalPlayerController())
+	if (DamageScroll.IsValid())
 	{
-		if (DamageScroll.IsValid())
-		{
-			USceneComponent* Axis = GetAttachParent();
-			FRotator FinalRot = UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), InController->GetPawn()->GetActorLocation());
-			//Axis->SetRelativeRotation(FinalRot);
-			Axis->SetWorldRotation(FinalRot);
+		USceneComponent* Axis = GetAttachParent();
+		FRotator FinalRot = UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), InController->GetPawn()->GetActorLocation());
+		//Axis->SetRelativeRotation(FinalRot);
+		Axis->SetWorldRotation(FinalRot);
 
-			DamageScroll->AddDamageText(InDamage, InColor);
-		}
-
+		DamageScroll->AddDamageText(InDamage, InColor);
 	}
 }

@@ -77,6 +77,7 @@ void ABaseAIController::BeginPlay()
 	//	bool b = AISystem->bForgetStaleActors;
 	//	int a = 1;
 	//}
+
 }
 
 void ABaseAIController::Tick(float DeltaTime)
@@ -93,6 +94,19 @@ void ABaseAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	RunAI();
+}
+
+void ABaseAIController::OnUnPossess()
+{
+	//UE_LOG(LogTemp, Display, TEXT("ABaseAIController::OnUnPossess"));
+	Super::OnUnPossess();
+
+
+	//SetActorTickEnabled(false);
+	//SetLifeSpan(5.f);
+	//SetAutoDestroyWhenFinished(true);
+
+	//PawnPendingDestroy()
 }
 
 void ABaseAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePawn)

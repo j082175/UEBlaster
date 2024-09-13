@@ -137,6 +137,13 @@ void AEnemy::Tick(float DeltaTime)
 
 }
 
+void AEnemy::UnPossessed()
+{
+	Super::UnPossessed();
+
+	//UE_LOG(LogTemp, Error, TEXT("Enemy UnPossessed"));
+}
+
 void AEnemy::SetOwner(AActor* NewOwner)
 {
 	Super::SetOwner(NewOwner);

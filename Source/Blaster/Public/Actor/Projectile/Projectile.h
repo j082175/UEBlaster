@@ -25,7 +25,7 @@ public:
 
 
 	// Used with server-side rewind
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	bool bUseServerSideRewind = false;
 	FVector_NetQuantize TraceStart;
 	FVector_NetQuantize100 InitialVelocity;
@@ -40,6 +40,15 @@ public:
 	// Doesn't matter for Grenades and Rockets
 	UPROPERTY(EditAnywhere)
 	float HeadShotDamage = 40.f;
+
+	UPROPERTY(EditAnywhere)
+	float DamageDeviation;
+
+	UPROPERTY()
+	float RandomDamage;
+
+	UPROPERTY()
+	float RandomHeadShotDamage;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

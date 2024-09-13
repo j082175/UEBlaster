@@ -270,6 +270,7 @@ public:
 	void PlayDeadMontage();
 	//void PlayCombatHitReactMontage();
 	void PlayReloadMontage();
+
 	void PlayThrowGrenadeMontage();
 	void PlaySwapMontage();
 	void PlaySlideMontage();
@@ -720,15 +721,21 @@ protected:
 
 	// Throw Grenade && Grenade Launcher
 protected:
+	void LaunchGrenadeFunc(const FVector_NetQuantize& Target);
 	void LaunchGrenade();
 
 	UFUNCTION(Server, Reliable)
 	void ServerLaunchGrenade(const FVector_NetQuantize& Target);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLaunchGrenade(const FVector_NetQuantize& Target);
+
 
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectileGrenade> GrenadeClass;
+
+	void ThrowGrenadeFunc();
 
 	UFUNCTION(Server, Reliable)
 	void ServerThrowGrenade();
@@ -956,5 +963,4 @@ protected:
 	TObjectPtr<class UOverheadWidgetComponent> OverheadWidgetComponent;
 
 
-	FLinearColor ReceiveDamageColor;
 };

@@ -84,6 +84,16 @@ void AWeapon::OnRep_Owner()
 	
 }
 
+float AWeapon::GetDamage()
+{
+	return FMath::RandRange(Damage - DamageDeviation, Damage + DamageDeviation);
+}
+
+float AWeapon::GetHeadShotDamage()
+{
+	return FMath::RandRange(HeadShotDamage - DamageDeviation, HeadShotDamage + DamageDeviation);
+}
+
 void AWeapon::SetHUDVisibility(bool IsVisible)
 {
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
@@ -91,6 +101,7 @@ void AWeapon::SetHUDVisibility(bool IsVisible)
 	if (BlasterOwnerCharacter && BlasterOwnerCharacter->IsLocallyControlled())
 	{
 		WeaponHUDComponent->SetVisibility(IsVisible);
+		WeaponHUDComponent->SetComponentTickEnabled(IsVisible);
 	}
 }
 

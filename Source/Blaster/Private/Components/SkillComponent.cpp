@@ -85,6 +85,9 @@ void USkillComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	//CoolTimeChecker(DeltaTime);
 
+
+	//AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
+
 	InitForWaiting();
 }
 
@@ -563,6 +566,8 @@ void USkillComponent::InitForWaiting()
 		OnSoulCountChanged.Broadcast(SkillPoint);
 
 		IsSkillCostChangedBroadcasted = true;
+
+		AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
 	}
 }
 

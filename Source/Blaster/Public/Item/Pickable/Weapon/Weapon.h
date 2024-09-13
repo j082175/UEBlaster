@@ -36,8 +36,8 @@ public:
 
 	// Getters
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
-	FORCEINLINE float GetDamage() const { return Damage; }
-	FORCEINLINE float GetHeadShotDamage() const { return HeadShotDamage; }
+	float GetDamage();
+	float GetHeadShotDamage();
 	FORCEINLINE class USoundBase* GetTakeSound() { return PickupSound; }
 	FORCEINLINE EWeaponName GetWeaponName() const { return WeaponName; }
 
@@ -88,9 +88,10 @@ protected:
 	float HeadShotDamage = 40.f;
 
 	UPROPERTY(Replicated, EditAnywhere)
-	bool bUseServerSideRewind = false;
+	bool bUseServerSideRewind = true;
 
-
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (AllowPrivateAccess = true))
+	float DamageDeviation;
 
 
 	// State

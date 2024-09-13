@@ -17,6 +17,8 @@ class BLASTER_API AEnemyRange : public AEnemy
 	GENERATED_BODY()
 public:
 	AEnemyRange();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted) override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void InitializeDefaults() override;
@@ -54,5 +56,7 @@ protected:
 
 	virtual void StartFireTimer() override;
 	virtual void FireTimerFinished() override;
+
+
 
 };

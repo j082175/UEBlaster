@@ -26,9 +26,15 @@ AProjectileGrenade::AProjectileGrenade()
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->bRotationFollowsVelocity = true; // 총알이 속도에 맞춰 회전을 유지함 중력으로 인한 FallOff 를 추가하면 경로 궤적에 따라 회전함.
-	ProjectileMovementComponent->SetIsReplicated(false);
 	ProjectileMovementComponent->bShouldBounce = true;
 	ProjectileMovementComponent->SetAutoActivate(true);
+}
+
+void AProjectileGrenade::PostLoad()
+{
+	Super::PostLoad();
+
+	ProjectileMovementComponent->SetIsReplicated(false);
 }
 
 void AProjectileGrenade::BeginPlay()

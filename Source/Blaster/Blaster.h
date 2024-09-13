@@ -20,6 +20,7 @@
 #define PROFILE_IgnoreOnlyPawn TEXT("IgnoreOnlyPawn")
 
 
+
 #define PRINT_DEBUG_LOCALROLE(Actor) UE_LOG(LogTemp, Display, TEXT("Actor's LocalRole : %s"), *UEnum::GetDisplayValueAsText(Actor->GetLocalRole()).ToString())
 
 #define LOG_LOCALROLEINFO *(UEnum::GetValueAsString(TEXT("Engine.ENetRole"), GetLocalRole()))
