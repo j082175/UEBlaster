@@ -16,7 +16,7 @@ ULagCompensationComponent::ULagCompensationComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	//PrimaryComponentTick.TickInterval = 0.1f;
+	PrimaryComponentTick.TickInterval = 0.1f;
 
 	// ...
 }
@@ -67,8 +67,12 @@ void ULagCompensationComponent::BeginPlay()
 
 void ULagCompensationComponent::ServerScoreRequest_Implementation(AActor* InHitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime)
 {
+
+	//UE_LOG(LogTemp, Display, TEXT("TraceStart : %f, %f, %f"), TraceStart.X, TraceStart.Y, TraceStart.Z);
+	//UE_LOG(LogTemp, Display, TEXT("HitLocation : %f, %f, %f"), HitLocation.X, HitLocation.Y, HitLocation.Z);
+
 	ACharacterBase* HitCharacter = Cast<ACharacterBase>(InHitCharacter);
-	if (HitCharacter == nullptr) return;
+	if (HitCharacter && HitCharacter->IsElimmed()) return;
 
 	FServerSideRewindResult Confirm = ServerSideRewind(HitCharacter, TraceStart, HitLocation, HitTime);
 
@@ -84,6 +88,8 @@ void ULagCompensationComponent::ServerScoreRequest_Implementation(AActor* InHitC
 
 void ULagCompensationComponent::ProjectileServerScoreRequest_Implementation(ACharacterBase* HitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize100& InitialVelocity, float HitTime)
 {
+	if (HitCharacter && HitCharacter->IsElimmed()) return;
+
 	FServerSideRewindResult Confirm = ProjectileServerSideRewind(HitCharacter, TraceStart, InitialVelocity, HitTime);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Confirm.bHitComfirmed : %d"), Confirm.bHitComfirmed);
@@ -98,6 +104,7 @@ void ULagCompensationComponent::ProjectileServerScoreRequest_Implementation(ACha
 
 void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const TArray<ACharacterBase*>& HitCharacters, const FVector_NetQuantize& TraceStart, const TArray<FVector_NetQuantize>& HitLocations, float HitTime)
 {
+
 	//UE_LOG(LogTemp, Display, TEXT("ShotgunServerScoreRequest_Implementation"));
 	FShotgunServerSideRewindResult Confirm = ShotgunServerSideRewind(HitCharacters, TraceStart, HitLocations, HitTime);		
 	//UE_LOG(LogTemp, Display, TEXT("HitCharacter Num : %d"), HitCharacters.Num());
@@ -105,6 +112,7 @@ void ULagCompensationComponent::ShotgunServerScoreRequest_Implementation(const T
 	for (auto& HitCharacter : HitCharacters)
 	{
 		if (HitCharacter == nullptr || Character == nullptr || InventoryComponent->GetEquippedWeapon() == nullptr) continue;
+		if (HitCharacter->IsElimmed()) continue;
 
 		float TotalDamage = 0.f;
 
@@ -176,7 +184,6 @@ void ULagCompensationComponent::SetupHitCapsule(FPhysAssetInformation PhysicsAss
 	HitCapsule->SetCollisionObjectType(ECC_HitCapsule);
 	HitCapsule->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	HitCapsule->SetCollisionResponseToChannel(ECC_HitCapsule, ECollisionResponse::ECR_Block);
-	HitCapsule->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Block);
 
 
 
@@ -229,7 +236,7 @@ void ULagCompensationComponent::SaveFramePackage()
 		SaveFramePackage(ThisFrame);
 		FrameHistory.AddHead(ThisFrame);
 
-		//ShowFramePackage(ThisFrame, FColor::Orange);
+		//ShowFramePackage(ThisFrame, FColor::Magenta);
 	}
 
 	//UE_LOG(LogTemp, Display, TEXT("FrameHistory num : %d"), FrameHistory.Num());
@@ -549,10 +556,9 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 	HeadCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	HeadCapsule->SetCollisionResponseToChannel(ECC_HitCapsule, ECollisionResponse::ECR_Block);
-	HeadCapsule->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Block);
 
 
-	UE_LOG(LogTemp, Display, TEXT("ProjectileConfirmHit Getowner : %s"), *GetOwner()->GetName());
+	//UE_LOG(LogTemp, Display, TEXT("ProjectileConfirmHit Getowner : %s"), *GetOwner()->GetName());
 
 	FPredictProjectilePathParams PathParams;
 	PathParams.bTraceWithCollision = true;
@@ -563,6 +569,7 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 	PathParams.ProjectileRadius = 5.f;
 	PathParams.TraceChannel = ECC_HitCapsule;
 	PathParams.ActorsToIgnore.Add(GetOwner());
+
 	PathParams.DrawDebugType = EDrawDebugTrace::None;
 	PathParams.DrawDebugTime = 5.f;
 
@@ -570,10 +577,13 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 	FPredictProjectilePathResult PathResult;
 	UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
 
+
 	if (PathResult.HitResult.bBlockingHit) // we hit the head, return early
 	{
 		if (PathResult.HitResult.GetComponent())
 		{
+			UE_LOG(LogTemp, Display, TEXT("HitResult : %s"), *PathResult.HitResult.GetActor()->GetName());
+
 			UCapsuleComponent* Capsule = Cast<UCapsuleComponent>(PathResult.HitResult.GetComponent());
 			if (Capsule)
 			{
@@ -593,7 +603,6 @@ FServerSideRewindResult ULagCompensationComponent::ProjectileConfirmHit(const FF
 			{
 				HitCapsulePair.Value->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 				HitCapsulePair.Value->SetCollisionResponseToChannel(ECC_HitCapsule, ECollisionResponse::ECR_Block);
-				HitCapsulePair.Value->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Block);
 			}
 		}
 

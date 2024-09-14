@@ -56,9 +56,12 @@ public:
 	void HideTeamScores();
 	void InitTeamScores();
 		
-
+	UFUNCTION()
 	void HighPingWarning();
+	UFUNCTION()
 	void StopHighPingWarning();
+	UFUNCTION()
+	void UpdatePing(float InPing);
 
 
 
@@ -123,10 +126,7 @@ public:
 	TObjectPtr<class UTextBlock> ScoreSpacerText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UImage> HighPingImage;
-
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	TObjectPtr<class UWidgetAnimation> HighPingAnimation;
+	TObjectPtr<class UPingStatus> WBP_PingStatus;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UCoolTimeAnnouncement> CoolTimeAnnouncement;

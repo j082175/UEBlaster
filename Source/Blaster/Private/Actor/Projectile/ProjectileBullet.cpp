@@ -12,6 +12,7 @@
 // Kismet
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Hearing.h"
+#include "AIController.h"
 
 #include "PlayerController/BlasterPlayerController.h"
 #include "Characters/BlasterCharacter.h"
@@ -74,7 +75,10 @@ void AProjectileBullet::SetIsActive(bool InIsActive)
 
 void AProjectileBullet::SetProjectileMovementVelocity(const FVector& InVelocity)
 {
-	ProjectileMovementComponent->Velocity = InVelocity.GetSafeNormal() * ProjectileMovementComponent->MaxSpeed;
+	FVector FinalVelocity = InVelocity.GetSafeNormal() * ProjectileMovementComponent->MaxSpeed;
+	ProjectileMovementComponent->Velocity = FinalVelocity;
+	InitialVelocity = FinalVelocity;
+	
 }
 
 #if WITH_EDITOR
@@ -122,6 +126,7 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 {
 	//UE_LOG(LogTemp, Display, TEXT("GetOwner : %s"), *GetOwner()->GetName());
 
+
 	ITeamInterface* TI = Cast<ITeamInterface>(OtherActor);
 
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
@@ -147,34 +152,37 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 	if (OwnerCharacter)
 	{
-
-		if (OwnerCharacter->HasAuthority() && !bUseServerSideRewind)
-		{
-
-			float DamageToCause = Hit.BoneName.ToString() == TEXT("head") ? RandomHeadShotDamage : RandomDamage;
-
-			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType_Projectile::StaticClass());
-
-			return;
-		}
-
+		float DamageToCause = Hit.BoneName.ToString() == TEXT("head") ? RandomHeadShotDamage : RandomDamage;
 
 		ABlasterPlayerController* OwnerController = Cast<ABlasterPlayerController>(OwnerCharacter->GetController());
 		if (OwnerController)
 		{
-			ACharacterBase* HitCharacter = Cast<ACharacterBase>(OtherActor);
-			if (bUseServerSideRewind && OwnerCharacter->GetComponentByClass<ULagCompensationComponent>() && OwnerCharacter->IsLocallyControlled() && HitCharacter)
-			{
-				//UE_LOG(LogTemp, Warning, TEXT("Autonomous : ProjectileBullet OnHit"));
 
-				OwnerCharacter->GetComponentByClass<ULagCompensationComponent>()->ProjectileServerScoreRequest(HitCharacter, TraceStart, InitialVelocity, OwnerController->GetServerTime() - OwnerController->SingleTripTime);
+			if (OtherActor->GetComponentByClass<ULagCompensationComponent>())
+			{
+				ACharacterBase* HitCharacter = Cast<ACharacterBase>(OtherActor);
+
+
+				if (bUseServerSideRewind && OwnerCharacter->GetComponentByClass<ULagCompensationComponent>() && OwnerCharacter->IsLocallyControlled() && HitCharacter)
+				{
+					//UE_LOG(LogTemp, Warning, TEXT("Autonomous : ProjectileBullet OnHit"));
+
+					OwnerCharacter->GetComponentByClass<ULagCompensationComponent>()->ProjectileServerScoreRequest(HitCharacter, TraceStart, InitialVelocity, OwnerController->GetServerTime() - OwnerController->SingleTripTime);
+					return;
+				}
 			}
 		}
+		else if (AAIController* AIC = Cast<AAIController>(OwnerCharacter->GetController()))
+		{
+			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType_Projectile::StaticClass());
+			return;
+		}
+
+		if (OwnerCharacter->HasAuthority() && !bUseServerSideRewind)
+		{
+			UGameplayStatics::ApplyDamage(OtherActor, DamageToCause, GetInstigatorController(), this, UDamageType_Projectile::StaticClass());
+			return;
+		}
 	}
-
-
-
-
-
 }
 

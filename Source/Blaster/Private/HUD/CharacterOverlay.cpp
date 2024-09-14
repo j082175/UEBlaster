@@ -11,6 +11,7 @@
 #include "HUD/OverlayModules/SkillBar.h"
 #include "HUD/OverlayModules/WeaponStatus.h"
 #include "HUD/CoolTimeAnnouncement.h"
+#include "HUD/OverlayModules/PingStatus.h"
 #include "Blaster.h"
 
 //UCharacterOverlay::UCharacterOverlay(const FObjectInitializer& ObjectInitializer)
@@ -177,18 +178,17 @@ void UCharacterOverlay::InitTeamScores()
 
 void UCharacterOverlay::HighPingWarning()
 {
-	HighPingImage->SetOpacity(1.f);
-	PlayAnimation(HighPingAnimation, 0.f, 10);
+	WBP_PingStatus->HighPingWarning();
 }
 
 void UCharacterOverlay::StopHighPingWarning()
 {
-	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	HighPingImage->SetOpacity(0.f);
-	if (IsAnimationPlaying(HighPingAnimation))
-	{
-		StopAnimation(HighPingAnimation);
-	}
+	WBP_PingStatus->StopHighPingWarning();
+}
+
+void UCharacterOverlay::UpdatePing(float InPing)
+{
+	WBP_PingStatus->UpdatePing(InPing);
 }
 
 void UCharacterOverlay::ShowCoolTimeAnnouncement(ESkillAssistant InSkillAssistant)

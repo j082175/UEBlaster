@@ -42,8 +42,8 @@ void ASplineActor::Tick(float DeltaTime)
 
 void ASplineActor::IncrementPatrolRoute()
 {
-	UE_LOG(LogTemp, Display, TEXT("PatrolIndex : %d"), PatrolIndex);
-	UE_LOG(LogTemp, Display, TEXT("GetNumberOfSplinePoints : %d"), SplineComponent->GetNumberOfSplinePoints());
+	//UE_LOG(LogTemp, Display, TEXT("PatrolIndex : %d"), PatrolIndex);
+	//UE_LOG(LogTemp, Display, TEXT("GetNumberOfSplinePoints : %d"), SplineComponent->GetNumberOfSplinePoints());
 
 	if (PatrolIndex == SplineComponent->GetNumberOfSplinePoints() - 1)
 	{

@@ -176,6 +176,7 @@ void AWeapon::Dropped()
 
 void AWeapon::OnPingTooHigh(bool bPingTooHigh)
 {
+	UE_LOG(LogTemp, Display, TEXT("PingTooHigh : %d"), bPingTooHigh);
 	bUseServerSideRewind = !bPingTooHigh;
 }
 
@@ -228,7 +229,7 @@ void AWeapon::OnEquipped()
 
 		if (BlasterOwnerController && HasAuthority() && !BlasterOwnerController->HighPingDelegate.IsBound())
 		{
-			BlasterOwnerController->HighPingDelegate.AddDynamic(this, &ThisClass::OnPingTooHigh);
+			BlasterOwnerController->HighPingDelegate.AddUObject(this, &ThisClass::OnPingTooHigh);
 		}
 
 		//if (BlasterOwnerController && HasAuthority() && !BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.IsBound())
@@ -255,7 +256,7 @@ void AWeapon::OnDropped()
 
 		if (BlasterOwnerController && HasAuthority() && BlasterOwnerController->HighPingDelegate.IsBound())
 		{
-			BlasterOwnerController->HighPingDelegate.RemoveDynamic(this, &ThisClass::OnPingTooHigh);
+			BlasterOwnerController->HighPingDelegate.Clear();
 		}
 
 		//if (BlasterOwnerController && HasAuthority() && BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.IsBound())
@@ -278,7 +279,7 @@ void AWeapon::OnEquippedSecondary()
 
 		if (BlasterOwnerController && HasAuthority() && BlasterOwnerController->HighPingDelegate.IsBound())
 		{
-			BlasterOwnerController->HighPingDelegate.RemoveDynamic(this, &ThisClass::OnPingTooHigh);
+			BlasterOwnerController->HighPingDelegate.Clear();
 		}
 
 		//if (BlasterOwnerController && HasAuthority() && BlasterOwnerController->GetBlasterHUD()->HighPingDelegate.IsBound())

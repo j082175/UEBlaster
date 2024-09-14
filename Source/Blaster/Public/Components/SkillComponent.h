@@ -9,11 +9,11 @@
 #include "GameData/SkillData.h"
 #include "SkillComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSkillAnimStartedDelegate, ESkillAnimType, InPrefix, int32, InIndex, float, InPlaybackSpeed);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnSkillAnimStartedDelegate, ESkillAnimType /*InPrefix*/, int32 /*InIndex*/, float /*InPlaybackSpeed*/);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillCostChangedDelegate, int32, NumCost, const FString&, InMessage);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoulCountChangedDelegate, int32, NumCount);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillCoolTimeCheckDelegate, ESkillAssistant, SkillIndex);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSkillCostChangedDelegate, int32 /*NumCost*/, const FString& /*InMessage*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSoulCountChangedDelegate, int32 /*NumCount*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSkillCoolTimeCheckDelegate, ESkillAssistant /*SkillIndex*/);
 
 
 USTRUCT(BlueprintType)
@@ -115,6 +115,7 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
 
+	void ProcedureFunc(ESkillAssistant InSkillAssistant, UAnimMontage* InMontage);
 	UFUNCTION(Server, Reliable)
 	void ServerProcedure(ESkillAssistant InSkillAssistant, class UAnimMontage* InMontage);
 
@@ -159,9 +160,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TArray<int32> NeededSkillPoints;
 
-	UFUNCTION()
-	void OnRep_CurrentSkill();
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentSkill)
+
 
 	ESkillAssistant CurrentSkill;
 
@@ -172,10 +171,7 @@ private:
 
 	// Anim
 public:
-	UFUNCTION()
-	void OnRep_CurrentMontage();
-
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentMontage)
+	UPROPERTY(Replicated)
 	TObjectPtr<class UAnimMontage> CurrentMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

@@ -523,7 +523,7 @@ void AWeapon_Gun::AddAmmo(int32 AmmoToAdd)
 
 	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
 	SetHUDAmmo();
-	//ClientAddAmmo(AmmoToAdd);
+	ClientAddAmmo(AmmoToAdd);
 }
 
 void AWeapon_Gun::ClientAddAmmo_Implementation(int32 AmmoToAdd)
@@ -546,6 +546,8 @@ void AWeapon_Gun::ClientAddAmmo_Implementation(int32 AmmoToAdd)
 	}
 
 	SetHUDAmmo();
+
+
 }
 
 void AWeapon_Gun::ClientUpdateAmmo_Implementation(int32 ServerAmmo)

@@ -75,6 +75,8 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 						PO->Damage = Damage;
 						PO->HeadShotDamage = HeadShotDamage;
 						PO->DamageDeviation = DamageDeviation;
+						PO->TraceStart = SocketTransform.GetLocation();
+						PO->bUseServerSideRewind = bUseServerSideRewind;
 					}
 
 				}
@@ -93,6 +95,8 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 						PO->Damage = Damage;
 						PO->HeadShotDamage = HeadShotDamage;
 						PO->DamageDeviation = DamageDeviation;
+						PO->TraceStart = SocketTransform.GetLocation();
+						PO->bUseServerSideRewind = bUseServerSideRewind;
 					}
 				}
 			}
@@ -116,6 +120,8 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 						PO->Damage = Damage;
 						PO->HeadShotDamage = HeadShotDamage;
 						PO->DamageDeviation = DamageDeviation;
+						PO->TraceStart = SocketTransform.GetLocation();
+						PO->bUseServerSideRewind = bUseServerSideRewind;
 					}
 				}
 				else // client, not locally controlled - spawn non-replicated projectile, no SSR
@@ -134,6 +140,8 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 						PO->Damage = Damage;
 						PO->HeadShotDamage = HeadShotDamage;
 						PO->DamageDeviation = DamageDeviation;
+						PO->TraceStart = SocketTransform.GetLocation();
+						PO->bUseServerSideRewind = bUseServerSideRewind;
 					}
 				}
 			}
@@ -161,6 +169,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					PO->Damage = Damage;
 					PO->HeadShotDamage = HeadShotDamage;
 					PO->DamageDeviation = DamageDeviation;
+					PO->TraceStart = SocketTransform.GetLocation();
 				}
 			}
 		}

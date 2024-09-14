@@ -59,6 +59,8 @@ void ABaseAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//SetActorTickInterval(0.f);
+
 	//UE_LOG(LogTemp, Display, TEXT("BaseAIController::BeginPlay"));
 
 	BindPerceptionFunctions(true);

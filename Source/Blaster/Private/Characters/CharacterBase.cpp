@@ -281,6 +281,8 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Pitch, COND_SimulatedOnly);
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Yaw, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, Team);
+
+	DOREPLIFETIME_CONDITION(ThisClass, bLocallyReloading, COND_AutonomousOnly);
 }
 
 // Called every frame
@@ -350,10 +352,6 @@ void ACharacterBase::IGetHit(const FVector& InHitPoint, const FHitResult& InHitR
 	}
 
 
-	if (bIsElimmed)
-		return SetDead();
-
-
 	if (CombatState == ECombatState::Dodging || CombatState == ECombatState::VaultOrMantle) return;
 
 	if (CombatState != ECombatState::Unoccupied) return;
@@ -391,10 +389,10 @@ void ACharacterBase::IBindWidget(UUserWidget* InUserWidget)
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
 
-		SkillComponent->OnSkillAnimStarted.AddUniqueDynamic(CO, &UCharacterOverlay::StartSkillAnim);
-		SkillComponent->OnSkillCostChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSkillCost);
-		SkillComponent->OnSoulCountChanged.AddUniqueDynamic(CO, &UCharacterOverlay::SetSoulCount);
-		SkillComponent->OnSkillCoolTimeCheck.AddUniqueDynamic(CO, &UCharacterOverlay::ShowCoolTimeAnnouncement);
+		SkillComponent->OnSkillAnimStarted.AddUObject(CO, &UCharacterOverlay::StartSkillAnim);
+		SkillComponent->OnSkillCostChanged.AddUObject(CO, &UCharacterOverlay::SetSkillCost);
+		SkillComponent->OnSoulCountChanged.AddUObject(CO, &UCharacterOverlay::SetSoulCount);
+		SkillComponent->OnSkillCoolTimeCheck.AddUObject(CO, &UCharacterOverlay::ShowCoolTimeAnnouncement);
 
 		//InventoryComponent->OnCurrentAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetCurrentAmmo);
 		//InventoryComponent->OnCarriedAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetMaxAmmo);
@@ -855,10 +853,10 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 		//	CombatState = ECombatState::Unoccupied;
 		//}
 
-		if (Montage == ReloadMontage)
-		{
-			bLocallyReloading = false;
-		}
+		//if (Montage == ReloadMontage)
+		//{
+		//	bLocallyReloading = false;
+		//}
 	}
 
 	if (!bInterrupted)
@@ -1191,6 +1189,7 @@ void ACharacterBase::SetRagdollCollision()
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetConstraintProfileForAll(TEXT("Ragdoll"));
+
 	GetMesh()->SetSimulatePhysics(true);
 
 
@@ -1452,6 +1451,9 @@ void ACharacterBase::OnRep_CombatState()
 		break;
 	case ECombatState::PhysicsRecoverForMulti:
 		PlayAnimMontage(UpMontageForMultiplayer);
+		break;
+	case ECombatState::SkillCasting:
+		GetMesh()->GetAnimInstance()->Montage_Play(SkillComponent->CurrentMontage);
 		break;
 	case ECombatState::ECS_MAX:
 		break;
@@ -2016,6 +2018,8 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 
 void ACharacterBase::Elim(bool bPlayerLeftGame)
 {
+	//AB_LOG(LogABDisplay, Warning, TEXT(""));
+
 	if (!GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->IsTurnOff() && !Cast<AEnemy>(this))
 	{
 		if (InventoryComponent->EquippedWeapon)
@@ -2122,20 +2126,20 @@ void ACharacterBase::MulticastElim_Implementation(bool bPlayerLeftGame)
 		SetRagdollCollision();
 
 		DoRagdollImpulse();
-		SetReplicateMovement(false);
+		//SetReplicateMovement(false);
 
 		// ¹ö±×Àâ±âÀ§ÇØ ÀÌµý½ÄÀ¸·ÎÂ« AnimationSnapShot ÂïÀ»¶§¶û ºñ½ÁÇÑ?
-		FTimerHandle Timerhandle;
-		GetWorldTimerManager().SetTimer(Timerhandle, FTimerDelegate::CreateLambda([&]()
-			{
-				GetMesh()->SetSimulatePhysics(false);
+		//FTimerHandle Timerhandle;
+		//GetWorldTimerManager().SetTimer(Timerhandle, FTimerDelegate::CreateLambda([&]()
+		//	{
+		//		GetMesh()->SetSimulatePhysics(false);
 
-				FTimerHandle Timerhandle;
-				GetWorldTimerManager().SetTimer(Timerhandle, FTimerDelegate::CreateLambda([&]()
-					{
-						GetMesh()->SetSimulatePhysics(true);
-					}), 0.001f, false);
-			}), 0.001f, false);
+		//		FTimerHandle Timerhandle;
+		//		GetWorldTimerManager().SetTimer(Timerhandle, FTimerDelegate::CreateLambda([&]()
+		//			{
+		//				GetMesh()->SetSimulatePhysics(true);
+		//			}), 0.001f, false);
+		//	}), 0.001f, false);
 	}
 
 
@@ -2231,8 +2235,9 @@ void ACharacterBase::ElimTimerFinished()
 	}
 	else
 	{
-		GetController()->Destroy();
 		Destroy();
+		//GetController()->Destroy();
+		
 		//Recover();
 		//SetIsActive(false);
 	}
@@ -2337,7 +2342,6 @@ void ACharacterBase::EquipWeaponFunc()
 		InventoryComponent->EquippedWeapon->SetInstigator(this);
 		InventoryComponent->EquippedWeapon->SetHUDVisibility(true);
 		InventoryComponent->EquippedWeapon->SetHUD();
-		AnimState = EAnimState::Equipped;
 
 		if (AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon)) Gun->SetHUDAmmo();
 
@@ -2466,7 +2470,12 @@ void ACharacterBase::Fire(bool bPressed)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Canfire : %d Fire"), CanFire());
 
+		//AB_LOG(LogABDisplay, Warning, TEXT("Fire : bIsFiring: % d"), bIsFiring);
+		//UE_LOG(LogTemp, Warning, TEXT("Fire : bIsFiring : %d"), bIsFiring);
+
 		bIsFiring = true;
+
+		//UE_LOG(LogTemp, Warning, TEXT("Fire : bIsFiringCheck : %d"), bIsFiring);
 
 		//FHitResult HitResult;
 		//TraceUnderCrosshairs(HitResult);
@@ -2484,6 +2493,7 @@ void ACharacterBase::Fire(bool bPressed)
 			AddControllerPitchInput(FMath::Lerp(0.f, Gun->GetRandomRecoilPitch(), 0.5f));
 			AddControllerYawInput(FMath::Lerp(0.f, Gun->GetRandomRecoilYaw(), 0.5f));
 
+
 			switch (Gun->GetFireType())
 			{
 			case EFireType::EFT_HitScan:
@@ -2500,8 +2510,10 @@ void ACharacterBase::Fire(bool bPressed)
 			}
 		}
 
-
-		StartFireTimer();
+		if (!FireTimer.IsValid())
+		{
+			StartFireTimer();
+		}
 	}
 }
 
@@ -2586,12 +2598,15 @@ void ACharacterBase::StartFireTimer()
 
 void ACharacterBase::FireTimerFinished()
 {
+	//UE_LOG(LogTemp, Display, TEXT("FireTimerFinished : bIsFiring : %d"), bIsFiring);
+
 	bIsFiring = false;
+	FireTimer.Invalidate();
 
 	//if (InventoryComponent->EquippedWeapon == nullptr) return;
 	//AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	//if (!Gun) return;
-	//UE_LOG(LogTemp, Display, TEXT("FireTimerFinished"));
+
 
 	////UE_LOG(LogTemp, Display, TEXT("FireTimer : %d"), FireTimer.IsValid());
 
@@ -2760,6 +2775,7 @@ bool ACharacterBase::CanFire()
 	if (!bFireButtonPressed) return false;
 	if (!IsLocallyControlled()) return false;
 	if (bIsFiring) return false;
+	if (FireTimer.IsValid()) return false;
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return false;
 
@@ -2832,8 +2848,8 @@ void ACharacterBase::UpdateAmmoValues()
 		//UE_LOG(LogTemp, Display, TEXT("CarriedAmmo : %d"), CarriedAmmo);
 	}
 
-
 	Gun->AddAmmo(ReloadAmount);
+	bLocallyReloading = false;
 
 
 	if (IsLocallyControlled())
@@ -2878,12 +2894,13 @@ void ACharacterBase::Reload()
 	{
 		if (!HasAuthority() && IsLocallyControlled()) HandleReload();
 		ServerReload();
-		bLocallyReloading = true;
+
 	}
 }
 
 void ACharacterBase::HandleReload()
 {
+	bLocallyReloading = true;
 	CombatState = ECombatState::Reloading;
 	PlayReloadMontage();
 }
@@ -2926,13 +2943,14 @@ void ACharacterBase::FinishReloading()
 {
 
 	FString Str = UEnum::GetDisplayValueAsText(GetLocalRole()).ToString();
-	UE_LOG(LogTemp, Display, TEXT("FinishReloading %s : %d"), *Str, bLocallyReloading);
+	//UE_LOG(LogTemp, Display, TEXT("FinishReloading %s : %d"), *Str, bLocallyReloading);
 
-	bLocallyReloading = false;
+	//bLocallyReloading = false;
 	if (true)
 	{
 		CombatState = ECombatState::Unoccupied;
 
+		if (!HasAuthority()) return;
 		UpdateAmmoValues();
 	}
 }

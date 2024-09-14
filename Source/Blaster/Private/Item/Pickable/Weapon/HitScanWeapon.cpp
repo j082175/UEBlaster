@@ -42,6 +42,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 
 		if (FireHit.bBlockingHit)
 		{
+			//UE_LOG(LogTemp, Display, TEXT("bBlockingHit"));
 
 			float DamageToCause = FireHit.BoneName.ToString() == TEXT("head") ? HeadShotDamage : Damage;
 
@@ -88,9 +89,17 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 
 			if (HitActor && InstigatorController) // 오로지 데미지를 처리하는 부분만 서버가 처리.
 			{
+				//UE_LOG(LogTemp, Display, TEXT("Ahthority : %d, ServerSideRewind : %d"), HasAuthority(), bUseServerSideRewind);
 				bool bCauseAuthDamage = !bUseServerSideRewind || OwnerPawn->IsLocallyControlled();
-				if (HasAuthority() && bCauseAuthDamage)
+
+				if (!FireHit.GetActor()->GetComponentByClass<ULagCompensationComponent>())
 				{
+					UGameplayStatics::ApplyDamage(FireHit.GetActor(), DamageToCause, InstigatorController, this, UDamageType::StaticClass());
+				}
+
+				else if (HasAuthority() && bCauseAuthDamage)
+				{
+					//UE_LOG(LogTemp, Display, TEXT("Not Use ServerSideRewind"));
 
 					//UE_LOG(LogTemp, Display, TEXT("HitScanWeapon : HasAuthority, %s, Damage : %f"), *FireHit.GetActor()->GetName(), DamageToCause);
 
@@ -100,7 +109,8 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 				}
 				else if (!HasAuthority() && bUseServerSideRewind)
 				{
-					//UE_LOG(LogTemp, Display, TEXT("HitActor : %s"), *BlasterCharacter->GetName());
+					//UE_LOG(LogTemp, Display, TEXT("Use ServerSideRewind"));
+
 					BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(OwnerPawn) : BlasterOwnerCharacter;
 					BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(InstigatorController) : BlasterOwnerController;
 					if (BlasterOwnerController && BlasterOwnerCharacter && BlasterOwnerCharacter->GetLagCompensationComponent() && BlasterOwnerCharacter->IsLocallyControlled())
@@ -108,8 +118,6 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 						BlasterOwnerCharacter->GetLagCompensationComponent()->ServerScoreRequest(FireHit.GetActor(), Start, HitTarget, BlasterOwnerController->GetServerTime() - BlasterOwnerController->SingleTripTime);
 					}
 				}
-
-
 			}
 
 			if (ImpactParticle)

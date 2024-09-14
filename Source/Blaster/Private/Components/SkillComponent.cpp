@@ -57,9 +57,8 @@ void USkillComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, SkillPoint);
-	DOREPLIFETIME(ThisClass, CurrentSkill);
-	DOREPLIFETIME(ThisClass, CurrentMontage);
 	DOREPLIFETIME(ThisClass, TempWeapon);
+	DOREPLIFETIME(ThisClass, CurrentMontage);
 
 }
 
@@ -433,13 +432,19 @@ void USkillComponent::SpawnAttributeAssistantDetach(ESkillAssistant InSkillAssis
 	}
 }
 
-void USkillComponent::ServerProcedure_Implementation(ESkillAssistant InSkillAssistant, UAnimMontage* InMontage)
+void USkillComponent::ProcedureFunc(ESkillAssistant InSkillAssistant, UAnimMontage* InMontage)
 {
 	CurrentMontage = InMontage;
 
 	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(CurrentMontage);
 	CharacterOwner->SetCombatState(ECombatState::SkillCasting);
 	CurrentSkill = InSkillAssistant;
+
+}
+
+void USkillComponent::ServerProcedure_Implementation(ESkillAssistant InSkillAssistant, UAnimMontage* InMontage)
+{
+	ProcedureFunc(InSkillAssistant, InMontage);
 }
 
 void USkillComponent::ServerSpawnAttributeAssistant_Implementation(ESkillAssistant InSkillAssistant)
@@ -542,10 +547,6 @@ void USkillComponent::InitializeCoolTimeMap()
 	}
 }
 
-void USkillComponent::OnRep_CurrentSkill()
-{
-}
-
 void USkillComponent::InitForWaiting()
 {
 	if (!IsSkillCostChangedBroadcasted && OnSkillCostChanged.IsBound() && OnSoulCountChanged.IsBound())
@@ -569,11 +570,6 @@ void USkillComponent::InitForWaiting()
 
 		AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
 	}
-}
-
-void USkillComponent::OnRep_CurrentMontage()
-{
-	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(CurrentMontage);
 }
 
 void USkillComponent::UltimateCastFinished()

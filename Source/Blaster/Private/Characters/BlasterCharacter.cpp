@@ -170,7 +170,8 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 	//}
 
-
+	//AB_LOG(LogABDisplay, Warning, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
+	UE_LOG(LogTemp, Display, TEXT("bLocallyReloading : %d"), bLocallyReloading);
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

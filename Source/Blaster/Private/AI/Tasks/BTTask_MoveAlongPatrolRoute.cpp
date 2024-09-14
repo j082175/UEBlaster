@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTTask_MoveAlongPatrolRoute::ExecuteTask(UBehaviorTreeCompo
 
 		EPathFollowingRequestResult::Type R = OwnerComp.GetAIOwner()->MoveToLocation(Direction, 10.f);
 
-		UE_LOG(LogTemp, Display, TEXT("R : %s"), *UEnum::GetDisplayValueAsText(R).ToString());
+		//UE_LOG(LogTemp, Display, TEXT("R : %s"), *UEnum::GetDisplayValueAsText(R).ToString());
 		if (R == EPathFollowingRequestResult::Type::AlreadyAtGoal)
 		{
 			SplineActor->IncrementPatrolRoute();

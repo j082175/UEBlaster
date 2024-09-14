@@ -765,12 +765,27 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindWidget"));
 		MatchCountdown.AddUObject(CO, &UCharacterOverlay::SetHUDMatchCountdown);
+		OnPingChanged.BindUObject(CO, &UCharacterOverlay::UpdatePing);
+		OnPingAnimStarted.BindUObject(CO, &UCharacterOverlay::HighPingWarning);
+		OnPingAnimStopped.BindUObject(CO, &UCharacterOverlay::StopHighPingWarning);
+
 		//OnTeamScoreChanged.BindUObject(CO, &UCharacterOverlay::)
 	}
 }
 
 void ABlasterPlayerController::CheckPing(float DeltaTime)
 {
+
+	if (PlayerState)
+	{
+		if (!OnPingChanged.ExecuteIfBound(PlayerState->GetPingInMilliseconds()))
+		{
+			//UE_LOG(LogTemp, Error, TEXT("OnPingChanged Not Bounded!"));
+		}
+	}
+
+
+
 	HighPingRunningTime += DeltaTime;
 	if (HighPingRunningTime > CheckPingFrequency)
 	{
@@ -778,6 +793,7 @@ void ABlasterPlayerController::CheckPing(float DeltaTime)
 		if (PlayerState)
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("Ping: :%f"), PlayerState->GetPingInMilliseconds());
+
 
 			if (PlayerState->GetPingInMilliseconds() > HighPingThreshold)
 			{
@@ -792,14 +808,11 @@ void ABlasterPlayerController::CheckPing(float DeltaTime)
 		}
 		HighPingRunningTime = 0.f;
 	}
-	bool bHighPingAnimationPlaying = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HighPingAnimation && BlasterHUD->CharacterOverlay->IsAnimationPlaying(BlasterHUD->CharacterOverlay->HighPingAnimation);
-	if (bHighPingAnimationPlaying)
+
+	PingAnimationRunningTime += DeltaTime;
+	if (PingAnimationRunningTime > HighPingDuration)
 	{
-		PingAnimationRunningTime += DeltaTime;
-		if (PingAnimationRunningTime > HighPingDuration)
-		{
-			StopHighPingWarning();
-		}
+		StopHighPingWarning();
 	}
 }
 
@@ -811,28 +824,12 @@ void ABlasterPlayerController::ServerReportPingStatus_Implementation(bool bHighP
 
 void ABlasterPlayerController::HighPingWarning()
 {
-	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HighPingImage && BlasterHUD->CharacterOverlay->HighPingAnimation;
-	if (bHUDValid)
-	{
-		BlasterHUD->CharacterOverlay->HighPingImage->SetOpacity(1.f);
-		BlasterHUD->CharacterOverlay->PlayAnimation(BlasterHUD->CharacterOverlay->HighPingAnimation, 0.f, 10);
-	}
+	OnPingAnimStarted.ExecuteIfBound();
 }
 
 void ABlasterPlayerController::StopHighPingWarning()
 {
-	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	bool bHUDValid = BlasterHUD && BlasterHUD->CharacterOverlay && BlasterHUD->CharacterOverlay->HighPingImage && BlasterHUD->CharacterOverlay->HighPingAnimation;
-	if (bHUDValid)
-	{
-		BlasterHUD->CharacterOverlay->HighPingImage->SetOpacity(0.f);
-		if (BlasterHUD->CharacterOverlay->IsAnimationPlaying(BlasterHUD->CharacterOverlay->HighPingAnimation))
-		{
-			BlasterHUD->CharacterOverlay->StopAnimation(BlasterHUD->CharacterOverlay->HighPingAnimation);
-
-		}
-	}
+	OnPingAnimStopped.ExecuteIfBound();
 }
 
 void ABlasterPlayerController::OnRep_ShowTeamScores()

@@ -14,7 +14,10 @@
 
 #include "BlasterPlayerController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
+DECLARE_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool /*bPingTooHigh*/);
+DECLARE_DELEGATE_OneParam(FOnPingChangedDelegate, float /*Ping*/);
+DECLARE_DELEGATE(FOnPingAnimStartedDelegate);
+DECLARE_DELEGATE(FOnPingAnimStoppedDelegate);
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchCountdownDelegate, float);
 DECLARE_DELEGATE_OneParam(FOnRedTeamScoreChangedDelegate, const FString&);
@@ -116,6 +119,9 @@ protected:
 	// Pings
 public:
 	FHighPingDelegate HighPingDelegate;
+	FOnPingChangedDelegate OnPingChanged;
+	FOnPingAnimStartedDelegate OnPingAnimStarted;
+	FOnPingAnimStoppedDelegate OnPingAnimStopped;
 	FOnMatchCountdownDelegate MatchCountdown;
 	FOnRedTeamScoreChangedDelegate OnRedTeamScoreChanged;
 	FOnBlueTeamScoreChangedDelegate OnBlueTeamScoreChanged;
@@ -135,7 +141,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float CheckPingFrequency = 20.f;
 	UPROPERTY(EditAnywhere)
-	float HighPingThreshold = 50.f;
+	float HighPingThreshold = 200.f;
 	UPROPERTY(EditAnywhere)
 	float PingAnimationRunningTime = 0.f;
 

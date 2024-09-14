@@ -212,7 +212,7 @@ void AEnemyRange::BeginPlay()
 		}), 0.1f, false);
 
 
-	SetActorTickInterval(1.f);
+	//SetActorTickInterval(1.f);
 }
 
 void AEnemyRange::IAttack(FAttackEndedDelegate Delegate, const FString& AttackType)

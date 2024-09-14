@@ -64,10 +64,12 @@ AProjectile::AProjectile()
 	FieldSystemComponent = CreateDefaultSubobject<UFieldSystemComponent>(TEXT("FieldSystemComponent"));
 	ensure(FieldSystemComponent);
 	FieldSystemComponent->SetupAttachment(RootComponent);
+	FieldSystemComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CollisionBox->SetCollisionProfileName(PROFILE_Projectile);
 	CollisionBox->SetCollisionObjectType(ECC_Projectile);
 
+	
 }
 
 void AProjectile::Destroyed()
@@ -177,14 +179,18 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		ABlasterPlayerController* BPC = Cast<ABlasterPlayerController>(GetInstigatorController());
 		UReceiveDamageHUDComponent* DHUD = OtherActor->GetComponentByClass<UReceiveDamageHUDComponent>();
 
+		RandomDamage = FMath::RandRange(Damage - DamageDeviation, Damage + DamageDeviation);
+		RandomHeadShotDamage = FMath::RandRange(HeadShotDamage - DamageDeviation, HeadShotDamage + DamageDeviation);
+
 		if (BPC && BPC->IsLocalPlayerController())
 		{
-			RandomDamage = FMath::RandRange(Damage - DamageDeviation, Damage + DamageDeviation);
-			RandomHeadShotDamage = FMath::RandRange(HeadShotDamage - DamageDeviation, HeadShotDamage + DamageDeviation);
+
 
 			//UE_LOG(LogTemp, Error, TEXT("BoneName : %s"), *Hit.BoneName.ToString());
 			//UE_LOG(LogTemp, Error, TEXT("MyBoneName : %s"), *Hit.MyBoneName.ToString());
 			//UE_LOG(LogTemp, Error, TEXT("Component : %s"), *Hit.Component->GetName());
+
+			//UE_LOG(LogTemp, Error, TEXT("HitComp : %s"), *HitComp->GetName());
 
 			if (Hit.BoneName.ToString() == TEXT("head"))
 			{

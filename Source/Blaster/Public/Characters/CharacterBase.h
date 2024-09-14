@@ -110,6 +110,7 @@ public:
 	FORCEINLINE void SetDisableGameplay(bool IsDisable) { bDisableGameplay = IsDisable; }
 
 	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
+	FORCEINLINE void SetIsLocallyReloading(bool InIsReload) { bLocallyReloading = InIsReload; }
 
 	//void SetEquippedWeapon(class AWeapon* W) { EquippedWeapon = W; }
 	//void SetSecondaryEquippedWeapon(class AWeapon* W) { SecondaryWeapon = W; }
@@ -576,6 +577,8 @@ protected:
 	bool CanFire();
 
 	FTimerHandle FireTimer;
+
+	UPROPERTY()
 	uint8 bIsFiring : 1;
 	uint8 bFireButtonPressed : 1;
 	uint8 bReloadStopCheck : 1;
@@ -623,7 +626,11 @@ protected:
 	uint8 bIsDodge : 1;
 	UPROPERTY(ReplicatedUsing = OnRep_Sliding)
 	uint8 bIsSliding : 1;
+
+	UPROPERTY(Replicated)
 	uint8 bLocallyReloading : 1;
+
+public:
 
 	UPROPERTY(Replicated)
 	FName KeySectionName;
@@ -677,7 +684,10 @@ protected:
 	//UFUNCTION()
 	//void OnRep_CarriedAmmo();
 
-	virtual void UpdateAmmoValues();
+
+	void UpdateAmmoValues();
+
+
 	void UpdateShotgunAmmoValues();
 
 	//UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo, EditAnywhere)
