@@ -36,8 +36,8 @@ void ADefenceActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::SphereBeginOverlap);
-	SphereCollision->OnComponentEndOverlap.AddDynamic(this, &ThisClass::SphereEndOverlap);
+	SphereCollision->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::SphereBeginOverlap);
+	SphereCollision->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::SphereEndOverlap);
 }
 
 // Called every frame

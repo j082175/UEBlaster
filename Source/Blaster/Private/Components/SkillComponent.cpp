@@ -202,32 +202,20 @@ void USkillComponent::SkillCast(ESkillAssistant InSkillAssistant)
 
 void USkillComponent::UltimateCast()
 {
-	CharacterOwner->SetCombatState(ECombatState::UltimateMode);
+	if (!CharacterOwner->HasAuthority()) return;
 
-	UMaterial* M = TransparentMaterial;
-
-	if (CharacterOwner->IGetTeam() == ETeam::RedTeam)
-	{
-		M = UltimateWeaponMaterial_Red;
-		WeaponMaterialIndex = 4; // suppose to...
-	}
-	else if (CharacterOwner->IGetTeam() == ETeam::BlueTeam)
-	{
-		M = UltimateWeaponMaterial_Blue;
-		WeaponMaterialIndex = 5;
-	}
 
 	FSkillManagementStruct* S = CoolTimeMap.Find(ESkillAssistant::Ultimate);
 
 
-	if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
+
 
 	FTimerHandle H;
-	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinished, S->SkillStat.MaintainTime);
+	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::MulticastUltimateCastFinished, S->SkillStat.MaintainTime);
 
 	MulticastCastEnd(ESkillAssistant::Ultimate);
 
-	UltimateEffectComponent->Activate();
+
 
 	if (CharacterOwner->HasAuthority())
 	{
@@ -318,7 +306,27 @@ void USkillComponent::MulticastCastEnd_Implementation(ESkillAssistant InSkillAss
 
 		break;
 	case ESkillAssistant::Ultimate:
+	{
 		OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->SkillStat.MaintainTime);
+		CharacterOwner->SetCombatState(ECombatState::UltimateMode);
+
+		UMaterial* M = TransparentMaterial;
+
+		if (CharacterOwner->IGetTeam() == ETeam::RedTeam)
+		{
+			M = UltimateWeaponMaterial_Red;
+			WeaponMaterialIndex = 4; // suppose to...
+		}
+		else if (CharacterOwner->IGetTeam() == ETeam::BlueTeam)
+		{
+			M = UltimateWeaponMaterial_Blue;
+			WeaponMaterialIndex = 5;
+		}
+
+		if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
+
+		UltimateEffectComponent->Activate();
+	}
 
 		break;
 	case ESkillAssistant::ESA_MAX:
@@ -572,10 +580,10 @@ void USkillComponent::InitForWaiting()
 	}
 }
 
-void USkillComponent::UltimateCastFinished()
+void USkillComponent::MulticastUltimateCastFinished_Implementation()
 {
+	//AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
 	CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, TransparentMaterial);
-	CharacterOwner->SetCombatState(ECombatState::Unoccupied);
 	UltimateEffectComponent->Deactivate();
 
 	if (UInventoryComponent* IC = CharacterOwner->GetComponentByClass<UInventoryComponent>())
@@ -583,7 +591,9 @@ void USkillComponent::UltimateCastFinished()
 		AWeapon* CurrentWeapon = IC->GetEquippedWeapon();
 		CurrentWeapon->Dropped();
 		CurrentWeapon->Destroy();
+		IC->SetEquippedWeapon(nullptr);
 
+		CharacterOwner->bFireButtonPressed = true;
 		FTimerHandle H;
 		GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::UltimateCastFinishedDelay, 0.1f, false);
 	}
@@ -598,6 +608,9 @@ void USkillComponent::UltimateCastFinishedDelay()
 		IC->SetEquippedWeapon(TempWeapon);
 		CharacterOwner->EquipWeaponFunc();
 		CharacterOwner->Fire(false);
+
+		CharacterOwner->SetCombatState(ECombatState::Unoccupied);
+		CharacterOwner->bFireButtonPressed = false;
 	}
 
 }

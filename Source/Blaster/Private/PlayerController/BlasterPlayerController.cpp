@@ -39,6 +39,14 @@ ABlasterPlayerController::ABlasterPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 	//PrimaryActorTick.TickInterval = 0.01f;
 
+	static ConstructorHelpers::FClassFinder<UUserWidget> WBP_PauseMenuClassRef(TEXT("/Game/A_Blaster/Blueprints/HUD/WB_PauseMenu.WB_PauseMenu_C"));
+	ensure(WBP_PauseMenuClassRef.Class);
+	WBP_PauseMenuClass = WBP_PauseMenuClassRef.Class;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_QuitActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/A_Blaster/Inputs/IA_Escape.IA_Escape'"));
+	ensure(IA_QuitActionRef.Object);
+	IA_QuitAction = IA_QuitActionRef.Object;
+
 	ChatSystemComponent = CreateDefaultSubobject<UChatSystemComponent>(TEXT("ChatSystemComponent"));
 
 	Tags.Add(TEXT("Player"));
@@ -130,7 +138,6 @@ void ABlasterPlayerController::BeginPlay()
 			}
 		}
 	}
-
 
 
 	//UE_LOG(LogTemp, Warning, TEXT("%s : PlayerState : %x"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), GetPlayerState<APlayerState>());
@@ -355,7 +362,9 @@ void ABlasterPlayerController::SetupInputComponent()
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	if (EnhancedInputComponent)
 	{
-		EnhancedInputComponent->BindAction(IA_QuitAction, ETriggerEvent::Triggered, this, &ThisClass::ShowReturnToMainMenu);
+		//EnhancedInputComponent->BindAction(IA_QuitAction, ETriggerEvent::Triggered, this, &ThisClass::ShowReturnToMainMenu);
+		EnhancedInputComponent->BindAction(IA_QuitAction, ETriggerEvent::Triggered, this, &ThisClass::ShowPauseMenu);
+
 		EnhancedInputComponent->BindAction(IA_Chat, ETriggerEvent::Triggered, ChatSystemComponent.Get(), &UChatSystemComponent::ChatButtonPressed);
 
 
@@ -1216,90 +1225,34 @@ void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerStat
 
 }
 
-//void ABlasterPlayerController::AddChatBox()
-//{
-//	if (ChatBoxClass)
-//	{
-//		ChatBox = CreateWidget<UChatBox>(this, ChatBoxClass);
-//		if (ChatBox && ChatBox->ChatInput)
-//		{
-//			ChatBox->AddToViewport();
-//			ChatBox->ChatInput->SetHintText(FText(FText::FromString("-")));
-//			ChatBox->SetVisibility(ESlateVisibility::Collapsed);
-//			ChatBox->ChatInput->SetRevertTextOnEscape(true);
-//			ChatBox->ChatInput->OnTextCommitted.AddDynamic(this, &ABlasterPlayerController::OnChatCommittedFunc);
-//		}
-//	}
-//}
-//
-//void ABlasterPlayerController::OpenChatBox()
-//{
-//	if (ChatBox && ChatBox->ChatInput)
-//	{
-//		if (ChatBox->GetVisibility() == ESlateVisibility::Collapsed)
-//		{
-//			UE_LOG(LogTemp, Display, TEXT("ChatBox Open"));
-//			ChatBox->SetVisibility(ESlateVisibility::Visible);
-//			FInputModeGameAndUI InputModeGameAndUI;
-//			
-//			InputModeGameAndUI.SetWidgetToFocus(ChatBox->ChatInput->TakeWidget());
-//			InputModeGameAndUI.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
-//			//InputModeGameAndUI.SetHideCursorDuringCapture(true);
-//
-//			SetShowMouseCursor(false);
-//			SetInputMode(InputModeGameAndUI);
-//		}
-//		else if (ChatBox->GetVisibility() == ESlateVisibility::Visible)
-//		{
-//			UE_LOG(LogTemp, Display, TEXT("ChatBox Close"));
-//			ChatBox->SetVisibility(ESlateVisibility::Collapsed);
-//			FInputModeGameOnly InputModeGameOnly;
-//			SetInputMode(InputModeGameOnly);
-//			//SetShowMouseCursor(false);
-//		}
-//	}
-//}
-//
-//void ABlasterPlayerController::OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod)
-//{
-//	UE_LOG(LogTemp, Error, TEXT("OnChatCommittedFunc : %s"), *UEnum::GetDisplayValueAsText(CommitMethod).ToString());
-//
-//	if (CommitMethod == ETextCommit::OnCleared || CommitMethod == ETextCommit::OnUserMovedFocus)
-//	{
-//		OpenChatBox();
-//		return;
-//	}
-//	
-//	if (CommitMethod != ETextCommit::OnEnter) return;
-//
-//	FString PlayerName{ "" };
-//
-//	APlayerState* TempPlayerState = GetPlayerState<APlayerState>();
-//	if (TempPlayerState)
-//	{
-//		PlayerName = TempPlayerState->GetPlayerName();
-//	}
-//
-//	ServerChatCommitted(Text, PlayerName); //TODO: Add a delay so that some absolute cucumber can't spam the chat.
-//
-//
-//}
-//
-//void ABlasterPlayerController::ChatButtonPressed()
-//{
-//	UE_LOG(LogTemp, Display, TEXT("ChatButtonPressed"));
-//	OpenChatBox();
-//}
-//
-//void ABlasterPlayerController::ServerChatCommitted_Implementation(const FText& Text, const FString& PlayerName)
-//{
-//	BlasterGameMode->SendChatMsg(Text, PlayerName);
-//}
-//
-//void ABlasterPlayerController::ClientChatCommitted_Implementation(const FText& Text, const FString& PlayerName)
-//{
-//	if (ChatBox)
-//	{
-//		ChatBox->OnTextCommitted(Text, PlayerName);
-//	}
-//}
+void ABlasterPlayerController::ShowPauseMenu()
+{
+	WBP_PauseMenu = WBP_PauseMenu == nullptr ? CreateWidget<UUserWidget>(this, WBP_PauseMenuClass) : WBP_PauseMenu.Get();
+	if (WBP_PauseMenu->IsInViewport())
+	{
+		WBP_PauseMenu->RemoveFromViewport();
+		FInputModeGameOnly InputModeGameOnly;
+		SetInputMode(InputModeGameOnly);
+		SetShowMouseCursor(false);
+	}
+	else
+	{
+		WBP_PauseMenu->AddToViewport();
+
+		FInputModeGameAndUI InputModeGameAndUI;
+		InputModeGameAndUI.SetWidgetToFocus(WBP_PauseMenu->TakeWidget());
+		SetInputMode(InputModeGameAndUI);
+		SetShowMouseCursor(true);
+	}
+
+	if (WBP_PauseMenu->IsVisible())
+	{
+
+	}
+	else
+	{
+
+	}
+
+
+}

@@ -43,8 +43,8 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UProgressBar> ShieldBar;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UProgressBar> SpBar;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UProgressBar> SpBar;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UProgressBar> ParryGaugeBar;
@@ -61,11 +61,11 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> MaxShield;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> CurrentSp;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> CurrentSp;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> MaxSp;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> MaxSp;
 
 	//UPROPERTY(meta = (BindWidget))
 	//TObjectPtr<class UTextBlock> CurrentParryGauge;

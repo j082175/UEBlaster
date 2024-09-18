@@ -17,12 +17,11 @@ ASoul::ASoul()
 
 void ASoul::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
-	Super::OnCapsuleBeginOverlapFunc(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-
 	USkillComponent* SkillComponent = OtherActor->GetComponentByClass<USkillComponent>();
 	if (SkillComponent && OtherActor->Implements<UOverlapItemInterface>())
 	{
+		Super::OnCapsuleBeginOverlapFunc(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+
 		//AB_LOG(LogABDisplay, Log, TEXT(""));
 		UGameplayStatics::PlaySoundAtLocation(this, TakeSound, SoulEffect->GetComponentLocation());
 		SkillComponent->AddSkillPoint(Soul);

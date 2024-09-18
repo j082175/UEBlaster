@@ -66,9 +66,9 @@ void UCharacterOverlay::SetSpBar(float InCurrent, float InMax)
 	//StaminaBar->SetPercent(InCurrent / InMax);
 	//StaminaText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), FMath::CeilToInt(FMath::Clamp((InCurrent), 0.f, InMax)), (int)InMax)));
 
-	AttributeStatus->SetCurrentTextBlock(AttributeStatus->CurrentSp, InCurrent);
-	AttributeStatus->SetMaxTextBlock(AttributeStatus->MaxSp, InMax);
-	AttributeStatus->SetProgressBar(AttributeStatus->SpBar, InCurrent / InMax);
+	//AttributeStatus->SetCurrentTextBlock(AttributeStatus->CurrentSp, InCurrent);
+	//AttributeStatus->SetMaxTextBlock(AttributeStatus->MaxSp, InMax);
+	//AttributeStatus->SetProgressBar(AttributeStatus->SpBar, InCurrent / InMax);
 	SkillBar->SetSpBar(InCurrent / InMax);
 }
 

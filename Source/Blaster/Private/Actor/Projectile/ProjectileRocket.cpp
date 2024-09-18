@@ -86,7 +86,7 @@ void AProjectileRocket::BeginPlay()
 
 		if (!HasAuthority()) // 로켓탄두만큼은 클라도 OnHit Event 가 작동하도록 설정.
 		{
-			CollisionBox->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
+			CollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnHit);
 		}
 
 		SpawnTrailSystem();

@@ -189,7 +189,7 @@ void UObjectPoolComponent::GenerateObject()
 					Actor->SetIsActive(false);
 					Actor->SetPoolIndex(i);
 					Actor->FinishSpawning(T);
-					Actor->OnPooledObjectDespawn.AddDynamic(this, &ThisClass::OnPooledObjectDespawn);
+					Actor->OnPooledObjectDespawn.AddUniqueDynamic(this, &ThisClass::OnPooledObjectDespawn);
 
 					ObjectPool[PO].Add(Actor);
 

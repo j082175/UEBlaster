@@ -268,7 +268,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME_CONDITION(ThisClass, bIsSliding, COND_SimulatedOnly);
 	DOREPLIFETIME_CONDITION(ThisClass, bIsDodge, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, bIsMorV);
-	DOREPLIFETIME_CONDITION(ThisClass, AnimState, COND_SimulatedOnly);
+	DOREPLIFETIME(ThisClass, AnimState);
 	DOREPLIFETIME(ThisClass, bParryResultCheck);
 	DOREPLIFETIME_CONDITION(ThisClass, bDisableGameplay, COND_OwnerOnly);
 	DOREPLIFETIME(ThisClass, KeySectionName);
@@ -282,7 +282,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Yaw, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, Team);
 
-	DOREPLIFETIME_CONDITION(ThisClass, bLocallyReloading, COND_AutonomousOnly);
+	//DOREPLIFETIME_CONDITION(ThisClass, bLocallyReloading, COND_AutonomousOnly);
 }
 
 // Called every frame
@@ -2245,6 +2245,7 @@ void ACharacterBase::ElimTimerFinished()
 
 void ACharacterBase::SpawnDefaultWeapon()
 {
+	if (!HasAuthority()) return;
 	//UE_LOG(LogTemp, Display, TEXT("SpawnDefaultWeapon"));
 	BlasterGameMode = BlasterGameMode == nullptr ? Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this)) : BlasterGameMode;
 	UWorld* World = GetWorld();
@@ -2575,7 +2576,7 @@ void ACharacterBase::ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHi
 	if (CombatState == ECombatState::Reloading || CombatState == ECombatState::Unoccupied)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("ShotgunLocalFire"));
-		bLocallyReloading = false;
+		//bLocallyReloading = false;
 		PlayFireMontage(bIsAiming);
 		Shotgun->FireShotgun(TraceHitTargets);
 		CombatState = ECombatState::Unoccupied;
@@ -2659,14 +2660,14 @@ void ACharacterBase::ServerFire_Implementation(bool bPressed, const FVector_NetQ
 
 bool ACharacterBase::ServerFire_Validate(bool bPressed, const FVector_NetQuantize& TraceHitTarget, float FireDelay)
 {
-	if (InventoryComponent->EquippedWeapon)
-	{
-		AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
-		if (!Gun) return false;
+	//if (InventoryComponent->EquippedWeapon)
+	//{
+	//	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
+	//	if (!Gun) return false;
 
-		bool bNearlyEqual = FMath::IsNearlyEqual(Gun->GetFireDelay(), FireDelay, 0.001f);
-		return bNearlyEqual;
-	}
+	//	bool bNearlyEqual = FMath::IsNearlyEqual(Gun->GetFireDelay(), FireDelay, 0.001f);
+	//	return bNearlyEqual;
+	//}
 
 	return true;
 }
@@ -2770,7 +2771,7 @@ bool ACharacterBase::CanFire()
 
 	//UE_LOG(LogTemp, Display, TEXT("bLocallyReloading : %d"), bLocallyReloading);
 	if (InventoryComponent->EquippedWeapon == nullptr) return false;
-	if (bLocallyReloading) return false;
+	//if (bLocallyReloading) return false;
 	if (!IsAiming()) return false;
 	if (!bFireButtonPressed) return false;
 	if (!IsLocallyControlled()) return false;
@@ -2849,7 +2850,8 @@ void ACharacterBase::UpdateAmmoValues()
 	}
 
 	Gun->AddAmmo(ReloadAmount);
-	bLocallyReloading = false;
+	//bLocallyReloading = false;
+	CombatState = ECombatState::Unoccupied;
 
 
 	if (IsLocallyControlled())
@@ -2890,9 +2892,9 @@ void ACharacterBase::Reload()
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
-	if (InventoryComponent->CarriedAmmo > 0 && !Gun->IsFull() && !bLocallyReloading)
+	if (InventoryComponent->CarriedAmmo > 0 && !Gun->IsFull() /*&& !bLocallyReloading*/)
 	{
-		if (!HasAuthority() && IsLocallyControlled()) HandleReload();
+		//if (!HasAuthority() && IsLocallyControlled()) HandleReload();
 		ServerReload();
 
 	}
@@ -2900,7 +2902,7 @@ void ACharacterBase::Reload()
 
 void ACharacterBase::HandleReload()
 {
-	bLocallyReloading = true;
+	//bLocallyReloading = true;
 	CombatState = ECombatState::Reloading;
 	PlayReloadMontage();
 }
@@ -2929,13 +2931,12 @@ void ACharacterBase::ServerReload_Implementation()
 	//UpdateAmmoValues();
 
 	//if (!IsLocallyControlled()) HandleReload();
-	HandleReload();
 	MulticastReload();
 }
 
 void ACharacterBase::MulticastReload_Implementation()
 {
-	if (!HasAuthority() && !IsLocallyControlled())
+	//if (!HasAuthority() && !IsLocallyControlled())
 	HandleReload();
 }
 

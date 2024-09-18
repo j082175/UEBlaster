@@ -557,6 +557,7 @@ protected:
 public:
 	virtual void Fire(bool bPressed);
 
+	uint8 bFireButtonPressed : 1;
 protected:
 	virtual void FireProjectileWeapon(bool bPressed);
 	virtual void FireHitScanWeapon(bool bPressed);
@@ -580,7 +581,7 @@ protected:
 
 	UPROPERTY()
 	uint8 bIsFiring : 1;
-	uint8 bFireButtonPressed : 1;
+
 	uint8 bReloadStopCheck : 1;
 
 

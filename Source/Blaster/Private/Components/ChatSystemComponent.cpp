@@ -59,7 +59,7 @@ void UChatSystemComponent::AddChatBox()
 			ChatBox->ChatInput->SetHintText(FText(FText::FromString("-")));
 			ChatBox->SetVisibility(ESlateVisibility::Collapsed);
 			ChatBox->ChatInput->SetRevertTextOnEscape(true);
-			ChatBox->ChatInput->OnTextCommitted.AddDynamic(this, &UChatSystemComponent::OnChatCommittedFunc);
+			ChatBox->ChatInput->OnTextCommitted.AddUniqueDynamic(this, &UChatSystemComponent::OnChatCommittedFunc);
 		}
 	}
 }

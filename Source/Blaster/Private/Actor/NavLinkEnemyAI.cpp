@@ -8,7 +8,7 @@ void ANavLinkEnemyAI::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnSmartLinkReached.AddDynamic(this, &ThisClass::SmartLinkReached);
+	OnSmartLinkReached.AddUniqueDynamic(this, &ThisClass::SmartLinkReached);
 }
 
 void ANavLinkEnemyAI::Tick(float DeltaTime)

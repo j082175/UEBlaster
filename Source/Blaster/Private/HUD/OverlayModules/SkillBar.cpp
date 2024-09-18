@@ -29,6 +29,8 @@ void USkillBar::StartAnimation(ESkillAnimType InPrefix, int32 InIndex, float InP
 {
 	FString Prefix = *UEnum::GetDisplayValueAsText(InPrefix).ToString();
 
+	UE_LOG(LogTemp, Display, TEXT("PlaybackSpeed : %f"), InPlaybackSpeed);
+
 	UWidgetAnimation* ResultAnim = WidgetAnimHelper::StartAnimation(Prefix, TEXT("Skill"), InIndex, InPlaybackSpeed, this, FindWidgetAnimation);
 }
 

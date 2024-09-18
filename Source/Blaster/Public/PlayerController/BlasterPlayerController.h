@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+//#include "GameFramework/PlayerController.h"
+#include "PlayerController/BasePlayerController.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
 
 #include "Item/Pickable/Weapon/WeaponTypes.h"
@@ -29,7 +30,7 @@ DECLARE_DELEGATE_OneParam(FOnBlueTeamScoreChangedDelegate, const FString&);
  *
  */
 UCLASS()
-class BLASTER_API ABlasterPlayerController : public APlayerController, public IWidgetBindDelegateInterface
+class BLASTER_API ABlasterPlayerController : public ABasePlayerController, public IWidgetBindDelegateInterface
 {
 	GENERATED_BODY()
 public:
@@ -247,36 +248,13 @@ private:
 	virtual void OnRep_PlayerState() override;
 
 
-	//public:
-	//	UFUNCTION(Client, Reliable)
-	//	void ClientChatCommitted(const FText& Text, const FString& PlayerName);
-	//	void AddChatBox();
-	//	void OpenChatBox();
-	//protected:
-	//	UFUNCTION()
-	//	void OnChatCommittedFunc(const FText& Text, ETextCommit::Type CommitMethod);
-	//
-	//	UFUNCTION(Server, Reliable)
-	//	void ServerChatCommitted(const FText& Text, const FString& PlayerName);
-	//
-	//	void ChatButtonPressed();
-	//
-	//
-	//
-	//	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	//	TSubclassOf<class UChatBox> ChatBoxClass;
-	//
-	//	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
-	//	TObjectPtr<class UChatBox> ChatBox;
-	//
-	//	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
-	//	TObjectPtr<class UInputAction> IA_Chat;
+private:
+	void ShowPauseMenu();
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> WBP_PauseMenuClass;
 
-		// Test
-	TWeakObjectPtr<class UCharacterOverlay> HUD_CO;
-	TWeakObjectPtr<class UAnnouncement> HUD_A;
-	TWeakObjectPtr<AHUD> HUUD;
-	TWeakObjectPtr<class ABlasterHUD> BlasterHUUD;
+	UPROPERTY()
+	TObjectPtr<class UUserWidget> WBP_PauseMenu;
 
 };

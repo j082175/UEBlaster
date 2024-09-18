@@ -182,7 +182,8 @@ public:
 
 	// Ultimate Skill
 private:
-	void UltimateCastFinished();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastUltimateCastFinished();
 	void UltimateCastFinishedDelay();
 
 

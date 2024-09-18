@@ -23,6 +23,9 @@ public class Blaster : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
+		PublicDependencyModuleNames.AddRange(new string[] { "AdvancedSessions", "AdvancedSteamSessions" });
+
+
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
