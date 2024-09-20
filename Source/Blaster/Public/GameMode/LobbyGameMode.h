@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+
 #include "LobbyGameMode.generated.h"
 
 /**
@@ -20,4 +21,9 @@ public:
 	//virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* PlayerController) override;
 
+
+protected:
+	//UPROPERTY(config, EditAnywhere, Category = Packaging, AdvancedDisplay, meta = (DisplayName = "List of maps to include in a packaged build", RelativeToGameContentDir, LongPackageName, AllowPrivateAccess = true))
+	UPROPERTY(config, EditAnywhere, Category = Packaging, AdvancedDisplay, meta = (RelativeToGameContentDir, LongPackageName))
+	TArray<FFilePath> MapPath;
 };

@@ -4,6 +4,8 @@
 #include "GameMode/LobbyGameMode.h"
 #include "GameFramework/GameStateBase.h"
 #include "MultiplayerSessionsSubsystem.h"
+#include "Kismet/GameplayStatics.h"
+#include "Enums/MapNames.h"
 
 ALobbyGameMode::ALobbyGameMode()
 {
@@ -73,35 +75,76 @@ void ALobbyGameMode::PostLogin(APlayerController* PlayerController)
 				bUseSeamlessTravel = true;
 
 				FString MatchType = SubSystem->DesiredMatchType;
-				if (MatchType == TEXT("FreeForAll"))
+				FString DesiredMap = SubSystem->DesiredMap;
+
+
+				//UGameplayStatics::OpenLevel(this, *DesiredMap, true, TEXT("listen"));
+
+				for (size_t i = 0; i < MapPath.Num(); i++)
 				{
-					//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
-					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
-
-					//FTimerHandle H;
-					//GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-					//	{
-					//		GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
-
-					//	}), 10.f, false);
-
-					
-
-					//GetWorld()->SetGameMode(TEXT("/Script/Engine.Blueprint'/Game/A_Blaster/Blueprints/GameModes/BP_BlasterGameMode.BP_BlasterGameMode'"));
-
+					if (MapPath[i].FilePath.Contains(DesiredMap))
+					{
+						FString P = MapPath[i].FilePath.Append(TEXT("?listen"));
+						GetWorld()->ServerTravel(P);
+						return;
+					}
 				}
-				else if (MatchType == TEXT("Teams"))
-				{
-					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
-					//GetWorld()->SetGameMode(TEXT("/Script/Engine.Blueprint'/Game/A_Blaster/Blueprints/GameModes/BP_TeamsGameMode.BP_TeamsGameMode'"));
 
-				}
-				else if (MatchType == TEXT("CaptureTheFlag"))
-				{
+				ensure(false);
+				return;
 
-					GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/SciFi_LevelInstances/GameMap_Space?listen"));
-					//GetWorld()->SetGameMode(TEXT("/Script/Engine.Blueprint'/Game/A_Blaster/Blueprints/GameModes/BP_CTFGameMode.BP_CTFGameMode'"));
-				}
+				//if (MatchType == *UEnum::GetDisplayValueAsText(EMatchTypes::FreeForAll).ToString())
+				//{
+				//	//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
+				//	//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
+
+				//	//for (const auto& i : E)
+
+				//	//UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(EDefaultMaps::LobbyMap_SciFi_Dynamic).ToString(), true, TEXT("listen"));
+
+				//	//FTimerHandle H;
+				//	//GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+				//	//	{
+				//	//		GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/Lobby_Test?listen"));
+
+				//	//	}), 10.f, false);
+
+				//	
+
+				//	//GetWorld()->SetGameMode(TEXT("/Script/Engine.Blueprint'/Game/A_Blaster/Blueprints/GameModes/BP_BlasterGameMode.BP_BlasterGameMode'"));
+
+				//}
+				//else if (MatchType == *UEnum::GetDisplayValueAsText(EMatchTypes::Teams).ToString())
+				//{
+				//	for (size_t i = 0; i < static_cast<size_t>(ETeamMaps::MAX); i++)
+				//	{
+				//		if (*UEnum::GetDisplayValueAsText(static_cast<ETeamMaps>(i)).ToString() == DesiredMap)
+				//		{
+				//			UGameplayStatics::OpenLevel(this, *DesiredMap, true, TEXT("listen"));
+				//			return;
+				//		}
+				//	}
+
+
+				//	//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
+
+				//	//GetWorld()->SetGameMode(TEXT("/Script/Engine.Blueprint'/Game/A_Blaster/Blueprints/GameModes/BP_TeamsGameMode.BP_TeamsGameMode'"));
+
+				//}
+				//else if (MatchType == *UEnum::GetDisplayValueAsText(EMatchTypes::CaptureTheFlag).ToString())
+				//{
+				//	for (size_t i = 0; i < static_cast<size_t>(ECaptureTheFlagMaps::MAX); i++)
+				//	{
+				//		if (*UEnum::GetDisplayValueAsText(static_cast<ETeamMaps>(i)).ToString() == DesiredMap)
+				//		{
+				//			UGameplayStatics::OpenLevel(this, *DesiredMap, true, TEXT("listen"));
+				//			return;
+				//		}
+				//	}
+
+				//	//GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/SciFi_LevelInstances/GameMap_Space?listen"));
+				//	//GetWorld()->SetGameMode(TEXT("/Script/Engine.Blueprint'/Game/A_Blaster/Blueprints/GameModes/BP_CTFGameMode.BP_CTFGameMode'"));
+				//}
 			}
 		}
 	}

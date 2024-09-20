@@ -77,9 +77,9 @@ void UCharacterOverlay::SetParryGaugeBar(float InCurrent, float InMax)
 	AttributeStatus->SetProgressBar(AttributeStatus->ParryGaugeBar, InCurrent / InMax);
 }
 
-void UCharacterOverlay::SetHUDScore(float Score)
+void UCharacterOverlay::SetHUDScore(int32 Score)
 {
-	FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
+	FString ScoreText = FString::Printf(TEXT("%d"), Score);
 	ScoreAmount->SetText(FText::FromString(ScoreText));
 }
 

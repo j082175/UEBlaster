@@ -24,6 +24,7 @@ UMainMenu_Home::UMainMenu_Home(const FObjectInitializer& ObjectInitializer)
 	static ConstructorHelpers::FClassFinder<ULoading> LoadingClassRef(TEXT("/MultiplayerSessions/Widgets/WBP_Loading.WBP_Loading_C"));
 	ensure(LoadingClassRef.Class);
 	LoadingClass = LoadingClassRef.Class;
+
 }
 
 void UMainMenu_Home::NativeConstruct()
@@ -36,15 +37,9 @@ void UMainMenu_Home::NativeConstruct()
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
 
-	MapLength = static_cast<int32>(EMapNames::MAX);
-	MapArr.Reserve(MapLength);
 
-	for (size_t i = 0; i < MapLength; i++)
-	{
-		MapArr.Add(static_cast<EMapNames>(i));
-	}
 
-	WBP_Selector_Map->SetText(*UEnum::GetDisplayValueAsText(MapArr[0]).ToString());
+
 
 
 	//WBP_Selector_Map->OnPreviousButtonClicked.AddUniqueDynamic(this, &ThisClass::LeftArrowClicked_Map);
@@ -61,34 +56,42 @@ void UMainMenu_Home::NativeConstruct()
 
 	WBP_Button_Create->ButtonText->SetText(FText::FromString(TEXT("Create")));
 
-	WBP_Selector_Players->SetText(TEXT("0"));
-	WBP_Selector_LAN->SetText(TEXT("Off"));
+	if (static_cast<uint8>(EFreeForAllMaps::MAX) == 0)
+	{
+		WBP_Selector_Map->SetText(TEXT("None"));
+	}
+	else
+	{
+		WBP_Selector_Map->SetText(*UEnum::GetDisplayValueAsText(static_cast<EFreeForAllMaps>(0)).ToString());
+	}
+
+
+	WBP_Selector_Players->SetText(FString::FromInt(CurrentPlayer));
+	WBP_Selector_LAN->SetText(*UEnum::GetDisplayValueAsText(CurrentMatchType).ToString());
 }
 
 void UMainMenu_Home::LeftArrowClicked_Map()
 {
-	CurrentMap = static_cast<EMapNames>(WBP_Selector_Map->Switch(false, MapArr.Num()));
-	WBP_Selector_Map->SetText(*UEnum::GetDisplayValueAsText(CurrentMap).ToString());
+	SelectMap(false);
 }
 
 void UMainMenu_Home::RightArrowClicked_Map()
 {
-	CurrentMap = static_cast<EMapNames>(WBP_Selector_Map->Switch(true, MapArr.Num()));
-	WBP_Selector_Map->SetText(*UEnum::GetDisplayValueAsText(CurrentMap).ToString());
+	SelectMap(true);
 }
 
 void UMainMenu_Home::LeftArrowClicked_LAN()
 {
-	bUseLAN = bUseLAN == true ? false : true;
-	FString Str = bUseLAN == true ? TEXT("On") : TEXT("Off");
-	WBP_Selector_LAN->SetText(Str);
+	CurrentMatchType = static_cast<EMatchTypes>(WBP_Selector_Map->Switch(false, static_cast<uint8>(EMatchTypes::MAX)));
+
+	WBP_Selector_LAN->SetText(*UEnum::GetDisplayValueAsText(CurrentMatchType).ToString());
 }
 
 void UMainMenu_Home::RightArrowClicked_LAN()
 {
-	bUseLAN = bUseLAN == true ? false : true;
-	FString Str = bUseLAN == true ? TEXT("On") : TEXT("Off");
-	WBP_Selector_LAN->SetText(Str);
+	CurrentMatchType = static_cast<EMatchTypes>(WBP_Selector_Map->Switch(true, static_cast<uint8>(EMatchTypes::MAX)));
+
+	WBP_Selector_LAN->SetText(*UEnum::GetDisplayValueAsText(CurrentMatchType).ToString());
 }
 
 void UMainMenu_Home::LeftArrowClicked_Players()
@@ -118,7 +121,7 @@ void UMainMenu_Home::CreateButtonClicked()
 	if (MultiplayerSessionsSubsystem.IsValid())
 	{
 		MultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddUniqueDynamic(this, &ThisClass::OnCreateSessionFinished);
-		MultiplayerSessionsSubsystem->CreateSession(MaxPlayer, TEXT("FreeForAll"));
+		MultiplayerSessionsSubsystem->CreateSession(CurrentPlayer, *UEnum::GetDisplayValueAsText(CurrentMatchType).ToString(), SelectType(CurrentMatchType));
 	}
 
 }
@@ -135,7 +138,12 @@ void UMainMenu_Home::OnCreateSessionFinished(bool bWasSuccessful)
 		FTimerHandle H;
 		GetWorld()->GetTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
 			{
-				UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(CurrentMap).ToString(), true, TEXT("listen"));
+				//FString Str = SelectType(CurrentMatchType);
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, *UEnum::GetDisplayValueAsText(EDefaultMaps::LobbyMap_SciFi_Dynamic).ToString());
+				}
+				UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(EDefaultMaps::LobbyMap_SciFi_Dynamic).ToString(), true, TEXT("listen"));
 				LoadingWidget->RemoveFromViewport();
 			}), 2.f, false);
 
@@ -147,3 +155,74 @@ void UMainMenu_Home::OnCreateSessionFinished(bool bWasSuccessful)
 
 }
 
+void UMainMenu_Home::SelectMap(bool IsRight)
+{
+	switch (CurrentMatchType)
+	{
+	case EMatchTypes::FreeForAll:
+		if (static_cast<uint8>(EFreeForAllMaps::MAX) == 0)
+		{
+			FString Str = FString::Printf(TEXT("There is no maps about : %s"), *UEnum::GetDisplayValueAsText(EMatchTypes::FreeForAll).ToString());
+			WBP_Selector_Map->SetText(Str);
+		}
+		else
+		{
+			CurrentFreeForAllMap = static_cast<EFreeForAllMaps>(WBP_Selector_Map->Switch(IsRight, static_cast<uint8>(EFreeForAllMaps::MAX)));
+			WBP_Selector_Map->SetText(*UEnum::GetDisplayValueAsText(CurrentFreeForAllMap).ToString());
+		}
+
+		break;
+	case EMatchTypes::Teams:
+		if (static_cast<uint8>(ETeamMaps::MAX) == 0)
+		{
+			FString Str = FString::Printf(TEXT("There is no maps about : %s"), *UEnum::GetDisplayValueAsText(EMatchTypes::Teams).ToString());
+			WBP_Selector_Map->SetText(Str);
+		}
+		else
+		{
+			CurrentTeamMap = static_cast<ETeamMaps>(WBP_Selector_Map->Switch(IsRight, static_cast<uint8>(ETeamMaps::MAX)));
+			WBP_Selector_Map->SetText(*UEnum::GetDisplayValueAsText(CurrentTeamMap).ToString());
+		}
+		break;
+	case EMatchTypes::CaptureTheFlag:
+		if (static_cast<uint8>(ECaptureTheFlagMaps::MAX) == 0)
+		{
+			FString Str = FString::Printf(TEXT("There is no maps about : %s"), *UEnum::GetDisplayValueAsText(EMatchTypes::CaptureTheFlag).ToString());
+			WBP_Selector_Map->SetText(Str);
+		}
+		else
+		{
+			CurrentCaptureTheFlagMap = static_cast<ECaptureTheFlagMaps>(WBP_Selector_Map->Switch(IsRight, static_cast<uint8>(ECaptureTheFlagMaps::MAX)));
+			WBP_Selector_Map->SetText(*UEnum::GetDisplayValueAsText(CurrentCaptureTheFlagMap).ToString());
+		}
+		break;
+	case EMatchTypes::MAX:
+		break;
+	default:
+		break;
+	}
+}
+
+FString UMainMenu_Home::SelectType(EMatchTypes InCurrentMatchType)
+{
+	FString Result;
+
+	switch (InCurrentMatchType)
+	{
+	case EMatchTypes::FreeForAll:
+		Result = *UEnum::GetDisplayValueAsText(CurrentFreeForAllMap).ToString();
+		break;
+	case EMatchTypes::Teams:
+		Result = *UEnum::GetDisplayValueAsText(CurrentTeamMap).ToString();
+		break;
+	case EMatchTypes::CaptureTheFlag:
+		Result = *UEnum::GetDisplayValueAsText(CurrentCaptureTheFlagMap).ToString();
+		break;
+	case EMatchTypes::MAX:
+		break;
+	default:
+		break;
+	}
+
+	return Result;
+}

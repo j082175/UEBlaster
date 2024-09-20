@@ -44,7 +44,7 @@ void UBootScreen::OnAnimationFinished_Implementation(const UWidgetAnimation* Ani
 		LoadingWidget = CreateWidget<ULoading>(this, LoadingClass);
 		LoadingWidget->AddToViewport();
 
-		UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(EMapNames::StartupMap_SciFi_Dynamic).ToString(), true, TEXT("listen"));
+		UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(EDefaultMaps::StartupMap_SciFi_Dynamic).ToString(), true, TEXT("listen"));
 
 		FTimerHandle H;
 		GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::Travel, 2.f);

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameMode/BlasterGameMode.h"
+#include "BlasterTypes/Team.h"
+
 #include "TeamsGameMode.generated.h"
 
 /**
@@ -23,4 +25,11 @@ public:
 protected:
 
 	virtual void HandleMatchHasStarted() override; // error occured!
+
+
+	void RemoveAllControllerScoreBoard(class ABlasterPlayerState* RemoveTarget);
+
+
+public:
+	TArray<class ABlasterPlayerState*> PlayerStateArr;
 };

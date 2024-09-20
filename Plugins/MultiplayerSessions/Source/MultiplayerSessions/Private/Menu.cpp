@@ -6,6 +6,7 @@
 #include "MultiplayerSessionsSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
+#include "Enums/MapNames.h"
 
 void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath)
 {
@@ -86,7 +87,8 @@ void UMenu::OnCreateSession(bool bWasSuccessful)
 
 		if (GetWorld())
 		{
-			GetWorld()->ServerTravel(PathToLobby);
+			//GetWorld()->ServerTravel(PathToLobby);
+			GetWorld()->ServerTravel(*UEnum::GetDisplayValueAsText(EDefaultMaps::LobbyMap_SciFi_Dynamic).ToString());
 		}
 	}
 	else
@@ -196,11 +198,7 @@ void UMenu::HostButtonClicked()
 
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType);
-		//if (GetWorld())
-		//{
-		//	GetWorld()->ServerTravel(TEXT("/Game/ThirdPerson/Maps/Lobby?listen"));
-		//}
+		MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType, *UEnum::GetDisplayValueAsText(ETeamMaps::GameMap_Tokyo).ToString());
 	}
 }
 

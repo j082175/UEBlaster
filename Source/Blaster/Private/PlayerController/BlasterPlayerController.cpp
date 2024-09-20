@@ -27,9 +27,13 @@
 #include "HUD/ChattingUI/ChatBox.h"
 #include "HUD/ChattingUI/ChatTextBlock.h"
 #include "HUD/OverheadWidget.h"
+#include "HUD/ScoreBoard/ScoreBoard.h"
+#include "Components/ScrollBox.h"
+
 #include "Components/WidgetComponent.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ChatSystemComponent.h"
+#include "Components/ScoreBoardComponent.h"
 #include "HUD/OverheadWidgetComponent.h"
 #include "Blaster/Blaster.h"
 
@@ -39,15 +43,24 @@ ABlasterPlayerController::ABlasterPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 	//PrimaryActorTick.TickInterval = 0.01f;
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> WBP_PauseMenuClassRef(TEXT("/Game/A_Blaster/Blueprints/HUD/WB_PauseMenu.WB_PauseMenu_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> WBP_PauseMenuClassRef(TEXT("/Game/A_Blaster/Blueprints/HUD/WBP_PauseMenu.WBP_PauseMenu_C"));
 	ensure(WBP_PauseMenuClassRef.Class);
 	WBP_PauseMenuClass = WBP_PauseMenuClassRef.Class;
+
+	//static ConstructorHelpers::FClassFinder<UUserWidget> WBP_ScoreBoardClassRef(TEXT("/Game/A_Blaster/Blueprints/HUD/ScoreBoard/WBP_ScoreBoard.WBP_ScoreBoard_C"));
+	//ensure(WBP_ScoreBoardClassRef.Class);
+	//WBP_ScoreBoardClass = WBP_ScoreBoardClassRef.Class;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_QuitActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/A_Blaster/Inputs/IA_Escape.IA_Escape'"));
 	ensure(IA_QuitActionRef.Object);
 	IA_QuitAction = IA_QuitActionRef.Object;
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_TabActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/A_Blaster/Inputs/IA_Tab.IA_Tab'"));
+	ensure(IA_TabActionRef.Object);
+	IA_Tab = IA_TabActionRef.Object;
+
 	ChatSystemComponent = CreateDefaultSubobject<UChatSystemComponent>(TEXT("ChatSystemComponent"));
+	ScoreBoardComponent = CreateDefaultSubobject<UScoreBoardComponent>(TEXT("ScoreBoardComponent"));
 
 	Tags.Add(TEXT("Player"));
 
@@ -121,6 +134,8 @@ void ABlasterPlayerController::BeginPlay()
 		}
 	}
 
+	//WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? CreateWidget<UScoreBoard>(this, WBP_ScoreBoardClass) : WBP_ScoreBoard.Get();
+
 	if (IsLocalPlayerController())
 	{
 		if (HitNoticeClass)
@@ -137,7 +152,11 @@ void ABlasterPlayerController::BeginPlay()
 				HitNotice->AddToViewport();
 			}
 		}
+
+
 	}
+
+
 
 
 	//UE_LOG(LogTemp, Warning, TEXT("%s : PlayerState : %x"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), GetPlayerState<APlayerState>());
@@ -366,7 +385,8 @@ void ABlasterPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_QuitAction, ETriggerEvent::Triggered, this, &ThisClass::ShowPauseMenu);
 
 		EnhancedInputComponent->BindAction(IA_Chat, ETriggerEvent::Triggered, ChatSystemComponent.Get(), &UChatSystemComponent::ChatButtonPressed);
-
+		EnhancedInputComponent->BindAction(IA_Tab, ETriggerEvent::Started, ScoreBoardComponent.Get(), &UScoreBoardComponent::ShowScoreBoard);
+		EnhancedInputComponent->BindAction(IA_Tab, ETriggerEvent::Completed, ScoreBoardComponent.Get(), &UScoreBoardComponent::ReleaseScoreBoard);
 
 	}
 }
@@ -599,6 +619,8 @@ void ABlasterPlayerController::SetHUDRedTeamScore(int32 RedScore)
 
 		BlasterHUD->CharacterOverlay->RedTeamScore->SetText(FText::FromString(ScoreText));
 	}
+
+	OnRedTeamScoreChanged.ExecuteIfBound(RedScore);
 }
 
 void ABlasterPlayerController::SetHUDBlueTeamScore(int32 BlueScore)
@@ -611,6 +633,8 @@ void ABlasterPlayerController::SetHUDBlueTeamScore(int32 BlueScore)
 
 		BlasterHUD->CharacterOverlay->BlueTeamScore->SetText(FText::FromString(ScoreText));
 	}
+
+	OnBlueTeamScoreChanged.ExecuteIfBound(BlueScore);
 }
 
 void ABlasterPlayerController::HideTeamScores()
@@ -764,21 +788,37 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 {
 	if (BlasterCharacter) BlasterCharacter->IBindWidget(InUserWidget);
 
-	//AB_LOG(LogABDisplay, Warning, TEXT("Num : %d"), UserWidgetsToBind.Num());
-
-
-
 	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindWidget Called"));
+
+	if (!IsLocalPlayerController()) return;
 
 	if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerController::IBindWidget"));
 		MatchCountdown.AddUObject(CO, &UCharacterOverlay::SetHUDMatchCountdown);
-		OnPingChanged.BindUObject(CO, &UCharacterOverlay::UpdatePing);
+		OnPingChanged.AddUObject(CO, &UCharacterOverlay::UpdatePing);
 		OnPingAnimStarted.BindUObject(CO, &UCharacterOverlay::HighPingWarning);
 		OnPingAnimStopped.BindUObject(CO, &UCharacterOverlay::StopHighPingWarning);
 
+		OnScoreChanged.AddUObject(CO, &UCharacterOverlay::SetHUDScore);
+		OnDefeatsChanged.AddUObject(CO, &UCharacterOverlay::SetHUDDefeats);
+
+
 		//OnTeamScoreChanged.BindUObject(CO, &UCharacterOverlay::)
+	}
+	else if (UScoreBoard* SB = Cast<UScoreBoard>(InUserWidget))
+	{
+		OnRedTeamScoreChanged.BindUObject(SB, &UScoreBoard::SetRedTeamScore);
+		OnBlueTeamScoreChanged.BindUObject(SB, &UScoreBoard::SetBlueTeamScore);
+		ScoreBoardComponent->InitScoreBoard();
+
+	}
+	else if (UScoreBoardText* SBT = Cast<UScoreBoardText>(InUserWidget))
+	{
+		UE_LOG(LogTemp, Display, TEXT("UScoreBoardText"));
+		OnPingChanged.AddUObject(SBT, &UScoreBoardText::SetLatency);
+		OnScoreChanged.AddUObject(SBT, &UScoreBoardText::SetScore);
+		OnDefeatsChanged.AddUObject(SBT, &UScoreBoardText::SetElims);
 	}
 }
 
@@ -787,10 +827,7 @@ void ABlasterPlayerController::CheckPing(float DeltaTime)
 
 	if (PlayerState)
 	{
-		if (!OnPingChanged.ExecuteIfBound(PlayerState->GetPingInMilliseconds()))
-		{
-			//UE_LOG(LogTemp, Error, TEXT("OnPingChanged Not Bounded!"));
-		}
+		OnPingChanged.Broadcast(PlayerState->GetPingInMilliseconds());
 	}
 
 
@@ -1244,15 +1281,88 @@ void ABlasterPlayerController::ShowPauseMenu()
 		SetInputMode(InputModeGameAndUI);
 		SetShowMouseCursor(true);
 	}
-
-	if (WBP_PauseMenu->IsVisible())
-	{
-
-	}
-	else
-	{
-
-	}
-
-
 }
+
+//void ABlasterPlayerController::InitScoreBoard()
+//{
+//	//UE_LOG(LogTemp, Display, TEXT("InitScoreBoard"));
+//	ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
+//
+//	if (!BlasterPlayerState)
+//	{
+//		return;
+//	}
+//
+//	if (ABlasterGameState* BlasterGameState = GetWorld()->GetGameState<ABlasterGameState>())
+//	{
+//		//OnRedTeamScoreChanged.ExecuteIfBound(BlasterGameState->GetRedTeamScore());
+//		//OnBlueTeamScoreChanged.ExecuteIfBound(BlasterGameState->GetBlueTeamScore());
+//
+//		FScoreBoardTextStruct S;
+//		S.PlayerName = FText::FromString(BlasterPlayerState->GetPlayerName());
+//		S.Score = BlasterPlayerState->GetScore();
+//		S.Elims = BlasterPlayerState->GetDefeats();
+//		S.Latency = BlasterPlayerState->GetPingInMilliseconds();
+//
+//		if (BlasterPlayerState && BlasterPlayerState->IGetTeam() == ETeam::RedTeam)
+//		{
+//			//AddScoreBoard(ETeam::RedTeam, S, );
+//		}
+//		else if (BlasterPlayerState && BlasterPlayerState->IGetTeam() == ETeam::BlueTeam)
+//		{
+//			//AddScoreBoard(ETeam::BlueTeam, S);
+//		}
+//
+//	}
+//}
+//
+//void ABlasterPlayerController::AddScoreBoard(ETeam InTeam, const FScoreBoardTextStruct& InStruct, APlayerController* InPC)
+//{
+//
+//
+//	//UE_LOG(LogTemp, Display, TEXT("AddScoreBoard : %s, WBP_ScoreBoard : %x, Name : %s"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString(), WBP_ScoreBoard.Get(), *GetOwner()->GetName());
+//
+//	WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? CreateWidget<UScoreBoard>(this, WBP_ScoreBoardClass) : WBP_ScoreBoard.Get();
+//
+//	if (WBP_ScoreBoard)
+//	{
+//
+//		if (InTeam == ETeam::RedTeam)
+//		{
+//			WBP_ScoreBoard->AddRedTeam(InStruct);
+//		}
+//		else if (InTeam == ETeam::BlueTeam)
+//		{
+//			WBP_ScoreBoard->AddBlueTeam(InStruct);
+//		}
+//
+//		WBP_ScoreBoard->ScoreBoardText->SetOwningPlayer(InPC);
+//		IWidgetBindDelegateInterface* WBD = Cast<IWidgetBindDelegateInterface>(InPC);
+//		WBD->IBindWidget(WBP_ScoreBoard->ScoreBoardText);
+//	}
+//
+//
+//}
+//
+//void ABlasterPlayerController::RemoveScoreBoard(const FString& InPlayerName)
+//{
+//	if (WBP_ScoreBoard) WBP_ScoreBoard->RemoveTeam(InPlayerName);
+//}
+//
+//void ABlasterPlayerController::ShowScoreBoard()
+//{
+//	WBP_ScoreBoard->SetVisibility(ESlateVisibility::Visible);
+//}
+//
+//void ABlasterPlayerController::ReleaseScoreBoard()
+//{
+//	if (WBP_ScoreBoard && WBP_ScoreBoard->IsInViewport())
+//	{
+//		WBP_ScoreBoard->SetVisibility(ESlateVisibility::Collapsed);
+//	}
+//}
+//
+//void ABlasterPlayerController::OnRep_ScoreBoard()
+//{
+//	UE_LOG(LogTemp, Warning, TEXT("OnRep_ScoreBoard"));
+//}

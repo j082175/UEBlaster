@@ -20,6 +20,7 @@ public:
 	UMainMenu_Matches(const FObjectInitializer& ObjectInitializer);
 	void NativeConstruct() override;
 
+
 	UFUNCTION()
 	void Refresh();
 
@@ -42,6 +43,8 @@ public:
 	TObjectPtr<class UCircularThrobber> CircularThrobber;
 
 private:
+	void ProceedResetTimer();
+
 	void ProcessAfterSearching();
 
 	void FindSessionsFinished(const TArray<class FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
@@ -58,4 +61,9 @@ private:
 	TWeakObjectPtr<class UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
 
 	TArray<FString> SelectorArr;
+
+	UPROPERTY()
+	TSet<FString> SessionIdStrSet;
+
+	FTimerHandle Handle;
 };

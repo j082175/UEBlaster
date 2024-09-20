@@ -24,7 +24,7 @@ class MULTIPLAYERSESSIONS_API UMultiplayerSessionsSubsystem : public UGameInstan
 public:
 	UMultiplayerSessionsSubsystem();
 
-	void CreateSession(int32 NumPublicConnections, FString MatchType);
+	void CreateSession(int32 NumPublicConnections, FString MatchType, FString MapNames);
 	void FindSessions(int32 MaxSearchResults);
 	void JoinSession(const FOnlineSessionSearchResult& SessionResult);
 	void DestroySession();
@@ -67,4 +67,5 @@ private:
 public:
 	int32 DesiredNumPublicConnections{};
 	FString DesiredMatchType{};
+	FString DesiredMap;
 };

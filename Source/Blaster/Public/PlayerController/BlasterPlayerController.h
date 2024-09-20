@@ -6,25 +6,27 @@
 //#include "GameFramework/PlayerController.h"
 #include "PlayerController/BasePlayerController.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
-
 #include "Item/Pickable/Weapon/WeaponTypes.h"
-
+#include "Interfaces/TeamInterface.h"
 // Enums
 #include "Types/SlateEnums.h"
-
+#include "BlasterTypes/Team.h"
+#include "HUD/ScoreBoard/ScoreBoardText.h"
 
 #include "BlasterPlayerController.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool /*bPingTooHigh*/);
-DECLARE_DELEGATE_OneParam(FOnPingChangedDelegate, float /*Ping*/);
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPingChangedDelegate, float /*Ping*/);
 DECLARE_DELEGATE(FOnPingAnimStartedDelegate);
 DECLARE_DELEGATE(FOnPingAnimStoppedDelegate);
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchCountdownDelegate, float);
-DECLARE_DELEGATE_OneParam(FOnRedTeamScoreChangedDelegate, const FString&);
-DECLARE_DELEGATE_OneParam(FOnBlueTeamScoreChangedDelegate, const FString&);
+DECLARE_DELEGATE_OneParam(FOnRedTeamScoreChangedDelegate, int32);
+DECLARE_DELEGATE_OneParam(FOnBlueTeamScoreChangedDelegate, int32);
 
-
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnScoreChangedDelegate, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDefeatsChangedDelegate, int32);
 
 /**
  *
@@ -48,7 +50,6 @@ public:
 
 
 	FORCEINLINE class ABlasterHUD* GetBlasterHUD() const { return BlasterHUD; }
-
 
 	void PollInit(APawn* InPawn);
 protected:
@@ -124,8 +125,12 @@ public:
 	FOnPingAnimStartedDelegate OnPingAnimStarted;
 	FOnPingAnimStoppedDelegate OnPingAnimStopped;
 	FOnMatchCountdownDelegate MatchCountdown;
+
 	FOnRedTeamScoreChangedDelegate OnRedTeamScoreChanged;
 	FOnBlueTeamScoreChangedDelegate OnBlueTeamScoreChanged;
+
+	FOnScoreChangedDelegate OnScoreChanged;
+	FOnDefeatsChangedDelegate OnDefeatsChanged;
 
 	void CheckPing(float DeltaTime);
 
@@ -211,6 +216,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UInputAction> IA_QuitAction;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UInputAction> IA_Tab;
+
 public:
 	void BroadcastElim(APlayerState* Attacker, APlayerState* Victim);
 
@@ -257,4 +265,26 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UUserWidget> WBP_PauseMenu;
 
+	
+
+	//void InitScoreBoard();
+
+	//public:
+	//void AddScoreBoard(ETeam InTeam, const FScoreBoardTextStruct& InStruct, APlayerController* InPC);
+	//void RemoveScoreBoard(const FString& InPlayerName);
+
+	//void ShowScoreBoard();
+	//void ReleaseScoreBoard();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UScoreBoardComponent> ScoreBoardComponent;
+
+
+	//UPROPERTY(EditAnywhere)
+	//TSubclassOf<class UScoreBoard> WBP_ScoreBoardClass;
+
+	//UFUNCTION()
+	//void OnRep_ScoreBoard();
+	//UPROPERTY(ReplicatedUsing = OnRep_ScoreBoard, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	//TObjectPtr<class UScoreBoard> WBP_ScoreBoard;
 };

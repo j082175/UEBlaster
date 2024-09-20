@@ -223,6 +223,8 @@ protected:
 
 
 	// Particles
+	void SpawnEffect();
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Effect", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UParticleSystem> BloodEffect;

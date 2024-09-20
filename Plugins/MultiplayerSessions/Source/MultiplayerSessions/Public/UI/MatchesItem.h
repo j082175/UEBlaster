@@ -21,7 +21,7 @@ public:
 
 	virtual void NativeConstruct() override;
 
-	FORCEINLINE void SetOnlineSessionSearchResult(class FOnlineSessionSearchResult InResult) { SearchResult = InResult; }
+	void SetOnlineSessionSearchResult(class FOnlineSessionSearchResult InResult);
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> ServerNameText;
@@ -43,8 +43,8 @@ public:
 private:
 	void JoinSessionFinished(EOnJoinSessionCompleteResult::Type Result);
 
+	UFUNCTION()
 	void JoinButtonClicked();
-
 
 	class FOnlineSessionSearchResult SearchResult;
 

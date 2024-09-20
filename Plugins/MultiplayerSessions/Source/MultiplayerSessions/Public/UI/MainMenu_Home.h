@@ -10,8 +10,9 @@
 #include "MainMenu_Home.generated.h"
 
 /**
- * 
+ *
  */
+
 UCLASS()
 class MULTIPLAYERSESSIONS_API UMainMenu_Home : public UUserWidget
 {
@@ -41,7 +42,7 @@ public:
 	UFUNCTION()
 	void CreateButtonClicked();
 
-	
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class ULobbySelector> WBP_Selector_Map;
 
@@ -58,18 +59,28 @@ private:
 	UFUNCTION()
 	void OnCreateSessionFinished(bool bWasSuccessful);
 
+	void SelectMap(bool IsRight);
 
-	TArray<EMapNames> MapArr;
+
+	FString SelectType(EMatchTypes InCurrentMatchType);
+
+
 	TArray<int32> PlayerArr;
-
-	int32 MapLength;
-
-
 	int32 MaxPlayer = 8;
 
-	EMapNames CurrentMap;
+
+
 	uint8 bUseLAN : 1;
 	uint32 CurrentPlayer;
+
+
+	EFreeForAllMaps CurrentFreeForAllMap;
+	ETeamMaps CurrentTeamMap;
+	ECaptureTheFlagMaps CurrentCaptureTheFlagMap;
+	EDefaultMaps CurrentDefaultMap;
+
+	EMatchTypes CurrentMatchType = EMatchTypes::FreeForAll;
+
 
 
 	TWeakObjectPtr<class UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
@@ -82,4 +93,6 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class ULoading> LoadingWidget;
+
+
 };

@@ -8,6 +8,9 @@
 
 //#include "Interfaces/CommonPCFuncInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Enums/MapNames.h"
+#include "MultiplayerSessionsSubsystem.h"
 
 UPauseMenu::UPauseMenu(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
@@ -43,6 +46,13 @@ void UPauseMenu::OnClickedLeave_Btn()
 	//{
 	//	CommonFunc->IShowLoading();
 	//}
+
+	UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(EDefaultMaps::StartupMap_SciFi_Dynamic).ToString(), true, TEXT("listen"));
+
+	if (UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem = GetGameInstance()->GetSubsystem<UMultiplayerSessionsSubsystem>())
+	{
+		MultiplayerSessionsSubsystem->DestroySession();
+	}
 }
 
 void UPauseMenu::OnClickedQuit_Btn()

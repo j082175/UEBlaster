@@ -9,6 +9,7 @@
 
 #include "MultiplayerSessionsSubsystem.h"
 #include "FindSessionsCallbackProxy.h"
+#include "Kismet/KismetStringLibrary.h"
 
 
 UMatchesItem::UMatchesItem(const FObjectInitializer& ObjectInitializer)
@@ -28,15 +29,30 @@ void UMatchesItem::NativeConstruct()
 
 	JoinButton->OnClicked.AddUniqueDynamic(this, &ThisClass::JoinButtonClicked);
 
-	ServerNameText->SetText(FText::FromString(SearchResult.Session.OwningUserName));
-	MaxPlayersText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), SearchResult.Session.SessionSettings.NumPublicConnections - SearchResult.Session.NumOpenPublicConnections, SearchResult.Session.SessionSettings.NumPublicConnections)));
+}
+
+void UMatchesItem::SetOnlineSessionSearchResult(FOnlineSessionSearchResult InResult)
+{
+	SearchResult = InResult;
+
+	FString ServerName = UKismetStringLibrary::GetSubstring(SearchResult.Session.OwningUserName, 0, 15);
+	ServerNameText->SetText(FText::FromString(ServerName));
+
+	int32 CurrentPlayers = SearchResult.Session.SessionSettings.NumPublicConnections - SearchResult.Session.NumOpenPublicConnections;
+	int32 MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
+
+	MaxPlayersText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentPlayers, MaxPlayers)));
+
 	PingText->SetText(FText::FromString(FString::FromInt(SearchResult.PingInMs)));
-
-
 }
 
 void UMatchesItem::JoinSessionFinished(EOnJoinSessionCompleteResult::Type Result)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::FromInt(Result));
+	}
+
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	if (Subsystem)
 	{

@@ -25,7 +25,7 @@ public:
 	void SetShieldBar(float InCurrent, float InMax);
 	void SetSpBar(float InCurrent, float InMax);
 	void SetParryGaugeBar(float InCurrent, float InMax);
-	void SetHUDScore(float Score);
+	void SetHUDScore(int32 Score);
 	void SetHUDDefeats(int32 Defeats);
 	void SetHUDMatchCountdown(float CountdownTime);
 

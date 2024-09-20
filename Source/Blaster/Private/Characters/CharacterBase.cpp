@@ -220,11 +220,7 @@ void ACharacterBase::BeginPlay()
 	InitializeWidgets();
 
 	FTimerHandle H;
-	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-		{
-			if (CharacterSpawnEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetTransform());
-		}), 0.01f, false);
-
+	GetWorldTimerManager().SetTimer(H, this, &ThisClass::SpawnEffect, 0.01f);
 
 
 	OverheadWidget = Cast<UOverheadWidget>(OverheadWidgetComponent->GetWidget());
@@ -3204,6 +3200,11 @@ void ACharacterBase::PlaySecondaryWeaponSound()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, InventoryComponent->SecondaryWeapon->GetTakeSound(), GetActorLocation());
 	}
+}
+
+void ACharacterBase::SpawnEffect()
+{
+	if (CharacterSpawnEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetTransform());
 }
 
 void ACharacterBase::ReloadEmptyWeapon()

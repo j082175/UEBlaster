@@ -12,8 +12,9 @@
 #include "PlayerState/BlasterPlayerState.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "GameFramework/PlayerStart.h"
-#include "HUD/OverheadWidgetComponent.h"
+#include "PlayerState/BlasterPlayerState.h"
 
+#include "HUD/OverheadWidgetComponent.h"
 
 ATeamsGameMode::ATeamsGameMode()
 {
@@ -76,13 +77,14 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 			{
 				BGameState->RedTeam.AddUnique(BPState);
 				BPState->ISetTeam(ETeam::RedTeam);
-
 			}
 			else
 			{
 				BGameState->BlueTeam.AddUnique(BPState);
 				BPState->ISetTeam(ETeam::BlueTeam);
 			}
+
+			PlayerStateArr.AddUnique(BPState);
 		}
 		else
 		{
@@ -108,6 +110,8 @@ void ATeamsGameMode::Logout(AController* Exiting)
 
 	Super::Logout(Exiting);
 
+	UE_LOG(LogTemp, Display, TEXT("Logout : %s"), *Exiting->GetName());
+
 	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	ABlasterPlayerState* BPState = Exiting->GetPlayerState<ABlasterPlayerState>();
 	if (BGameState && BPState)
@@ -121,6 +125,8 @@ void ATeamsGameMode::Logout(AController* Exiting)
 		{
 			BGameState->BlueTeam.Remove(BPState);
 		}
+
+		RemoveAllControllerScoreBoard(BPState);
 	}
 }
 
@@ -197,3 +203,19 @@ void ATeamsGameMode::HandleMatchHasStarted()
 		}
 	}
 }
+
+
+void ATeamsGameMode::RemoveAllControllerScoreBoard(ABlasterPlayerState* RemoveTarget)
+{
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		ABlasterPlayerState* PS = Iterator->Get()->GetPlayerState<ABlasterPlayerState>();
+
+		if (PS == RemoveTarget)
+		{
+			continue;
+		}
+		PS->RemoveFromScoreBoard(RemoveTarget);
+	}
+}
+

@@ -21,10 +21,10 @@ public:
 	FORCEINLINE void SetOwingActor(AActor* NewOwner) { OwingActor = NewOwner; }
 
 
+	void PollInit();
 protected:
 	TWeakObjectPtr<AActor> OwingActor;
 
-	void PollInit();
 	void PollInitFunc();
 
 	//TWeakObjectPtr<AActor> OPawn;

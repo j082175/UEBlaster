@@ -6,6 +6,7 @@
 #include "OnlineSessionSettings.h"
 #include "Online/OnlineSessionNames.h"
 
+
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 	: CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete)),
 	FindSessionsCompleteDelegate(FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete)),
@@ -20,10 +21,11 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 	}
 }
 
-void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType)
+void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType, FString MapNames)
 {
 	DesiredNumPublicConnections = NumPublicConnections;
 	DesiredMatchType = MatchType;
+	DesiredMap = MapNames;
 
 	if (!SessionInterface.IsValid())
 	{
@@ -69,19 +71,25 @@ void UMultiplayerSessionsSubsystem::FindSessions(int32 MaxSearchResults)
 		return;
 	}
 
+	//UE_LOG(LogTemp, Warning, TEXT("UMultiplayerSessionsSubsystem::FindSessions"));
+
 	FindSessionsCompleteDelegateHandle = SessionInterface.Pin()->AddOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegate);
 
 	LastSessionSearch = MakeShareable(new FOnlineSessionSearch());
 	LastSessionSearch->MaxSearchResults = MaxSearchResults;
 	LastSessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->GetSubsystemName() == TEXT("NULL") ? true : false;
 	LastSessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+	
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface.Pin()->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef()))
 	{
 		SessionInterface.Pin()->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegateHandle);
-
-		MultiplayerOnFindSessionComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
+		MultiplayerOnFindSessionComplete.Broadcast(LastSessionSearch->SearchResults, false);
+	}
+	else
+	{
+		MultiplayerOnFindSessionComplete.Broadcast(LastSessionSearch->SearchResults, true);
 	}
 }
 
@@ -186,7 +194,7 @@ void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, 
 	if (bWasSuccessful && bCreateSessionOnDestroy)
 	{
 		bCreateSessionOnDestroy = false;
-		CreateSession(LastNumPublicConnections, LastMatchType);
+		CreateSession(LastNumPublicConnections, LastMatchType, DesiredMap);
 	}
 
 	MultiplayerOnDestroySessionComplete.Broadcast(bWasSuccessful);

@@ -19,6 +19,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	FORCEINLINE uint32 GetRedTeamScore() const { return RedTeamScore; }
+	FORCEINLINE uint32 GetBlueTeamScore() const { return BlueTeamScore; }
+
+
 	void UpdateTopScore(class ABlasterPlayerState* ScoringPlayer);
 
 	UPROPERTY(Replicated)
@@ -38,15 +43,18 @@ public:
 	TArray<ABlasterPlayerState*> BlueTeam;
 
 	UPROPERTY(ReplicatedUsing = OnRep_RedTeamScore)
-	float RedTeamScore = 0.f;
+	uint32 RedTeamScore = 0.f;
 
 	UPROPERTY(ReplicatedUsing = OnRep_BlueTeamScore)
-	float BlueTeamScore = 0.f;
+	uint32 BlueTeamScore = 0.f;
+
+
+
 
 private:
 
 
-	float TopScore = 0.f;
+	uint32 TopScore = 0.f;
 
 
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
@@ -54,4 +62,6 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AActor> PlayableActor;
+
+private:
 };

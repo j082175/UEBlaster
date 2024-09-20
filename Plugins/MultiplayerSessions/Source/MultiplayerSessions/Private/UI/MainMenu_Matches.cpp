@@ -36,6 +36,19 @@ void UMainMenu_Matches::NativeConstruct()
 	RefreshButton->OnClicked.AddUniqueDynamic(this, &ThisClass::Refresh);
 
 	WBP_Selector->SetText(TEXT("Search Online"));
+
+	if (MultiplayerSessionsSubsystem.IsValid())
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnFindSessionComplete.AddUObject(this, &ThisClass::FindSessionsFinished);
+	}
+}
+
+void UMainMenu_Matches::ProceedResetTimer()
+{
+	if (!Handle.IsValid())
+	{
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &ThisClass::ProcessAfterSearching, 2.f);
+	}
 }
 
 void UMainMenu_Matches::ProcessAfterSearching()
@@ -44,90 +57,72 @@ void UMainMenu_Matches::ProcessAfterSearching()
 	RefreshButton->SetIsEnabled(true);
 	WBP_Selector->SetIsEnabled(true);
 	bIsSearching = false;
+
+	if (!ScrollBox->HasAnyChildren())
+	{
+		NoServers_Text->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		ScrollBox->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	Handle.Invalidate();
 }
 
 void UMainMenu_Matches::FindSessionsFinished(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
 {
-	UE_LOG(LogTemp, Display, TEXT("FindSessionsFinished"));
-	if (bWasSuccessful)
+	UE_LOG(LogTemp, Display, TEXT("FindSessionsFinished, ResultNum : %d"), SessionResults.Num());
+
+	if (bWasSuccessful && SessionResults.Num() > 0)
 	{
 		for (const FOnlineSessionSearchResult& SessionResult : SessionResults)
 		{
 			if (UMatchesItem* MatchesItem = CreateWidget<UMatchesItem>(this, MatchesItemClass))
 			{
+				//if (!SessionIdStrSet.Contains(SessionResult.GetSessionIdStr()))
+				//{
+				//	SessionIdStrSet.Add(SessionResult.GetSessionIdStr());
+				//}
+
 				ScrollBox->AddChild(MatchesItem);
 				MatchesItem->SetOnlineSessionSearchResult(SessionResult);
 			}
 		}
 
-		if (SessionResults.Num() == 0)
-		{
-			NoServers_Text->SetVisibility(ESlateVisibility::Visible);
-		}
-
 	}
 	else
 	{
-		NoServers_Text->SetVisibility(ESlateVisibility::Visible);
 		if (GEngine)
 		{
-			GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("FindSessionFailed")));
+			GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("FindSessionFailed")));
 		}
 	}
 
-	ProcessAfterSearching();
-}
+	ProceedResetTimer();
 
-//void UMainMenu_Matches::FindSessionsSuccess(const TArray<FBlueprintSessionResult>& Results)
-//{
-//	for (const auto& i : Results)
-//	{
-//		UMatchesItem* MatchesItem = CreateWidget<UMatchesItem>(this, MatchesItemClass);
-//		ScrollBox->AddChild(MatchesItem);
-//	}
-//
-//	if (Results.Num() == 0)
-//	{
-//		NoServers_Text->SetVisibility(ESlateVisibility::Visible);
-//	}
-//
-//	ProcessAfterSearching();
-//}
-//
-//void UMainMenu_Matches::FindSessionsFailure(const TArray<FBlueprintSessionResult>& Results)
-//{
-//	ProcessAfterSearching();
-//
-//	if (Results.Num() == 0)
-//	{
-//		NoServers_Text->SetVisibility(ESlateVisibility::Visible);
-//	}
-//}
+
+	//ProcessAfterSearching();
+}
 
 void UMainMenu_Matches::Refresh()
 {
-	UE_LOG(LogTemp, Display, TEXT("Refresh"));
+	UE_LOG(LogTemp, Display, TEXT("Refresh, bIsSearching : %d"), bIsSearching);
+
+
 	if (!bIsSearching)
 	{
-
 		bIsSearching = true;
 		ScrollBox->ClearChildren();
+		ScrollBox->SetVisibility(ESlateVisibility::Collapsed);
 		WBP_Selector->SetIsEnabled(false);
 		RefreshButton->SetIsEnabled(false);
 		NoServers_Text->SetVisibility(ESlateVisibility::Collapsed);
 		CircularThrobber->SetVisibility(ESlateVisibility::Visible);
 
-		//TArray<FSessionsSearchSetting> Filters;
-		//UFindSessionsCallbackProxyAdvanced* FindSessionsCallbackProxyAdvanced = UFindSessionsCallbackProxyAdvanced::FindSessionsAdvanced(this, GetOwningPlayer(), 6, bUseLAN, EBPServerPresenceSearchType::AllServers, Filters);
-
-		//FindSessionsCallbackProxyAdvanced->OnSuccess.AddUniqueDynamic(this, &ThisClass::FindSessionsSuccess);
-		//FindSessionsCallbackProxyAdvanced->OnFailure.AddUniqueDynamic(this, &ThisClass::FindSessionsFailure);
-
 		if (MultiplayerSessionsSubsystem.IsValid())
 		{
-			MultiplayerSessionsSubsystem->FindSessions(6);
-			MultiplayerSessionsSubsystem->MultiplayerOnFindSessionComplete.AddUObject(this, &ThisClass::FindSessionsFinished);
-
+			MultiplayerSessionsSubsystem->FindSessions(10000);
 		}
 	}
 }

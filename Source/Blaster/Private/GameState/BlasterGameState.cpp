@@ -17,6 +17,7 @@ ABlasterGameState::ABlasterGameState()
 {
 	ObjectPoolComponent = CreateDefaultSubobject<UObjectPoolComponent>(TEXT("ObjectPoolComponent"));
 
+
 	AB_LOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
 
@@ -103,3 +104,4 @@ void ABlasterGameState::OnRep_BlueTeamScore()
 		BPlayer->SetHUDBlueTeamScore(BlueTeamScore);
 	}
 }
+

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/TeamInterface.h"
+#include "HUD/ScoreBoard/ScoreBoardText.h"
+
 #include "BlasterPlayerState.generated.h"
 
 /**
@@ -25,12 +27,16 @@ public:
 	virtual ETeam IGetTeam() const override;
 	virtual void ISetTeam(ETeam TeamToSlot) override;
 
+	FORCEINLINE int32 GetDefeats() const { return Defeats; }
+
 	void AddToScore(float ScoreAmount);
 	UFUNCTION()
 	virtual void OnRep_Defeats();
 	void AddToDefeats(int32 DefeatsAmount);
+
+
 private:
-	void SetHUDScore(float InScore);
+	void SetHUDScore(int32 InScore);
 	void SetDefeatsScore(int32 DefeatsAmount);
 private:
 	UPROPERTY()
@@ -55,6 +61,20 @@ private:
 
 	FTimerHandle InitializeTimerHandle;
 
+
+public:
+
+	void Search(const TArray<ABlasterPlayerState*>& Players);
+
+	UFUNCTION(Client, Reliable)
+	void ClientSearch(const FScoreBoardTextStruct& Struct, ETeam InTeam);
+
+
+	void RemoveFromScoreBoard(class ABlasterPlayerState* RemoveTarget);
+	UFUNCTION(Client, Reliable)
+	void ClientRemoveFromScoreBoard(class ABlasterPlayerState* RemoveTarget);
+
+	TSet<ABlasterPlayerState*> PlayerCheck;
 
 
 };
