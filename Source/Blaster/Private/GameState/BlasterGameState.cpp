@@ -11,6 +11,7 @@
 #include "Characters/CharacterBase.h"
 #include "HUD/OverheadWidget.h"
 #include "Components/WidgetComponent.h"
+#include "Components/ScoreBoardComponent.h"
 #include "Blaster.h"
 
 ABlasterGameState::ABlasterGameState()
@@ -105,3 +106,20 @@ void ABlasterGameState::OnRep_BlueTeamScore()
 	}
 }
 
+void ABlasterGameState::ChangeScoreBoard(const FString& InPlayerName, int32 InValue, bool IsScore)
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		//ABlasterPlayerController* TempBlasterPlayerController = Cast<ABlasterPlayerController>(*It);
+		//if (TempBlasterPlayerController)
+		//{
+		//	TempBlasterPlayerController->ClientChatCommitted(Text, PlayerName);
+		//}
+
+		UScoreBoardComponent* ScoreBoardComponent = It->Get()->GetComponentByClass<UScoreBoardComponent>();
+		if (ScoreBoardComponent)
+		{
+			ScoreBoardComponent->ClientChangeScore(InPlayerName, InValue, IsScore);
+		}
+	}
+}

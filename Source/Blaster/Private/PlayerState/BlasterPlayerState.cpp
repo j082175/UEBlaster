@@ -9,8 +9,16 @@
 #include "Blaster.h"
 #include "HUD/OverheadWidgetComponent.h"
 #include "GameState/BlasterGameState.h"
-
+#include "Blueprint/UserWidget.h"
 #include "Components/ScoreBoardComponent.h"
+#include "GameMode/TeamsGameMode.h"
+
+#include "HUD/ScoreBoard/ScoreBoard.h"
+#include "HUD/ScoreBoard/ScoreBoardText.h"
+#include "Components/ScrollBox.h"
+#include "Components/TextBlock.h"
+
+#include "EngineUtils.h"
 
 ABlasterPlayerState::ABlasterPlayerState()
 {
@@ -33,7 +41,7 @@ void ABlasterPlayerState::BeginPlay()
 
 	//UE_LOG(LogTemp, Warning, TEXT("ABlasterPlayerState::BeginPlay"));
 
-
+	Controller = Cast<ABlasterPlayerController>(GetOwner());
 }
 
 void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -42,6 +50,7 @@ void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(ThisClass, Defeats);
 	DOREPLIFETIME(ThisClass, Team);
+
 }
 
 void ABlasterPlayerState::OnRep_Score()
@@ -58,6 +67,11 @@ ETeam ABlasterPlayerState::IGetTeam() const
 
 void ABlasterPlayerState::ISetTeam(ETeam TeamToSlot)
 {
+	if (TeamToSlot == ETeam::NoTeam)
+	{
+		ensure(false);
+	}
+
 	//UE_LOG(LogTemp, Error, TEXT("TeamToSlot : %d"), (int)TeamToSlot);
 	Team = TeamToSlot;
 	GetWorldTimerManager().SetTimer(InitializeTimerHandle, this, &ThisClass::SetTeamFunc, 0.3f, true);
@@ -94,8 +108,17 @@ void ABlasterPlayerState::SetHUDScore(int32 InScore)
 		{
 			//Controller->SetHUDScore(InScore);
 			Controller->OnScoreChanged.Broadcast(InScore);
+
+			if (HasAuthority())
+			{
+				ATeamsGameMode* GM = GetWorld()->GetAuthGameMode<ATeamsGameMode>();
+				GM->ChangeScoreBoard(GetPlayerName(), InScore, true);
+			}
+
 		}
 	}
+
+	
 }
 
 void ABlasterPlayerState::SetDefeatsScore(int32 DefeatsAmount)
@@ -108,6 +131,14 @@ void ABlasterPlayerState::SetDefeatsScore(int32 DefeatsAmount)
 		{
 			//Controller->SetHUDDefeats(Defeats);
 			Controller->OnDefeatsChanged.Broadcast(DefeatsAmount);
+
+
+			if (HasAuthority())
+			{
+				ATeamsGameMode* GM = GetWorld()->GetAuthGameMode<ATeamsGameMode>();
+				GM->ChangeScoreBoard(GetPlayerName(), DefeatsAmount, false);
+			}
+
 		}
 	}
 }
@@ -137,112 +168,21 @@ void ABlasterPlayerState::SetTeamFunc()
 
 }
 
-void ABlasterPlayerState::Search(const TArray<ABlasterPlayerState*>& Players)
-{
 
 
-	//for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-	{
-		ABlasterPlayerController* MyController = Cast<ABlasterPlayerController>(GetOwningController());
-
-		//BlasterGameState = GetWorld()->GetGameState<ABlasterGameState>();
-
-
-		for (size_t i = 0; i < Players.Num(); i++)
-		{
-			//if (Players[i] == this)
-			//{
-			//	continue;
-			//}
-			FScoreBoardTextStruct S;
-			S.PlayerName = FText::FromString(Players[i]->GetPlayerName());
-			S.Score = Players[i]->GetScore();
-			S.Elims = Players[i]->GetDefeats();
-			S.Latency = Players[i]->GetPingInMilliseconds();
-
-			if (!PlayerCheck.Contains(Players[i]))
-			{
-				PlayerCheck.Add(Players[i]);
-				ClientSearch(S, Players[i]->IGetTeam());
-
-				//UScoreBoardComponent* ScoreBoard = GetOwningController()->GetComponentByClass<UScoreBoardComponent>();
-				//ScoreBoard->AddScoreBoard(Players[i]->IGetTeam(), S);
-			}
-		}
+//void ABlasterPlayerState::RemoveFromScoreBoard(ABlasterPlayerState* RemoveTarget)
+//{
+//	if (PlayerCheck.Contains(RemoveTarget))
+//	{
+//		ClientRemoveFromScoreBoard(RemoveTarget);
+//		PlayerCheck.Remove(RemoveTarget);
+//	}
+//}
 
 
-		//for (size_t i = 0; i < RedTeam.Num(); i++)
-		//{
-		//	//ABlasterPlayerController* SubP = Cast<ABlasterPlayerController>(RedTeam[i]->GetOwningController());
-		//	if (RedTeam[i] == nullptr) continue;
-
-		//	AB_LOG(LogABDisplay, Warning, TEXT("%s : AddRed"), *MyController->GetName());
-
-		//	FScoreBoardTextStruct S;
-		//	S.PlayerName = FText::FromString(RedTeam[i]->GetPlayerName());
-		//	S.Score = RedTeam[i]->GetScore();
-		//	S.Elims = RedTeam[i]->GetDefeats();
-		//	S.Latency = RedTeam[i]->GetPingInMilliseconds();
-
-		//	if (!PlayerCheck.Contains(RedTeam[i]->GetPlayerName()))
-		//	{
-		//		MyController->AddScoreBoard(ETeam::RedTeam, S);
-		//		PlayerCheck.Add(RedTeam[i]->GetPlayerName());
-		//	}
-
-		//	ClientSearch(InController, S, ETeam::RedTeam);
-
-		//}
-
-		//for (size_t i = 0; i < BlueTeam.Num(); i++)
-		//{
-		//	if (BlueTeam[i] == nullptr) continue;
-
-		//	//ABlasterPlayerController* SubP = Cast<ABlasterPlayerController>(BlueTeam[i]->GetOwningController());
-
-		//	AB_LOG(LogABDisplay, Warning, TEXT("%s : AddBlue"), *MyController->GetName());
-
-		//	FScoreBoardTextStruct S;
-		//	S.PlayerName = FText::FromString(BlueTeam[i]->GetPlayerName());
-		//	S.Score = BlueTeam[i]->GetScore();
-		//	S.Elims = BlueTeam[i]->GetDefeats();
-		//	S.Latency = BlueTeam[i]->GetPingInMilliseconds();
-
-		//	if (!PlayerCheck.Contains(BlueTeam[i]->GetPlayerName()))
-		//	{
-		//		MyController->AddScoreBoard(ETeam::BlueTeam, S);
-		//		PlayerCheck.Add(BlueTeam[i]->GetPlayerName());
-		//	}
-
-		//	ClientSearch(InController, S, ETeam::BlueTeam);
-		//}
-	}
-
-}
-
-
-
-
-void ABlasterPlayerState::ClientSearch_Implementation(const FScoreBoardTextStruct& Struct, ETeam InTeam)
-{
-	ABlasterPlayerController* MyController = Cast<ABlasterPlayerController>(GetOwningController());
-	//UScoreBoardComponent* ScoreBoard = GetOwningController()->GetComponentByClass<UScoreBoardComponent>();
-	//MyController->AddScoreBoard(InTeam, Struct);
-}
-
-void ABlasterPlayerState::RemoveFromScoreBoard(ABlasterPlayerState* RemoveTarget)
-{
-	if (PlayerCheck.Contains(RemoveTarget))
-	{
-		ClientRemoveFromScoreBoard(RemoveTarget);
-		PlayerCheck.Remove(RemoveTarget);
-	}
-}
-
-
-void ABlasterPlayerState::ClientRemoveFromScoreBoard_Implementation(ABlasterPlayerState* RemoveTarget)
-{
-	//ABlasterPlayerController* MyController = Cast<ABlasterPlayerController>(GetOwningController());
-	UScoreBoardComponent* ScoreBoard = GetOwningController()->GetComponentByClass<UScoreBoardComponent>();
-	ScoreBoard->RemoveScoreBoard(RemoveTarget->GetPlayerName());
-}
+//void ABlasterPlayerState::ClientRemoveFromScoreBoard_Implementation(ABlasterPlayerState* RemoveTarget)
+//{
+//	//ABlasterPlayerController* MyController = Cast<ABlasterPlayerController>(GetOwningController());
+//	UScoreBoardComponent* ScoreBoard = GetOwningController()->GetComponentByClass<UScoreBoardComponent>();
+//	ScoreBoard->RemoveScoreBoard(RemoveTarget->GetPlayerName());
+//}

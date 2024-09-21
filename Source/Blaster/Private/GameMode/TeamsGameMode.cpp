@@ -13,6 +13,7 @@
 #include "PlayerController/BlasterPlayerController.h"
 #include "GameFramework/PlayerStart.h"
 #include "PlayerState/BlasterPlayerState.h"
+#include "Components/ScoreBoardComponent.h"
 
 #include "HUD/OverheadWidgetComponent.h"
 
@@ -84,7 +85,7 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 				BPState->ISetTeam(ETeam::BlueTeam);
 			}
 
-			PlayerStateArr.AddUnique(BPState);
+
 		}
 		else
 		{
@@ -126,7 +127,7 @@ void ATeamsGameMode::Logout(AController* Exiting)
 			BGameState->BlueTeam.Remove(BPState);
 		}
 
-		RemoveAllControllerScoreBoard(BPState);
+		RemoveAllControllerScoreBoard(BPState->GetPlayerName());
 	}
 }
 
@@ -205,17 +206,27 @@ void ATeamsGameMode::HandleMatchHasStarted()
 }
 
 
-void ATeamsGameMode::RemoveAllControllerScoreBoard(ABlasterPlayerState* RemoveTarget)
+void ATeamsGameMode::ChangeScoreBoard(const FString& InPlayerName, int32 InValue, bool IsScore)
 {
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		ABlasterPlayerState* PS = Iterator->Get()->GetPlayerState<ABlasterPlayerState>();
-
-		if (PS == RemoveTarget)
+		UScoreBoardComponent* ScoreBoardComponent = It->Get()->GetComponentByClass<UScoreBoardComponent>();
+		if (ScoreBoardComponent)
 		{
-			continue;
+			ScoreBoardComponent->ClientChangeScore(InPlayerName, InValue, IsScore);
 		}
-		PS->RemoveFromScoreBoard(RemoveTarget);
+	}
+}
+
+void ATeamsGameMode::RemoveAllControllerScoreBoard(const FString& InRemoveTarget)
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		UScoreBoardComponent* ScoreBoardComponent = It->Get()->GetComponentByClass<UScoreBoardComponent>();
+		if (ScoreBoardComponent)
+		{
+			ScoreBoardComponent->ClientRemoveScoreText(InRemoveTarget);
+		}
 	}
 }
 

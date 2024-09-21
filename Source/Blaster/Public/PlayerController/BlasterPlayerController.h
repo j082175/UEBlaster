@@ -265,26 +265,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UUserWidget> WBP_PauseMenu;
 
-	
-
-	//void InitScoreBoard();
-
-	//public:
-	//void AddScoreBoard(ETeam InTeam, const FScoreBoardTextStruct& InStruct, APlayerController* InPC);
-	//void RemoveScoreBoard(const FString& InPlayerName);
-
-	//void ShowScoreBoard();
-	//void ReleaseScoreBoard();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UScoreBoardComponent> ScoreBoardComponent;
-
-
-	//UPROPERTY(EditAnywhere)
-	//TSubclassOf<class UScoreBoard> WBP_ScoreBoardClass;
-
-	//UFUNCTION()
-	//void OnRep_ScoreBoard();
-	//UPROPERTY(ReplicatedUsing = OnRep_ScoreBoard, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	//TObjectPtr<class UScoreBoard> WBP_ScoreBoard;
 };

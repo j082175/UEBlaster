@@ -3,6 +3,7 @@
 
 #include "HUD/ScoreBoard/ScoreBoardText.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 
 FString UScoreBoardText::GetPlayerName() const
 {
@@ -11,7 +12,7 @@ FString UScoreBoardText::GetPlayerName() const
 
 void UScoreBoardText::SetScoreBoardText(const FScoreBoardTextStruct& InScoreBoardStruct)
 {
-	if (PlayerNameText) PlayerNameText->SetText(InScoreBoardStruct.PlayerName);
+	if (PlayerNameText) PlayerNameText->SetText(FText::FromString(InScoreBoardStruct.PlayerName));
 	if (ScoreText) ScoreText->SetText(FText::FromString(FString::FromInt(InScoreBoardStruct.Score)));
 	if (ElimsText) ElimsText->SetText(FText::FromString(FString::FromInt(InScoreBoardStruct.Elims)));
 	if (LatencyText) LatencyText->SetText(FText::FromString(FString::Printf(TEXT("%f"), InScoreBoardStruct.Latency)));
@@ -35,4 +36,9 @@ void UScoreBoardText::SetElims(int32 InElims)
 void UScoreBoardText::SetLatency(float InLatency)
 {
 	LatencyText->SetText(FText::FromString(FString::Printf(TEXT("%f"), InLatency)));
+}
+
+void UScoreBoardText::SetBackgroundColor(FLinearColor InColor)
+{
+	ScoreBoardBackground->SetColorAndOpacity(InColor);
 }

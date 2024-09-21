@@ -28,6 +28,8 @@
 #include "HUD/ChattingUI/ChatTextBlock.h"
 #include "HUD/OverheadWidget.h"
 #include "HUD/ScoreBoard/ScoreBoard.h"
+#include "HUD/ScoreBoard/ScoreBoardText.h"
+
 #include "Components/ScrollBox.h"
 
 #include "Components/WidgetComponent.h"
@@ -73,6 +75,7 @@ void ABlasterPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 	DOREPLIFETIME(ThisClass, MatchState);
 	DOREPLIFETIME(ThisClass, bShowTeamScores);
+
 }
 
 void ABlasterPlayerController::PreInitializeComponents()
@@ -132,9 +135,8 @@ void ABlasterPlayerController::BeginPlay()
 		{
 			UE_LOG(LogTemp, Error, TEXT("ChatBox is not initialized"));
 		}
-	}
 
-	//WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? CreateWidget<UScoreBoard>(this, WBP_ScoreBoardClass) : WBP_ScoreBoard.Get();
+	}
 
 	if (IsLocalPlayerController())
 	{
@@ -1221,7 +1223,7 @@ void ABlasterPlayerController::OnRep_PlayerState()
 
 	if (UOverheadWidgetComponent* OWC = GetComponentByClass<UOverheadWidgetComponent>())
 	{
-		Cast<UOverheadWidget>(OWC->GetWidget())->ShowPlayerName(GetPawn());
+		//Cast<UOverheadWidget>(OWC->GetWidget())->ShowPlayerName(GetPawn());
 	}
 }
 
@@ -1283,86 +1285,3 @@ void ABlasterPlayerController::ShowPauseMenu()
 	}
 }
 
-//void ABlasterPlayerController::InitScoreBoard()
-//{
-//	//UE_LOG(LogTemp, Display, TEXT("InitScoreBoard"));
-//	ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
-//
-//	if (!BlasterPlayerState)
-//	{
-//		return;
-//	}
-//
-//	if (ABlasterGameState* BlasterGameState = GetWorld()->GetGameState<ABlasterGameState>())
-//	{
-//		//OnRedTeamScoreChanged.ExecuteIfBound(BlasterGameState->GetRedTeamScore());
-//		//OnBlueTeamScoreChanged.ExecuteIfBound(BlasterGameState->GetBlueTeamScore());
-//
-//		FScoreBoardTextStruct S;
-//		S.PlayerName = FText::FromString(BlasterPlayerState->GetPlayerName());
-//		S.Score = BlasterPlayerState->GetScore();
-//		S.Elims = BlasterPlayerState->GetDefeats();
-//		S.Latency = BlasterPlayerState->GetPingInMilliseconds();
-//
-//		if (BlasterPlayerState && BlasterPlayerState->IGetTeam() == ETeam::RedTeam)
-//		{
-//			//AddScoreBoard(ETeam::RedTeam, S, );
-//		}
-//		else if (BlasterPlayerState && BlasterPlayerState->IGetTeam() == ETeam::BlueTeam)
-//		{
-//			//AddScoreBoard(ETeam::BlueTeam, S);
-//		}
-//
-//	}
-//}
-//
-//void ABlasterPlayerController::AddScoreBoard(ETeam InTeam, const FScoreBoardTextStruct& InStruct, APlayerController* InPC)
-//{
-//
-//
-//	//UE_LOG(LogTemp, Display, TEXT("AddScoreBoard : %s, WBP_ScoreBoard : %x, Name : %s"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString(), WBP_ScoreBoard.Get(), *GetOwner()->GetName());
-//
-//	WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? CreateWidget<UScoreBoard>(this, WBP_ScoreBoardClass) : WBP_ScoreBoard.Get();
-//
-//	if (WBP_ScoreBoard)
-//	{
-//
-//		if (InTeam == ETeam::RedTeam)
-//		{
-//			WBP_ScoreBoard->AddRedTeam(InStruct);
-//		}
-//		else if (InTeam == ETeam::BlueTeam)
-//		{
-//			WBP_ScoreBoard->AddBlueTeam(InStruct);
-//		}
-//
-//		WBP_ScoreBoard->ScoreBoardText->SetOwningPlayer(InPC);
-//		IWidgetBindDelegateInterface* WBD = Cast<IWidgetBindDelegateInterface>(InPC);
-//		WBD->IBindWidget(WBP_ScoreBoard->ScoreBoardText);
-//	}
-//
-//
-//}
-//
-//void ABlasterPlayerController::RemoveScoreBoard(const FString& InPlayerName)
-//{
-//	if (WBP_ScoreBoard) WBP_ScoreBoard->RemoveTeam(InPlayerName);
-//}
-//
-//void ABlasterPlayerController::ShowScoreBoard()
-//{
-//	WBP_ScoreBoard->SetVisibility(ESlateVisibility::Visible);
-//}
-//
-//void ABlasterPlayerController::ReleaseScoreBoard()
-//{
-//	if (WBP_ScoreBoard && WBP_ScoreBoard->IsInViewport())
-//	{
-//		WBP_ScoreBoard->SetVisibility(ESlateVisibility::Collapsed);
-//	}
-//}
-//
-//void ABlasterPlayerController::OnRep_ScoreBoard()
-//{
-//	UE_LOG(LogTemp, Warning, TEXT("OnRep_ScoreBoard"));
-//}

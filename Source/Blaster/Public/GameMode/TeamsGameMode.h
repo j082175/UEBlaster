@@ -22,14 +22,13 @@ public:
 	virtual void Logout(AController* Exiting) override;
 	virtual float CalculateDamage(AController* Attacker, AController* Victim, float BaseDamage) override;
 	virtual void PlayerEliminated(class ACharacterBase* ElimmedCharacter, class ABlasterPlayerController* VictimController, class ABlasterPlayerController* AttackerController) override;
+
+	void ChangeScoreBoard(const FString& InPlayerName, int32 InValue, bool IsScore);
 protected:
 
 	virtual void HandleMatchHasStarted() override; // error occured!
 
 
-	void RemoveAllControllerScoreBoard(class ABlasterPlayerState* RemoveTarget);
+	void RemoveAllControllerScoreBoard(const FString& InRemoveTarget);
 
-
-public:
-	TArray<class ABlasterPlayerState*> PlayerStateArr;
 };

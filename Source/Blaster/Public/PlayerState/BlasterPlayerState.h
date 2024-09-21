@@ -64,17 +64,8 @@ private:
 
 public:
 
-	void Search(const TArray<ABlasterPlayerState*>& Players);
 
-	UFUNCTION(Client, Reliable)
-	void ClientSearch(const FScoreBoardTextStruct& Struct, ETeam InTeam);
-
-
-	void RemoveFromScoreBoard(class ABlasterPlayerState* RemoveTarget);
-	UFUNCTION(Client, Reliable)
-	void ClientRemoveFromScoreBoard(class ABlasterPlayerState* RemoveTarget);
-
-	TSet<ABlasterPlayerState*> PlayerCheck;
+	//void RemoveFromScoreBoard(class ABlasterPlayerState* RemoveTarget);
 
 
 };

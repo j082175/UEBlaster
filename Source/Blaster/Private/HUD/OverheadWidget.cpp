@@ -14,7 +14,7 @@
 
 
 UOverheadWidget::UOverheadWidget(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer)
+	//:Super(ObjectInitializer)
 {
 	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("Begin"));
 }
@@ -27,7 +27,7 @@ void UOverheadWidget::NativeConstruct()
 
 	SetVisibility(ESlateVisibility::Visible);
 
-	ShowPlayerName(GetOwningPlayerPawn());
+	ShowPlayerName(Cast<APawn>(OwingActor));
 }
 
 void UOverheadWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

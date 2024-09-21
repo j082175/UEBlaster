@@ -49,6 +49,7 @@ public:
 	uint32 BlueTeamScore = 0.f;
 
 
+	void ChangeScoreBoard(const FString& InPlayerName, int32 InValue, bool IsScore);
 
 
 private:

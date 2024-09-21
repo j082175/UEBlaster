@@ -15,12 +15,12 @@ struct FScoreBoardTextStruct
 {
 	GENERATED_BODY()
 public:
-	FScoreBoardTextStruct(FText InPlayerName = FText::FromString(TEXT("None")), int32 InScore = 0, int32 InElims = 0, float InLatency = 0.f)
+	FScoreBoardTextStruct(const FString& InPlayerName = TEXT("None"), int32 InScore = 0, int32 InElims = 0, float InLatency = 0.f)
 		:PlayerName(InPlayerName), Score(InScore), Elims(InElims), Latency(InLatency)
 	{}
 
 	UPROPERTY(EditAnywhere)
-	FText PlayerName;
+	FString PlayerName;
 	UPROPERTY(EditAnywhere)
 	int32 Score;
 	UPROPERTY(EditAnywhere)
@@ -43,6 +43,11 @@ public:
 	void SetScore(int32 InScore);
 	void SetElims(int32 InElims);
 	void SetLatency(float InLatency);
+
+	void SetBackgroundColor(FLinearColor InColor);
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UImage> ScoreBoardBackground;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> PlayerNameText;

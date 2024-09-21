@@ -52,7 +52,7 @@ void UMyUserWidget::PollInitFunc()
 
 	if (OwingActor.IsValid())
 	{
-		UE_LOG(LogTemp, Error, TEXT("OwingActor Name : %s"), *OwingActor->GetName());
+		//UE_LOG(LogTemp, Error, TEXT("OwingActor Name : %s"), *OwingActor->GetName());
 
 		IWidgetBindDelegateInterface* WBDI = Cast<IWidgetBindDelegateInterface>(OwingActor);
 		if (WBDI)

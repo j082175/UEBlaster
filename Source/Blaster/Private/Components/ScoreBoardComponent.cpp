@@ -9,6 +9,8 @@
 #include "GameMode/TeamsGameMode.h"
 #include "Net/UnrealNetwork.h"
 
+#include "Components/ScrollBox.h"
+
 // Sets default values for this component's properties
 UScoreBoardComponent::UScoreBoardComponent()
 {
@@ -32,6 +34,7 @@ void UScoreBoardComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 	DOREPLIFETIME(ThisClass, WBP_ScoreBoard);
 	DOREPLIFETIME(ThisClass, OwingController);
+	//DOREPLIFETIME(ThisClass, ScoreBoardTextArr);
 
 }
 
@@ -59,13 +62,17 @@ void UScoreBoardComponent::BeginPlay()
 	}
 
 	OwingController = Cast<ABlasterPlayerController>(GetOwner());
-	
+
 	//WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? CreateWidget<UScoreBoard>(this, WBP_ScoreBoardClass) : WBP_ScoreBoard.Get();
 	WBP_ScoreBoard = Cast<UScoreBoard>(GetWidget());
 	WBP_ScoreBoard->AddToViewport();
 	WBP_ScoreBoard->SetVisibility(ESlateVisibility::Collapsed);
 
-	/*if (!GetOwner()->HasAuthority())*/ SetAllControllerScoreBoard();
+	FTimerHandle H;
+	GetWorld()->GetTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
+		{
+			SetAllControllerScoreBoard();
+		}), 1.f, false);
 }
 
 
@@ -76,6 +83,11 @@ void UScoreBoardComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	// ...
 }
+
+//TArray<UScoreBoardText*> UScoreBoardComponent::GetScoreBoardTexts() const
+//{
+//	return ScoreBoardTextArr;
+//}
 
 void UScoreBoardComponent::InitScoreBoard()
 {
@@ -93,7 +105,7 @@ void UScoreBoardComponent::InitScoreBoard()
 		//OnBlueTeamScoreChanged.ExecuteIfBound(BlasterGameState->GetBlueTeamScore());
 
 		FScoreBoardTextStruct S;
-		S.PlayerName = FText::FromString(BlasterPlayerState->GetPlayerName());
+		S.PlayerName = BlasterPlayerState->GetPlayerName();
 		S.Score = BlasterPlayerState->GetScore();
 		S.Elims = BlasterPlayerState->GetDefeats();
 		S.Latency = BlasterPlayerState->GetPingInMilliseconds();
@@ -110,34 +122,35 @@ void UScoreBoardComponent::InitScoreBoard()
 	}
 }
 
-void UScoreBoardComponent::AddScoreBoard_Implementation(ETeam InTeam, const FScoreBoardTextStruct& InStruct, APlayerController* InPC)
+void UScoreBoardComponent::ClientAddScoreBoard_Implementation(ETeam InTeam, const FString& InPlayerName, const FString& OwnerName)
 {
-	if (!GetOwner()->HasAuthority())
-	{
-		int a = 1;
-	}
+	UE_LOG(LogTemp, Display, TEXT("ClientAddScoreBoard_Implementation"));
 
 	UE_LOG(LogTemp, Display, TEXT("AddScoreBoard : %s, WBP_ScoreBoard : %x, Name : %s"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString(), WBP_ScoreBoard.Get(), *GetOwner()->GetName());
 
 	if (WBP_ScoreBoard)
 	{
+		FScoreBoardTextStruct S;
+		S.PlayerName = InPlayerName;
+		S.Score = 0;
+		S.Elims = 0;
+		S.Latency = 0;
 
 		if (InTeam == ETeam::RedTeam)
 		{
-			WBP_ScoreBoard->AddRedTeam(InStruct);
+			WBP_ScoreBoard->AddRedTeam(S, OwnerName);
 
 		}
 		else if (InTeam == ETeam::BlueTeam)
 		{
-			WBP_ScoreBoard->AddBlueTeam(InStruct);
+			WBP_ScoreBoard->AddBlueTeam(S, OwnerName);
 		}
 
-		WBP_ScoreBoard->ScoreBoardText->SetOwningPlayer(InPC);
-		IWidgetBindDelegateInterface* WBD = Cast<IWidgetBindDelegateInterface>(InPC);
-		if (WBD) WBD->IBindWidget(WBP_ScoreBoard->ScoreBoardText);
 	}
-
-
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("WBP_ScoreBoard NULL!!!"));
+	}
 }
 
 void UScoreBoardComponent::RemoveScoreBoard(const FString& InPlayerName)
@@ -158,6 +171,102 @@ void UScoreBoardComponent::ReleaseScoreBoard()
 	}
 }
 
+void UScoreBoardComponent::ClientChangeScore_Implementation(const FString& InPlayerName, int32 InValue, bool IsScore)
+{
+	if (!WBP_ScoreBoard)
+	{
+		return;
+	}
+
+	{
+		TArray<UWidget*> Children = WBP_ScoreBoard->BlueTeamScoreBox->GetAllChildren();
+		for (size_t i = 0; i < Children.Num(); i++)
+		{
+			if (UScoreBoardText* ScoreBoardText = Cast<UScoreBoardText>(Children[i]))
+			{
+				if (ScoreBoardText->GetPlayerName() == InPlayerName)
+				{
+					if (IsScore)
+					{
+						//UE_LOG(LogTemp, Warning, TEXT("SetScore"));
+						ScoreBoardText->SetScore(InValue);
+					}
+					else
+					{
+						//UE_LOG(LogTemp, Warning, TEXT("SetElims"));
+						ScoreBoardText->SetElims(InValue);
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		TArray<UWidget*> Children = WBP_ScoreBoard->RedTeamScoreBox->GetAllChildren();
+		for (size_t i = 0; i < Children.Num(); i++)
+		{
+			if (UScoreBoardText* ScoreBoardText = Cast<UScoreBoardText>(Children[i]))
+			{
+				if (ScoreBoardText->GetPlayerName() == InPlayerName)
+				{
+					if (IsScore)
+					{
+						//UE_LOG(LogTemp, Warning, TEXT("SetScore"));
+						ScoreBoardText->SetScore(InValue);
+					}
+					else
+					{
+						//UE_LOG(LogTemp, Warning, TEXT("SetElims"));
+						ScoreBoardText->SetElims(InValue);
+					}
+				}
+			}
+
+		}
+	}
+
+
+}
+
+void UScoreBoardComponent::ClientRemoveScoreText_Implementation(const FString& InPlayerName)
+{
+	if (!WBP_ScoreBoard)
+	{
+		return;
+	}
+
+	{
+		TArray<UWidget*> Children = WBP_ScoreBoard->BlueTeamScoreBox->GetAllChildren();
+		for (size_t i = 0; i < Children.Num(); i++)
+		{
+			if (UScoreBoardText* ScoreBoardText = Cast<UScoreBoardText>(Children[i]))
+			{
+				if (ScoreBoardText->GetPlayerName() == InPlayerName)
+				{
+					ScoreBoardText->RemoveFromViewport();
+				}
+			}
+
+		}
+	}
+
+	{
+		TArray<UWidget*> Children = WBP_ScoreBoard->RedTeamScoreBox->GetAllChildren();
+		for (size_t i = 0; i < Children.Num(); i++)
+		{
+			if (UScoreBoardText* ScoreBoardText = Cast<UScoreBoardText>(Children[i]))
+			{
+				if (ScoreBoardText->GetPlayerName() == InPlayerName)
+				{
+					ScoreBoardText->RemoveFromViewport();
+				}
+			}
+
+		}
+	}
+}
+
 void UScoreBoardComponent::OnRep_ScoreBoard()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnRep_ScoreBoard"));
@@ -173,28 +282,30 @@ void UScoreBoardComponent::SetAllControllerScoreBoard_Implementation()
 
 	ABlasterPlayerState* ThisPlayerState = OwingController->GetPlayerState<ABlasterPlayerState>();
 
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	for (FConstPlayerControllerIterator Opponent = GetWorld()->GetPlayerControllerIterator(); Opponent; ++Opponent)
 	{
 
-		ABlasterPlayerState* BlasterPlayerState = Iterator->Get()->GetPlayerState<ABlasterPlayerState>();
+		ABlasterPlayerState* OpponentBlasterPlayerState = Opponent->Get()->GetPlayerState<ABlasterPlayerState>();
 
-		FScoreBoardTextStruct S;
-		S.PlayerName = FText::FromString(BlasterPlayerState->GetPlayerName());
 
-		//if (!CheckPC.Contains(Iterator->Get()))
+		if (!CheckPC.Contains(Opponent->Get()))
 		{
-			AddScoreBoard(BlasterPlayerState->IGetTeam(), S, Iterator->Get());
-			CheckPC.Add(Iterator->Get());
+			ClientAddScoreBoard(OpponentBlasterPlayerState->IGetTeam(), OpponentBlasterPlayerState->GetPlayerName(), ThisPlayerState->GetPlayerName());
+			CheckPC.Add(Opponent->Get());
 		}
 
 
-		if (Iterator->Get() == OwingController)
+		if (Opponent->Get() == OwingController)
 		{
 			continue;
 		}
 
-		S.PlayerName = FText::FromString(ThisPlayerState->GetPlayerName());
+		if (!Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->CheckPC.Contains(Cast<APlayerController>(GetOwner())))
+		{
+			Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->ClientAddScoreBoard(ThisPlayerState->IGetTeam(), ThisPlayerState->GetPlayerName(), OpponentBlasterPlayerState->GetPlayerName());
+			Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->CheckPC.Add(Cast<APlayerController>(GetOwner()));
+		}
 
-		Iterator->Get()->GetComponentByClass<UScoreBoardComponent>()->AddScoreBoard(ThisPlayerState->IGetTeam(), S, OwingController.Get());
 	}
 }
+
