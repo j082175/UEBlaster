@@ -68,8 +68,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
 
-private:
+	void PollInitFunc();
 	virtual void PollInit() override;
+	FTimerHandle PollInitTimer;
+private:
 	void OnPlayerStateInitialized();
 	virtual void InitializeDefaults() override;
 	virtual void InitializeCollisionStates() override;

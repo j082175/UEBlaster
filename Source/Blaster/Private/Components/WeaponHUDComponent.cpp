@@ -32,8 +32,6 @@ void UWeaponHUDComponent::InitWidget()
 	Super::InitWidget();
 
 	WeaponStatus = Cast<UWeaponStatus>(GetWidget());
-
-
 }
 
 void UWeaponHUDComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

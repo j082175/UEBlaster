@@ -31,4 +31,7 @@ protected:
 
 	void RemoveAllControllerScoreBoard(const FString& InRemoveTarget);
 
+
+
+private:
 };

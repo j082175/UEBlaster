@@ -17,10 +17,13 @@ class BLASTER_API UMyGameInstance : public UGameInstance
 public:
 	void SpawnCharacter();
 
+	uint8 bRestartGameCheck : 1 = false;
 private:
 	UPROPERTY()
 	TObjectPtr<class AActor> LastPlayer;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSoftClassPtr<AActor> Player;
+
+
 };

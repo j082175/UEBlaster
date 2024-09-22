@@ -21,7 +21,7 @@ class BLASTER_API ABlasterGameMode : public AGameMode
 	GENERATED_BODY()
 public:
 	ABlasterGameMode();
-	//virtual void PostLogin(APlayerController* PlayerController) override;
+	virtual void PostLogin(APlayerController* PlayerController) override;
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -40,7 +40,12 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnMatchStateSet() override;
 
-
+	virtual void HandleMatchHasStarted() override;
+	virtual void HandleMatchIsWaitingToStart() override;
+	virtual void HandleLeavingMap() override;
+	virtual void HandleDisconnect(UWorld* InWorld, UNetDriver* NetDriver) override;
+	virtual void Logout(AController* Exiting) override;
+	virtual void Destroyed() override;
 public:
 	virtual void PlayerEliminated(class ACharacterBase* ElimmedCharacter, class ABlasterPlayerController* VictimController, class ABlasterPlayerController* AttackerController);
 	virtual void RequestRespawn(class ACharacter* ElimmedCharacter, class AController* ElimmedController);

@@ -31,10 +31,9 @@ public:
 
 public:
 
-	void InitScoreBoard();
-
 	UFUNCTION(Client, Reliable)
 	void ClientAddScoreBoard(ETeam InTeam, const FString& InPlayerName, const FString& OwnerName);
+
 	void RemoveScoreBoard(const FString& InPlayerName);
 
 	void ShowScoreBoard();
@@ -51,20 +50,23 @@ public:
 public:
 
 
-	UPROPERTY(Replicated, VisibleAnywhere, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TWeakObjectPtr<class ABlasterPlayerController> OwingController;
 
 	UPROPERTY()
 	TSubclassOf<class UScoreBoard> WBP_ScoreBoardClass;
 
-	UFUNCTION()
-	void OnRep_ScoreBoard();
-	UPROPERTY(ReplicatedUsing = OnRep_ScoreBoard, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UScoreBoard> WBP_ScoreBoard;
 
-	UFUNCTION(Server, Reliable)
+
 	void SetAllControllerScoreBoard();
 
+	uint8 bWorldPlayersCountChanged : 1 = true;
 
 	TSet<APlayerController*> CheckPC;
+
+	FTimerHandle InitTimer;
+
 };

@@ -7,6 +7,7 @@
 #include "Blaster.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameMode/TeamsGameMode.h"
 
 UOverheadWidgetComponent::UOverheadWidgetComponent()
 {

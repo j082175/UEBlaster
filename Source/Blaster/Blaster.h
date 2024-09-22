@@ -49,3 +49,4 @@ public:
 	static class UWidgetAnimation* StartAnimation(const FString& InPrefix, const FString& InName, int32 InIndex, float InPlaybackSpeed, class UUserWidget* InUserWidget, TMap<FString, class UWidgetAnimation*>& InWidgetAnimations);
 };
 
+static uint8 bRestartGameCheck;

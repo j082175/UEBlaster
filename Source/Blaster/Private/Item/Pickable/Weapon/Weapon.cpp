@@ -75,6 +75,7 @@ void AWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//Moving(DeltaTime);
+
 }
 
 void AWeapon::OnRep_Owner()
@@ -98,10 +99,14 @@ void AWeapon::SetHUDVisibility(bool IsVisible)
 {
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 
-	if (BlasterOwnerCharacter && BlasterOwnerCharacter->IsLocallyControlled())
+	if (BlasterOwnerCharacter)
 	{
 		WeaponHUDComponent->SetVisibility(IsVisible);
 		WeaponHUDComponent->SetComponentTickEnabled(IsVisible);
+	}
+	else if (BlasterOwnerCharacter)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AWeapon::SetHUDVisibility Failed, IsLocallyControlled : %x"), BlasterOwnerCharacter->GetController());
 	}
 }
 

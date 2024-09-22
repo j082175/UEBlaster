@@ -97,6 +97,7 @@ ABlasterCharacter::ABlasterCharacter()
 void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	HideCameraIfCharacterClose();
 
 
 	//GetMesh()->SetComponentTickInterval(0.001);
@@ -108,7 +109,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	//if (IsLocallyControlled())
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 
-	HideCameraIfCharacterClose();
 
 
 	//BlasterGameMode = BlasterGameMode == nullptr ? GetWorld()->GetAuthGameMode<ABlasterGameMode>() : BlasterGameMode;
@@ -172,6 +172,8 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 	//AB_LOG(LogABDisplay, Warning, TEXT("CombatState : %s"), *UEnum::GetDisplayValueAsText(CombatState).ToString());
 	//UE_LOG(LogTemp, Display, TEXT("bLocallyReloading : %d"), bLocallyReloading);
+
+
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -226,8 +228,7 @@ void ABlasterCharacter::BeginPlay()
 
 	SetActorTickInterval(0.f);
 
-	SpawnDefaultWeapon();
-
+	BlasterPlayerController = Cast<ABlasterPlayerController>(GetController());
 
 
 	//FTimerHandle H;
@@ -423,40 +424,38 @@ void ABlasterCharacter::PossessedBy(AController* NewController)
 //	}
 //}
 
+void ABlasterCharacter::PollInitFunc()
+{
+	UE_LOG(LogTemp, Display, TEXT("ABlasterCharacter::PollInit"));
+
+	BlasterPlayerState = BlasterPlayerState == nullptr ? GetPlayerState<ABlasterPlayerState>() : BlasterPlayerState;
+
+	if (BlasterPlayerState)
+	{
+		OnPlayerStateInitialized();
+
+		SpawnDefaultWeapon();
+
+		GetWorldTimerManager().ClearTimer(PollInitTimer);
+		PollInitTimer.Invalidate();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("ABlasterCharacter Initializing"));
+	}
+}
+
 void ABlasterCharacter::PollInit()
 {
-	if (BlasterPlayerState == nullptr)
-	{
-		BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
-		if (BlasterPlayerState)
-		{
-			OnPlayerStateInitialized();
-
-			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
-			if (BlasterGameState && BlasterGameState->TopScoringPlayers.Contains(BlasterPlayerState))
-			{
-				//MulticastGainedTheLead();
-			}
-		}
-	}
-
-	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(GetController()) : BlasterPlayerController;
-
-	if (IsLocallyControlled())
-	{
-		AttributeComponent->OnSpChanged.AddUObject(BlasterPlayerController, &ABlasterPlayerController::SetHUDSp);
-		AttributeComponent->OnParryGaugeChanged.AddUObject(BlasterPlayerController, &ABlasterPlayerController::SetHUDParryGauge);
-		AttributeComponent->OnHpChanged.AddUObject(BlasterPlayerController, &ABlasterPlayerController::SetHUDHealth);
-
-	}
-
+	GetWorldTimerManager().SetTimer(PollInitTimer, this, &ThisClass::PollInitFunc, 0.1f, true);
 }
 
 void ABlasterCharacter::OnPlayerStateInitialized()
 {
+	//AB_LOG(LogABDisplay, Log, TEXT(""));
 	BlasterPlayerState->AddToScore(0.f);
 	BlasterPlayerState->AddToDefeats(0);
-	SetTeamColor(BlasterPlayerState->IGetTeam());
+	SetTeamColor(IGetTeam());
 	SetSpawnPoint();
 }
 
@@ -471,6 +470,8 @@ void ABlasterCharacter::InitializeDefaults()
 	CameraBoom->SetupAttachment(GetCapsuleComponent());
 
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	//FollowCamera->SetupAttachment(GetMesh(), TEXT("head"));
+
 	FollowCamera->bUsePawnControlRotation = false;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;

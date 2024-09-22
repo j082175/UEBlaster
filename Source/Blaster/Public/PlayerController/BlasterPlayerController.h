@@ -28,6 +28,12 @@ DECLARE_DELEGATE_OneParam(FOnBlueTeamScoreChangedDelegate, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnScoreChangedDelegate, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDefeatsChangedDelegate, int32);
 
+
+DECLARE_DELEGATE_OneParam(FOnAnnouncementCountdownChangedDelegate, float);
+DECLARE_DELEGATE_OneParam(FOnAnnouncementTextChangedDelegate, const FString&);
+DECLARE_DELEGATE_OneParam(FOnAnnouncementInfoTextChangedDelegate, const FString&);
+DECLARE_DELEGATE_OneParam(FOnAnnouncementVisibilityChangedDelegate, ESlateVisibility);
+
 /**
  *
  */
@@ -50,6 +56,7 @@ public:
 
 
 	FORCEINLINE class ABlasterHUD* GetBlasterHUD() const { return BlasterHUD; }
+	FORCEINLINE float GetWarmUpTime() const { return WarmupTime; }
 
 	void PollInit(APawn* InPawn);
 protected:
@@ -132,6 +139,11 @@ public:
 	FOnScoreChangedDelegate OnScoreChanged;
 	FOnDefeatsChangedDelegate OnDefeatsChanged;
 
+	FOnAnnouncementCountdownChangedDelegate OnAnnouncementCountdownChanged;
+	FOnAnnouncementTextChangedDelegate OnAnnouncementTextChanged;
+	FOnAnnouncementInfoTextChangedDelegate OnAnnouncementInfoTextChanged;
+	FOnAnnouncementVisibilityChangedDelegate OnAnnouncementVisibilityChanged;
+
 	void CheckPing(float DeltaTime);
 
 protected:
@@ -182,7 +194,7 @@ private:
 	float MatchTime = 0.f;
 	float WarmupTime = 0.f;
 	uint32 CountdownInt = 0;
-	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
+	UPROPERTY(ReplicatedUsing = OnRep_MatchState, VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	FName MatchState;
 
 	float CooldownTime = 0.f;

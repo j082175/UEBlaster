@@ -31,7 +31,7 @@ public:
 	FVector_NetQuantize100 InitialVelocity;
 
 	UPROPERTY(EditAnywhere)
-	float InitialSpeed = 15000.f;
+	float InitialSpeed = 30000.f;
 
 	// Only set this for Grenades and Rockets
 	UPROPERTY(EditAnywhere)

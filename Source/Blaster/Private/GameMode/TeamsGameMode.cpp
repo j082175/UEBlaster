@@ -7,13 +7,14 @@
 #include "Kismet/GameplayStatics.h"
 //#include "Characters/BlasterCharacter.h"
 #include "Characters/CharacterBase.h"
-
+#include "Characters/BlasterCharacter.h"
 
 #include "PlayerState/BlasterPlayerState.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "GameFramework/PlayerStart.h"
 #include "PlayerState/BlasterPlayerState.h"
 #include "Components/ScoreBoardComponent.h"
+
 
 #include "HUD/OverheadWidgetComponent.h"
 
@@ -65,7 +66,8 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 	//PC = PlayerController;
 	//Init();
 
-	//UE_LOG(LogTemp, Error, TEXT("ATeamsGameMode::PostLogin"));
+	UE_LOG(LogTemp, Display, TEXT("ATeamsGameMode::PostLogin"));
+
 
 	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	if (BGameState)
@@ -84,7 +86,6 @@ void ATeamsGameMode::PostLogin(APlayerController* PlayerController)
 				BGameState->BlueTeam.AddUnique(BPState);
 				BPState->ISetTeam(ETeam::BlueTeam);
 			}
-
 
 		}
 		else
@@ -110,8 +111,6 @@ void ATeamsGameMode::Logout(AController* Exiting)
 	}
 
 	Super::Logout(Exiting);
-
-	UE_LOG(LogTemp, Display, TEXT("Logout : %s"), *Exiting->GetName());
 
 	ABlasterGameState* BGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	ABlasterPlayerState* BPState = Exiting->GetPlayerState<ABlasterPlayerState>();
@@ -177,7 +176,7 @@ void ATeamsGameMode::PlayerEliminated(ACharacterBase* ElimmedCharacter, ABlaster
 void ATeamsGameMode::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
-	//UE_LOG(LogTemp, Display, TEXT("HandleMatchHasStarted"));
+	UE_LOG(LogTemp, Display, TEXT("HandleMatchHasStarted"));
 
 	//Init();
 
@@ -187,6 +186,7 @@ void ATeamsGameMode::HandleMatchHasStarted()
 		//UE_LOG(LogTemp, Display, TEXT("BGameState->PlayerArray num : %d"), BGameState->PlayerArray.Num());
 		for (const auto& PState : BGameState->PlayerArray)
 		{
+
 			ABlasterPlayerState* BPState = Cast<ABlasterPlayerState>(PState.Get());
 			if (BPState && BPState->IGetTeam() == ETeam::NoTeam)
 			{
@@ -200,6 +200,7 @@ void ATeamsGameMode::HandleMatchHasStarted()
 					BGameState->BlueTeam.AddUnique(BPState);
 					BPState->ISetTeam(ETeam::BlueTeam);
 				}
+
 			}
 		}
 	}
@@ -208,6 +209,8 @@ void ATeamsGameMode::HandleMatchHasStarted()
 
 void ATeamsGameMode::ChangeScoreBoard(const FString& InPlayerName, int32 InValue, bool IsScore)
 {
+	if (!GetWorld()->IsValidLowLevel()) return;
+
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		UScoreBoardComponent* ScoreBoardComponent = It->Get()->GetComponentByClass<UScoreBoardComponent>();
@@ -220,8 +223,11 @@ void ATeamsGameMode::ChangeScoreBoard(const FString& InPlayerName, int32 InValue
 
 void ATeamsGameMode::RemoveAllControllerScoreBoard(const FString& InRemoveTarget)
 {
+	if (!GetWorld()->IsValidLowLevel()) return;
+
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
+
 		UScoreBoardComponent* ScoreBoardComponent = It->Get()->GetComponentByClass<UScoreBoardComponent>();
 		if (ScoreBoardComponent)
 		{
@@ -229,4 +235,3 @@ void ATeamsGameMode::RemoveAllControllerScoreBoard(const FString& InRemoveTarget
 		}
 	}
 }
-

@@ -13,7 +13,12 @@
 #include "Actor/Casing.h"
 #include "Components/ObjectPoolComponent.h"
 #include "Components/ChatSystemComponent.h"
+#include "Components/ScoreBoardComponent.h"
+#include "Characters/BlasterCharacter.h"
+#include "GameInstance/MyGameInstance.h"
 #include "Blaster.h"
+
+
 
 namespace MatchState
 {
@@ -38,20 +43,16 @@ ABlasterGameMode::ABlasterGameMode()
 	//	DefaultPawnClass = BlasterCharacterRef.Class;
 }
 
-//void ABlasterGameMode::PostLogin(APlayerController* PlayerController)
-//{
-//	Super::PostLogin(PlayerController);
-//
-//	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
-//	if (NumberOfPlayers >= 2)
-//	{
-//		if (GetWorld())
-//		{
-//			bUseSeamlessTravel = true;
-//			GetWorld()->ServerTravel(TEXT("/Game/A_Blaster/Maps/GameMap_Tokyo?listen"));
-//		}
-//	}
-//}
+void ABlasterGameMode::PostLogin(APlayerController* PlayerController)
+{
+	Super::PostLogin(PlayerController);
+
+
+	FInputModeGameOnly GameOnly;
+	PlayerController->SetInputMode(GameOnly);
+
+	//PlayerController->GetComponentByClass<UScoreBoardComponent>()->bWorldPlayersCountChanged = true;
+}
 
 void ABlasterGameMode::Tick(float DeltaTime)
 {
@@ -121,7 +122,10 @@ void ABlasterGameMode::BeginPlay()
 	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("Begin"));
 	Super::BeginPlay();
 	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
-	//UE_LOG(LogTemp, Display, TEXT("BlasterGameMode BeginPlay"));
+
+	UMyGameInstance* GI = GetGameInstance<UMyGameInstance>();
+
+	UE_LOG(LogTemp, Display, TEXT("BlasterGameMode BeginPlay"));
 
 	//if (GEngine)
 	//{
@@ -132,6 +136,13 @@ void ABlasterGameMode::BeginPlay()
 	//LevelStartingTime = 0.f;
 	//UE_LOG(LogTemp, Warning, TEXT("LevelStartingTime : %f"), LevelStartingTime);
 
+
+
+	if (bRestartGameCheck == 0)
+	{
+		Super::RestartGame();
+		++bRestartGameCheck;
+	}
 }
 
 void ABlasterGameMode::OnMatchStateSet()
@@ -146,6 +157,60 @@ void ABlasterGameMode::OnMatchStateSet()
 			BlasterPlayer->OnMatchStateSet(MatchState, bTeamsMatch);
 		}
 	}
+}
+
+void ABlasterGameMode::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
+
+}
+
+void ABlasterGameMode::HandleMatchIsWaitingToStart()
+{
+	Super::HandleMatchIsWaitingToStart();
+
+	UE_LOG(LogTemp, Display, TEXT("BlasterGameMode HandleMatchIsWaitingToStart"));
+}
+
+void ABlasterGameMode::HandleLeavingMap()
+{
+	Super::HandleLeavingMap();
+
+	UE_LOG(LogTemp, Display, TEXT("BlasterGameMode HandleLeavingMap"));
+
+	if (bRestartGameCheck == 2)
+	{
+		bRestartGameCheck = 0;
+	}
+	else
+	{
+		++bRestartGameCheck;
+	}
+
+
+}
+
+void ABlasterGameMode::HandleDisconnect(UWorld* InWorld, UNetDriver* NetDriver)
+{
+	Super::HandleDisconnect(InWorld, NetDriver);
+
+	UE_LOG(LogTemp, Display, TEXT("BlasterGameMode HandleDisconnect"));
+}
+
+void ABlasterGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	UE_LOG(LogTemp, Display, TEXT("Logout : %s"), *Exiting->GetName());
+
+	//bRestartGameCheck = false;
+}
+
+void ABlasterGameMode::Destroyed()
+{
+	Super::Destroyed();
+
+	UE_LOG(LogTemp, Display, TEXT("BlasterGameMode Destroyed"));
 }
 
 void ABlasterGameMode::PlayerEliminated(ACharacterBase* ElimmedCharacter, ABlasterPlayerController* VictimController, ABlasterPlayerController* AttackerController)
@@ -213,6 +278,7 @@ void ABlasterGameMode::PlayerEliminated(ACharacterBase* ElimmedCharacter, ABlast
 
 void ABlasterGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
 {
+	UE_LOG(LogTemp, Display, TEXT("RequestRespawn"));
 	if (ElimmedCharacter)
 	{
 		ElimmedCharacter->Reset();

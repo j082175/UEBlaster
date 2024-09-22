@@ -17,6 +17,7 @@ UScoreBoardComponent::UScoreBoardComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 1.f;
 
 	SetIsReplicatedByDefault(true);
 
@@ -31,11 +32,6 @@ UScoreBoardComponent::UScoreBoardComponent()
 void UScoreBoardComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ThisClass, WBP_ScoreBoard);
-	DOREPLIFETIME(ThisClass, OwingController);
-	//DOREPLIFETIME(ThisClass, ScoreBoardTextArr);
-
 }
 
 void UScoreBoardComponent::PostLoad()
@@ -55,24 +51,15 @@ void UScoreBoardComponent::BeginPlay()
 	// ...
 
 	UE_LOG(LogTemp, Warning, TEXT("UScoreBoardComponent::BeginPlay, Authority : %d"), GetOwner()->HasAuthority());
-
-	if (!GetOwner()->HasAuthority())
+	WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? Cast<UScoreBoard>(GetWidget()) : WBP_ScoreBoard.Get();
+	if (WBP_ScoreBoard && !WBP_ScoreBoard->IsInViewport())
 	{
-		int a = 1;
+		WBP_ScoreBoard->AddToViewport();
+		WBP_ScoreBoard->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
-	OwingController = Cast<ABlasterPlayerController>(GetOwner());
 
-	//WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? CreateWidget<UScoreBoard>(this, WBP_ScoreBoardClass) : WBP_ScoreBoard.Get();
-	WBP_ScoreBoard = Cast<UScoreBoard>(GetWidget());
-	WBP_ScoreBoard->AddToViewport();
-	WBP_ScoreBoard->SetVisibility(ESlateVisibility::Collapsed);
-
-	FTimerHandle H;
-	GetWorld()->GetTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-		{
-			SetAllControllerScoreBoard();
-		}), 1.f, false);
+	GetWorld()->GetTimerManager().SetTimer(InitTimer, this, &ThisClass::SetAllControllerScoreBoard, 0.5f, true);
 }
 
 
@@ -82,6 +69,13 @@ void UScoreBoardComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+
+	//if (GetOwner()->HasAuthority() && bWorldPlayersCountChanged)
+	//{
+	//	UE_LOG(LogTemp, Display, TEXT("WorldPlayersCountChanged"));
+	//	SetAllControllerScoreBoard();
+	//}
+
 }
 
 //TArray<UScoreBoardText*> UScoreBoardComponent::GetScoreBoardTexts() const
@@ -89,44 +83,12 @@ void UScoreBoardComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 //	return ScoreBoardTextArr;
 //}
 
-void UScoreBoardComponent::InitScoreBoard()
-{
-	//UE_LOG(LogTemp, Display, TEXT("InitScoreBoard"));
-	ABlasterPlayerState* BlasterPlayerState = OwingController->GetPlayerState<ABlasterPlayerState>();
-
-	if (!BlasterPlayerState)
-	{
-		return;
-	}
-
-	if (ABlasterGameState* BlasterGameState = GetWorld()->GetGameState<ABlasterGameState>())
-	{
-		//OnRedTeamScoreChanged.ExecuteIfBound(BlasterGameState->GetRedTeamScore());
-		//OnBlueTeamScoreChanged.ExecuteIfBound(BlasterGameState->GetBlueTeamScore());
-
-		FScoreBoardTextStruct S;
-		S.PlayerName = BlasterPlayerState->GetPlayerName();
-		S.Score = BlasterPlayerState->GetScore();
-		S.Elims = BlasterPlayerState->GetDefeats();
-		S.Latency = BlasterPlayerState->GetPingInMilliseconds();
-
-		if (BlasterPlayerState && BlasterPlayerState->IGetTeam() == ETeam::RedTeam)
-		{
-			//AddScoreBoard(ETeam::RedTeam, S);
-		}
-		else if (BlasterPlayerState && BlasterPlayerState->IGetTeam() == ETeam::BlueTeam)
-		{
-			//AddScoreBoard(ETeam::BlueTeam, S);
-		}
-
-	}
-}
 
 void UScoreBoardComponent::ClientAddScoreBoard_Implementation(ETeam InTeam, const FString& InPlayerName, const FString& OwnerName)
 {
-	UE_LOG(LogTemp, Display, TEXT("ClientAddScoreBoard_Implementation"));
+	//UE_LOG(LogTemp, Display, TEXT("ClientAddScoreBoard_Implementation"));
 
-	UE_LOG(LogTemp, Display, TEXT("AddScoreBoard : %s, WBP_ScoreBoard : %x, Name : %s"), *UEnum::GetDisplayValueAsText(GetOwner()->GetLocalRole()).ToString(), WBP_ScoreBoard.Get(), *GetOwner()->GetName());
+	WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? Cast<UScoreBoard>(GetWidget()) : WBP_ScoreBoard.Get();
 
 	if (WBP_ScoreBoard)
 	{
@@ -149,7 +111,7 @@ void UScoreBoardComponent::ClientAddScoreBoard_Implementation(ETeam InTeam, cons
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("WBP_ScoreBoard NULL!!!"));
+		UE_LOG(LogTemp, Error, TEXT("WBP_ScoreBoard NULL!!!, Authority : %d"), GetOwner()->HasAuthority());
 	}
 }
 
@@ -267,33 +229,39 @@ void UScoreBoardComponent::ClientRemoveScoreText_Implementation(const FString& I
 	}
 }
 
-void UScoreBoardComponent::OnRep_ScoreBoard()
-{
-	UE_LOG(LogTemp, Warning, TEXT("OnRep_ScoreBoard"));
-}
-
-void UScoreBoardComponent::SetAllControllerScoreBoard_Implementation()
+void UScoreBoardComponent::SetAllControllerScoreBoard()
 {
 	if (!GetOwner()->HasAuthority()) return;
 
-	UE_LOG(LogTemp, Display, TEXT("SetAllControllerScoreBoard"));
+	//UE_LOG(LogTemp, Display, TEXT("SetAllControllerScoreBoard"));
 
-	ATeamsGameMode* TeamsGameMode = GetWorld()->GetAuthGameMode<ATeamsGameMode>();
+	//WBP_ScoreBoard = WBP_ScoreBoard == nullptr ? Cast<UScoreBoard>(GetWidget()) : WBP_ScoreBoard.Get();
+
+	OwingController = OwingController == nullptr ? Cast<ABlasterPlayerController>(GetOwner()) : OwingController;
+
+	if (!OwingController.IsValid() || !OwingController->GetPlayerState<ABlasterPlayerState>())
+	{
+		return;
+	}
+
+
 
 	ABlasterPlayerState* ThisPlayerState = OwingController->GetPlayerState<ABlasterPlayerState>();
 
 	for (FConstPlayerControllerIterator Opponent = GetWorld()->GetPlayerControllerIterator(); Opponent; ++Opponent)
 	{
-
 		ABlasterPlayerState* OpponentBlasterPlayerState = Opponent->Get()->GetPlayerState<ABlasterPlayerState>();
 
+		if (!OpponentBlasterPlayerState)
+		{
+			return;
+		}
 
 		if (!CheckPC.Contains(Opponent->Get()))
 		{
 			ClientAddScoreBoard(OpponentBlasterPlayerState->IGetTeam(), OpponentBlasterPlayerState->GetPlayerName(), ThisPlayerState->GetPlayerName());
 			CheckPC.Add(Opponent->Get());
 		}
-
 
 		if (Opponent->Get() == OwingController)
 		{
@@ -302,10 +270,22 @@ void UScoreBoardComponent::SetAllControllerScoreBoard_Implementation()
 
 		if (!Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->CheckPC.Contains(Cast<APlayerController>(GetOwner())))
 		{
-			Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->ClientAddScoreBoard(ThisPlayerState->IGetTeam(), ThisPlayerState->GetPlayerName(), OpponentBlasterPlayerState->GetPlayerName());
-			Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->CheckPC.Add(Cast<APlayerController>(GetOwner()));
+			if (Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->GetScoreBoard())
+			{
+				Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->ClientAddScoreBoard(ThisPlayerState->IGetTeam(), ThisPlayerState->GetPlayerName(), OpponentBlasterPlayerState->GetPlayerName());
+				Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->CheckPC.Add(Cast<APlayerController>(GetOwner()));
+			}
+			else
+			{
+				return;
+			}
+
+
 		}
 
 	}
-}
 
+	UE_LOG(LogTemp, Display, TEXT("SetAllControllerScoreBoard Initialize Finished"));
+	GetWorld()->GetTimerManager().ClearTimer(InitTimer);
+	InitTimer.Invalidate();
+}

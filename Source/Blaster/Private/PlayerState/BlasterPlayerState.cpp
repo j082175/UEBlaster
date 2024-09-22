@@ -109,10 +109,12 @@ void ABlasterPlayerState::SetHUDScore(int32 InScore)
 			//Controller->SetHUDScore(InScore);
 			Controller->OnScoreChanged.Broadcast(InScore);
 
-			if (HasAuthority())
+			if (HasAuthority() && GetWorld()->IsValidLowLevel())
 			{
-				ATeamsGameMode* GM = GetWorld()->GetAuthGameMode<ATeamsGameMode>();
-				GM->ChangeScoreBoard(GetPlayerName(), InScore, true);
+				if (ATeamsGameMode* GM = GetWorld()->GetAuthGameMode<ATeamsGameMode>())
+				{
+					GM->ChangeScoreBoard(GetPlayerName(), InScore, true);
+				}
 			}
 
 		}
@@ -133,10 +135,12 @@ void ABlasterPlayerState::SetDefeatsScore(int32 DefeatsAmount)
 			Controller->OnDefeatsChanged.Broadcast(DefeatsAmount);
 
 
-			if (HasAuthority())
+			if (HasAuthority() && GetWorld()->IsValidLowLevel())
 			{
-				ATeamsGameMode* GM = GetWorld()->GetAuthGameMode<ATeamsGameMode>();
-				GM->ChangeScoreBoard(GetPlayerName(), DefeatsAmount, false);
+				if (ATeamsGameMode* GM = GetWorld()->GetAuthGameMode<ATeamsGameMode>())
+				{
+					GM->ChangeScoreBoard(GetPlayerName(), DefeatsAmount, false);
+				}
 			}
 
 		}
@@ -145,11 +149,7 @@ void ABlasterPlayerState::SetDefeatsScore(int32 DefeatsAmount)
 
 void ABlasterPlayerState::OnRep_Team()
 {
-	ABlasterCharacter* BCharacter = Cast<ABlasterCharacter>(GetPawn());
-	if (BCharacter)
-	{
-		BCharacter->SetTeamColor(Team);
-	}
+	GetWorldTimerManager().SetTimer(InitializeTimerHandle, this, &ThisClass::SetTeamFunc, 0.3f, true);
 }
 
 void ABlasterPlayerState::SetTeamFunc()

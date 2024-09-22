@@ -39,7 +39,9 @@ public:
 	UFUNCTION()
 	void OnRep_BlueTeamScore();
 
+	UPROPERTY(Replicated, VisibleAnywhere)
 	TArray<ABlasterPlayerState*> RedTeam;
+	UPROPERTY(Replicated, VisibleAnywhere)
 	TArray<ABlasterPlayerState*> BlueTeam;
 
 	UPROPERTY(ReplicatedUsing = OnRep_RedTeamScore)

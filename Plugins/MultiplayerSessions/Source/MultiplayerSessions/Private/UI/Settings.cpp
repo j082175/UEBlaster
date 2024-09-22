@@ -27,18 +27,26 @@ void USettings::NativeConstruct()
 	WBP_Selector_Graphics->LeftArrow->OnClicked.AddUniqueDynamic(this, &ThisClass::OnPreviousClickedGraphics);
 
 
+	UGameUserSettings* UserSettings = GEngine->GetGameUserSettings();
+
+
+	ResolutionArr.Add(UserSettings->GetScreenResolution());
 	ResolutionArr.Add(FIntPoint(1280, 720));
+	ResolutionArr.Add(FIntPoint(1280, 960));
+	ResolutionArr.Add(FIntPoint(1280, 1080));
 	ResolutionArr.Add(FIntPoint(1600, 900));
+	ResolutionArr.Add(FIntPoint(1600, 1200));
 	ResolutionArr.Add(FIntPoint(1920, 1080));
+	ResolutionArr.Add(FIntPoint(1920, 1200));
 	ResolutionArr.Add(FIntPoint(2560, 1440));
-	ResolutionArr.Add(FIntPoint(3840, 2160));
+	ResolutionArr.Add(FIntPoint(2560, 1600));
 
 
 	GameUserSettings->SetFullscreenMode(static_cast<EWindowMode::Type>(0));
-	GameUserSettings->SetScreenResolution(ResolutionArr[2]);
+	GameUserSettings->SetScreenResolution(ResolutionArr[0]);
 	GameUserSettings->SetOverallScalabilityLevel(3);
 	
-	WBP_Selector_Resolution->SetOptionIndex(2);
+	WBP_Selector_Resolution->SetOptionIndex(0);
 	WBP_Selector_Graphics->SetOptionIndex(3);
 	GameUserSettings->ApplySettings(true);
 

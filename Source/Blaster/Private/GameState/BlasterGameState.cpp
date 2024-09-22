@@ -44,6 +44,9 @@ void ABlasterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ThisClass, RedTeamScore);
 	DOREPLIFETIME(ThisClass, BlueTeamScore);
 
+	DOREPLIFETIME(ThisClass, RedTeam);
+	DOREPLIFETIME(ThisClass, BlueTeam);
+
 }
 
 void ABlasterGameState::UpdateTopScore(ABlasterPlayerState* ScoringPlayer)

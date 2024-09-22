@@ -288,7 +288,7 @@ void ACharacterBase::Tick(float DeltaTime)
 
 	//UE_LOG(LogTemp, Display, TEXT("Tick~ : %s"), *GetFName().ToString());
 
-	PollInit();
+	//PollInit();
 
 	RotateInPlace(DeltaTime);
 	UpdateMotionWarpingTransform();
@@ -1743,6 +1743,7 @@ ETeam ACharacterBase::IGetTeam() const
 void ACharacterBase::ISetTeam(ETeam InNewTeam)
 {
 	Team = InNewTeam;
+	SetTeamColor(Team);
 }
 
 void ACharacterBase::SetHoldingTheFlag(bool bHolding)
@@ -1972,6 +1973,8 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 {
 	//if (!HasAuthority()) return;
 	//if (!IsValid(GetMesh()) || !IsValid(OriginalMaterial)) return;
+	//AB_LOG(LogABDisplay, Warning, TEXT("SetTeamColor : %s"), *UEnum::GetDisplayValueAsText(InTeam).ToString());
+
 	switch (InTeam)
 	{
 	case ETeam::NoTeam:
@@ -2314,7 +2317,7 @@ void ACharacterBase::EquipWeaponFunc()
 {
 	if (InventoryComponent->EquippedWeapon)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Equip"));
+		//UE_LOG(LogTemp, Display, TEXT("Equip"));
 
 		bUseControllerRotationYaw = true;
 		//GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -2587,8 +2590,17 @@ void ACharacterBase::StartFireTimer()
 	if (InventoryComponent->EquippedWeapon == nullptr) return;
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
+	
+	float WeaponFireDelay = Gun->GetFireDelay();
+	float FinalDelay = (WeaponFireDelay - (GetWorld()->GetDeltaSeconds()));
+	//float FinalDelay = WeaponFireDelay * (GetWorld()->GetDeltaSeconds());
+	
 
-	GetWorldTimerManager().SetTimer(FireTimer, this, &ThisClass::FireTimerFinished, Gun->GetFireDelay(), false, Gun->GetFireDelay());
+
+	//UE_LOG(LogTemp, Display, TEXT("FinalDelay : %f"), FinalDelay);
+
+	//FTimerManagerTimerParameters{ .bLoop = false, .bMaxOncePerFrame = true };
+	GetWorldTimerManager().SetTimer(FireTimer, this, &ThisClass::FireTimerFinished, FinalDelay, false, FinalDelay);
 	//UE_LOG(LogTemp, Display, TEXT("FireTimer : %d"), FireTimer.IsValid());
 
 }

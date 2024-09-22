@@ -89,6 +89,9 @@ void ABlasterPlayerController::BeginPlay()
 	Super::BeginPlay();
 	AB_LOG(LogABBeginPlay, Warning, TEXT("%s"), TEXT("End"));
 
+	FInputModeGameOnly GameOnly;
+	SetInputMode(GameOnly);
+
 	//UE_LOG(LogTemp, Display, TEXT("%s BeginPlay"), *GetName());
 
 	//PrimaryActorTick.TickInterval = 0.1f;
@@ -121,6 +124,7 @@ void ABlasterPlayerController::BeginPlay()
 	//{
 	//	BlasterHUD->AddAnnouncement();
 	//}
+
 	ServerCheckMatchState();
 
 	if (IsLocalPlayerController())
@@ -157,8 +161,6 @@ void ABlasterPlayerController::BeginPlay()
 
 
 	}
-
-
 
 
 	//UE_LOG(LogTemp, Warning, TEXT("%s : PlayerState : %x"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), GetPlayerState<APlayerState>());
@@ -728,7 +730,9 @@ void ABlasterPlayerController::SetHUDTime()
 			//{
 			//	GEngine->AddOnScreenDebugMessage(6, 2.f, FColor::Red, FString::Printf(TEXT("MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown")));
 			//}
-			SetHUDAnnouncementCountdown(TimeLeft);
+			
+			//SetHUDAnnouncementCountdown(TimeLeft);
+			OnAnnouncementCountdownChanged.ExecuteIfBound(TimeLeft);
 		}
 		else if (MatchState == MatchState::InProgress)
 		{
@@ -812,7 +816,7 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 	{
 		OnRedTeamScoreChanged.BindUObject(SB, &UScoreBoard::SetRedTeamScore);
 		OnBlueTeamScoreChanged.BindUObject(SB, &UScoreBoard::SetBlueTeamScore);
-		ScoreBoardComponent->InitScoreBoard();
+		//ScoreBoardComponent->InitScoreBoard();
 
 	}
 	else if (UScoreBoardText* SBT = Cast<UScoreBoardText>(InUserWidget))
@@ -821,6 +825,13 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 		OnPingChanged.AddUObject(SBT, &UScoreBoardText::SetLatency);
 		OnScoreChanged.AddUObject(SBT, &UScoreBoardText::SetScore);
 		OnDefeatsChanged.AddUObject(SBT, &UScoreBoardText::SetElims);
+	}
+	else if (UAnnouncement* UA = Cast<UAnnouncement>(InUserWidget))
+	{
+		OnAnnouncementCountdownChanged.BindUObject(UA, &UAnnouncement::SetHUDAnnouncementCountdown);
+		OnAnnouncementTextChanged.BindUObject(UA, &UAnnouncement::SetAnnouncementText);
+		OnAnnouncementInfoTextChanged.BindUObject(UA, &UAnnouncement::SetInfoText);
+		OnAnnouncementVisibilityChanged.BindUObject(UA, &UAnnouncement::SetVisibility);
 	}
 }
 
@@ -894,7 +905,7 @@ void ABlasterPlayerController::OnRep_ShowTeamScores()
 
 void ABlasterPlayerController::OnMatchStateSet(FName State, bool bTeamsMatch)
 {
-	//UE_LOG(LogTemp, Display, TEXT("OnMatchStateSet : %s"), *State.ToString());
+	UE_LOG(LogTemp, Display, TEXT("OnMatchStateSet : %s"), *State.ToString());
 	MatchState = State;
 	OnMatchStateSetFunc(bTeamsMatch);
 }
@@ -909,7 +920,8 @@ void ABlasterPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 
 		if (BlasterHUD->Announcement)
 		{
-			BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+			//BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+			OnAnnouncementVisibilityChanged.ExecuteIfBound(ESlateVisibility::Hidden);
 		}
 
 		if (!HasAuthority()) return;
@@ -928,31 +940,33 @@ void ABlasterPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 void ABlasterPlayerController::HandleCooldown()
 {
 	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	if (BlasterHUD)
+	if (BlasterHUD && BlasterHUD->CharacterOverlay)
 	{
 		BlasterHUD->CharacterOverlay->RemoveFromParent();
-
-		bool bHUDValid = BlasterHUD->Announcement && BlasterHUD->Announcement->AnnouncementText && BlasterHUD->Announcement->InfoText;
-		if (bHUDValid)
-		{
-			BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
-			//FText AnnouncementText = FText::FromString(AnnouncementTypes::NewMatchStartsIn);
-			//BlasterHUD->Announcement->AnnouncementText->SetText(AnnouncementText);
-			BlasterHUD->Announcement->SetAnnouncementText(AnnouncementTypes::NewMatchStartsIn);
-
-			ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
-			ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
-			if (BlasterGameState && BlasterPlayerState)
-			{
-				TArray<ABlasterPlayerState*> TopPlayers = BlasterGameState->TopScoringPlayers;
-				FString InfoTextString = bShowTeamScores ? GetTeamsInfoText(BlasterGameState) : GetInfoText(TopPlayers);
-
-				//BlasterHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
-				BlasterHUD->Announcement->SetInfoText(InfoTextString);
-			}
+	}
 
 
-		}
+	//BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
+	OnAnnouncementVisibilityChanged.ExecuteIfBound(ESlateVisibility::Visible);
+
+	//FText AnnouncementText = FText::FromString(AnnouncementTypes::NewMatchStartsIn);
+	//BlasterHUD->Announcement->AnnouncementText->SetText(AnnouncementText);
+
+
+	//BlasterHUD->Announcement->SetAnnouncementText(AnnouncementTypes::NewMatchStartsIn);
+	OnAnnouncementTextChanged.ExecuteIfBound(AnnouncementTypes::NewMatchStartsIn);
+
+	ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
+	ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
+	if (BlasterGameState && BlasterPlayerState)
+	{
+		TArray<ABlasterPlayerState*> TopPlayers = BlasterGameState->TopScoringPlayers;
+		FString InfoTextString = bShowTeamScores ? GetTeamsInfoText(BlasterGameState) : GetInfoText(TopPlayers);
+
+		//BlasterHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
+
+		//BlasterHUD->Announcement->SetInfoText(InfoTextString);
+		OnAnnouncementInfoTextChanged.ExecuteIfBound(InfoTextString);
 	}
 
 	BlasterCharacter = BlasterCharacter == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : BlasterCharacter.Get();
@@ -1034,6 +1048,7 @@ void ABlasterPlayerController::ServerCheckMatchState_Implementation()
 	BlasterGameMode = BlasterGameMode == nullptr ? Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this)) : BlasterGameMode.Get();
 	if (BlasterGameMode)
 	{
+
 		ClientJoinMidgame(BlasterGameMode->GetMatchState(), BlasterGameMode->GetWarmupTime(), BlasterGameMode->GetMatchTime(), BlasterGameMode->GetLevelStartingTime(), BlasterGameMode->GetCooldownTime());
 	}
 
