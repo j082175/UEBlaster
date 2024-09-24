@@ -34,6 +34,12 @@ void ASupporterAIController::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ASupporterAIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+}
+
 void ASupporterAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	AController* C = Actor->GetInstigatorController();

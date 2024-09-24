@@ -94,8 +94,8 @@ void ABaseAIController::OnPossess(APawn* InPawn)
 	//UE_LOG(LogTemp, Display, TEXT("OnPossess"));
 
 	Super::OnPossess(InPawn);
-
 	RunAI();
+
 }
 
 void ABaseAIController::OnUnPossess()
@@ -146,20 +146,17 @@ void ABaseAIController::RunAI()
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(GetBrainComponent());
 	ensure(BehaviorTreeComponent);
 	BehaviorTreeComponent->RestartTree();
-
 	BindPerceptionFunctions(true);
 }
 
 void ABaseAIController::StopAI()
 {
-	//UE_LOG(LogTemp, Display, TEXT("StopAI"));
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(GetBrainComponent());
 	ensure(BehaviorTreeComponent);
 	BehaviorTreeComponent->RestartTree();
 	BehaviorTreeComponent->StopLogic(TEXT("Elimed"));
 
 	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
-	//BlackboardComponent->SetValueAsObject(TARGET_ACTOR, nullptr);
 
 	BindPerceptionFunctions(false);
 }

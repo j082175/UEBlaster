@@ -197,19 +197,7 @@ void AEnemyRange::BeginPlay()
 
 
 	FTimerHandle H;
-	GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
-		{
-			if (Tags.Num() != 0 && GetInstigatorController())
-			{
-				ABlasterPlayerState* BPS = GetInstigatorController()->GetPlayerState<ABlasterPlayerState>();
-				if (BPS)
-				{
-					FString PlayerName = BPS->GetPlayerName();
-					FString Str = FString::Printf(TEXT("%s's %s"), *PlayerName, *Tags[0].ToString());
-					OverheadWidget->ShowPlayerName(Str);
-				}
-			}
-		}), 0.1f, false);
+	GetWorldTimerManager().SetTimer(H, this, &ThisClass::InitEnemyOverhead, 0.1f, false);
 
 
 	//SetActorTickInterval(1.f);
@@ -337,4 +325,18 @@ void AEnemyRange::FireTimerFinished()
 	bIsFiring = false;
 	//GetWorldTimerManager().ClearTimer(FireTimer);
 	FireTimer.Invalidate();
+}
+
+void AEnemyRange::InitEnemyOverhead()
+{
+	if (Tags.Num() != 0 && GetInstigatorController())
+	{
+		ABlasterPlayerState* BPS = GetInstigatorController()->GetPlayerState<ABlasterPlayerState>();
+		if (BPS)
+		{
+			FString PlayerName = BPS->GetPlayerName();
+			FString Str = FString::Printf(TEXT("%s's %s"), *PlayerName, *Tags[0].ToString());
+			OverheadWidget->ShowPlayerName(Str);
+		}
+	}
 }

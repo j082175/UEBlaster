@@ -23,10 +23,7 @@ EBTNodeResult::Type UBTTask_Recognize::ExecuteTask(UBehaviorTreeComponent& Owner
 	if (CheckHistory())
 	{
 		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
-			{
-				AdjustRecognizeTime();
-			}), 0.5f, true);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::AdjustRecognizeTime, 0.5f, true);
 
 		// TODO: Change Character's speed
 	}

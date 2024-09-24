@@ -27,11 +27,10 @@ void UElimAnnouncement::SetElimAnnouncementText(FString AttackerName, FString Vi
 	}
 
 	FTimerHandle ElimMsgTimer;
-	
-	GetWorld()->GetTimerManager().SetTimer(ElimMsgTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			if (AnnouncementScroll) AnnouncementScroll->GetChildAt(0)->RemoveFromParent();
+	GetWorld()->GetTimerManager().SetTimer(ElimMsgTimer, this, &ThisClass::RemoveScrollChild, ElimAnnouncementTime, false);
+}
 
-		}), ElimAnnouncementTime, false);
-
+void UElimAnnouncement::RemoveScrollChild()
+{
+	if (AnnouncementScroll) AnnouncementScroll->GetChildAt(0)->RemoveFromParent();
 }

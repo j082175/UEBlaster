@@ -23,7 +23,8 @@
 #include "Components/ObjectPoolComponent.h"
 #include "GameState/BlasterGameState.h"
 #include "Components/InventoryComponent.h"
-
+#include "Components/SphereComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // AI
 #include "AIController.h"
@@ -37,6 +38,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Actor/SplineActor.h"
 
+#include "Interfaces/OverlapItemInterface.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -99,6 +101,8 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//UKismetSystemLibrary::DrawDebugSphere(this, GetActorLocation(), CheckAIOnOffComponent->GetScaledSphereRadius());
+
 	//UE_LOG(LogTemp, Display, TEXT("Enemy Tick"));
 
 	//static bool isGoal = false;
@@ -148,10 +152,12 @@ void AEnemy::SetOwner(AActor* NewOwner)
 {
 	Super::SetOwner(NewOwner);
 
-	AAIController* AIOwner = Cast<AAIController>(GetController());
-	if (AIOwner)
+	if (AAIController* AIOwner = Cast<AAIController>(GetController()))
 	{
-		AIOwner->GetBlackboardComponent()->SetValueAsObject(OWING_ACTOR, NewOwner);
+		if (UBlackboardComponent* BC = AIOwner->GetBlackboardComponent())
+		{
+			BC->SetValueAsObject(OWING_ACTOR, NewOwner);
+		}
 	}
 }
 
@@ -284,6 +290,7 @@ void AEnemy::InitializeDefaults()
 
 }
 
+
 void AEnemy::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult)
 {
 	Super::IGetHit(InHitPoint, InHitResult);
@@ -294,11 +301,12 @@ void AEnemy::IGetHit(const FVector& InHitPoint, const FHitResult& InHitResult)
 		PlayHitReactMontage(InHitPoint);
 	}
 
-
-
 	if (BaseAIController)
 	{
-		BaseAIController->GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
+		if (UBlackboardComponent* BC = BaseAIController->GetBlackboardComponent())
+		{
+			BC->SetValueAsBool(TEXT("IsHit"), true);
+		}
 	}
 }
 

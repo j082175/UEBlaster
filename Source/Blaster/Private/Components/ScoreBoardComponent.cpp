@@ -268,19 +268,22 @@ void UScoreBoardComponent::SetAllControllerScoreBoard()
 			continue;
 		}
 
-		if (!Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->CheckPC.Contains(Cast<APlayerController>(GetOwner())))
+		UScoreBoardComponent* OpponentSC = Opponent->Get()->GetComponentByClass<UScoreBoardComponent>();
+		if (!OpponentSC) return;
+		APlayerController* ThisPC = Cast<APlayerController>(GetOwner());
+		if (!ThisPC) return;
+
+		if (!OpponentSC->CheckPC.Contains(ThisPC))
 		{
-			if (Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->GetScoreBoard())
+			if (OpponentSC->GetScoreBoard())
 			{
-				Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->ClientAddScoreBoard(ThisPlayerState->IGetTeam(), ThisPlayerState->GetPlayerName(), OpponentBlasterPlayerState->GetPlayerName());
-				Opponent->Get()->GetComponentByClass<UScoreBoardComponent>()->CheckPC.Add(Cast<APlayerController>(GetOwner()));
+				OpponentSC->ClientAddScoreBoard(ThisPlayerState->IGetTeam(), ThisPlayerState->GetPlayerName(), OpponentBlasterPlayerState->GetPlayerName());
+				OpponentSC->CheckPC.Add(ThisPC);
 			}
 			else
 			{
 				return;
 			}
-
-
 		}
 
 	}

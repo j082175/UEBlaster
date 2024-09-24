@@ -13,6 +13,7 @@ UCLASS()
 class MULTIPLAYERSESSIONS_API UPauseMenu : public UUserWidget
 {
 	GENERATED_BODY()
+public:
 	UPauseMenu(const FObjectInitializer& ObjectInitializer);
 	virtual void NativeConstruct() override;
 
@@ -33,4 +34,11 @@ class MULTIPLAYERSESSIONS_API UPauseMenu : public UUserWidget
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class ULobbyButton> Quit_Btn;
+
+private:
+	UFUNCTION()
+	void OnDestroySessionComplete(bool bWasSuccessful);
+
+	TWeakObjectPtr<class UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
+
 };

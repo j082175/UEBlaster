@@ -31,7 +31,9 @@ public:
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn) override;
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void RunAI();
+	UFUNCTION(BlueprintCallable)
 	void StopAI();
 
 protected:

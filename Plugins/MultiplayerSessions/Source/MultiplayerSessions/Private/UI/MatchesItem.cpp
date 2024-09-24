@@ -35,8 +35,14 @@ void UMatchesItem::SetOnlineSessionSearchResult(FOnlineSessionSearchResult InRes
 {
 	SearchResult = InResult;
 
+	for (const auto& i : InResult.Session.SessionSettings.Settings)
+	{
+		ServerNameText->SetText(FText::FromString(i.Key.ToString()));
+	}
+
+
 	FString ServerName = UKismetStringLibrary::GetSubstring(SearchResult.Session.OwningUserName, 0, 15);
-	ServerNameText->SetText(FText::FromString(ServerName));
+	OwnerNameText->SetText(FText::FromString(ServerName));
 
 	int32 CurrentPlayers = SearchResult.Session.SessionSettings.NumPublicConnections - SearchResult.Session.NumOpenPublicConnections;
 	int32 MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;

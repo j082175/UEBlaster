@@ -14,8 +14,10 @@ class BLASTER_API ASupporterAIController : public ABaseAIController
 {
 	GENERATED_BODY()
 	ASupporterAIController();
-
+public:
 	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
+
 private:
 
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus) override;

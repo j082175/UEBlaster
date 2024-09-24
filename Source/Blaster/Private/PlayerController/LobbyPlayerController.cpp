@@ -10,15 +10,22 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 
+#include "GameMenu.h"
+
+
 ALobbyPlayerController::ALobbyPlayerController()
 {
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_LobbyRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/A_Blaster/Inputs/IMC_Lobby.IMC_Lobby'"));
 	ensure(IMC_LobbyRef.Object);
 	IMC_Lobby = IMC_LobbyRef.Object;
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_QuitActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/A_Blaster/Inputs/IA_Escape.IA_Escape'"));
-	ensure(IA_QuitActionRef.Object);
-	IA_QuitAction = IA_QuitActionRef.Object;
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_PressStartRef(TEXT("/Script/EnhancedInput.InputAction'/Game/A_Blaster/Inputs/IA_Tab.IA_Tab'"));
+	ensure(IA_PressStartRef.Object);
+	IA_PressStart = IA_PressStartRef.Object;
+
+	static ConstructorHelpers::FClassFinder<UGameMenu> GameStartButtonClassRef(TEXT("/MultiplayerSessions/WBP_GameMenu.WBP_GameMenu_C"));
+	ensure(GameStartButtonClassRef.Class);
+	GameStartButtonClass = GameStartButtonClassRef.Class;
 }
 
 void ALobbyPlayerController::BeginPlay()
@@ -50,7 +57,24 @@ void ALobbyPlayerController::SetupInputComponent()
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	if (EnhancedInputComponent)
 	{
+		EnhancedInputComponent->BindAction(IA_PressStart, ETriggerEvent::Triggered, this, &ThisClass::PressStarted);
+	}
+}
 
+void ALobbyPlayerController::CreateStartButton()
+{
+	if (IsLocalPlayerController())
+	{
+		GameStartButton = CreateWidget<UGameMenu>(this, GameStartButtonClass);
+	}
+
+}
+
+void ALobbyPlayerController::PressStarted()
+{
+	if (IsLocalPlayerController() && GameStartButton)
+	{
+		GameStartButton->OnButtonClickedFunc();
 	}
 }
 

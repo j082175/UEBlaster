@@ -45,17 +45,9 @@ ABlasterPlayerController::ABlasterPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 	//PrimaryActorTick.TickInterval = 0.01f;
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> WBP_PauseMenuClassRef(TEXT("/Game/A_Blaster/Blueprints/HUD/WBP_PauseMenu.WBP_PauseMenu_C"));
-	ensure(WBP_PauseMenuClassRef.Class);
-	WBP_PauseMenuClass = WBP_PauseMenuClassRef.Class;
-
 	//static ConstructorHelpers::FClassFinder<UUserWidget> WBP_ScoreBoardClassRef(TEXT("/Game/A_Blaster/Blueprints/HUD/ScoreBoard/WBP_ScoreBoard.WBP_ScoreBoard_C"));
 	//ensure(WBP_ScoreBoardClassRef.Class);
 	//WBP_ScoreBoardClass = WBP_ScoreBoardClassRef.Class;
-
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_QuitActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/A_Blaster/Inputs/IA_Escape.IA_Escape'"));
-	ensure(IA_QuitActionRef.Object);
-	IA_QuitAction = IA_QuitActionRef.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> IA_TabActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/A_Blaster/Inputs/IA_Tab.IA_Tab'"));
 	ensure(IA_TabActionRef.Object);
@@ -386,7 +378,7 @@ void ABlasterPlayerController::SetupInputComponent()
 	if (EnhancedInputComponent)
 	{
 		//EnhancedInputComponent->BindAction(IA_QuitAction, ETriggerEvent::Triggered, this, &ThisClass::ShowReturnToMainMenu);
-		EnhancedInputComponent->BindAction(IA_QuitAction, ETriggerEvent::Triggered, this, &ThisClass::ShowPauseMenu);
+		//EnhancedInputComponent->BindAction(IA_QuitAction, ETriggerEvent::Triggered, this, &ThisClass::ShowPauseMenu);
 
 		EnhancedInputComponent->BindAction(IA_Chat, ETriggerEvent::Triggered, ChatSystemComponent.Get(), &UChatSystemComponent::ChatButtonPressed);
 		EnhancedInputComponent->BindAction(IA_Tab, ETriggerEvent::Started, ScoreBoardComponent.Get(), &UScoreBoardComponent::ShowScoreBoard);
@@ -809,7 +801,7 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 		OnScoreChanged.AddUObject(CO, &UCharacterOverlay::SetHUDScore);
 		OnDefeatsChanged.AddUObject(CO, &UCharacterOverlay::SetHUDDefeats);
 
-
+		OnCharacterOverlayRemoved.BindUObject(CO, &UCharacterOverlay::RemoveFromViewport);
 		//OnTeamScoreChanged.BindUObject(CO, &UCharacterOverlay::)
 	}
 	else if (UScoreBoard* SB = Cast<UScoreBoard>(InUserWidget))
@@ -832,6 +824,7 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 		OnAnnouncementTextChanged.BindUObject(UA, &UAnnouncement::SetAnnouncementText);
 		OnAnnouncementInfoTextChanged.BindUObject(UA, &UAnnouncement::SetInfoText);
 		OnAnnouncementVisibilityChanged.BindUObject(UA, &UAnnouncement::SetVisibility);
+
 	}
 }
 
@@ -939,22 +932,35 @@ void ABlasterPlayerController::HandleMatchHasStarted(bool bTeamsMatch)
 
 void ABlasterPlayerController::HandleCooldown()
 {
-	//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-	if (BlasterHUD && BlasterHUD->CharacterOverlay)
+
+	//if (BlasterHUD && BlasterHUD->CharacterOverlay)
+	//{
+	//	BlasterHUD->CharacterOverlay->RemoveFromParent();
+	//}
+
+	if (!OnCharacterOverlayRemoved.ExecuteIfBound())
 	{
-		BlasterHUD->CharacterOverlay->RemoveFromParent();
+		if (GEngine) GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("OnCharacterOverlayRemoved Failed")));
 	}
 
 
 	//BlasterHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
-	OnAnnouncementVisibilityChanged.ExecuteIfBound(ESlateVisibility::Visible);
+
+	if (!OnAnnouncementVisibilityChanged.ExecuteIfBound(ESlateVisibility::Visible))
+	{
+		if (GEngine) GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("OnAnnouncementVisibilityChanged Failed")));
+	}
 
 	//FText AnnouncementText = FText::FromString(AnnouncementTypes::NewMatchStartsIn);
 	//BlasterHUD->Announcement->AnnouncementText->SetText(AnnouncementText);
 
 
 	//BlasterHUD->Announcement->SetAnnouncementText(AnnouncementTypes::NewMatchStartsIn);
-	OnAnnouncementTextChanged.ExecuteIfBound(AnnouncementTypes::NewMatchStartsIn);
+
+	if (!OnAnnouncementTextChanged.ExecuteIfBound(AnnouncementTypes::NewMatchStartsIn))
+	{
+		if (GEngine) GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("OnAnnouncementTextChanged Failed")));
+	}
 
 	ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
 	ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
@@ -964,9 +970,12 @@ void ABlasterPlayerController::HandleCooldown()
 		FString InfoTextString = bShowTeamScores ? GetTeamsInfoText(BlasterGameState) : GetInfoText(TopPlayers);
 
 		//BlasterHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
-
 		//BlasterHUD->Announcement->SetInfoText(InfoTextString);
-		OnAnnouncementInfoTextChanged.ExecuteIfBound(InfoTextString);
+
+		if (!OnAnnouncementInfoTextChanged.ExecuteIfBound(InfoTextString))
+		{
+			if (GEngine) GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("OnAnnouncementInfoTextChanged Failed")));
+		}
 	}
 
 	BlasterCharacter = BlasterCharacter == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : BlasterCharacter.Get();
@@ -981,11 +990,7 @@ void ABlasterPlayerController::OnMatchStateSetFunc(bool bTeamsMatch)
 {
 	if (MatchState == MatchState::WaitingToStart)
 	{
-		//BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
-		if (BlasterHUD)
-		{
-			BlasterHUD->AddAnnouncement();
-		}
+		if (BlasterHUD) BlasterHUD->AddAnnouncement();
 	}
 	else if (MatchState == MatchState::InProgress)
 	{
@@ -993,10 +998,7 @@ void ABlasterPlayerController::OnMatchStateSetFunc(bool bTeamsMatch)
 	}
 	else if (MatchState == MatchState::Cooldown)
 	{
-		//if (BlasterHUD)
-		//{
-		//	BlasterHUD->AddAnnouncement();
-		//}
+		if (BlasterHUD) BlasterHUD->AddAnnouncement();
 		HandleCooldown();
 	}
 }
@@ -1278,25 +1280,3 @@ void ABlasterPlayerController::ClientElimAnnouncement_Implementation(APlayerStat
 	}
 
 }
-
-void ABlasterPlayerController::ShowPauseMenu()
-{
-	WBP_PauseMenu = WBP_PauseMenu == nullptr ? CreateWidget<UUserWidget>(this, WBP_PauseMenuClass) : WBP_PauseMenu.Get();
-	if (WBP_PauseMenu->IsInViewport())
-	{
-		WBP_PauseMenu->RemoveFromViewport();
-		FInputModeGameOnly InputModeGameOnly;
-		SetInputMode(InputModeGameOnly);
-		SetShowMouseCursor(false);
-	}
-	else
-	{
-		WBP_PauseMenu->AddToViewport();
-
-		FInputModeGameAndUI InputModeGameAndUI;
-		InputModeGameAndUI.SetWidgetToFocus(WBP_PauseMenu->TakeWidget());
-		SetInputMode(InputModeGameAndUI);
-		SetShowMouseCursor(true);
-	}
-}
-

@@ -21,6 +21,7 @@ public:
 
 
 private:
+	void SetShieldFunc();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	float ReplenishInterval = 0.5f;

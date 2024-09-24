@@ -54,6 +54,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void Destroyed() override;
+	virtual void SetActorTickEnabled(bool bEnabled) override;
+	virtual void SetActorTickInterval(float TickInterval);
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

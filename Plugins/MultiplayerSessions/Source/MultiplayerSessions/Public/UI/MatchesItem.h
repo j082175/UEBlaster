@@ -27,6 +27,9 @@ public:
 	TObjectPtr<class UTextBlock> ServerNameText;
 
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> OwnerNameText;
+
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> MaxPlayersText;
 
 	UPROPERTY(meta = (BindWidget))

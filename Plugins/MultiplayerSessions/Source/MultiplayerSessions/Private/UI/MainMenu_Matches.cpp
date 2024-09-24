@@ -80,11 +80,6 @@ void UMainMenu_Matches::FindSessionsFinished(const TArray<FOnlineSessionSearchRe
 		{
 			if (UMatchesItem* MatchesItem = CreateWidget<UMatchesItem>(this, MatchesItemClass))
 			{
-				//if (!SessionIdStrSet.Contains(SessionResult.GetSessionIdStr()))
-				//{
-				//	SessionIdStrSet.Add(SessionResult.GetSessionIdStr());
-				//}
-
 				ScrollBox->AddChild(MatchesItem);
 				MatchesItem->SetOnlineSessionSearchResult(SessionResult);
 			}

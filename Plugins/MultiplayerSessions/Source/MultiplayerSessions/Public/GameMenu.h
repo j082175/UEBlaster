@@ -19,9 +19,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MenuSetup();
 
-private:
 	UFUNCTION()
 	void OnButtonClickedFunc();
+private:
+
 
 	UFUNCTION()
 	void OnStartSession(bool bWasSuccessful);
@@ -30,5 +31,5 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UButton> StartButton;
 
-	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+	TWeakObjectPtr<class UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
 };

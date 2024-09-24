@@ -149,14 +149,15 @@ void UChatBox::SwitchOnChatViewer()
 
 	if (!ChatViewerReleaseTimerHandle.IsValid())
 	{
-		//UE_LOG(LogTemp, Display, TEXT("Set ReleaseTimer"));
-		GetWorld()->GetTimerManager().SetTimer(ChatViewerReleaseTimerHandle, FTimerDelegate::CreateLambda([&]()
-			{
-				//UE_LOG(LogTemp, Display, TEXT("Chatbox Disabled"));
-				ChatViewer->SetVisibility(ESlateVisibility::Collapsed);
-				FInputModeGameOnly InputModeGameOnly;
-				if (GetOwningPlayer()) GetOwningPlayer()->SetInputMode(InputModeGameOnly);
-				ChatViewerReleaseTimerHandle.Invalidate();
-			}), ChatViewerReleaseTime, false);
+		GetWorld()->GetTimerManager().SetTimer(ChatViewerReleaseTimerHandle, this, &ThisClass::ChatViewerReleaseFunc, ChatViewerReleaseTime, false);
 	}
+}
+
+void UChatBox::ChatViewerReleaseFunc()
+{
+	//UE_LOG(LogTemp, Display, TEXT("Chatbox Disabled"));
+	ChatViewer->SetVisibility(ESlateVisibility::Collapsed);
+	FInputModeGameOnly InputModeGameOnly;
+	if (GetOwningPlayer()) GetOwningPlayer()->SetInputMode(InputModeGameOnly);
+	ChatViewerReleaseTimerHandle.Invalidate();
 }

@@ -198,7 +198,7 @@ void UMenu::HostButtonClicked()
 
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType, *UEnum::GetDisplayValueAsText(ETeamMaps::GameMap_Tokyo).ToString());
+		MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType, *UEnum::GetDisplayValueAsText(ETeamMaps::GameMap_Hanamura).ToString(), TEXT("MyServer"));
 	}
 }
 

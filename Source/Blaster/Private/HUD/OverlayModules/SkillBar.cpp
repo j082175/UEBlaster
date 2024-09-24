@@ -58,8 +58,13 @@ void USkillBar::OnAnimationFinished_Implementation(const UWidgetAnimation* Anima
 {
 	Super::OnAnimationFinished_Implementation(Animation);
 
-	if (USkillComponent* SC = GetOwningPlayerPawn()->GetComponentByClass<USkillComponent>())
+	
+	if (GetOwningPlayerPawn())
 	{
-		SC->SkillAnimFinished(Animation);
+		if (USkillComponent* SC = GetOwningPlayerPawn()->GetComponentByClass<USkillComponent>())
+		{
+			SC->SkillAnimFinished(Animation);
+		}
 	}
+
 }

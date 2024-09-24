@@ -29,12 +29,14 @@ void AShieldBarrier::SphereBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		{
 			//AttributeComponent->SetCurrentShield(AttributeComponent->GetMaxShield());
 
-			GetWorldTimerManager().SetTimer(ReplenishTimer, FTimerDelegate::CreateLambda([&]()
-				{
-					AttributeComponent->SetCurrentShield(AttributeComponent->GetMaxShield());
-				}), ReplenishInterval, true, 0.f);
+			GetWorldTimerManager().SetTimer(ReplenishTimer, this, &ThisClass::SetShieldFunc, ReplenishInterval, true, 0.f);
 		}
 
 
 	}
+}
+
+void AShieldBarrier::SetShieldFunc()
+{
+	AttributeComponent->SetCurrentShield(AttributeComponent->GetMaxShield());
 }

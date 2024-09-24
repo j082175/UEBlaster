@@ -26,4 +26,7 @@ protected:
 	//UPROPERTY(config, EditAnywhere, Category = Packaging, AdvancedDisplay, meta = (DisplayName = "List of maps to include in a packaged build", RelativeToGameContentDir, LongPackageName, AllowPrivateAccess = true))
 	UPROPERTY(config, EditAnywhere, Category = Packaging, AdvancedDisplay, meta = (RelativeToGameContentDir, LongPackageName))
 	TArray<FFilePath> MapPath;
+
+
+
 };

@@ -30,7 +30,7 @@ struct FAIConfig
 };
 
 UCLASS()
-class BLASTER_API AEnemy : public ACharacterBase , public IAIInterface, public IInteractWithCrosshairsInterface, public IGetPatrolRouteInterface
+class BLASTER_API AEnemy : public ACharacterBase, public IAIInterface, public IInteractWithCrosshairsInterface, public IGetPatrolRouteInterface
 {
 	GENERATED_BODY()
 
@@ -66,12 +66,15 @@ protected:
 	virtual void InitializeDefaults() override;
 
 	// Components
+
+
 protected:
 	//UPROPERTY(VisibleAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	//TObjectPtr<class UPawnSensingComponent> PawnSensingComponent;
 
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI", meta = (AllowPrivateAccess = true))
 	//TObjectPtr<class UMotionWarpingComponent> MotionWarpingComponent;
+
 
 	// Interface
 protected:
@@ -146,5 +149,5 @@ protected:
 
 
 	// Attack
-	
+
 };

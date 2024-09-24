@@ -52,12 +52,16 @@ void AEnemyAIController::OnTargetPerceptionForgotten(AActor* Actor)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("OnTargetPerceptionForgotten : %s"), *Actor->GetName());
 	
-	AActor* TargetActor = Cast<AActor>(GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
-	if (TargetActor == Actor && GetBlackboardComponent())
+	if (UBlackboardComponent* BC = GetBlackboardComponent())
 	{
-		GetBlackboardComponent()->SetValueAsObject(TARGET_ACTOR, nullptr);
-		SetFocus(nullptr);
-		if (AIPawn) AIPawn->ISetAIState(EAIState::Passive);
+		AActor* TargetActor = Cast<AActor>(BC->GetValueAsObject(TARGET_ACTOR));
+		if (TargetActor == Actor && GetBlackboardComponent())
+		{
+			GetBlackboardComponent()->SetValueAsObject(TARGET_ACTOR, nullptr);
+			SetFocus(nullptr);
+			if (AIPawn) AIPawn->ISetAIState(EAIState::Passive);
+		}
 	}
+
 
 }

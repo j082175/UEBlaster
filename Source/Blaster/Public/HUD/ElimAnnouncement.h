@@ -30,4 +30,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float ElimAnnouncementTime = 3.f;
+
+private:
+	void RemoveScrollChild();
 };

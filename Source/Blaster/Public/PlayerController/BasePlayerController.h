@@ -18,8 +18,21 @@ public:
 	ABasePlayerController();
 	
 protected:
+	virtual void SetupInputComponent() override;
 	virtual void IShowLoading() override;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> WBP_LoadingClass;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UInputAction> IA_QuitAction;
+
+	void ShowPauseMenu();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> WBP_PauseMenuClass;
+
+	UPROPERTY()
+	TObjectPtr<class UUserWidget> WBP_PauseMenu;
 };

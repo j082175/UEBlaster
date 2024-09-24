@@ -5,6 +5,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Online/OnlineSessionNames.h"
+//#include "CreateSessionCallbackProxyAdvanced.h"
 
 
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
@@ -21,11 +22,12 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 	}
 }
 
-void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType, FString MapNames)
+void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType, FString MapNames, const FString& InServerName)
 {
 	DesiredNumPublicConnections = NumPublicConnections;
 	DesiredMatchType = MatchType;
 	DesiredMap = MapNames;
+	ServerName = InServerName;
 
 	if (!SessionInterface.IsValid())
 	{
@@ -52,10 +54,21 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	LastSessionSettings->bShouldAdvertise = true; 
 	LastSessionSettings->bUsesPresence = true;
 	LastSessionSettings->bUseLobbiesIfAvailable = true;
-	LastSessionSettings->Set(TEXT("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	//LastSessionSettings->Set(TEXT("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(FName(InServerName), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
 	LastSessionSettings->BuildUniqueId = 1;
 
+
+
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+	//if (!SessionInterface.Pin()->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *LastSessionSettings))
+	//{
+	//	SessionInterface.Pin()->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
+
+	//	MultiplayerOnCreateSessionComplete.Broadcast(false);
+	//}
+	//UCreateSessionCallbackProxyAdvanced::Create
 	if (!SessionInterface.Pin()->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *LastSessionSettings))
 	{
 		SessionInterface.Pin()->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
@@ -139,6 +152,8 @@ void UMultiplayerSessionsSubsystem::StartSession()
 
 	StartSessionCompleteDelegateHandle = SessionInterface.Pin()->AddOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegate);
 
+	SessionInterface.Pin()->GetNamedSession(NAME_GameSession)->SessionState = EOnlineSessionState::Pending;
+
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface.Pin()->StartSession(NAME_GameSession))
 	{
@@ -194,7 +209,7 @@ void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, 
 	if (bWasSuccessful && bCreateSessionOnDestroy)
 	{
 		bCreateSessionOnDestroy = false;
-		CreateSession(LastNumPublicConnections, LastMatchType, DesiredMap);
+		CreateSession(LastNumPublicConnections, LastMatchType, DesiredMap, ServerName);
 	}
 
 	MultiplayerOnDestroySessionComplete.Broadcast(bWasSuccessful);

@@ -40,6 +40,8 @@ public:
 private:
 	void SwitchOnChatViewer();
 
+	void ChatViewerReleaseFunc();
+
 	UPROPERTY()
 	APlayerController* OwningController;
 

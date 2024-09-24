@@ -57,6 +57,6 @@ protected:
 	virtual void StartFireTimer() override;
 	virtual void FireTimerFinished() override;
 
-
-
+private:
+	void InitEnemyOverhead();
 };

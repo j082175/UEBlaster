@@ -30,6 +30,17 @@ void UPauseMenu::NativeConstruct()
 	Leave_Btn->ButtonText->SetText(FText::FromString(TEXT("Leave")));
 	Quit_Btn->ButtonText->SetText(FText::FromString(TEXT("Quit")));
 
+
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance)
+	{
+		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
+		if (MultiplayerSessionsSubsystem.IsValid())
+		{
+			MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddUniqueDynamic(this, &ThisClass::OnDestroySessionComplete);
+		}
+
+	}
 }
 
 void UPauseMenu::OnClickedContinue_Btn()
@@ -42,14 +53,7 @@ void UPauseMenu::OnClickedContinue_Btn()
 
 void UPauseMenu::OnClickedLeave_Btn()
 {
-	//if (ICommonPCFuncInterface* CommonFunc = Cast<ICommonPCFuncInterface>(GetOwningPlayer()))
-	//{
-	//	CommonFunc->IShowLoading();
-	//}
-
-	UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(EDefaultMaps::StartupMap_SciFi_Dynamic).ToString(), true, TEXT("listen"));
-
-	if (UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem = GetGameInstance()->GetSubsystem<UMultiplayerSessionsSubsystem>())
+	if (MultiplayerSessionsSubsystem.IsValid())
 	{
 		MultiplayerSessionsSubsystem->DestroySession();
 	}
@@ -58,4 +62,16 @@ void UPauseMenu::OnClickedLeave_Btn()
 void UPauseMenu::OnClickedQuit_Btn()
 {
 	UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, false);
+}
+
+void UPauseMenu::OnDestroySessionComplete(bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(EDefaultMaps::StartupMap_SciFi_Dynamic).ToString(), true, TEXT("listen"));
+	}
+	else
+	{
+		if (GEngine) GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("OnDestroySessionComplete Failed")));
+	}
 }

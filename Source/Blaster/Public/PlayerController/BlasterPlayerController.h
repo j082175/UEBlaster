@@ -33,6 +33,8 @@ DECLARE_DELEGATE_OneParam(FOnAnnouncementCountdownChangedDelegate, float);
 DECLARE_DELEGATE_OneParam(FOnAnnouncementTextChangedDelegate, const FString&);
 DECLARE_DELEGATE_OneParam(FOnAnnouncementInfoTextChangedDelegate, const FString&);
 DECLARE_DELEGATE_OneParam(FOnAnnouncementVisibilityChangedDelegate, ESlateVisibility);
+DECLARE_DELEGATE(FOnCharacterOverlayRemovedDelegate);
+
 
 /**
  *
@@ -143,6 +145,7 @@ public:
 	FOnAnnouncementTextChangedDelegate OnAnnouncementTextChanged;
 	FOnAnnouncementInfoTextChangedDelegate OnAnnouncementInfoTextChanged;
 	FOnAnnouncementVisibilityChangedDelegate OnAnnouncementVisibilityChanged;
+	FOnCharacterOverlayRemovedDelegate OnCharacterOverlayRemoved;
 
 	void CheckPing(float DeltaTime);
 
@@ -225,8 +228,7 @@ private:
 
 	// input
 private:
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UInputAction> IA_QuitAction;
+
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UInputAction> IA_Tab;
@@ -269,13 +271,6 @@ private:
 
 
 private:
-	void ShowPauseMenu();
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> WBP_PauseMenuClass;
-
-	UPROPERTY()
-	TObjectPtr<class UUserWidget> WBP_PauseMenu;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

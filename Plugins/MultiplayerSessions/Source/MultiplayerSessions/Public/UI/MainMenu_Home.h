@@ -28,10 +28,10 @@ public:
 	void RightArrowClicked_Map();
 
 	UFUNCTION()
-	void LeftArrowClicked_LAN();
+	void LeftArrowClicked_GameMode();
 
 	UFUNCTION()
-	void RightArrowClicked_LAN();
+	void RightArrowClicked_GameMode();
 
 	UFUNCTION()
 	void LeftArrowClicked_Players();
@@ -42,6 +42,10 @@ public:
 	UFUNCTION()
 	void CreateButtonClicked();
 
+	void CreateButtonFinished(const FString& InServerName);
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UImage> MapPreviewImage;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class ULobbySelector> WBP_Selector_Map;
@@ -50,7 +54,7 @@ public:
 	TObjectPtr<class ULobbySelector> WBP_Selector_Players;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class ULobbySelector> WBP_Selector_LAN;
+	TObjectPtr<class ULobbySelector> WBP_Selector_GameMode;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class ULobbyButton> WBP_Button_Create;
@@ -59,33 +63,37 @@ private:
 	UFUNCTION()
 	void OnCreateSessionFinished(bool bWasSuccessful);
 
+	void CreateSession();
+
 	void SelectMap(bool IsRight);
 
 
 	FString SelectType(EMatchTypes InCurrentMatchType);
 
-
-	TArray<int32> PlayerArr;
-	int32 MaxPlayer = 8;
-
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TArray<uint32> PlayerArr;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	uint32 MaxPlayer = 2;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TMap<ETeamMaps, class UTexture2D*> TeamsMapPreviewImageMap;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TMap<ECaptureTheFlagMaps, class UTexture2D*> CTFMapPreviewImageMap;
 
 
 	uint8 bUseLAN : 1;
-	uint32 CurrentPlayer;
 
 
-	EFreeForAllMaps CurrentFreeForAllMap;
+	//EFreeForAllMaps CurrentFreeForAllMap;
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	ETeamMaps CurrentTeamMap;
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	ECaptureTheFlagMaps CurrentCaptureTheFlagMap;
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	EDefaultMaps CurrentDefaultMap;
-
-	EMatchTypes CurrentMatchType = EMatchTypes::FreeForAll;
-
-
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
+	EMatchTypes CurrentMatchType = EMatchTypes::Teams;
 
 	TWeakObjectPtr<class UMultiplayerSessionsSubsystem> MultiplayerSessionsSubsystem;
-
-
 
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -94,5 +102,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<class ULoading> LoadingWidget;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<class UServerNameTextBox> ServerNameTextBoxClass;
 
+	UPROPERTY()
+	TObjectPtr<class UServerNameTextBox> ServerNameTextBox;
 };

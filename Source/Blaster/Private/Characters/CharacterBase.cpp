@@ -1635,6 +1635,28 @@ void ACharacterBase::Destroyed()
 	}
 }
 
+void ACharacterBase::SetActorTickEnabled(bool bEnabled)
+{
+	Super::SetActorTickEnabled(bEnabled);
+
+	if (bEnabled)
+	{
+		GetMesh()->Play(true);
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
+	else
+	{
+		GetMesh()->Stop();
+		GetCharacterMovement()->DisableMovement();
+	}
+
+}
+
+void ACharacterBase::SetActorTickInterval(float TickInterval)
+{
+	Super::SetActorTickInterval(TickInterval);
+}
+
 #if WITH_EDITOR
 void ACharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {

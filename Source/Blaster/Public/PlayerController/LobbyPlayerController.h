@@ -16,7 +16,7 @@ class BLASTER_API ALobbyPlayerController : public ABasePlayerController
 {
 	GENERATED_BODY()
 	ALobbyPlayerController();
-
+public:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
@@ -26,20 +26,25 @@ class BLASTER_API ALobbyPlayerController : public ABasePlayerController
 	void ServerSpawnCharacter();
 
 	// UI
+public:
+	void CreateStartButton();
 private:
-
+	UPROPERTY()
+	TSubclassOf<class UGameMenu> GameStartButtonClass;
+	UPROPERTY()
+	TObjectPtr<class UGameMenu> GameStartButton;
 
 
 
 	// input
+	void PressStarted();
 private:
-	void ShowPauseMenu();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class UInputAction> IA_QuitAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UInputMappingContext> IMC_Lobby;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UInputAction> IA_PressStart;
 
 private:
 
