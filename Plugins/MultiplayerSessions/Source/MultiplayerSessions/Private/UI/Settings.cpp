@@ -5,7 +5,6 @@
 #include "UI/LobbySelector.h"
 
 #include "Components/Button.h"
-
 #include "GameFramework/GameUserSettings.h"
 
 void USettings::NativeConstruct()
@@ -26,9 +25,8 @@ void USettings::NativeConstruct()
 	WBP_Selector_Graphics->RightArrow->OnClicked.AddUniqueDynamic(this, &ThisClass::OnNextClickedGraphics);
 	WBP_Selector_Graphics->LeftArrow->OnClicked.AddUniqueDynamic(this, &ThisClass::OnPreviousClickedGraphics);
 
-
 	UGameUserSettings* UserSettings = GEngine->GetGameUserSettings();
-
+	
 
 	ResolutionArr.Add(UserSettings->GetScreenResolution());
 	ResolutionArr.Add(FIntPoint(1280, 720));

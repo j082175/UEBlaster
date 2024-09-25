@@ -148,10 +148,12 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 	DamageHUDAxisComponent = CreateDefaultSubobject<USphereComponent>(TEXT("DamageHUDAxisComponent"));
 	DamageHUDAxisComponent->SetupAttachment(GetRootComponent());
 	DamageHUDAxisComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DamageHUDAxisComponent->SetGenerateOverlapEvents(false);
 
 	ReceiveDamageHUDComponent = CreateDefaultSubobject<UReceiveDamageHUDComponent>(TEXT("ReceiveDamageHUDComponent"));
 	ReceiveDamageHUDComponent->SetupAttachment(DamageHUDAxisComponent);
 	ReceiveDamageHUDComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ReceiveDamageHUDComponent->SetRelativeLocation(FVector(0.f, -70.f, 70.f));
 
 
 	//UE_LOG(LogTemp, Display, TEXT("Base Constructor"));
@@ -775,11 +777,11 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 	{
 		//UE_LOG(LogTemp, Display, TEXT("AURA_LEFT"));
 
-		SpawnMagic(TEXT("Socket_LeftTrailEnd"));
+		SpawnMagic(SOCKET_LEFT_TRAIL_END);
 	}
 	else if (AURA_RIGHT == NotifyName)
 	{
-		SpawnMagic(TEXT("Socket_RightTrailEnd"));
+		SpawnMagic(SOCKET_RIGHT_TRAIL_END);
 	}
 	else if (SPAWN_ENEMY_RIGHT == NotifyName)
 	{
@@ -804,7 +806,7 @@ void ACharacterBase::OnPlayMontageNotifyBeginFunc(FName NotifyName, const FBranc
 	}
 	else if (GROUND_ATTACK == NotifyName)
 	{
-		GroundAttack(TEXT("Player"));
+		GroundAttack(TAG_PLAYER);
 	}
 	else if (SLOMO_START == NotifyName)
 	{
@@ -1555,6 +1557,7 @@ void ACharacterBase::InitializeDefaults()
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -3158,7 +3161,7 @@ void ACharacterBase::AttachActorToRightHand(AActor* ActorToAttach)
 {
 	if (GetMesh() == nullptr || ActorToAttach == nullptr) return;
 	//UE_LOG(LogTemp, Display, TEXT("AttachActorToRightHand"));
-	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(TEXT("hand_rSocket"));
+	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(SOCKET_HAND_R);
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(ActorToAttach, GetMesh()); // ÀÚµ¿À¸·Î replicated µÊ
@@ -3169,7 +3172,7 @@ void ACharacterBase::AttachActorToBackpack(AActor* ActorToAttach)
 {
 	if (GetMesh() == nullptr || ActorToAttach == nullptr) return;
 	//UE_LOG(LogTemp, Display, TEXT("AttachActorToRightHand"));
-	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(TEXT("BackpackSocket"));
+	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(SOCKET_BACKPACK);
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(ActorToAttach, GetMesh()); // ÀÚµ¿À¸·Î replicated µÊ
@@ -3181,11 +3184,11 @@ void ACharacterBase::AttachActorToLeftHand(AActor* ActorToAttach)
 	if (GetMesh() == nullptr || ActorToAttach == nullptr || InventoryComponent->EquippedWeapon == nullptr) return;
 	//UE_LOG(LogTemp, Display, TEXT("AttachActorToRightHand"));
 	bool bUsePistolSocket = InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::Pistol || InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SMG;
-	FName SocketName = bUsePistolSocket ? TEXT("hand_lSocket_Pistol") : TEXT("hand_lSocket");
+	FName SocketName = bUsePistolSocket ? SOCKET_HAND_L_PISTOL : SOCKET_HAND_L;
 
 	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle)
 	{
-		SocketName = TEXT("hand_lSocket_Rifle");
+		SocketName = SOCKET_HAND_L_RIFLE;
 	}
 
 	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(SocketName);
@@ -3199,7 +3202,7 @@ void ACharacterBase::AttachFlagToLeftHand(AWeapon* InFlag)
 {
 	if (GetMesh() == nullptr || InFlag == nullptr) return;
 	//UE_LOG(LogTemp, Display, TEXT("AttachActorToRightHand"));
-	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(TEXT("FlagSocket"));
+	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(SOCKET_FLAG);
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(InFlag, GetMesh()); // ÀÚµ¿À¸·Î replicated µÊ

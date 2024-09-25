@@ -27,6 +27,8 @@
 #include "Characters/CharacterBase.h"
 #include "PlayerController/BlasterPlayerController.h"
 
+#include "Blaster.h"
+
 //void AShotgun::Fire(const FVector& HitTarget)
 //{
 //	//Super::Fire(HitTarget);
@@ -99,7 +101,7 @@ void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();
 
-	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(TEXT("MuzzleFlash"));
+	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(SOCKET_MUZZLE_FLASH);
 	if (MuzzleFlashSocket)
 	{
 		const FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
@@ -219,7 +221,7 @@ void AShotgun::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 
 void AShotgun::ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets)
 {
-	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(TEXT("MuzzleFlash"));
+	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(SOCKET_MUZZLE_FLASH);
 	if (MuzzleFlashSocket == nullptr) return;
 
 	const FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());

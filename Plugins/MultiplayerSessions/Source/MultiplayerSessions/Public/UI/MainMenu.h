@@ -41,8 +41,8 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UMainMenu_Matches> WBP_Matches;
 
-	//UPROPERTY(meta = (BindWidget))
-	//TObjectPtr<class UButton> WBP_Characters;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UMainMenu_Characters> WBP_Characters;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class USettings> WBP_Settings;

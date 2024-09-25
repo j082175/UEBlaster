@@ -18,6 +18,8 @@ UWeaponHUDComponent::UWeaponHUDComponent()
 	SetRelativeRotation(FRotator(-90.f, 0.f, 90.f));
 	SetRelativeLocation(FVector(20.f, 0.f, 0.f));
 	bDrawAtDesiredSize = true;
+
+	SetGenerateOverlapEvents(false);
 }
 
 void UWeaponHUDComponent::PostLoad()

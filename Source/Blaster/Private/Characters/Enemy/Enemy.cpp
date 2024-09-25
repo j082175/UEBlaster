@@ -40,6 +40,8 @@
 
 #include "Interfaces/OverlapItemInterface.h"
 
+#include "Blaster.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -50,6 +52,15 @@ AEnemy::AEnemy()
 	//ensure(PawnSensingComponent);
 
 	InitializeDefaults();
+}
+
+void AEnemy::PostLoad()
+{
+	Super::PostLoad();
+
+
+	GetMesh()->SetGenerateOverlapEvents(false);
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 }
 
 void AEnemy::PostInitializeComponents()
@@ -80,7 +91,7 @@ void AEnemy::BeginPlay()
 	{
 		Weapon = GetWorld()->SpawnActor<AWeapon_Melee>(WeaponClass);
 		Weapon->SetReplicates(false);
-		Weapon->ItemAttachToComponent(GetMesh(), Rules, TEXT("WeaponSocket"));
+		Weapon->ItemAttachToComponent(GetMesh(), Rules, SOCKET_WEAPON);
 		Weapon->SetOwner(this);
 		Weapon->SetInstigator(this);
 
@@ -100,6 +111,8 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//CheckVisibilityAndSetupAnim();
 
 	//UKismetSystemLibrary::DrawDebugSphere(this, GetActorLocation(), CheckAIOnOffComponent->GetScaledSphereRadius());
 
@@ -286,8 +299,16 @@ void AEnemy::InitializeDefaults()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = true;
 
-	if (GetCharacterMovement()) GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_NavWalking);
+		GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_NavWalking;
+		GetCharacterMovement()->bUpdateOnlyIfRendered = true;
+	}
 
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	GetMesh()->bEnableUpdateRateOptimizations = true;
 }
 
 
@@ -615,4 +636,22 @@ bool AEnemy::CheckParryFunc(AActor* OtherActor)
 
 
 	return false;
+}
+
+void AEnemy::CheckVisibilityAndSetupAnim()
+{
+	//WasRecentlyRendered(0.5f)
+
+
+
+	if (GetWorld()->GetFirstPlayerController()->LineOfSightTo(this))
+	{
+		GetMesh()->ToggleVisibility(true);
+		GetMesh()->SetComponentTickEnabled(true);
+	}
+	else
+	{
+		GetMesh()->ToggleVisibility(false);
+		GetMesh()->SetComponentTickEnabled(false);
+	}
 }

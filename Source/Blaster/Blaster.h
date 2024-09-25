@@ -19,6 +19,30 @@
 #define PROFILE_BlockAllDynamic TEXT("BlockAllDynamic")
 #define PROFILE_IgnoreOnlyPawn TEXT("IgnoreOnlyPawn")
 
+// Weapon
+#define SOCKET_LEFT_HAND FName(TEXT("LeftHandSocket"))
+#define SOCKET_MUZZLE_FLASH FName(TEXT("MuzzleFlash"))
+#define SOCKET_AMMO_EJECT TEXT("AmmoEject")
+
+// Enemy
+#define SOCKET_LEFT_TRAIL_END TEXT("Socket_LeftTrailEnd")
+#define SOCKET_RIGHT_TRAIL_END TEXT("Socket_RightTrailEnd")
+#define SOCKET_WEAPON TEXT("WeaponSocket")
+
+// Character
+#define SOCKET_GRENADE TEXT("GrenadeSocket")
+#define SOCKET_BACKPACK TEXT("BackpackSocket")
+#define SOCKET_HAND_R TEXT("hand_rSocket")
+#define SOCKET_HAND_L TEXT("hand_lSocket")
+#define SOCKET_HAND_L_PISTOL TEXT("hand_lSocket_Pistol")
+#define SOCKET_HAND_L_RIFLE TEXT("hand_lSocket_Rifle")
+
+#define SOCKET_FLAG TEXT("FlagSocket")
+
+
+
+// Tag
+#define TAG_PLAYER TEXT("Player")
 
 
 #define PRINT_DEBUG_LOCALROLE(Actor) UE_LOG(LogTemp, Display, TEXT("Actor's LocalRole : %s"), *UEnum::GetDisplayValueAsText(Actor->GetLocalRole()).ToString())

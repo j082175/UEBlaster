@@ -19,7 +19,7 @@
 
 #include "Perception/AISense_Damage.h"
 #include "Perception/AISense_Hearing.h"
-
+#include "Blaster.h"
 
 void AHitScanWeapon::Fire(const FVector& HitTarget)
 {
@@ -31,7 +31,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 
 	//UE_LOG(LogTemp, Display, TEXT("InstigatorController : %x"), InstigatorController);
 
-	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(TEXT("MuzzleFlash"));
+	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(SOCKET_MUZZLE_FLASH);
 	if (MuzzleFlashSocket)
 	{
 		FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());

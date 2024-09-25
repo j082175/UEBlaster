@@ -122,7 +122,7 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && CharacterOwner->GetMesh())
 		{
 			// LeftHandSocket 소켓을 월드 공간으로 변환한 값을 저장
-			LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName(TEXT("LeftHandSocket")), ERelativeTransformSpace::RTS_World);
+			LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform((SOCKET_LEFT_HAND), ERelativeTransformSpace::RTS_World);
 			//LeftHandTransform.DebugPrint();
 
 
@@ -139,7 +139,7 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 			LeftHandTransform.SetRotation(FQuat(OutRotation));
 
 
-			FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(TEXT("MuzzleFlash"));
+			FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(SOCKET_MUZZLE_FLASH);
 
 			if (CharacterOwner->IsLocallyControlled())
 			{

@@ -28,4 +28,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	ETeam Team;
 
+private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class USoundBase> OverlapeedSound;
 };

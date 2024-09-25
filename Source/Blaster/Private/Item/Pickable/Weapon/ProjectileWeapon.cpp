@@ -12,6 +12,8 @@
 //#include "GameFramework/ProjectileMovementComponent.h"
 #include "Actor/Projectile/ProjectileBullet.h"
 
+#include "Blaster.h"
+
 AProjectileWeapon::AProjectileWeapon()
 {
 }
@@ -28,7 +30,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 	// 아래 총알을 만들고 발사하는 것은 매우 민감한 행동들이므로 오로지 서버에서만 실행할 수 있게 한다.
 	// 해결책은 총알을 bReplicates = true 로 만들어 서버에서 발사하면 클라에도 똑같이 총알이 복제되도록 하면 된다!
 	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
-	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(TEXT("MuzzleFlash"));
+	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(SOCKET_MUZZLE_FLASH);
 	UWorld* World = GetWorld();
 
 	if (MuzzleFlashSocket && World)

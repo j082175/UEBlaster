@@ -1,0 +1,8 @@
+---,SkillImage,SkillCastingSound,SkillEffect,SkillEffect_Sub
+HealArea,"/Script/Engine.Texture2D'/Game/A_Blaster/Textures/Thumbnails/Health.Health'","/Script/MetasoundEngine.MetaSoundSource'/Game/A_Blaster/Sounds/Skill/sfx_SkillCast.sfx_SkillCast'","None","/Script/Niagara.NiagaraSystem'/Game/MegaMagicVFXBundle/VFX/MagicShieldsVFX/VFX/DefaultVersions/ArcaneShield/Systems/N_ArcaneShield.N_ArcaneShield'"
+ShieldRecovery,"/Script/Engine.Texture2D'/Game/A_Blaster/Textures/Thumbnails/Shield.Shield'","/Script/MetasoundEngine.MetaSoundSource'/Game/A_Blaster/Sounds/Skill/sfx_SkillCast.sfx_SkillCast'","None","/Script/Niagara.NiagaraSystem'/Game/MegaMagicVFXBundle/VFX/MagicShieldsVFX/VFX/DefaultVersions/AquaShield/Systems/N_AquaShield.N_AquaShield'"
+Supporter,"/Script/Engine.Texture2D'/Game/A_Blaster/Textures/Thumbnails/Spawn.Spawn'","/Script/MetasoundEngine.MetaSoundSource'/Game/A_Blaster/Sounds/Skill/sfx_SkillCast.sfx_SkillCast'","/Script/Engine.ParticleSystem'/Game/ParagonMinions/FX/Particles/Minions/Shared/P_MinionSpawn.P_MinionSpawn'","None"
+Ultimate,"/Script/Engine.Texture2D'/Game/A_Blaster/Textures/Thumbnails/Ultimate.Ultimate'","/Script/MetasoundEngine.MetaSoundSource'/Game/A_Blaster/Sounds/Skill/sfx_Ultimate.sfx_Ultimate'","None","None"
+Slide,"None","None","None","None"
+Dash,"None","None","None","None"
+Dodge,"None","None","None","None"

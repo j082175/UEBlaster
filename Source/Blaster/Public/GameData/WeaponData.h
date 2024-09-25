@@ -34,6 +34,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
 	TObjectPtr<class UAnimationAsset> ReloadAnimation;
-
-
 };

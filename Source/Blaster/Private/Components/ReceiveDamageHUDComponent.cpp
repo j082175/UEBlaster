@@ -17,6 +17,8 @@ UReceiveDamageHUDComponent::UReceiveDamageHUDComponent()
 	SetRelativeLocation(FVector(60.f, -130.f, 100.f));
 	SetRelativeScale3D(FVector(0.2f));
 	SetWidgetSpace(EWidgetSpace::Screen);
+
+	SetGenerateOverlapEvents(false);
 }
 
 void UReceiveDamageHUDComponent::BeginPlay()

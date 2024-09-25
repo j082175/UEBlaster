@@ -19,9 +19,21 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogABGameSingleton, Error, All);
 
+UENUM(BlueprintType)
+enum class EDataType : uint8
+{
+	WeaponStat = 0 UMETA(DisplayName = "WeaponStat"),
+	WeaponData UMETA(DisplayName = "WeaponData"),
+	SkillStat UMETA(DisplayName = "SkillStat"),
+	SkillData UMETA(DisplayName = "SkillData"),
+
+	MAX UMETA(DisplayName = "Default_MAX")
+};
+
 /**
- * 
+ *
  */
+ //template<typename DataStruct, typename EnumType>
 UCLASS()
 class BLASTER_API UDataSingleton : public UObject
 {
@@ -44,10 +56,45 @@ public:
 	int32 CharacterMaxLevel;
 
 private:
+	template<typename DataStruct, typename EnumType>
+	void Init(TMap<FName, DataStruct>& OutMap, const FString& InName);
+
 
 	TMap<FName, FWeaponStat> WeaponStatMap;
 	TMap<FName, FWeaponData> WeaponDataMap;
 
 	TMap<FName, FSkillStat> SkillStatMap;
 	TMap<FName, FSkillData> SkillDataMap;
+
+
 };
+
+template<typename DataStruct, typename EnumType>
+void UDataSingleton::Init(TMap<FName, DataStruct>& OutMap, const FString& InName)
+{
+	FString Path = TEXT("/Script/Engine.DataTable'/Game/A_Blaster/GameData/");
+	FString New = FString::Printf(TEXT("%s.%s'"), *InName, *InName);
+	Path.Append(New);
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> WeaponStatTableRef(*Path);
+	if (nullptr != WeaponStatTableRef.Object)
+	{
+		const UDataTable* DataTable = WeaponStatTableRef.Object;
+		check(DataTable->GetRowMap().Num() > 0);
+
+		TArray<uint8*> ValueArray;
+		DataTable->GetRowMap().GenerateValueArray(ValueArray);
+		TArray<FName> WeaponTypeArray;
+		DataTable->GetRowMap().GenerateKeyArray(WeaponTypeArray);
+
+		OutMap.Reserve(ValueArray.Num());
+		for (size_t i = 0; i < ValueArray.Num(); i++)
+		{
+			OutMap.Emplace(WeaponTypeArray[i], *reinterpret_cast<DataStruct*>(ValueArray[i]));
+		}
+	}
+	else
+	{
+		ensure(false);
+	}
+}

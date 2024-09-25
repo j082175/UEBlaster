@@ -14,6 +14,7 @@ UHpBarWidgetComponent::UHpBarWidgetComponent()
 	//PrimaryComponentTick.bStartWithTickEnabled = false;
 	//PrimaryComponentTick.TickInterval = 0.1f;
 	//SetIsReplicated(true);
+	SetGenerateOverlapEvents(false);
 }
 
 void UHpBarWidgetComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

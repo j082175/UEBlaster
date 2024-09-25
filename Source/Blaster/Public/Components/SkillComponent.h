@@ -57,6 +57,8 @@ public:
 
 protected:
 	// Called when the game starts
+	virtual void InitializeComponent() override;
+
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void PostLoad() override;

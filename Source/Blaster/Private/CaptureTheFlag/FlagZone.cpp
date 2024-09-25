@@ -7,6 +7,7 @@
 #include "GameMode/CaptureTheFlagGameMode.h"
 #include "Characters/BlasterCharacter.h"
 #include "Components/InventoryComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Blaster/Blaster.h"
 
 // Sets default values
@@ -69,6 +70,7 @@ void AFlagZone::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 					OverlappingFlag->GetPickupMesh()->SetSimulatePhysics(false);
 					OverlappingFlag->MulticastResetFlag();
 
+					UGameplayStatics::PlaySoundAtLocation(this, OverlapeedSound, GetActorLocation());
 				}
 				else
 				{

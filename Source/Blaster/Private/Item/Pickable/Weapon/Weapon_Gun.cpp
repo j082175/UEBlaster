@@ -86,6 +86,7 @@ AWeapon_Gun::AWeapon_Gun()
 void AWeapon_Gun::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	InitData();
 }
 
 //void AWeapon_Gun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -168,7 +169,6 @@ void AWeapon_Gun::PostLoad()
 {
 	Super::PostLoad();
 
-	InitData();
 }
 
 #if WITH_EDITOR
@@ -300,7 +300,7 @@ void AWeapon_Gun::EjectCasing()
 	//UE_LOG(LogTemp, Display, TEXT("Eject"));
 	if (CasingClass)
 	{
-		const USkeletalMeshSocket* AmmoEjectSocket = GetWeaponMesh()->GetSocketByName(TEXT("AmmoEject"));
+		const USkeletalMeshSocket* AmmoEjectSocket = GetWeaponMesh()->GetSocketByName(SOCKET_AMMO_EJECT);
 		if (AmmoEjectSocket)
 		{
 			FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(GetWeaponMesh());
@@ -428,6 +428,7 @@ void AWeapon_Gun::InitData()
 	if (GetWeaponName() == EWeaponName::AI_Pistol) return;
 
 	UDataSingleton& DataSingleton = UDataSingleton::Get();
+
 	FWeaponStat WeaponStat = DataSingleton.GetWeaponName(WeaponName);
 
 	Damage = WeaponStat.BodyDamage;
@@ -498,8 +499,8 @@ void AWeapon_Gun::Fire(const FVector& HitTarget)
 	}
 	else
 	{
-		if (FireSound) UGameplayStatics::PlaySoundAtLocation(this, FireSound, WeaponSKMesh->GetSocketLocation(TEXT("MuzzleFlash")));
-		if (FireEffect) UGameplayStatics::SpawnEmitterAttached(FireEffect, WeaponSKMesh, TEXT("MuzzleFlash"), WeaponSKMesh->GetSocketLocation(TEXT("MuzzleFlash")), WeaponSKMesh->GetSocketRotation(TEXT("MuzzleFlash")), EAttachLocation::KeepWorldPosition);
+		if (FireSound) UGameplayStatics::PlaySoundAtLocation(this, FireSound, WeaponSKMesh->GetSocketLocation(SOCKET_MUZZLE_FLASH));
+		if (FireEffect) UGameplayStatics::SpawnEmitterAttached(FireEffect, WeaponSKMesh, SOCKET_MUZZLE_FLASH, WeaponSKMesh->GetSocketLocation(SOCKET_MUZZLE_FLASH), WeaponSKMesh->GetSocketRotation(SOCKET_MUZZLE_FLASH), EAttachLocation::KeepWorldPosition);
 	}
 
 	if (WeaponType != EWeaponType::SniperRifle && WeaponType != EWeaponType::Shotgun) EjectCasing();
@@ -616,7 +617,7 @@ void AWeapon_Gun::EnableCustomDepth(bool bEnable)
 
 FVector AWeapon_Gun::TraceEndWithScatter(const FVector& HitTarget)
 {
-	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(TEXT("MuzzleFlash"));
+	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(SOCKET_MUZZLE_FLASH);
 	if (MuzzleFlashSocket == nullptr) return FVector();
 
 	const FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());

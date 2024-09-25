@@ -169,28 +169,28 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UCombatComponent> CombatComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UBuffComponent> BuffComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class ULagCompensationComponent> LagCompensation;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UMantleVaultComponent> MantleVaultComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HpBarWidget", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UHpBarWidgetComponent> HpBarWidgetComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HpBarWidget", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAttributeComponent> AttributeComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UMotionWarpingComponent> MotionWarpingComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UPawnNoiseEmitterComponent> PawnNoiseEmitterComponent;
 
 
@@ -214,10 +214,10 @@ protected:
 	void PlayEquipWeaponSound();
 	void PlaySecondaryWeaponSound();
 
-	UPROPERTY(EditAnywhere, Category = "Sound", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class USoundBase> HitSound;
 
-	UPROPERTY(EditAnywhere, Category = "Sound", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class USoundCue> ElimBotSound;
 
 	UPROPERTY(EditAnywhere)
@@ -228,10 +228,10 @@ protected:
 	void SpawnEffect();
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Effect", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UParticleSystem> BloodEffect;
 
-	UPROPERTY(EditAnywhere, Category = "Effect", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UParticleSystem> ElimBotEffect;
 
 	UPROPERTY(VisibleAnywhere)
@@ -260,7 +260,7 @@ protected:
 
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	uint8 bIsElimmed : 1 = false;
 
 	// Animations
@@ -295,55 +295,55 @@ public:
 	void MulticastRandomAttack(int32 Index, const FString& AttackType);
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Anim", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> HitReactMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Anim", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> DeadMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> AttackMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> EquipMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> ReloadMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> ThrowGrenadeMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> SwapMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> SlideMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> DodgeMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> VaultMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> MantleMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> BoltActionMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> DashMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> StunMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> ParriedMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> MeleeMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> SweepFallMontage;
 
 	// About Items
@@ -354,20 +354,20 @@ protected:
 	void AttachToSocket(class AItem* Item, class USkeletalMeshComponent* SkeletalMesh, FName SocketName);
 
 
-	UPROPERTY(EditAnywhere, Category = "Weapon", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class AWeapon_Melee> Weapon;
 
 	// About State
 protected:
 	void SetState(ECharacterState InCharacterState, ECombatState InCombatState);
 
-	UPROPERTY(Replicated, VisibleInstanceOnly, BlueprintReadWrite, Category = "State", meta = (AllowPrivateAccess = true))
+	UPROPERTY(Replicated, VisibleInstanceOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	ECharacterState CharacterState = ECharacterState::Unequipped;
 
 	UFUNCTION()
 	void OnRep_CombatState();
 
-	UPROPERTY(ReplicatedUsing = OnRep_CombatState, VisibleInstanceOnly, BlueprintReadWrite, Category = "State", meta = (AllowPrivateAccess = true))
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState, VisibleInstanceOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	ECombatState CombatState = ECombatState::Unoccupied;
 
 	// For Calculate
@@ -423,13 +423,13 @@ protected:
 	TObjectPtr<UTimelineComponent> DissolveTimelineComponent;
 
 	// Dynamic Instance that we can change at runtime
-	UPROPERTY(VisibleAnywhere, Category = "Elim")
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
 
 	UPROPERTY(EditAnywhere)
 	UCurveFloat* DissolveCurve;
 	// Material instance set on the Blueprint, used with the dynamic material instance
-	UPROPERTY(EditAnywhere, Category = "Elim")
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
 
 	FOnTimelineFloat DissolveTrack;
@@ -440,19 +440,19 @@ public:
 	void SetTeamColor(ETeam InTeam);
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "Elim")
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UMaterialInstance> RedDissolveMatInst;
 
-	UPROPERTY(EditAnywhere, Category = "Elim")
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UMaterialInstance> RedMaterial;
 
-	UPROPERTY(EditAnywhere, Category = "Elim")
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UMaterialInstance> BlueDissolveMatInst;
 
-	UPROPERTY(EditAnywhere, Category = "Elim")
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UMaterialInstance> BlueMaterial;
 
-	UPROPERTY(EditAnywhere, Category = "Elim")
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UMaterialInstance> OriginalMaterial;
 
 	UPROPERTY(EditAnywhere)
@@ -775,7 +775,7 @@ protected:
 	UPROPERTY(Replicated)
 	uint8 bHoldingTheFlag : 1;
 
-	UPROPERTY(Replicated, EditAnywhere)
+	UPROPERTY(Replicated, VisibleAnywhere)
 	TObjectPtr<class AWeapon> Flag;
 
 	// Slide
@@ -861,7 +861,7 @@ protected:
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(class AWeapon* LastWeapon);
 
-	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon, VisibleAnywhere, Category = "Repl", meta = (AllowPrivateAccess = true))
+	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon, VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class AWeapon> OverlappingWeapon;
 
 	// Reload

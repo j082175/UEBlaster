@@ -45,6 +45,7 @@ public:
 
 	FOnSpawnedEnemyDisabledDelegate OnSpawnedEnemyDisabled;
 protected:
+	virtual void PostLoad() override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -148,6 +149,7 @@ protected:
 	float LongStunTime = 10.f;
 
 
-	// Attack
 
+	// For Optimization
+	void CheckVisibilityAndSetupAnim();
 };

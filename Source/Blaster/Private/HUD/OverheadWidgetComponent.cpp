@@ -11,6 +11,7 @@
 
 UOverheadWidgetComponent::UOverheadWidgetComponent()
 {
+	SetGenerateOverlapEvents(false);
 }
 
 void UOverheadWidgetComponent::PostLoad()

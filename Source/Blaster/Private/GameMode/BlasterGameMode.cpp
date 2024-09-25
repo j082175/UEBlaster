@@ -140,7 +140,7 @@ void ABlasterGameMode::BeginPlay()
 
 	if (bRestartGameCheck == 0)
 	{
-		Super::RestartGame();
+		Super::RestartGame(); // Without this, Server's HUD has a problem
 		++bRestartGameCheck;
 	}
 }

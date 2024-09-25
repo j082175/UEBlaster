@@ -1,0 +1,8 @@
+---,CoolTime,MaintainTime,RequiredPoint,bCanExecute,bSkillPointEnough
+HealArea,"20.000000","5.000000","3.000000","True","True"
+ShieldRecovery,"25.000000","5.000000","3.000000","True","True"
+Supporter,"20.000000","0.000000","5.000000","True","True"
+Ultimate,"50.000000","10.000000","20.000000","True","True"
+Slide,"1.000000","0.000000","0.000000","True","True"
+Dash,"2.000000","0.000000","0.000000","True","True"
+Dodge,"3.000000","0.000000","0.000000","True","True"

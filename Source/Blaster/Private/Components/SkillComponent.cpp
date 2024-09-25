@@ -25,10 +25,16 @@ USkillComponent::USkillComponent()
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 
 	// ...
+	bWantsInitializeComponent = true;
 
 	UltimateEffectComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("UltimateEffect"));
 }
 
+void USkillComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	InitializeCoolTimeMap();
+}
 
 // Called when the game starts
 void USkillComponent::BeginPlay()
@@ -65,9 +71,6 @@ void USkillComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 void USkillComponent::PostLoad()
 {
 	Super::PostLoad();
-
-	InitializeCoolTimeMap();
-
 	SetIsReplicated(true);
 	PrimaryComponentTick.bStartWithTickEnabled = true;
 	SetComponentTickInterval(0.01f);
@@ -511,16 +514,6 @@ void USkillComponent::InitializeCoolTimeMap()
 
 	UDataSingleton& DataSingleton = UDataSingleton::Get();
 
-
-
-	//CoolTimeMap.Add(ESkillAssistant::HealArea, FCoolTimeCheckStruct(3, 5.f, 20.f));
-	//CoolTimeMap.Add(ESkillAssistant::ShieldRecovery, FCoolTimeCheckStruct(3, 5.f, 25.f));
-	//CoolTimeMap.Add(ESkillAssistant::Supporter, FCoolTimeCheckStruct(5, 0.f, 20.f));
-	//CoolTimeMap.Add(ESkillAssistant::Ultimate, FCoolTimeCheckStruct(20, 10.f, 50.f));
-
-	//CoolTimeMap.Add(ESkillAssistant::Slide, FCoolTimeCheckStruct(0, 0.f, 1.f));
-	//CoolTimeMap.Add(ESkillAssistant::Dash, FCoolTimeCheckStruct(0, 0.f, 2.f));
-	//CoolTimeMap.Add(ESkillAssistant::Dodge, FCoolTimeCheckStruct(0, 0.f, 3.f));
 
 
 	int count = 0;

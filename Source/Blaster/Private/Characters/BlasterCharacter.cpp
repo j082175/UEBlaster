@@ -483,7 +483,7 @@ void ABlasterCharacter::InitializeDefaults()
 
 	BuffComponent->SetIsReplicated(true);
 
-	AttachedGrenade->SetupAttachment(GetMesh(), TEXT("GrenadeSocket"));
+	AttachedGrenade->SetupAttachment(GetMesh(), SOCKET_GRENADE);
 	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 

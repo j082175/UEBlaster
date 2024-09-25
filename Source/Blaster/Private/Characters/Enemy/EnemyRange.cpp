@@ -15,6 +15,7 @@
 #include "PlayerState/BlasterPlayerState.h"
 #include "Components/InventoryComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Blaster.h"
 
 AEnemyRange::AEnemyRange()
 {
@@ -87,7 +88,7 @@ void AEnemyRange::Tick(float DeltaTime)
 #if WITH_EDITOR
 	if (EquippedGun)
 	{
-		FTransform MuzzleTipTransform = EquippedGun->GetWeaponMesh()->GetSocketTransform(TEXT("MuzzleFlash"));
+		FTransform MuzzleTipTransform = EquippedGun->GetWeaponMesh()->GetSocketTransform(SOCKET_MUZZLE_FLASH);
 		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), TargetPoint, FColor::Red, false);
 	}
 #endif
