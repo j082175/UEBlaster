@@ -33,15 +33,15 @@ void UCoolTimeAnnouncement::NativeTick(const FGeometry& MyGeometry, float InDelt
 
 }
 
-void UCoolTimeAnnouncement::SetCoolTimeAnnouncementText(ESkillAssistant InSkillAssistant)
+void UCoolTimeAnnouncement::SetCoolTimeAnnouncementText(int32 InSkillIndex)
 {
 	if (USkillComponent* SC = GetOwningPlayerPawn()->GetComponentByClass<USkillComponent>())
 	{
-		FSkillManagementStruct* CTCS = SC->CoolTimeMap.Find(InSkillAssistant);
+		FSkillManagementStruct* CTCS = SC->CoolTimeMap.Find(InSkillIndex);
 
 		if (CTCS && !CTCS->CoolTimeCheckStruct.bCanExecute || !CTCS->CoolTimeCheckStruct.bSkillPointEnough)
 		{
-			FString Str = FString::Printf(TEXT("%s Is CoolTime or No Point"), *UEnum::GetDisplayValueAsText(InSkillAssistant).ToString());
+			FString Str = FString::Printf(TEXT("%s Is CoolTime or No Point"), *CTCS->SkillData.Description.ToString());
 
 			CoolTimeAnnouncementText->SetText(FText::FromString(Str));
 			SetVisibility(ESlateVisibility::Visible);

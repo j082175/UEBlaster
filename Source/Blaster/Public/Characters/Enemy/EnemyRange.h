@@ -18,15 +18,16 @@ class BLASTER_API AEnemyRange : public AEnemy
 public:
 	AEnemyRange();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted) override;
-	virtual void Tick(float DeltaTime) override;
 	virtual void InitializeDefaults() override;
 
 	virtual void Fire(bool bPressed) override;
 
 protected:
-	virtual void BeginPlay() override;
+
 
 	virtual void IAttack(FAttackEndedDelegate Delegate, const FString& AttackType) override;
 	virtual void ISetAIState(EAIState InAIState) override;

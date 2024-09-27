@@ -17,6 +17,9 @@
 
 #include "HUD/BlasterHUD.h"
 
+#include "Enums/CharacterTypes.h"
+
+
 // Interfaces
 #include "Interfaces/HitInterface.h"
 #include "Interfaces/WidgetBindDelegateInterface.h"
@@ -84,6 +87,8 @@ public:
 
 	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
 	FORCEINLINE class UOverheadWidget* GetOverheadWidget() const { return OverheadWidget; }
+
+	FORCEINLINE ECharacterTypes GetCharacterType() const { return CurrentCharacterType; }
 
 	ECombatState GetCombatState() const;
 	//class AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
@@ -454,6 +459,15 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UMaterialInstance> OriginalMaterial;
+
+	//UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	//TMap<ECharacterTypes, class USkeletalMesh*> RedTeamSKMeshMap;
+
+	//UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	//TMap<ECharacterTypes, class USkeletalMesh*> BlueTeamSKMeshMap;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	ECharacterTypes CurrentCharacterType;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class USkeletalMesh> RedTeamSKMesh;

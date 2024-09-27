@@ -13,7 +13,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnSkillAnimStartedDelegate, ESkillAnimTy
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSkillCostChangedDelegate, int32 /*NumCost*/, const FString& /*InMessage*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSoulCountChangedDelegate, int32 /*NumCount*/);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnSkillCoolTimeCheckDelegate, ESkillAssistant /*SkillIndex*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSkillCoolTimeCheckDelegate, int32 /*SkillIndex*/);
 
 
 USTRUCT(BlueprintType)
@@ -87,15 +87,15 @@ public:
 
 	void UltimateCast();
 
-	void SkillCast(ESkillAssistant InSkillAssistant);
+	void SkillCast(int32 InCurrentSkillIndex);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastCastEnd(ESkillAssistant InSkillAssistant);
+	void MulticastCastEnd(int32 InCurrentSkillIndex);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
-	void ServerSpawnAttributeAssistant(ESkillAssistant InSkillAssistant);
+	void ServerSpawnAttributeAssistant(int32 InCurrentSkillIndex);
 	UFUNCTION(Server, Reliable, BlueprintCallable)
-	void ServerSpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
+	void ServerSpawnAttributeAssistantDetach(int32 InCurrentSkillIndex);
 
 
 
@@ -109,23 +109,28 @@ private:
 
 
 
-	void SpawnAttributeAssistant(ESkillAssistant InSkillAssistant);
+	void SpawnAttributeAssistant(int32 InCurrentSkillIndex);
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastSpawnAttributeAssistant(ESkillAssistant InSkillAssistant);
+	void MulticastSpawnAttributeAssistant(int32 InCurrentSkillIndex);
 
-	void SpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
+	void SpawnAttributeAssistantDetach(int32 InCurrentSkillIndex);
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastSpawnAttributeAssistantDetach(ESkillAssistant InSkillAssistant);
+	void MulticastSpawnAttributeAssistantDetach(int32 InCurrentSkillIndex);
 
-	void ProcedureFunc(ESkillAssistant InSkillAssistant, UAnimMontage* InMontage);
+	void ProcedureFunc(int32 InCurrentSkillIndex, UAnimMontage* InMontage);
 	UFUNCTION(Server, Reliable)
-	void ServerProcedure(ESkillAssistant InSkillAssistant, class UAnimMontage* InMontage);
+	void ServerProcedure(int32 InCurrentSkillIndex, class UAnimMontage* InMontage);
+
+	//UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	//TSubclassOf<class AActor> SpawnActorClass;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	//TObjectPtr<class AActor> SpawnActor;
 
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AHealArea> HealAreaClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class AHealArea> HealArea;
+	TObjectPtr<class AHealArea> Spawn;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<class AShieldBarrier> ShieldBarrierClass;
@@ -151,10 +156,10 @@ private:
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TMap<int32, ESkillAssistant> SkillList;
+	TMap<int32, ESkillType> SkillList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TMap<ESkillAssistant, FSkillManagementStruct> CoolTimeMap;
+	TMap<int32, FSkillManagementStruct> CoolTimeMap;
 
 	UPROPERTY()
 	TArray<bool> SkillButtonPressedChecker;
@@ -164,7 +169,9 @@ public:
 
 
 
-	ESkillAssistant CurrentSkill;
+	ESkillType CurrentSkill;
+
+	int32 CurrentSkillIndex;
 
 private:
 	void InitForWaiting();
@@ -177,7 +184,13 @@ public:
 	TObjectPtr<class UAnimMontage> CurrentMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class UAnimMontage> SkillCastingMontage;
+	TObjectPtr<class UAnimMontage> SkillCastingMontage_A;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UAnimMontage> SkillCastingMontage_B;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UAnimMontage> SkillCastingMontage_C;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UAnimMontage> UltimateMontage;

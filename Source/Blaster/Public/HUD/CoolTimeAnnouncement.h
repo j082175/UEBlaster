@@ -19,7 +19,7 @@ class BLASTER_API UCoolTimeAnnouncement : public UMyUserWidget
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
-	void SetCoolTimeAnnouncementText(ESkillAssistant InSkillAssistant);
+	void SetCoolTimeAnnouncementText(int32 InSkillIndex);
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> CoolTimeAnnouncementText;

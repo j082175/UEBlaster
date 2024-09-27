@@ -10,6 +10,7 @@
 #include "BlasterTypes/CharacterState.h"
 #include "BlasterTypes/CombatState.h"
 #include "BlasterTypes/AnimState.h"
+#include "Enums/CharacterTypes.h"
 
 #include "BaseAnimInstance.generated.h"
 
@@ -97,6 +98,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
 	ECombatState CombatState;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
+	ECharacterTypes CharacterTypes;
 
 
 	// Orientation

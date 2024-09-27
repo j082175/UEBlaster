@@ -110,6 +110,7 @@
 #include "BlasterTypes/KeyType.h"
 #include "GameData/DataSingleton.h"
 
+
 // Set default values
 ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -2009,6 +2010,7 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 	case ETeam::RedTeam:
 		//GetMesh()->SetMaterial(1, RedMaterial);
 		//DissolveMaterialInstance = RedDissolveMatInst;
+
 		if (RedTeamSKMesh) GetMesh()->SetSkeletalMesh(RedTeamSKMesh);
 
 		//UE_LOG(LogTemp, Warning, TEXT("%s ,%s, : RedTeam~"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), *GetName());
@@ -3184,11 +3186,11 @@ void ACharacterBase::AttachActorToLeftHand(AActor* ActorToAttach)
 	if (GetMesh() == nullptr || ActorToAttach == nullptr || InventoryComponent->EquippedWeapon == nullptr) return;
 	//UE_LOG(LogTemp, Display, TEXT("AttachActorToRightHand"));
 	bool bUsePistolSocket = InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::Pistol || InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SMG;
-	FName SocketName = bUsePistolSocket ? SOCKET_HAND_L_PISTOL : SOCKET_HAND_L;
+	FName SocketName = bUsePistolSocket ? SOCKET_HAND_L_PISTOL : SOCKET_HAND_L_RIFLE;
 
 	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle)
 	{
-		SocketName = SOCKET_HAND_L_RIFLE;
+		SocketName = SOCKET_HAND_L;
 	}
 
 	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(SocketName);

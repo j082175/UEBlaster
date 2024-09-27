@@ -12,6 +12,7 @@
 #include "Components/WidgetComponent.h"
 
 #include "Net/UnrealNetwork.h"
+#include "Blaster.h"
 
 
 AFlag::AFlag()
@@ -93,7 +94,7 @@ void AFlag::Equip(ACharacter* NewOwner)
 	SetInstigator(NewOwner);
 
 	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
-	AttachToComponent(NewOwner->GetMesh(), Rules, TEXT("pelvisSocket"));
+	AttachToComponent(NewOwner->GetMesh(), Rules, SOCKET_PELVIS);
 	ShowPickupWidget(false);
 	//OverlapCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PickupMesh->SetSimulatePhysics(false);

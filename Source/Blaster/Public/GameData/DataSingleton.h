@@ -14,6 +14,7 @@
 // Enum
 #include "Item/Pickable/Weapon/WeaponTypes.h"
 #include "BlasterTypes/SkillAssistant.h"
+#include "Enums/CharacterTypes.h"
 
 #include "DataSingleton.generated.h"
 
@@ -48,15 +49,16 @@ public:
 	FWeaponStat GetWeaponName(EWeaponName InWeaponType) const;
 	FWeaponData GetWeaponData(EWeaponName InWeaponType) const;
 
-	FSkillStat GetSkillStat(ESkillAssistant InWeaponType) const;
-	FSkillData GetSkillData(ESkillAssistant InWeaponType) const;
+
+	FSkillStat GetSkillStat(ECharacterTypes InCharacterType, const FName& Index) const;
+	FSkillData GetSkillData(ECharacterTypes InCharacterType, const FName& Index) const;
 
 
 	UPROPERTY()
 	int32 CharacterMaxLevel;
 
 private:
-	template<typename DataStruct, typename EnumType>
+	template<typename DataStruct>
 	void Init(TMap<FName, DataStruct>& OutMap, const FString& InName);
 
 
@@ -66,10 +68,11 @@ private:
 	TMap<FName, FSkillStat> SkillStatMap;
 	TMap<FName, FSkillData> SkillDataMap;
 
-
+	TArray<TMap<FName, FSkillStat>> CharacterStatTable;
+	TArray<TMap<FName, FSkillData>> CharacterDataTable;
 };
 
-template<typename DataStruct, typename EnumType>
+template<typename DataStruct>
 void UDataSingleton::Init(TMap<FName, DataStruct>& OutMap, const FString& InName)
 {
 	FString Path = TEXT("/Script/Engine.DataTable'/Game/A_Blaster/GameData/");

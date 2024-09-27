@@ -32,6 +32,36 @@ void AEnemyRange::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 }
 
+void AEnemyRange::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SpawnDefaultWeapon();
+
+	if (BaseAIController.IsValid() && BaseAIController->GetBlackboardComponent())
+		BaseAIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
+
+
+	FTimerHandle H;
+	GetWorldTimerManager().SetTimer(H, this, &ThisClass::InitEnemyOverhead, 0.1f, false);
+
+
+	ACharacterBase* CharacterOwner = Cast<ACharacterBase>(GetOwner());
+	if (CharacterOwner)
+	{
+		SpawnDefaultController();
+		ISetTeam(CharacterOwner->IGetTeam());
+		SetTeamColor(IGetTeam());
+
+		if (AAIController* AIController = Cast<AAIController>(GetController()))
+		{
+			AIController->GetBlackboardComponent()->SetValueAsObject(OWING_ACTOR, GetInstigator());
+		}
+	}
+
+	//SetActorTickInterval(1.f);
+}
+
 void AEnemyRange::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted)
 {
 	ACharacterBase::OnMontageEndedFunc(Montage, bInterrupted);
@@ -50,7 +80,7 @@ void AEnemyRange::Tick(float DeltaTime)
 
 	BaseAIController = BaseAIController == nullptr ? Cast<ABaseAIController>(GetController()) : BaseAIController.Get();
 
-	if (BaseAIController && BaseAIController->GetBlackboardComponent())
+	if (BaseAIController.IsValid() && BaseAIController->GetBlackboardComponent())
 	{
 		AActor* TargetActor = Cast<AActor>(BaseAIController->GetBlackboardComponent()->GetValueAsObject(TARGET_ACTOR));
 		if (TargetActor)
@@ -187,23 +217,6 @@ void AEnemyRange::Fire(bool bPressed)
 	}
 }
 
-void AEnemyRange::BeginPlay()
-{
-	Super::BeginPlay();
-
-	SpawnDefaultWeapon();
-
-	if (BaseAIController && BaseAIController->GetBlackboardComponent())
-		BaseAIController->GetBlackboardComponent()->ClearValue(TARGET_ACTOR_LAST_POSITION);
-
-
-	FTimerHandle H;
-	GetWorldTimerManager().SetTimer(H, this, &ThisClass::InitEnemyOverhead, 0.1f, false);
-
-
-	//SetActorTickInterval(1.f);
-}
-
 void AEnemyRange::IAttack(FAttackEndedDelegate Delegate, const FString& AttackType)
 {
 	OnAttackEnded = Delegate;
@@ -215,7 +228,7 @@ void AEnemyRange::ISetAIState(EAIState InAIState)
 {
 	Super::ISetAIState(InAIState);
 
-	if (BaseAIController) BaseAIController->GetBlackboardComponent()->SetValueAsBool(CAN_SEE, false);
+	if (BaseAIController.IsValid()) BaseAIController->GetBlackboardComponent()->SetValueAsBool(CAN_SEE, false);
 }
 
 void AEnemyRange::FinishReloading()

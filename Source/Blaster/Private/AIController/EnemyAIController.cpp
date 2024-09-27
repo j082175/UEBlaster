@@ -31,7 +31,7 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 	if (!Actor->GetInstigatorController()) return;
 	if (Actor->GetInstigatorController()->Tags.Num() == 0) return;
 	if (Actor->GetInstigatorController()->Tags[0] != TEXT("Player") &&
-		Actor->GetInstigatorController()->Tags[0] != TEXT("Supporter")) return;
+		Actor->GetInstigatorController()->Tags[0] != TEXT("Passive")) return;
 
 	//UE_LOG(LogTemp, Display, TEXT("Actor Tag : %s"), *Actor->GetInstigatorController()->Tags[0].ToString());
 

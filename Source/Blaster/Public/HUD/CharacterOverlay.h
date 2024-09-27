@@ -44,7 +44,7 @@ public:
 	UFUNCTION()
 	void SetSoulCount(int32 InCount);
 	UFUNCTION()
-	void ShowCoolTimeAnnouncement(ESkillAssistant InSkillAssistant);
+	void ShowCoolTimeAnnouncement(int32 InSkillIndex);
 
 	//void SetCurrentAmmo(int32 InAmmo);
 	//void SetMaxAmmo(int32 InAmmo);

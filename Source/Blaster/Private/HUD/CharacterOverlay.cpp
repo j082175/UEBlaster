@@ -191,9 +191,9 @@ void UCharacterOverlay::UpdatePing(float InPing)
 	WBP_PingStatus->UpdatePing(InPing);
 }
 
-void UCharacterOverlay::ShowCoolTimeAnnouncement(ESkillAssistant InSkillAssistant)
+void UCharacterOverlay::ShowCoolTimeAnnouncement(int32 InSkillIndex)
 {
-	CoolTimeAnnouncement->SetCoolTimeAnnouncementText(InSkillAssistant);
+	CoolTimeAnnouncement->SetCoolTimeAnnouncementText(InSkillIndex);
 }
 
 //void UCharacterOverlay::SetCurrentAmmo(int32 InAmmo)

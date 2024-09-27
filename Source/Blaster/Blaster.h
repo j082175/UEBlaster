@@ -20,7 +20,9 @@
 #define PROFILE_IgnoreOnlyPawn TEXT("IgnoreOnlyPawn")
 
 // Weapon
-#define SOCKET_LEFT_HAND FName(TEXT("LeftHandSocket"))
+#define SOCKET_LEFT_HAND_WRAITH FName(TEXT("LeftHandSocket_Wraith"))
+#define SOCKET_LEFT_HAND_BELICA FName(TEXT("LeftHandSocket_Belica"))
+
 #define SOCKET_MUZZLE_FLASH FName(TEXT("MuzzleFlash"))
 #define SOCKET_AMMO_EJECT TEXT("AmmoEject")
 
@@ -36,6 +38,7 @@
 #define SOCKET_HAND_L TEXT("hand_lSocket")
 #define SOCKET_HAND_L_PISTOL TEXT("hand_lSocket_Pistol")
 #define SOCKET_HAND_L_RIFLE TEXT("hand_lSocket_Rifle")
+#define SOCKET_PELVIS TEXT("pelvisSocket")
 
 #define SOCKET_FLAG TEXT("FlagSocket")
 

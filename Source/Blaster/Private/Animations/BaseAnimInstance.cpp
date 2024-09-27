@@ -13,7 +13,6 @@
 #include "Item/Pickable/Weapon/Weapon_Gun.h"
 #include "BlasterTypes/CombatState.h"
 #include "Net/UnrealNetwork.h"
-
 #include "Characters/CharacterBase.h"
 
 #include "Blaster/Blaster.h"
@@ -76,6 +75,7 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		bHoldingTheFlag = CharacterOwner->IsHoldingTheFlag();
 		bIsSprint = CharacterOwner->IsSprint();
 		bIsRagdollStateStopped = CharacterOwner->GetIsRagdollStateStopped();
+		CharacterTypes = CharacterOwner->GetCharacterType();
 
 		/* For Derived Class */
 
@@ -122,7 +122,25 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && CharacterOwner->GetMesh())
 		{
 			// LeftHandSocket 소켓을 월드 공간으로 변환한 값을 저장
-			LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform((SOCKET_LEFT_HAND), ERelativeTransformSpace::RTS_World);
+
+			switch (CharacterTypes)
+			{
+			case ECharacterTypes::Wraith:
+				LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform((SOCKET_LEFT_HAND_WRAITH), ERelativeTransformSpace::RTS_World);
+				break;
+			case ECharacterTypes::Belica:
+				LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform((SOCKET_LEFT_HAND_BELICA), ERelativeTransformSpace::RTS_World);
+				break;
+			case ECharacterTypes::Murdock:
+				LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform((SOCKET_LEFT_HAND_WRAITH), ERelativeTransformSpace::RTS_World);
+				break;
+			case ECharacterTypes::MAX:
+				break;
+			default:
+				break;
+			}
+
+
 			//LeftHandTransform.DebugPrint();
 
 

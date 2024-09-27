@@ -3,11 +3,22 @@
 
 #include "Actor/ShieldBarrier.h"
 #include "Components/AttributeComponent.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 AShieldBarrier::AShieldBarrier()
 {
 
+}
+
+void AShieldBarrier::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+
+	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+	AttachToComponent(OwnerCharacter->GetMesh(), Rules, TEXT("pelvis"));
 }
 
 void AShieldBarrier::Destroyed()

@@ -24,7 +24,7 @@
 
 ASupporterAIController::ASupporterAIController()
 {
-	Tags.Add(TEXT("Supporter"));
+	Tags.Add(TEXT("Passive"));
 
 	PrimaryActorTick.TickInterval = 0.01f;
 }

@@ -93,11 +93,21 @@ DEFINE_LOG_CATEGORY(LogABGameSingleton);
 
 UDataSingleton::UDataSingleton()
 {
-	Init<FWeaponStat, EDataType>(WeaponStatMap, TEXT("DT_WeaponStat"));
-	Init<FWeaponData, EDataType>(WeaponDataMap, TEXT("DT_WeaponData"));
-	Init<FSkillStat, EDataType>(SkillStatMap, TEXT("DT_SkillStat"));
-	Init<FSkillData, EDataType>(SkillDataMap, TEXT("DT_SkillData"));
 
+	Init<FWeaponStat>(WeaponStatMap, TEXT("DT_WeaponStat"));
+	Init<FWeaponData>(WeaponDataMap, TEXT("DT_WeaponData"));
+	Init<FSkillStat>(SkillStatMap, TEXT("DT_SkillStat_Wraith"));
+	Init<FSkillData>(SkillDataMap, TEXT("DT_SkillData_Wraith"));
+	CharacterStatTable.Add(SkillStatMap);
+	CharacterDataTable.Add(SkillDataMap);
+	//Init<FSkillStat>(SkillStatMap, TEXT("DT_SkillStat_Belica"));
+	//Init<FSkillData>(SkillDataMap, TEXT("DT_SkillData_Belica"));
+	//CharacterStatTable.Add(SkillStatMap);
+	//CharacterDataTable.Add(SkillDataMap);
+	//Init<FSkillStat>(SkillStatMap, TEXT("DT_SkillStat_Murdock"));
+	//Init<FSkillData>(SkillDataMap, TEXT("DT_SkillData_Murdock"));
+	//CharacterStatTable.Add(SkillStatMap);
+	//CharacterDataTable.Add(SkillDataMap);
 
 	CharacterMaxLevel = WeaponStatMap.Num();
 	ensure(CharacterMaxLevel > 0);
@@ -172,18 +182,25 @@ FWeaponData UDataSingleton::GetWeaponData(EWeaponName InWeaponType) const
 	return WeaponDataMap.Contains(EnumName) ? WeaponDataMap[EnumName] : FWeaponData();
 }
 
-FSkillStat UDataSingleton::GetSkillStat(ESkillAssistant InWeaponType) const
+FSkillStat UDataSingleton::GetSkillStat(ECharacterTypes InCharacterType, const FName& Index) const
 {
-	FName EnumName = FName(UEnum::GetDisplayValueAsText(InWeaponType).ToString());
+	TMap<FName, FSkillStat> Map = CharacterStatTable[static_cast<int32>(InCharacterType)];
+	
+	return Map.Contains(Index) ? Map[Index] : FSkillStat();
 
-	return SkillStatMap.Contains(EnumName) ? SkillStatMap[EnumName] : FSkillStat();
+	//FName EnumName = FName(UEnum::GetDisplayValueAsText(InCharacterType).ToString());
+
+	//return SkillStatMap.Contains(EnumName) ? SkillStatMap[EnumName] : FSkillStat();
 }
 
-FSkillData UDataSingleton::GetSkillData(ESkillAssistant InWeaponType) const
+FSkillData UDataSingleton::GetSkillData(ECharacterTypes InCharacterType, const FName& Index) const
 {
-	FName EnumName = FName(UEnum::GetDisplayValueAsText(InWeaponType).ToString());
+	TMap<FName, FSkillData> Map = CharacterDataTable[static_cast<int32>(InCharacterType)];
+	return Map.Contains(Index) ? Map[Index] : FSkillData();
 
-	return SkillDataMap.Contains(EnumName) ? SkillDataMap[EnumName] : FSkillData();
+	//FName EnumName = FName(UEnum::GetDisplayValueAsText(InCharacterType).ToString());
+
+	//return SkillDataMap.Contains(EnumName) ? SkillDataMap[EnumName] : FSkillData();
 }
 
 

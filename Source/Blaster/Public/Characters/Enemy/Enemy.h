@@ -39,7 +39,6 @@ public:
 	AEnemy();
 
 	FORCEINLINE FAIConfig GetAIConfig() const { return AIConfig; }
-	FORCEINLINE class ABaseAIController* GetBaseAIController() const { return BaseAIController; }
 
 	virtual void SetOwner(AActor* NewOwner) override;
 
@@ -109,8 +108,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class ASplineActor> PatrolTarget;
 
-	UPROPERTY(VisibleAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
-	TObjectPtr<class ABaseAIController> BaseAIController;
+	TWeakObjectPtr<class ABaseAIController> BaseAIController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<AActor> PawnDamageCauser;

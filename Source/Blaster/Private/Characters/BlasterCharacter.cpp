@@ -984,7 +984,7 @@ void ABlasterCharacter::DodgeButtonPressed()
 	//	OnSkillStarted.Broadcast(TEXT("Active"), 1, DodgeCoolTime);
 	//}
 
-	FSkillManagementStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::Dodge);
+	FSkillManagementStruct* S = SkillComponent->CoolTimeMap.Find(6);
 
 	if (S->CoolTimeCheckStruct.bCanExecute)
 	{
@@ -1020,7 +1020,7 @@ void ABlasterCharacter::DashButtonPressed()
 		//	OnSkillStarted.Broadcast(TEXT("Active"), 2, DashCoolTime);
 		//}
 
-		FSkillManagementStruct* S = SkillComponent->CoolTimeMap.Find(ESkillAssistant::Dash);
+		FSkillManagementStruct* S = SkillComponent->CoolTimeMap.Find(5);
 
 		if (S->CoolTimeCheckStruct.bCanExecute)
 		{
@@ -2001,7 +2001,7 @@ void ABlasterCharacter::ClientTesting_Implementation()
 //
 //	for (size_t i = 0; i < 5; i++)
 //	{
-//		FString Str = UEnum::GetDisplayValueAsText(ESkillAssistant::HealArea).ToString();
+//		FString Str = UEnum::GetDisplayValueAsText(ESkillType::Spawn).ToString();
 //		CoolTimeMap.Add(Str);
 //		SkillButtonPressedChecker.Add(false);
 //	}

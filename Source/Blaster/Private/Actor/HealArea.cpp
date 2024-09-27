@@ -7,10 +7,21 @@
 #include "Components/BuffComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/SkillComponent.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 AHealArea::AHealArea()
 {
+}
+
+void AHealArea::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+
+	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+	AttachToComponent(OwnerCharacter->GetMesh(), Rules, TEXT("pelvis"));
 }
 
 void AHealArea::SphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

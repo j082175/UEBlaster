@@ -56,7 +56,7 @@ void ADefenceActor::Destroyed()
 		//USkillComponent* SkillComponent = GetOwner()->GetComponentByClass<USkillComponent>();
 		//if (SkillComponent)
 		//{
-		//	SkillComponent->OnSkillAnimStarted.Broadcast(TEXT("Skill"), Index, SkillComponent->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillAssistant::HealArea).ToString())->CoolTime);
+		//	SkillComponent->OnSkillAnimStarted.Broadcast(TEXT("Skill"), Index, SkillComponent->CoolTimeMap.Find(UEnum::GetDisplayValueAsText(ESkillType::Spawn).ToString())->CoolTime);
 		//}
 	}
 }
