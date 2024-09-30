@@ -92,26 +92,24 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastCastEnd(int32 InCurrentSkillIndex);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable)
-	void ServerSpawnAttributeAssistant(int32 InCurrentSkillIndex);
+
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerSpawnAttributeAssistantDetach(int32 InCurrentSkillIndex);
 
-
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastMaterialChange();
 
 	void SkillAnimFinished(const class UWidgetAnimation* InWidgetAnimation);
 private:
 	//////////////////
 	// Owner Settings
-	TWeakObjectPtr<class ACharacterBase> CharacterOwner;
+	TWeakObjectPtr<class ABlasterCharacter> CharacterOwner;
 	///////////////////
 
 
 
 
 	void SpawnAttributeAssistant(int32 InCurrentSkillIndex);
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastSpawnAttributeAssistant(int32 InCurrentSkillIndex);
 
 	void SpawnAttributeAssistantDetach(int32 InCurrentSkillIndex);
 	UFUNCTION(NetMulticast, Reliable)
@@ -179,8 +177,10 @@ private:
 	uint8 IsSkillCostChangedBroadcasted : 1;
 
 	// Anim
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayMontage(class UAnimMontage* InMontage);
+
 public:
-	UPROPERTY(Replicated)
 	TObjectPtr<class UAnimMontage> CurrentMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -203,7 +203,12 @@ private:
 
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	int32 WeaponMaterialIndex = 4.f;
+	int32 RedWeaponMaterialIndex = 4;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	int32 BlueWeaponMaterialIndex = 4;
+
+	int32 WeaponMaterialIndex = 0;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UMaterial> UltimateWeaponMaterial_Red;

@@ -88,7 +88,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					//SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 					//SpawnedProjectile->bUseServerSideRewind = true;
 
-					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass));
+					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass));
 					if (PO)
 					{
 						PO->SetProjectileMovementVelocity(ToTarget);
@@ -113,7 +113,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					//SpawnedProjectile->InitialVelocity = SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->InitialSpeed;
 
 
-					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass));
+					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass));
 					if (PO)
 					{
 						PO->SetProjectileMovementVelocity(ToTarget);
@@ -133,7 +133,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 					//SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindProjectileClass, SocketTransform.GetLocation(), TargetRotation, SpawnParams);
 					//SpawnedProjectile->bUseServerSideRewind = false;
 
-					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ServerSideRewindProjectileClass));
+					AProjectileBullet* PO = Cast<AProjectileBullet>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObject(FTransform(TargetRotation, SocketTransform.GetLocation()), ProjectileClass));
 					if (PO)
 					{
 						PO->SetProjectileMovementVelocity(ToTarget);

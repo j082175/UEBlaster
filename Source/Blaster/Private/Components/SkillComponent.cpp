@@ -2,7 +2,7 @@
 
 
 #include "Components/SkillComponent.h"
-#include "Characters/CharacterBase.h"
+#include "Characters/BlasterCharacter.h"
 #include "Actor/HealArea.h"
 #include "Actor/ShieldBarrier.h"
 #include "Characters/Enemy/EnemyRange.h"
@@ -14,6 +14,8 @@
 #include "Item/Pickable/Weapon/Weapon_Gun.h"
 #include "GameData/DataSingleton.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Components/PoseableMeshComponent.h"
 #include "Blaster.h"
 
 // Sets default values for this component's properties
@@ -43,7 +45,7 @@ void USkillComponent::BeginPlay()
 	// ...
 
 
-	CharacterOwner = Cast<ACharacterBase>(GetOwner());
+	CharacterOwner = Cast<ABlasterCharacter>(GetOwner());
 
 	CharacterOwner->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ThisClass::OnPlayMontageNotifyBeginFunc);
 
@@ -66,7 +68,7 @@ void USkillComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME(ThisClass, SkillPoint);
 	DOREPLIFETIME(ThisClass, TempWeapon);
-	DOREPLIFETIME(ThisClass, CurrentMontage);
+	//DOREPLIFETIME(ThisClass, CurrentMontage);
 
 }
 
@@ -119,6 +121,7 @@ void USkillComponent::AddSkillPoint(int32 InAddAmount)
 
 void USkillComponent::SkillButtonPressed(int32 InIndex)
 {
+	//UE_LOG(LogTemp, Display, TEXT("SkillButtonPressed"));
 
 	ESkillType Skill = SkillList[InIndex];
 
@@ -176,6 +179,7 @@ void USkillComponent::SkillButtonPressed(int32 InIndex)
 		if (S->CoolTimeCheckStruct.bCanExecute && S->CoolTimeCheckStruct.bSkillPointEnough)
 		{
 			ServerProcedure(InIndex, S->SkillData.SkillMontage);
+
 		}
 		else
 		{
@@ -198,12 +202,13 @@ void USkillComponent::SkillCast(int32 InCurrentSkillIndex)
 
 
 	//UE_LOG(LogTemp, Display, TEXT("SkillCast"));
-	CharacterOwner->SetCombatState(ECombatState::Unoccupied);
+	//CharacterOwner->SetCombatState(ECombatState::Unoccupied);
 
 
 	MulticastCastEnd(InCurrentSkillIndex);
 
 	ESkillType SkillType = CoolTimeMap[InCurrentSkillIndex].SkillData.SkillType;
+
 	switch (SkillType)
 	{
 	case ESkillType::Slide:
@@ -243,10 +248,40 @@ void USkillComponent::UltimateCast()
 	GetWorld()->GetTimerManager().SetTimer(H, this, &ThisClass::MulticastUltimateCastFinished, S->SkillStat.MaintainTime);
 
 	MulticastCastEnd(3);
+}
 
+void USkillComponent::MulticastMaterialChange_Implementation()
+{
+	//if (S->SkillData.SkillType == ESkillType::Ultimate)
+	{
+		CharacterOwner->SetCombatState(ECombatState::UltimateMode);
 
+		//UMaterial* M = TransparentMaterial;
 
-	if (CharacterOwner->HasAuthority())
+		//if (CharacterOwner->IGetTeam() == ETeam::RedTeam)
+		//{
+		//	M = UltimateWeaponMaterial_Red;
+		//	WeaponMaterialIndex = RedWeaponMaterialIndex; // suppose to...
+		//}
+		//else if (CharacterOwner->IGetTeam() == ETeam::BlueTeam)
+		//{
+		//	M = UltimateWeaponMaterial_Blue;
+		//	WeaponMaterialIndex = BlueWeaponMaterialIndex;
+		//}
+
+		//if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
+
+		//if (const USkeletalMeshSocket* WeaponSocket = CharacterOwner->GetMesh()->)
+		{
+
+		}
+
+		CharacterOwner->SetShowRifleBone(true);
+
+		UltimateEffectComponent->Activate();
+	}
+
+	if (CharacterOwner.IsValid() && CharacterOwner->HasAuthority())
 	{
 		if (UInventoryComponent* IC = CharacterOwner->GetComponentByClass<UInventoryComponent>())
 		{
@@ -264,10 +299,6 @@ void USkillComponent::UltimateCast()
 			}
 		}
 	}
-
-
-
-
 }
 
 void USkillComponent::SkillAnimFinished(const UWidgetAnimation* InWidgetAnimation)
@@ -297,8 +328,7 @@ void USkillComponent::SkillAnimFinished(const UWidgetAnimation* InWidgetAnimatio
 		}
 	}
 
-
-
+	//CharacterOwner->SetCombatState(ECombatState::Unoccupied);
 
 
 
@@ -311,9 +341,6 @@ void USkillComponent::MulticastCastEnd_Implementation(int32 InCurrentSkillIndex)
 	S->SkillData.SkillCastingSound;
 
 	UGameplayStatics::PlaySoundAtLocation(this, S->SkillData.SkillCastingSound, CharacterOwner->GetActorLocation());
-
-
-	//OnSkillAnimStarted.Broadcast(S->SkillData.SkillAnimType, *SkillList.FindKey(InSkillAssistant), S->SkillStat.CoolTime);
 
 	ESkillAnimType SkillAnimType = S->SkillData.SkillAnimType;
 
@@ -329,81 +356,6 @@ void USkillComponent::MulticastCastEnd_Implementation(int32 InCurrentSkillIndex)
 		break;
 	default:
 		break;
-	}
-
-
-	//switch (InSkillAssistant)
-	//{
-	//case ESkillType::Dash:
-	//	break;
-	//case ESkillType::Dodge:
-	//	OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->SkillStat.CoolTime);
-	//	break;
-	//case ESkillType::Slide:
-	//	OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->SkillStat.CoolTime);
-	//	break;
-	//case ESkillType::Spawn:
-	//	OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->SkillStat.MaintainTime);
-
-	//	break;
-	//case ESkillType::Active:
-	//	OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->SkillStat.MaintainTime);
-
-	//	break;
-	//case ESkillType::Passive:
-	//	OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, *SkillList.FindKey(InSkillAssistant), S->SkillStat.CoolTime);
-
-	//	break;
-	//case ESkillType::Ultimate:
-	//{
-	//	OnSkillAnimStarted.Broadcast(ESkillAnimType::Maintain, *SkillList.FindKey(InSkillAssistant), S->SkillStat.MaintainTime);
-	//	CharacterOwner->SetCombatState(ECombatState::UltimateMode);
-
-	//	UMaterial* M = TransparentMaterial;
-
-	//	if (CharacterOwner->IGetTeam() == ETeam::RedTeam)
-	//	{
-	//		M = UltimateWeaponMaterial_Red;
-	//		WeaponMaterialIndex = 4; // suppose to...
-	//	}
-	//	else if (CharacterOwner->IGetTeam() == ETeam::BlueTeam)
-	//	{
-	//		M = UltimateWeaponMaterial_Blue;
-	//		WeaponMaterialIndex = 5;
-	//	}
-
-	//	if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
-
-	//	UltimateEffectComponent->Activate();
-	//}
-
-	//	break;
-	//case ESkillType::ESA_MAX:
-	//	break;
-	//default:
-	//	break;
-	//}
-
-	if (S->SkillData.SkillType == ESkillType::Ultimate)
-	{
-		CharacterOwner->SetCombatState(ECombatState::UltimateMode);
-
-		UMaterial* M = TransparentMaterial;
-
-		if (CharacterOwner->IGetTeam() == ETeam::RedTeam)
-		{
-			M = UltimateWeaponMaterial_Red;
-			WeaponMaterialIndex = 4; // suppose to...
-		}
-		else if (CharacterOwner->IGetTeam() == ETeam::BlueTeam)
-		{
-			M = UltimateWeaponMaterial_Blue;
-			WeaponMaterialIndex = 5;
-		}
-
-		if (M) CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, M);
-
-		UltimateEffectComponent->Activate();
 	}
 
 
@@ -528,28 +480,30 @@ void USkillComponent::SpawnAttributeAssistantDetach(int32 InCurrentSkillIndex)
 
 void USkillComponent::ProcedureFunc(int32 InCurrentSkillIndex, UAnimMontage* InMontage)
 {
-	CurrentMontage = InMontage;
+	//CurrentMontage = nullptr;
+	//CurrentMontage = InMontage;
 
-	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(CurrentMontage);
+	CharacterOwner->SetShowPistolBone(true);
+
+	MulticastPlayMontage(InMontage);
+
+	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(InMontage);
 	CharacterOwner->SetCombatState(ECombatState::SkillCasting);
 	CurrentSkillIndex = InCurrentSkillIndex;
 
+	CharacterOwner->SetRotateInPlace(false);
 }
 
 void USkillComponent::ServerProcedure_Implementation(int32 InCurrentSkillIndex, UAnimMontage* InMontage)
 {
 	ProcedureFunc(InCurrentSkillIndex, InMontage);
-}
 
-void USkillComponent::ServerSpawnAttributeAssistant_Implementation(int32 InCurrentSkillIndex)
-{
-	MulticastSpawnAttributeAssistant(InCurrentSkillIndex);
-}
+	if (InCurrentSkillIndex == 3)
+	{
+		MulticastMaterialChange();
+		CharacterOwner->SetCanInteract(false);
+	}
 
-void USkillComponent::MulticastSpawnAttributeAssistant_Implementation(int32 InCurrentSkillIndex)
-{
-	//UE_LOG(LogTemp, Warning, TEXT("MulticastSpawnAttributeAssistant"));
-	SpawnAttributeAssistant(InCurrentSkillIndex);
 }
 
 void USkillComponent::ServerSpawnAttributeAssistantDetach_Implementation(int32 InCurrentSkillIndex)
@@ -673,10 +627,19 @@ void USkillComponent::InitForWaiting()
 	}
 }
 
+void USkillComponent::MulticastPlayMontage_Implementation(UAnimMontage* InMontage)
+{
+	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(InMontage);
+}
+
 void USkillComponent::MulticastUltimateCastFinished_Implementation()
 {
 	//AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
-	CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, TransparentMaterial);
+	//CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, TransparentMaterial);
+
+	CharacterOwner->SetShowRifleBone(false);
+
+
 	UltimateEffectComponent->Deactivate();
 
 	if (UInventoryComponent* IC = CharacterOwner->GetComponentByClass<UInventoryComponent>())
@@ -701,9 +664,8 @@ void USkillComponent::UltimateCastFinishedDelay()
 		IC->SetEquippedWeapon(TempWeapon);
 		CharacterOwner->EquipWeaponFunc();
 		CharacterOwner->Fire(false);
-
-		CharacterOwner->SetCombatState(ECombatState::Unoccupied);
 		CharacterOwner->bFireButtonPressed = false;
+		CharacterOwner->SetCanInteract(true);
 	}
 
 }

@@ -28,7 +28,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
-	class ACharacterBase* CharacterOwner;
+	TWeakObjectPtr<class ACharacterBase> CharacterOwner;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
 	uint8 bIsInAir : 1;
@@ -78,6 +78,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
 	float Lean;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
+	FVector WeaponScale;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
@@ -122,8 +124,6 @@ protected:
 	uint8 bIsSprint : 1;
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
-	class ABlasterCharacter* BlasterCharacter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
 	ETurningInPlace TurningInPlace;
@@ -141,7 +141,7 @@ protected:
 	float AO_Pitch;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
-	uint8 bUseAimOffsets : 1;
+	uint8 bUseModifier : 1;
 
 	// Ragdoll
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))

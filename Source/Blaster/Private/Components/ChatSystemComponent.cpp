@@ -102,9 +102,12 @@ void UChatSystemComponent::OnChatCommittedFunc(const FText& Text, ETextCommit::T
 {
 	//UE_LOG(LogTemp, Error, TEXT("OnChatCommittedFunc : %s"), *UEnum::GetDisplayValueAsText(CommitMethod).ToString());
 
-	if (CommitMethod == ETextCommit::OnCleared || CommitMethod == ETextCommit::OnUserMovedFocus)
+	if (CommitMethod == ETextCommit::OnCleared || CommitMethod == ETextCommit::OnUserMovedFocus || CommitMethod == ETextCommit::Default)
 	{
 		//OpenChatBox();
+		ChatBox->SetVisibility(ESlateVisibility::Collapsed);
+		FInputModeGameOnly GameOnly;
+		OwingPlayerController->SetInputMode(GameOnly);
 		return;
 	}
 

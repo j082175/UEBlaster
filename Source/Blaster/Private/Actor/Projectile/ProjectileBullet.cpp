@@ -127,6 +127,9 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	//UE_LOG(LogTemp, Display, TEXT("GetOwner : %s"), *GetOwner()->GetName());
 
 
+	//UE_LOG(LogTemp, Display, TEXT("HitActor : %s"), *OtherActor->GetName());
+
+
 	ITeamInterface* TI = Cast<ITeamInterface>(OtherActor);
 
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());

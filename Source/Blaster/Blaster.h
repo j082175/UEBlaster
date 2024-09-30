@@ -35,14 +35,19 @@
 #define SOCKET_GRENADE TEXT("GrenadeSocket")
 #define SOCKET_BACKPACK TEXT("BackpackSocket")
 #define SOCKET_HAND_R TEXT("hand_rSocket")
-#define SOCKET_HAND_L TEXT("hand_lSocket")
+#define SOCKET_HAND_L_SNIPER TEXT("hand_lSocket_SniperRifle")
 #define SOCKET_HAND_L_PISTOL TEXT("hand_lSocket_Pistol")
 #define SOCKET_HAND_L_RIFLE TEXT("hand_lSocket_Rifle")
 #define SOCKET_PELVIS TEXT("pelvisSocket")
 
 #define SOCKET_FLAG TEXT("FlagSocket")
 
-
+// Paragon Character's Weapon Bone Name
+#define WEAPON_WRAITH TEXT("weapon_r")
+#define WEAPON_BELICA_RIFLE TEXT("weapon")
+#define WEAPON_BELICA_PISTOL TEXT("pistol")
+#define WEAPON_MURDOCK_RIFLE TEXT("gun")
+#define WEAPON_MURDOCK_SHOTGUN TEXT("shotgun_base")
 
 // Tag
 #define TAG_PLAYER TEXT("Player")

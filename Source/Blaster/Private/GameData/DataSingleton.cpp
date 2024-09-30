@@ -93,21 +93,26 @@ DEFINE_LOG_CATEGORY(LogABGameSingleton);
 
 UDataSingleton::UDataSingleton()
 {
+	TMap<FName, FSkillStat> SkillStatM;
+	TMap<FName, FSkillData> SkillDataM;
 
 	Init<FWeaponStat>(WeaponStatMap, TEXT("DT_WeaponStat"));
 	Init<FWeaponData>(WeaponDataMap, TEXT("DT_WeaponData"));
-	Init<FSkillStat>(SkillStatMap, TEXT("DT_SkillStat_Wraith"));
-	Init<FSkillData>(SkillDataMap, TEXT("DT_SkillData_Wraith"));
-	CharacterStatTable.Add(SkillStatMap);
-	CharacterDataTable.Add(SkillDataMap);
-	//Init<FSkillStat>(SkillStatMap, TEXT("DT_SkillStat_Belica"));
-	//Init<FSkillData>(SkillDataMap, TEXT("DT_SkillData_Belica"));
-	//CharacterStatTable.Add(SkillStatMap);
-	//CharacterDataTable.Add(SkillDataMap);
-	//Init<FSkillStat>(SkillStatMap, TEXT("DT_SkillStat_Murdock"));
-	//Init<FSkillData>(SkillDataMap, TEXT("DT_SkillData_Murdock"));
-	//CharacterStatTable.Add(SkillStatMap);
-	//CharacterDataTable.Add(SkillDataMap);
+
+	Init<FSkillStat>(SkillStatM, TEXT("DT_SkillStat_Wraith"));
+	Init<FSkillData>(SkillDataM, TEXT("DT_SkillData_Wraith"));
+	CharacterStatTable.Add(SkillStatM);
+	CharacterDataTable.Add(SkillDataM);
+
+	Init<FSkillStat>(SkillStatM, TEXT("DT_SkillStat_Belica"));
+	Init<FSkillData>(SkillDataM, TEXT("DT_SkillData_Belica"));
+	CharacterStatTable.Add(SkillStatM);
+	CharacterDataTable.Add(SkillDataM);
+
+	Init<FSkillStat>(SkillStatM, TEXT("DT_SkillStat_Murdock"));
+	Init<FSkillData>(SkillDataM, TEXT("DT_SkillData_Murdock"));
+	CharacterStatTable.Add(SkillStatM);
+	CharacterDataTable.Add(SkillDataM);
 
 	CharacterMaxLevel = WeaponStatMap.Num();
 	ensure(CharacterMaxLevel > 0);

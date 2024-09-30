@@ -70,6 +70,9 @@ public:
 
 public:
 	// Getters
+	
+
+
 	FORCEINLINE class UCombatComponent* GetCombatComponent() const { return CombatComponent; }
 	FORCEINLINE class UAttributeComponent* GetAttributeComponent() const { return AttributeComponent; }
 	FORCEINLINE class UBuffComponent* GetBuffComponent() const { return BuffComponent; }
@@ -118,6 +121,11 @@ public:
 
 	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
 	FORCEINLINE void SetIsLocallyReloading(bool InIsReload) { bLocallyReloading = InIsReload; }
+	FORCEINLINE void SetCanInteract(bool bCan) { bCanInteract = bCan; }
+
+
+
+	void SetRotateInPlace(bool InIsRotate);
 
 	//void SetEquippedWeapon(class AWeapon* W) { EquippedWeapon = W; }
 	//void SetSecondaryEquippedWeapon(class AWeapon* W) { SecondaryWeapon = W; }
@@ -174,6 +182,7 @@ public:
 
 protected:
 
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UCombatComponent> CombatComponent;
 
@@ -201,9 +210,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UMyAIPerceptionStimuliSource> AIPerceptionStimuliSource;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class USkillComponent> SkillComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UInventoryComponent> InventoryComponent;
@@ -375,6 +381,9 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState, VisibleInstanceOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	ECombatState CombatState = ECombatState::Unoccupied;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	uint8 bCanInteract : 1 = true;
+
 	// For Calculate
 protected:
 	FName CalculateHitDirection(const FVector& HitPoint);
@@ -393,7 +402,7 @@ protected:
 	float CameraThreshold = 100.f;
 
 	bool bRotateRootBone;
-	float TurnThreshold = 0.5f;
+	float TurnThreshold = 10.f;
 	FRotator ProxyRotationLastFrame;
 	FRotator ProxyRotationCurrentFrame;
 	float ProxyYawDelta;
@@ -408,6 +417,9 @@ protected:
 	FRotator StartingAimRotation;
 
 	ETurningInPlace TurningInPlace = ETurningInPlace::NotTurning;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	uint8 bRotateInPlace : 1 = true;
 	// 
 public:
 	UFUNCTION(NetMulticast, Reliable)
@@ -442,7 +454,7 @@ protected:
 
 	// Team Colors
 public:
-	void SetTeamColor(ETeam InTeam);
+	virtual void SetTeamColor(ETeam InTeam);
 protected:
 
 	UPROPERTY(EditAnywhere)

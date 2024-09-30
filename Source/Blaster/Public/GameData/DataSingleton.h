@@ -79,7 +79,7 @@ void UDataSingleton::Init(TMap<FName, DataStruct>& OutMap, const FString& InName
 	FString New = FString::Printf(TEXT("%s.%s'"), *InName, *InName);
 	Path.Append(New);
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> WeaponStatTableRef(*Path);
+	ConstructorHelpers::FObjectFinder<UDataTable> WeaponStatTableRef(*Path);
 	if (nullptr != WeaponStatTableRef.Object)
 	{
 		const UDataTable* DataTable = WeaponStatTableRef.Object;
@@ -95,6 +95,7 @@ void UDataSingleton::Init(TMap<FName, DataStruct>& OutMap, const FString& InName
 		{
 			OutMap.Emplace(WeaponTypeArray[i], *reinterpret_cast<DataStruct*>(ValueArray[i]));
 		}
+
 	}
 	else
 	{

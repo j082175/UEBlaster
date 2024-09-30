@@ -51,6 +51,8 @@ void ABlasterGameMode::PostLogin(APlayerController* PlayerController)
 	FInputModeGameOnly GameOnly;
 	PlayerController->SetInputMode(GameOnly);
 
+	//DefaultPawnClass = 
+
 	//PlayerController->GetComponentByClass<UScoreBoardComponent>()->bWorldPlayersCountChanged = true;
 }
 

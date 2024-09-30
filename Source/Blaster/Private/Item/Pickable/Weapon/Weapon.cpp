@@ -99,15 +99,15 @@ void AWeapon::SetHUDVisibility(bool IsVisible)
 {
 	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
 
-	if (BlasterOwnerCharacter)
+	if (BlasterOwnerCharacter && BlasterOwnerCharacter->IsLocallyControlled())
 	{
 		WeaponHUDComponent->SetVisibility(IsVisible);
 		WeaponHUDComponent->SetComponentTickEnabled(IsVisible);
 	}
-	else if (BlasterOwnerCharacter)
-	{
-		UE_LOG(LogTemp, Error, TEXT("AWeapon::SetHUDVisibility Failed, IsLocallyControlled : %x"), BlasterOwnerCharacter->GetController());
-	}
+	//else if (BlasterOwnerCharacter)
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("AWeapon::SetHUDVisibility Failed, IsLocallyControlled : %x"), BlasterOwnerCharacter->GetController());
+	//}
 }
 
 void AWeapon::SetHUD()

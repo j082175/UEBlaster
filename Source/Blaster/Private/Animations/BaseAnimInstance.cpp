@@ -14,6 +14,7 @@
 #include "BlasterTypes/CombatState.h"
 #include "Net/UnrealNetwork.h"
 #include "Characters/CharacterBase.h"
+#include "Components/PoseableMeshComponent.h"
 
 #include "Blaster/Blaster.h"
 
@@ -115,7 +116,8 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
 		const float Target = Delta.Yaw / DeltaTime;
 		const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 3.f);
-		Lean = FMath::Clamp(Interp, -90.f, 90.f);
+		//Lean = FMath::Clamp(Interp, -90.f, 90.f);
+		Lean = FMath::Clamp(Interp, -180.f, 180.f);
 
 
 
@@ -176,9 +178,16 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 				//FRotator LookAtRotation3 = UKismetMathLibrary::MakeRotFromY(ToHit - ToHitSpine);
 
-				RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaTime, 30.f);
-				//RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation2, DeltaTime, 10.f);
+				RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaTime, 60.f);
 
+				if (RightHandRotation.Pitch > 10.f)
+				{
+					bUseModifier = false;
+				}
+				else
+				{
+					bUseModifier = true;
+				}
 			}
 
 

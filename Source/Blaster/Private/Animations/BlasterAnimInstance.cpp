@@ -29,27 +29,20 @@ void UBlasterAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 	AB_CALLLOG(LogABNetwork, Log, TEXT("%s"), TEXT("End"));
 
-	BlasterCharacter = Cast<ABlasterCharacter>(CharacterOwner);
+	BlasterCharacterOwner = Cast<ABlasterCharacter>(TryGetPawnOwner());
 }
 
 void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
 
-	if (BlasterCharacter == nullptr)
+	if (!BlasterCharacterOwner.IsValid())
 	{
-		BlasterCharacter = Cast<ABlasterCharacter>(CharacterOwner);
+		BlasterCharacterOwner = Cast<ABlasterCharacter>(TryGetPawnOwner());
 	}
 	else
 	{
-		
-		//TurningInPlace = BlasterCharacter->GetTurningInPlace();
-		//bRotateRootBone = BlasterCharacter->ShouldRotateRootBone();
-		//bDisableGameplay = BlasterCharacter->GetDisableGameplay();
-		//AO_Yaw = BlasterCharacter->GetAO_Yaw();
-		//AO_Pitch = BlasterCharacter->GetAO_Pitch();
-
-		//bUseAimOffsets = CharacterOwner->GetCombatState() != ECombatState::Reloading && !bDisableGameplay;
-
+		bShowPistolBone = BlasterCharacterOwner->GetShowPistolBone();
+		bShowRifleBone = BlasterCharacterOwner->GetShowRifleBone();
 	}
 }

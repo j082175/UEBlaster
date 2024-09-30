@@ -2,4 +2,9 @@
 
 
 #include "Item/Pickable/Pickable.h"
+void APickable::AttachToComponentMulticast_Implementation(USceneComponent* Parent, FName SocketName)
+{
+	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+	AttachToComponent(Parent, Rules, SocketName);
+}
 

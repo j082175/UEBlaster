@@ -17,6 +17,8 @@
 #include "Components/SkillComponent.h"
 #include "Components/InventoryComponent.h"
 #include "HUD/OverheadWidgetComponent.h"
+#include "Components/PoseableMeshComponent.h"
+#include "Components/SkillComponent.h"
 
 // EnhancedInput
 #include "EnhancedInputSubsystems.h"
@@ -84,7 +86,8 @@ ABlasterCharacter::ABlasterCharacter()
 	BuffComponent = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
 	DissolveTimelineComponent = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 	AttachedGrenade = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttachedGrenade"));
-
+	PoseableMeshComponent = CreateDefaultSubobject<UPoseableMeshComponent>(TEXT("CharacterPoseableMesh"));
+	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
 
 
 	InitializeDefaults();
@@ -99,6 +102,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	HideCameraIfCharacterClose();
 
+	ModifyWeaponBoneScale();
 
 	//GetMesh()->SetComponentTickInterval(0.001);
 	GetCharacterMovement()->SetComponentTickInterval(0.f);
@@ -461,6 +465,10 @@ void ABlasterCharacter::OnPlayerStateInitialized()
 
 void ABlasterCharacter::InitializeDefaults()
 {
+	PoseableMeshComponent->SetupAttachment(RootComponent);
+	PoseableMeshComponent->SetRelativeRotation(GetMesh()->GetRelativeRotation());
+	PoseableMeshComponent->SetRelativeLocation(GetMesh()->GetRelativeLocation());
+	PoseableMeshComponent->SetSkeletalMesh(GetMesh()->GetSkeletalMeshAsset());
 
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
@@ -647,6 +655,19 @@ void ABlasterCharacter::IGetItem(AItem* InWeapon)
 	OverlappingWeapon = Cast<AWeapon>(InWeapon);
 }
 
+void ABlasterCharacter::IBindWidget(UUserWidget* InUserWidget)
+{
+	Super::IBindWidget(InUserWidget);
+
+	if (UCharacterOverlay* CO = Cast<UCharacterOverlay>(InUserWidget))
+	{
+		SkillComponent->OnSkillAnimStarted.AddUObject(CO, &UCharacterOverlay::StartSkillAnim);
+		SkillComponent->OnSkillCostChanged.AddUObject(CO, &UCharacterOverlay::SetSkillCost);
+		SkillComponent->OnSoulCountChanged.AddUObject(CO, &UCharacterOverlay::SetSoulCount);
+		SkillComponent->OnSkillCoolTimeCheck.AddUObject(CO, &UCharacterOverlay::ShowCoolTimeAnnouncement);
+	}
+}
+
 // Called to bind functionality to input
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -749,6 +770,7 @@ void ABlasterCharacter::Move(const FInputActionValue& Value)
 {
 	if (bDisableGameplay) return;
 	if (CombatState == ECombatState::Ragdoll) return;
+	if (CombatState == ECombatState::SkillCasting) return;
 
 
 	//UE_LOG(LogTemp, Display, TEXT("Move"));
@@ -804,7 +826,7 @@ void ABlasterCharacter::Interact()
 	//UE_LOG(LogTemp, Display, TEXT("Interact"));
 	if (bDisableGameplay) return;
 	if (bHoldingTheFlag) return;
-	if (CombatState == ECombatState::UltimateMode) return;
+
 
 	//if (HasAuthority())
 	//{
@@ -833,6 +855,8 @@ void ABlasterCharacter::Interact()
 		//{
 		//	EquipButtonFunc(OverlappingWeapon);
 		//}
+
+		if (!bCanInteract) return;
 		ServerEquipButtonPressed(OverlappingWeapon);
 	}
 
@@ -1944,6 +1968,68 @@ void ABlasterCharacter::OnRep_TestingBool()
 {
 	AB_LOG(LogABDisplay, Warning, TEXT(""));
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetActorTransform());
+}
+
+void ABlasterCharacter::ModifyWeaponBoneScale()
+{
+	PoseableMeshComponent->CopyPoseFromSkeletalComponent(GetMesh());
+
+	FName SocketName_Rifle;
+	FName SocketName_Pistol;
+	switch (CurrentCharacterType)
+	{
+	case ECharacterTypes::Wraith:
+		SocketName_Rifle = WEAPON_WRAITH;
+		break;
+	case ECharacterTypes::Belica:
+		SocketName_Rifle = WEAPON_BELICA_RIFLE;
+		SocketName_Pistol = WEAPON_BELICA_PISTOL;
+		break;
+	case ECharacterTypes::Murdock:
+		SocketName_Rifle = WEAPON_MURDOCK_RIFLE;
+		SocketName_Pistol = WEAPON_MURDOCK_SHOTGUN;
+		break;
+	case ECharacterTypes::MAX:
+		break;
+	default:
+		break;
+	}
+	
+	if (SocketName_Rifle != NAME_None)
+	{
+		if (bShowRifleBone) PoseableMeshComponent->SetBoneScaleByName(SocketName_Rifle, FVector(1.f), EBoneSpaces::ComponentSpace);
+		else PoseableMeshComponent->SetBoneScaleByName(SocketName_Rifle, FVector(0.f), EBoneSpaces::ComponentSpace);
+	}
+
+	if (SocketName_Pistol != NAME_None)
+	{
+		if (bShowPistolBone) PoseableMeshComponent->SetBoneScaleByName(SocketName_Pistol, FVector(1.f), EBoneSpaces::ComponentSpace);
+		else PoseableMeshComponent->SetBoneScaleByName(SocketName_Pistol, FVector(0.f), EBoneSpaces::ComponentSpace);
+	}
+
+
+}
+
+void ABlasterCharacter::SetTeamColor(ETeam InTeam)
+{
+	Super::SetTeamColor(InTeam);
+	switch (InTeam)
+	{
+	case ETeam::NoTeam:
+		break;
+	case ETeam::RedTeam:
+
+		if (RedTeamSKMesh) PoseableMeshComponent->SetSkeletalMesh(RedTeamSKMesh);
+		break;
+	case ETeam::BlueTeam:
+		if (BlueTeamSKMesh) PoseableMeshComponent->SetSkeletalMesh(BlueTeamSKMesh);
+
+		break;
+	case ETeam::ET_MAX:
+		break;
+	default:
+		break;
+	}
 }
 
 void ABlasterCharacter::MulticastTesting_Implementation()

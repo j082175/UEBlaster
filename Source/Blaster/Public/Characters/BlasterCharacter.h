@@ -48,6 +48,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	// Getters
+	FORCEINLINE class UPoseableMeshComponent* GetPoseableMesh() const { return PoseableMeshComponent; }
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
@@ -56,13 +57,15 @@ public:
 	FORCEINLINE bool GetDisableGameplay() const { return bDisableGameplay; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 
-
+	FORCEINLINE bool GetShowRifleBone() { return bShowRifleBone; }
+	FORCEINLINE bool GetShowPistolBone() { return bShowPistolBone; }
 
 
 
 	// Setters
 	FORCEINLINE void SetDisableGameplay(bool DisableGameplay) { bDisableGameplay = DisableGameplay; }
-
+	FORCEINLINE void SetShowRifleBone(bool bShow) { bShowRifleBone = bShow; }
+	FORCEINLINE void SetShowPistolBone(bool bShow) { bShowPistolBone = bShow; }
 
 	// Scope UI
 	UFUNCTION(BlueprintImplementableEvent)
@@ -85,9 +88,9 @@ protected:
 	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	// Interfaces
-private:
+public:
 	virtual void IGetItem(class AItem* InItem) override;
-
+	virtual void IBindWidget(class UUserWidget* InUserWidget) override;
 
 	// Inputs
 public:
@@ -202,8 +205,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class UPoseableMeshComponent> PoseableMeshComponent;
 
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class USkillComponent> SkillComponent;
 
 	UPROPERTY(Replicated)
 	EKeyType KeyType;
@@ -264,6 +270,7 @@ public:
 
 
 	// Crosshair & Zoom
+	virtual void EquipWeaponFunc() override;
 private:
 	//void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
@@ -290,7 +297,7 @@ private:
 	virtual void SetAiming(bool InbIsAiming) override;
 
 	virtual void FinishSwapAttachWeapons() override;
-	virtual void EquipWeaponFunc() override;
+
 
 	void EquipButtonFunc(AWeapon* InWeapon);
 
@@ -330,7 +337,7 @@ protected:
 
 	// OverheadWidget Init
 
-	
+
 	TWeakObjectPtr<class UOverheadWidget> OpponentOverheadWidget;
 
 
@@ -343,7 +350,7 @@ protected:
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	//float DashCoolTime = 2.f;
 	//uint8 bCanDash : 1 = true;
-	
+
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void MulticastTesting();
 
@@ -358,4 +365,14 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRep_TestingBool)
 	bool TestingBool;
+
+private:
+	void ModifyWeaponBoneScale();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	uint8 bShowPistolBone : 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	uint8 bShowRifleBone : 1;
+
+	virtual void SetTeamColor(ETeam InTeam) override;
 };

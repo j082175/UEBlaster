@@ -5,6 +5,7 @@
 #include "Blaster/Blaster.h"
 
 // Components
+
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,7 +24,6 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/MyAIPerceptionStimuliSource.h"
 #include "Components/ObjectPoolComponent.h"
-#include "Components/SkillComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Components/ReceiveDamageHUDComponent.h"
 #include "Components/SphereComponent.h"
@@ -113,13 +113,15 @@
 
 // Set default values
 ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+	:Super(ObjectInitializer.SetDefaultSubobjectClass<UMyCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 
 	//UE_LOG(LogTemp, Display, TEXT("Construction Super getname : %s"), *GetName());
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+
 
 	HpBarWidgetComponent = CreateDefaultSubobject<UHpBarWidgetComponent>(TEXT("HpBarWidgetComponent"));
 	ensure(HpBarWidgetComponent);
@@ -140,7 +142,6 @@ ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer)
 
 	AIPerceptionStimuliSource = CreateDefaultSubobject<UMyAIPerceptionStimuliSource>(TEXT("AIPerceptionStimuliSource"));
 
-	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 
 	OverheadWidgetComponent = CreateDefaultSubobject<UOverheadWidgetComponent>(TEXT("OverheadWidgetComponent"));
@@ -218,6 +219,7 @@ void ACharacterBase::BeginPlay()
 	Super::BeginPlay();
 
 	//UE_LOG(LogTemp, Warning, TEXT("Base Beginplay"));
+	//PoseableMeshComponent->SetSkeletalMesh(GetMesh()->GetSkeletalMeshAsset());
 
 	InitializeDelegates();
 	InitializeWidgets();
@@ -292,8 +294,12 @@ void ACharacterBase::Tick(float DeltaTime)
 	//UE_LOG(LogTemp, Display, TEXT("Tick~ : %s"), *GetFName().ToString());
 
 	//PollInit();
+	// 
 
-	RotateInPlace(DeltaTime);
+
+
+
+	if (bRotateInPlace) RotateInPlace(DeltaTime);
 	UpdateMotionWarpingTransform();
 
 	DashTimeline.TickTimeline(DeltaTime);
@@ -387,11 +393,6 @@ void ACharacterBase::IBindWidget(UUserWidget* InUserWidget)
 		AttributeComponent->OnShieldChanged.AddUObject(CO, &UCharacterOverlay::SetShieldBar);
 		AttributeComponent->OnSpChanged.AddUObject(CO, &UCharacterOverlay::SetSpBar);
 		AttributeComponent->OnParryGaugeChanged.AddUObject(CO, &UCharacterOverlay::SetParryGaugeBar);
-
-		SkillComponent->OnSkillAnimStarted.AddUObject(CO, &UCharacterOverlay::StartSkillAnim);
-		SkillComponent->OnSkillCostChanged.AddUObject(CO, &UCharacterOverlay::SetSkillCost);
-		SkillComponent->OnSoulCountChanged.AddUObject(CO, &UCharacterOverlay::SetSoulCount);
-		SkillComponent->OnSkillCoolTimeCheck.AddUObject(CO, &UCharacterOverlay::ShowCoolTimeAnnouncement);
 
 		//InventoryComponent->OnCurrentAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetCurrentAmmo);
 		//InventoryComponent->OnCarriedAmmoChanged.BindUObject(CO, &UCharacterOverlay::SetMaxAmmo);
@@ -841,7 +842,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Owner : %s, OnMontageEnded : %s, Interrupt : %d"), *GetName(), *Montage->GetName(), bInterrupted);
 
-
+	if (CombatState == ECombatState::Parried) return;
 
 	if (bInterrupted)
 	{
@@ -860,7 +861,6 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 
 	if (!bInterrupted)
 	{
-		if (CombatState == ECombatState::Parried) return;
 
 		//AAIController* AIController = Cast<AAIController>(GetController());
 		//if (AIController && AIController->GetBlackboardComponent())
@@ -868,7 +868,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 		//	AIController->GetBlackboardComponent()->SetValueAsEnum(E_COMBAT_STATE, (int)CombatState);
 		//}
 
-		if (CombatState == ECombatState::UltimateMode) return;
+
 		CombatState = ECombatState::Unoccupied;
 
 
@@ -892,7 +892,7 @@ void ACharacterBase::OnMontageEndedFunc(UAnimMontage* Montage, bool bInterrupted
 		}
 		else if (Montage == AttackMontage)
 		{
-			if (CombatState != ECombatState::UltimateMode) CombatState = ECombatState::Unoccupied;
+			CombatState = ECombatState::Unoccupied;
 			//CrosshairShootingFactor = 0.75f;
 		}
 		else if (CombatState == ECombatState::SwappingWeapon)
@@ -1452,7 +1452,10 @@ void ACharacterBase::OnRep_CombatState()
 		PlayAnimMontage(UpMontageForMultiplayer);
 		break;
 	case ECombatState::SkillCasting:
-		GetMesh()->GetAnimInstance()->Montage_Play(SkillComponent->CurrentMontage);
+		//GetMesh()->GetAnimInstance()->Montage_Play(SkillComponent->CurrentMontage);
+		break;
+	case ECombatState::UltimateMode:
+		//GetMesh()->GetAnimInstance()->Montage_Play(SkillComponent->CurrentMontage);
 		break;
 	case ECombatState::ECS_MAX:
 		break;
@@ -1546,6 +1549,10 @@ void ACharacterBase::InitializeDelegates()
 
 void ACharacterBase::InitializeDefaults()
 {
+	//UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
+	//for (int32 i = 0; i < OwnerCharacter->GetMesh()->SkeletalMesh->Materials.Num(); i++)
+	//	PoseableMeshComponent->SetMaterial(i, DynamicMaterial);
+
 	InitDashCurve();
 
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
@@ -1576,6 +1583,9 @@ void ACharacterBase::InitializeDefaults()
 	HpBarWidgetComponent->SetVisibility(false);
 
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+
+
 }
 
 FName ACharacterBase::CalculateHitDirection(const FVector& InHitPoint)
@@ -1779,6 +1789,21 @@ void ACharacterBase::SetHoldingTheFlag(bool bHolding)
 	bHoldingTheFlag = bHolding;
 }
 
+void ACharacterBase::SetRotateInPlace(bool InIsRotate)
+{
+	bRotateInPlace = InIsRotate;
+
+	if (InIsRotate)
+	{
+		GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	}
+	else
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	}
+}
+
 bool ACharacterBase::IsWeaponEquipped()
 {
 	return InventoryComponent->EquippedWeapon == nullptr ? false : true;
@@ -1964,16 +1989,16 @@ void ACharacterBase::PlayMantleMontage(FName SectionName)
 void ACharacterBase::PlayBoltActionMontage(FName SectionName)
 {
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && BoltActionMontage)
-	{
-		CombatState = ECombatState::Reloading;
-		AttachActorToLeftHand(InventoryComponent->EquippedWeapon);
+	//UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//if (AnimInstance && BoltActionMontage)
+	//{
+	//	CombatState = ECombatState::Reloading;
+	//	AttachActorToLeftHand(InventoryComponent->EquippedWeapon);
 
-		AnimInstance->Montage_Play(BoltActionMontage);
-		if (SectionName.ToString() == TEXT("")) return;
-		AnimInstance->Montage_JumpToSection(SectionName, BoltActionMontage);
-	}
+	//	AnimInstance->Montage_Play(BoltActionMontage);
+	//	if (SectionName.ToString() == TEXT("")) return;
+	//	AnimInstance->Montage_JumpToSection(SectionName, BoltActionMontage);
+	//}
 }
 
 void ACharacterBase::UpdateDissolveMaterial(float DissolveValue)
@@ -2011,7 +2036,11 @@ void ACharacterBase::SetTeamColor(ETeam InTeam)
 		//GetMesh()->SetMaterial(1, RedMaterial);
 		//DissolveMaterialInstance = RedDissolveMatInst;
 
-		if (RedTeamSKMesh) GetMesh()->SetSkeletalMesh(RedTeamSKMesh);
+		if (RedTeamSKMesh)
+		{
+			GetMesh()->SetSkeletalMesh(RedTeamSKMesh);
+
+		}
 
 		//UE_LOG(LogTemp, Warning, TEXT("%s ,%s, : RedTeam~"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), *GetName());
 
@@ -2263,7 +2292,7 @@ void ACharacterBase::ElimTimerFinished()
 	{
 		Destroy();
 		//GetController()->Destroy();
-		
+
 		//Recover();
 		//SetIsActive(false);
 	}
@@ -2617,11 +2646,11 @@ void ACharacterBase::StartFireTimer()
 	if (InventoryComponent->EquippedWeapon == nullptr) return;
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
-	
+
 	float WeaponFireDelay = Gun->GetFireDelay();
 	float FinalDelay = (WeaponFireDelay - (GetWorld()->GetDeltaSeconds()));
 	//float FinalDelay = WeaponFireDelay * (GetWorld()->GetDeltaSeconds());
-	
+
 
 
 	//UE_LOG(LogTemp, Display, TEXT("FinalDelay : %f"), FinalDelay);
@@ -2766,7 +2795,7 @@ void ACharacterBase::LocalFire(bool bPressed, const FVector_NetQuantize& TraceHi
 
 	if (bPressed)
 	{
-		if (CombatState != ECombatState::UltimateMode) CombatState = ECombatState::Attacking;
+		CombatState = ECombatState::Attacking;
 		PlayFireMontage(bIsAiming);
 		Gun->Fire(TraceHitTarget);
 	}
@@ -2923,7 +2952,8 @@ void ACharacterBase::UpdateShotgunAmmoValues()
 void ACharacterBase::Reload()
 {
 	//UE_LOG(LogTemp, Display, TEXT("CombatState : %d"), CombatState);
-	if ((int)CombatState > 1) return;
+	if (CombatState != ECombatState::Unoccupied) return;
+
 	AWeapon_Gun* Gun = Cast<AWeapon_Gun>(InventoryComponent->EquippedWeapon);
 	if (!Gun) return;
 
@@ -2939,6 +2969,7 @@ void ACharacterBase::HandleReload()
 {
 	//bLocallyReloading = true;
 	CombatState = ECombatState::Reloading;
+
 	PlayReloadMontage();
 }
 
@@ -3190,7 +3221,7 @@ void ACharacterBase::AttachActorToLeftHand(AActor* ActorToAttach)
 
 	if (InventoryComponent->EquippedWeapon->GetWeaponType() == EWeaponType::SniperRifle)
 	{
-		SocketName = SOCKET_HAND_L;
+		SocketName = SOCKET_HAND_L_SNIPER;
 	}
 
 	const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(SocketName);
@@ -3313,7 +3344,7 @@ void ACharacterBase::LaunchGrenade()
 void ACharacterBase::MulticastLaunchGrenade_Implementation(const FVector_NetQuantize& Target)
 {
 	if (!HasAuthority() && !IsLocallyControlled())
-	LaunchGrenadeFunc(Target);
+		LaunchGrenadeFunc(Target);
 }
 
 
@@ -3612,7 +3643,9 @@ void ACharacterBase::SimProxiesTurn()
 
 void ACharacterBase::TurnInPlace(float DeltaTime)
 {
-	float TurningThreshold = 45.f;
+	//float TurningThreshold = 45.f;
+	float TurningThreshold = 85.f;
+
 
 	if (AO_Yaw > TurningThreshold) // Right Turning Threshold
 	{
@@ -3627,7 +3660,8 @@ void ACharacterBase::TurnInPlace(float DeltaTime)
 	{
 		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 6.f);
 		AO_Yaw = InterpAO_Yaw;
-		if (FMath::Abs(AO_Yaw) < 15.f)
+		//if (FMath::Abs(AO_Yaw) < 15.f) // This cause Animation Freezing!
+		if (FMath::Abs(AO_Yaw) < 1.f)
 		{
 			TurningInPlace = ETurningInPlace::NotTurning;
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
