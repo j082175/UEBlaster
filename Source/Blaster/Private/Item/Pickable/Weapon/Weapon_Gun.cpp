@@ -482,7 +482,7 @@ void AWeapon_Gun::InitData()
 void AWeapon_Gun::Fire(const FVector& HitTarget)
 {
 
-	if (FireAnimation)
+	if (FireAnimation && bPlayFireAnimation)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("Fire"));
 		WeaponSKMesh->PlayAnimation(FireAnimation, false);

@@ -282,6 +282,8 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Pitch, COND_SimulatedOnly);
 	DOREPLIFETIME_CONDITION(ThisClass, AO_Yaw, COND_SimulatedOnly);
 	DOREPLIFETIME(ThisClass, Team);
+	DOREPLIFETIME(ThisClass, CurrentCharacterType);
+
 
 	//DOREPLIFETIME_CONDITION(ThisClass, bLocallyReloading, COND_AutonomousOnly);
 }
@@ -2847,6 +2849,11 @@ bool ACharacterBase::CanFire()
 	if (Gun->IsEmpty()) Reload();
 
 	return !Gun->IsEmpty() && (CombatState == ECombatState::Unoccupied || CombatState == ECombatState::HitReact || CombatState == ECombatState::Attacking || CombatState == ECombatState::UltimateMode);
+}
+
+void ACharacterBase::ServerSetHitTarget_Implementation(const FVector_NetQuantize& InHitTarget)
+{
+	HitTarget = InHitTarget;
 }
 
 void ACharacterBase::PickupAmmo(EWeaponType InWeaponType, int32 AmmoAmount)

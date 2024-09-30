@@ -185,6 +185,9 @@ protected:
 	TObjectPtr<class UAnimationAsset> FireAnimation;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	uint8 bPlayFireAnimation : 1 = true;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<class USoundBase> FireSound;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")

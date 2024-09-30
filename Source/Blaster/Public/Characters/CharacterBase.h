@@ -70,7 +70,7 @@ public:
 
 public:
 	// Getters
-	
+
 
 
 	FORCEINLINE class UCombatComponent* GetCombatComponent() const { return CombatComponent; }
@@ -478,7 +478,7 @@ protected:
 	//UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	//TMap<ECharacterTypes, class USkeletalMesh*> BlueTeamSKMeshMap;
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	UPROPERTY(Replicated, EditAnywhere, meta = (AllowPrivateAccess = true))
 	ECharacterTypes CurrentCharacterType;
 
 	UPROPERTY(EditAnywhere)
@@ -588,8 +588,8 @@ public:
 	virtual void Fire(bool bPressed);
 
 	uint8 bFireButtonPressed : 1;
-protected:
 	virtual void FireProjectileWeapon(bool bPressed);
+protected:
 	virtual void FireHitScanWeapon(bool bPressed);
 	virtual void FireShotgun(bool bPressed);
 	void ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
@@ -614,8 +614,11 @@ protected:
 
 	uint8 bReloadStopCheck : 1;
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetHitTarget(const FVector_NetQuantize& InHitTarget);
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FVector HitTarget;
 
 

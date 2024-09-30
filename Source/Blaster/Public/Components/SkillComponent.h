@@ -111,6 +111,15 @@ private:
 
 	void SpawnAttributeAssistant(int32 InCurrentSkillIndex);
 
+	void Inflict();
+
+	void Inflict_Belica();
+	void Inflict_Belica_SkillQ();
+	void Inflict_Belica_FireBullet();
+	UPROPERTY()
+	TObjectPtr<class AProjectileWeapon> BelicaPistol;
+
+
 	void SpawnAttributeAssistantDetach(int32 InCurrentSkillIndex);
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSpawnAttributeAssistantDetach(int32 InCurrentSkillIndex);

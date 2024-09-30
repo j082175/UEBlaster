@@ -16,6 +16,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/PoseableMeshComponent.h"
+#include "DamageType/DamageType_Rumbling.h"
+#include "Item/Pickable/Weapon/ProjectileWeapon.h"
 #include "Blaster.h"
 
 // Sets default values for this component's properties
@@ -200,8 +202,6 @@ void USkillComponent::SkillCast(int32 InCurrentSkillIndex)
 
 	AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
 
-
-	//UE_LOG(LogTemp, Display, TEXT("SkillCast"));
 	//CharacterOwner->SetCombatState(ECombatState::Unoccupied);
 
 
@@ -221,6 +221,7 @@ void USkillComponent::SkillCast(int32 InCurrentSkillIndex)
 		SpawnAttributeAssistant(InCurrentSkillIndex);
 		break;
 	case ESkillType::Active:
+		Inflict();
 		break;
 	case ESkillType::Passive:
 		break;
@@ -254,7 +255,6 @@ void USkillComponent::MulticastMaterialChange_Implementation()
 {
 	//if (S->SkillData.SkillType == ESkillType::Ultimate)
 	{
-		CharacterOwner->SetCombatState(ECombatState::UltimateMode);
 
 		//UMaterial* M = TransparentMaterial;
 
@@ -367,11 +367,14 @@ void USkillComponent::MulticastCastEnd_Implementation(int32 InCurrentSkillIndex)
 
 void USkillComponent::SpawnAttributeAssistant(int32 InCurrentSkillIndex)
 {
+	if (!CharacterOwner->HasAuthority()) return;
 	if (!CharacterOwner.IsValid()) return;
 
 	FSkillManagementStruct* S = CoolTimeMap.Find(InCurrentSkillIndex);
 
-	FTransform SpawnTo(CharacterOwner->GetActorRotation(), CharacterOwner->GetActorLocation() + FVector(0.f, 0.f, 100.f));
+	FTransform SpawnTo;
+	SpawnTo = FTransform(CharacterOwner->GetActorRotation(), CharacterOwner->GetActorLocation() + FVector(0.f, 0.f, 100.f));
+
 	AActor* SpawnActor = GetWorld()->SpawnActorDeferred<AActor>(S->SkillData.SpawnActorClass, SpawnTo);
 	if (SpawnActor)
 	{
@@ -448,6 +451,85 @@ void USkillComponent::SpawnAttributeAssistant(int32 InCurrentSkillIndex)
 	//}
 }
 
+void USkillComponent::Inflict()
+{
+	ECharacterTypes CharacterTypes = CharacterOwner->GetCharacterType();
+
+	switch (CharacterTypes)
+	{
+	case ECharacterTypes::Wraith:
+		break;
+	case ECharacterTypes::Belica:
+		Inflict_Belica();
+		break;
+	case ECharacterTypes::Murdock:
+		break;
+	case ECharacterTypes::MAX:
+		break;
+	default:
+		break;
+	}
+}
+
+void USkillComponent::Inflict_Belica()
+{
+	switch (CurrentSkillIndex)
+	{
+	case 0:
+		Inflict_Belica_SkillQ();
+		break;
+	case 1:
+		Inflict_Belica_FireBullet();
+		break;
+	case 2:
+
+		break;
+	default:
+		break;
+	}
+}
+
+void USkillComponent::Inflict_Belica_SkillQ()
+{
+	if (!CharacterOwner->HasAuthority()) return;
+	FVector Start = CharacterOwner->GetActorLocation();
+	FVector End = CharacterOwner->GetActorLocation() + CharacterOwner->GetActorForwardVector() * 400.f;
+
+	ETraceTypeQuery CanDamagedByWeapon = UEngineTypes::ConvertToTraceType(ECC_CanDamagedByWeapon);
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(CharacterOwner.Get());
+	FHitResult HitResult;
+	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(100.f, 100.f, 10.f), CharacterOwner->GetActorRotation(), CanDamagedByWeapon, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitResult, true, FLinearColor::Green);
+
+	if (HitResult.bBlockingHit)
+	{
+		UGameplayStatics::ApplyDamage(HitResult.GetActor(), 100.f, CharacterOwner->GetController(), CharacterOwner.Get(), UDamageType_Rumbling::StaticClass());
+	}
+}
+
+void USkillComponent::Inflict_Belica_FireBullet()
+{
+	FTransform SpawnTo = FTransform(CharacterOwner->GetActorRotation(), CharacterOwner->GetActorLocation() + FVector(0.f, 0.f, 100.f));
+	FSkillManagementStruct* S = CoolTimeMap.Find(CurrentSkillIndex);
+
+	if (!BelicaPistol)
+	{
+		BelicaPistol = GetWorld()->SpawnActorDeferred<AProjectileWeapon>(S->SkillData.SpawnActorClass, SpawnTo);
+		BelicaPistol->SetOwner(CharacterOwner.Get());
+		BelicaPistol->SetInstigator(CharacterOwner.Get());
+		BelicaPistol->FinishSpawning(SpawnTo);
+	}
+
+	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+	BelicaPistol->AttachToComponent(CharacterOwner->GetMesh(), Rules, SOCKET_HAND_R);
+
+	BelicaPistol->Fire(CharacterOwner->GetHitTarget());
+
+	//FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	//BelicaPistol->DetachFromActor(DetachRules);
+	//BelicaPistol->Destroy();
+}
+
 void USkillComponent::SpawnAttributeAssistantDetach(int32 InCurrentSkillIndex)
 {
 	if (!CharacterOwner.Get()) return;
@@ -482,8 +564,6 @@ void USkillComponent::ProcedureFunc(int32 InCurrentSkillIndex, UAnimMontage* InM
 {
 	//CurrentMontage = nullptr;
 	//CurrentMontage = InMontage;
-
-	CharacterOwner->SetShowPistolBone(true);
 
 	MulticastPlayMontage(InMontage);
 
@@ -630,6 +710,7 @@ void USkillComponent::InitForWaiting()
 void USkillComponent::MulticastPlayMontage_Implementation(UAnimMontage* InMontage)
 {
 	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(InMontage);
+	CharacterOwner->SetShowPistolBone(true);
 }
 
 void USkillComponent::MulticastUltimateCastFinished_Implementation()

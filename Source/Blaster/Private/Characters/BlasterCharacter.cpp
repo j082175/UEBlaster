@@ -141,6 +141,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
 		HitTarget = HitResult.ImpactPoint;
+		ServerSetHitTarget(HitTarget);
 		SetHUDCrosshairs(DeltaTime);
 		InterpFOV(DeltaTime);
 

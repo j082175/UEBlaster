@@ -105,7 +105,6 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	//UE_LOG(LogTemp, Display, TEXT("onhit"));
 
 
-
 	if (GetOwner() == OtherActor)
 	{
 		//UE_LOG(LogTemp, Error, TEXT("Rocket Owner : %s"), *GetOwner()->GetName());
@@ -118,7 +117,7 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		return;
 	}
 
-	ExplodeDamage();
+	if (GetOwner() && GetOwner()->HasAuthority()) ExplodeDamage();
 
 	StartDestroyTimer();
 
