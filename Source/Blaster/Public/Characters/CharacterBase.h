@@ -120,9 +120,10 @@ public:
 	FORCEINLINE void SetDisableGameplay(bool IsDisable) { bDisableGameplay = IsDisable; }
 
 	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
+	FORCEINLINE void SetAnimState(EAnimState InAnimState) { AnimState = InAnimState; }
 	FORCEINLINE void SetIsLocallyReloading(bool InIsReload) { bLocallyReloading = InIsReload; }
 	FORCEINLINE void SetCanInteract(bool bCan) { bCanInteract = bCan; }
-
+	FORCEINLINE void SetDisableAiming(bool bCan) { bDisableAiming = bCan; }
 
 
 	void SetRotateInPlace(bool InIsRotate);
@@ -514,6 +515,9 @@ protected:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	uint8 bDisableGameplay : 1;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	uint8 bDisableAiming : 1;
 
 
 	UPROPERTY(Replicated)

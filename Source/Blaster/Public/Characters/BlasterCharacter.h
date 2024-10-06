@@ -57,15 +57,9 @@ public:
 	FORCEINLINE bool GetDisableGameplay() const { return bDisableGameplay; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 
-	FORCEINLINE bool GetShowRifleBone() { return bShowRifleBone; }
-	FORCEINLINE bool GetShowPistolBone() { return bShowPistolBone; }
-
-
 
 	// Setters
 	FORCEINLINE void SetDisableGameplay(bool DisableGameplay) { bDisableGameplay = DisableGameplay; }
-	FORCEINLINE void SetShowRifleBone(bool bShow) { bShowRifleBone = bShow; }
-	FORCEINLINE void SetShowPistolBone(bool bShow) { bShowPistolBone = bShow; }
 
 	// Scope UI
 	UFUNCTION(BlueprintImplementableEvent)
@@ -366,13 +360,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRep_TestingBool)
 	bool TestingBool;
 
-private:
+public:
+	void HideWeaponBone(bool bHide, bool bRifle);
 	void ModifyWeaponBoneScale();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	uint8 bShowPistolBone : 1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	uint8 bShowRifleBone : 1;
-
 	virtual void SetTeamColor(ETeam InTeam) override;
+
+public:
+
 };

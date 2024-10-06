@@ -208,7 +208,7 @@ void UBaseAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		//	bUseFABRIK = !CharacterOwner->IsLocallyReloading();
 		//}
 
-		if (AnimState != EAnimState::UnEquipped)
+		if (AnimState == EAnimState::Combat || AnimState == EAnimState::Equipped)
 		{
 			bUseFABRIK = (int)CharacterOwner->GetCombatState() <= (int)ECombatState::Attacking;
 		}

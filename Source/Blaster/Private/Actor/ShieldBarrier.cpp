@@ -4,6 +4,9 @@
 #include "Actor/ShieldBarrier.h"
 #include "Components/AttributeComponent.h"
 #include "GameFramework/Character.h"
+//#include "Characters/BlasterCharacter.h"
+#include "Enums/CharacterTypes.h"
+#include "Blaster.h"
 
 // Sets default values
 AShieldBarrier::AShieldBarrier()
@@ -15,10 +18,10 @@ void AShieldBarrier::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+	ACharacter* CharacterOwner = Cast<ACharacter>(GetOwner());
 
 	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
-	AttachToComponent(OwnerCharacter->GetMesh(), Rules, TEXT("pelvis"));
+	AttachToComponent(CharacterOwner->GetMesh(), Rules, TEXT("pelvis"));
 }
 
 void AShieldBarrier::Destroyed()

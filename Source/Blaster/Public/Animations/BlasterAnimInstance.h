@@ -30,8 +30,4 @@ protected:
 	TWeakObjectPtr<class ABlasterCharacter> BlasterCharacterOwner;
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
-	uint8 bShowPistolBone : 1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlasterAnimInstance|Movement", meta = (AllowPrivateAccess = true))
-	uint8 bShowRifleBone : 1;
 };

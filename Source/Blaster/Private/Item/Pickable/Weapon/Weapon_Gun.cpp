@@ -505,7 +505,7 @@ void AWeapon_Gun::Fire(const FVector& HitTarget)
 
 	if (WeaponType != EWeaponType::SniperRifle && WeaponType != EWeaponType::Shotgun) EjectCasing();
 
-	if (true) // HasAutority 를 지움으로서 Client-Side Prediction 구현 하지만 Jitter 발생 => Replicated 가 아닌 RPC 로 해결
+	if (!bIsTemporal) // HasAutority 를 지움으로서 Client-Side Prediction 구현 하지만 Jitter 발생 => Replicated 가 아닌 RPC 로 해결
 	{
 		SpendRound();
 	}

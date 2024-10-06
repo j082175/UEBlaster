@@ -15,7 +15,7 @@ void UAnimNotify_SkillAnimEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 			if (CB->GetCombatState() != ECombatState::UltimateMode)
 			{
 				CB->SetCombatState(ECombatState::Unoccupied);
-				CB->SetShowPistolBone(false);
+				CB->HideWeaponBone(true, false);
 			}
 
 			CB->SetRotateInPlace(true);

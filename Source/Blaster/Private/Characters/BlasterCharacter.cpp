@@ -102,7 +102,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	HideCameraIfCharacterClose();
 
-	ModifyWeaponBoneScale();
+	//ModifyWeaponBoneScale();
 
 	//GetMesh()->SetComponentTickInterval(0.001);
 	GetCharacterMovement()->SetComponentTickInterval(0.f);
@@ -235,7 +235,10 @@ void ABlasterCharacter::BeginPlay()
 
 	BlasterPlayerController = Cast<ABlasterPlayerController>(GetController());
 
+	HideWeaponBone(true, true);
+	HideWeaponBone(true, false);
 
+	
 	//FTimerHandle H;
 	//GetWorldTimerManager().SetTimer(H, FTimerDelegate::CreateLambda([&]()
 	//	{
@@ -466,17 +469,15 @@ void ABlasterCharacter::OnPlayerStateInitialized()
 
 void ABlasterCharacter::InitializeDefaults()
 {
-	PoseableMeshComponent->SetupAttachment(RootComponent);
-	PoseableMeshComponent->SetRelativeRotation(GetMesh()->GetRelativeRotation());
-	PoseableMeshComponent->SetRelativeLocation(GetMesh()->GetRelativeLocation());
-	PoseableMeshComponent->SetSkeletalMesh(GetMesh()->GetSkeletalMeshAsset());
 
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	CameraBoom->AddRelativeLocation(FVector(0.f, 0.f, 80.f));
-	CameraBoom->TargetArmLength = 400.f;
+	CameraBoom->SocketOffset = FVector(0.f, 80.f, 0.f);
+	CameraBoom->TargetArmLength = 100.f;
 	CameraBoom->bUsePawnControlRotation = true;
 	CameraBoom->SetupAttachment(GetCapsuleComponent());
+	CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, 80.f));
+	//CameraBoom->SetupAttachment(GetMesh(), TEXT("head"));
 
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	//FollowCamera->SetupAttachment(GetMesh(), TEXT("head"));
@@ -494,6 +495,9 @@ void ABlasterCharacter::InitializeDefaults()
 
 	AttachedGrenade->SetupAttachment(GetMesh(), SOCKET_GRENADE);
 	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//PoseableMeshComponent->SetupAttachment(GetMesh());
+	//PoseableMeshComponent->SetSkeletalMesh(GetMesh()->GetSkeletalMeshAsset());
 
 
 	// Hit boxes for server-side rewind
@@ -897,6 +901,7 @@ void ABlasterCharacter::AimButtonPressed(const FInputActionValue& isPressed)
 {
 	//UE_LOG(LogTemp, Display, TEXT("Pressed : %d"), isPressed.Get<bool>());
 	if (bDisableGameplay) return;
+	if (bDisableAiming) return;
 	if (bHoldingTheFlag) return;
 
 	if (InventoryComponent->EquippedWeapon)
@@ -910,6 +915,7 @@ void ABlasterCharacter::AimButtonReleased(const FInputActionValue& isPressed)
 {
 	//UE_LOG(LogTemp, Display, TEXT("Released : %d"), isPressed.Get<bool>());
 	if (bDisableGameplay) return;
+	if (bDisableAiming) return;
 	if (bHoldingTheFlag) return;
 	if (InventoryComponent->EquippedWeapon)
 	{
@@ -1316,6 +1322,7 @@ void ABlasterCharacter::HideCameraIfCharacterClose()
 	if ((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
 	{
 		GetMesh()->SetVisibility(false);
+		//PoseableMeshComponent->SetVisibility(false);
 
 		if (Gun->GetWeaponMesh())
 		{
@@ -1330,6 +1337,7 @@ void ABlasterCharacter::HideCameraIfCharacterClose()
 	else
 	{
 		GetMesh()->SetVisibility(true);
+		//PoseableMeshComponent->SetVisibility(true);
 		if (Gun->GetWeaponMesh())
 		{
 			Gun->GetWeaponMesh()->bOwnerNoSee = false;
@@ -1457,6 +1465,7 @@ void ABlasterCharacter::MulticastElim_Implementation(bool bPlayerLeftGame)
 	//AB_LOG(LogABDisplay, Warning, TEXT(""));
 	Super::MulticastElim_Implementation(bPlayerLeftGame);
 
+	//PoseableMeshComponent->SetVisibility(false);
 
 	bLeftGame = bPlayerLeftGame;
 
@@ -1971,9 +1980,95 @@ void ABlasterCharacter::OnRep_TestingBool()
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CharacterSpawnEffect, GetActorTransform());
 }
 
+void ABlasterCharacter::HideWeaponBone(bool bHide, bool bRifle)
+{
+	if (bHide)
+	{
+		if (bRifle)
+		{
+			switch (CurrentCharacterType)
+			{
+			case ECharacterTypes::Wraith:
+				GetMesh()->HideBoneByName(WEAPON_WRAITH, EPhysBodyOp::PBO_None);
+				break;
+			case ECharacterTypes::Belica:
+				GetMesh()->HideBoneByName(WEAPON_BELICA_RIFLE, EPhysBodyOp::PBO_None);
+				break;
+			case ECharacterTypes::Murdock:
+				GetMesh()->HideBoneByName(WEAPON_MURDOCK_RIFLE, EPhysBodyOp::PBO_None);
+				break;
+			case ECharacterTypes::MAX:
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
+			switch (CurrentCharacterType)
+			{
+			case ECharacterTypes::Wraith:
+				break;
+			case ECharacterTypes::Belica:
+				GetMesh()->HideBoneByName(WEAPON_BELICA_PISTOL, EPhysBodyOp::PBO_None);
+				break;
+			case ECharacterTypes::Murdock:
+				GetMesh()->HideBoneByName(WEAPON_MURDOCK_SHOTGUN, EPhysBodyOp::PBO_None);
+				break;
+			case ECharacterTypes::MAX:
+				break;
+			default:
+				break;
+			}
+		}
+
+	}
+	else
+	{
+		if (bRifle)
+		{
+			switch (CurrentCharacterType)
+			{
+			case ECharacterTypes::Wraith:
+				GetMesh()->UnHideBoneByName(WEAPON_WRAITH);
+				break;
+			case ECharacterTypes::Belica:
+				GetMesh()->UnHideBoneByName(WEAPON_BELICA_RIFLE);
+				break;
+			case ECharacterTypes::Murdock:
+				GetMesh()->UnHideBoneByName(WEAPON_MURDOCK_RIFLE);
+				break;
+			case ECharacterTypes::MAX:
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
+			switch (CurrentCharacterType)
+			{
+			case ECharacterTypes::Wraith:
+				break;
+			case ECharacterTypes::Belica:
+				GetMesh()->UnHideBoneByName(WEAPON_BELICA_PISTOL);
+				break;
+			case ECharacterTypes::Murdock:
+				GetMesh()->UnHideBoneByName(WEAPON_MURDOCK_SHOTGUN);
+				break;
+			case ECharacterTypes::MAX:
+				break;
+			default:
+				break;
+			}
+		}
+
+	}
+}
+
 void ABlasterCharacter::ModifyWeaponBoneScale()
 {
-	PoseableMeshComponent->CopyPoseFromSkeletalComponent(GetMesh());
+	//PoseableMeshComponent->CopyPoseFromSkeletalComponent(GetMesh());
 
 	FName SocketName_Rifle;
 	FName SocketName_Pistol;
@@ -1996,17 +2091,17 @@ void ABlasterCharacter::ModifyWeaponBoneScale()
 		break;
 	}
 	
-	if (SocketName_Rifle != NAME_None)
-	{
-		if (bShowRifleBone) PoseableMeshComponent->SetBoneScaleByName(SocketName_Rifle, FVector(1.f), EBoneSpaces::ComponentSpace);
-		else PoseableMeshComponent->SetBoneScaleByName(SocketName_Rifle, FVector(0.f), EBoneSpaces::ComponentSpace);
-	}
+	//if (SocketName_Rifle != NAME_None)
+	//{
+	//	if (bShowRifleBone) PoseableMeshComponent->SetBoneScaleByName(SocketName_Rifle, FVector(1.f), EBoneSpaces::ComponentSpace);
+	//	else PoseableMeshComponent->SetBoneScaleByName(SocketName_Rifle, FVector(0.f), EBoneSpaces::ComponentSpace);
+	//}
 
-	if (SocketName_Pistol != NAME_None)
-	{
-		if (bShowPistolBone) PoseableMeshComponent->SetBoneScaleByName(SocketName_Pistol, FVector(1.f), EBoneSpaces::ComponentSpace);
-		else PoseableMeshComponent->SetBoneScaleByName(SocketName_Pistol, FVector(0.f), EBoneSpaces::ComponentSpace);
-	}
+	//if (SocketName_Pistol != NAME_None)
+	//{
+	//	if (bShowPistolBone) PoseableMeshComponent->SetBoneScaleByName(SocketName_Pistol, FVector(1.f), EBoneSpaces::ComponentSpace);
+	//	else PoseableMeshComponent->SetBoneScaleByName(SocketName_Pistol, FVector(0.f), EBoneSpaces::ComponentSpace);
+	//}
 
 
 }
@@ -2014,23 +2109,23 @@ void ABlasterCharacter::ModifyWeaponBoneScale()
 void ABlasterCharacter::SetTeamColor(ETeam InTeam)
 {
 	Super::SetTeamColor(InTeam);
-	switch (InTeam)
-	{
-	case ETeam::NoTeam:
-		break;
-	case ETeam::RedTeam:
+	//switch (InTeam)
+	//{
+	//case ETeam::NoTeam:
+	//	break;
+	//case ETeam::RedTeam:
 
-		if (RedTeamSKMesh) PoseableMeshComponent->SetSkeletalMesh(RedTeamSKMesh);
-		break;
-	case ETeam::BlueTeam:
-		if (BlueTeamSKMesh) PoseableMeshComponent->SetSkeletalMesh(BlueTeamSKMesh);
+	//	if (RedTeamSKMesh) PoseableMeshComponent->SetSkeletalMesh(RedTeamSKMesh);
+	//	break;
+	//case ETeam::BlueTeam:
+	//	if (BlueTeamSKMesh) PoseableMeshComponent->SetSkeletalMesh(BlueTeamSKMesh);
 
-		break;
-	case ETeam::ET_MAX:
-		break;
-	default:
-		break;
-	}
+	//	break;
+	//case ETeam::ET_MAX:
+	//	break;
+	//default:
+	//	break;
+	//}
 }
 
 void ABlasterCharacter::MulticastTesting_Implementation()

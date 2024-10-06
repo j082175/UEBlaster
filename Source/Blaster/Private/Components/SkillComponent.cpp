@@ -45,6 +45,7 @@ void USkillComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	UE_LOG(LogTemp, Fatal, TEXT("『『『『 fewfwefwefwefwefwefwef 『『『"));
 
 
 	CharacterOwner = Cast<ABlasterCharacter>(GetOwner());
@@ -61,7 +62,7 @@ void USkillComponent::BeginPlay()
 	//if (!CharacterOwner) UE_LOG(LogTemp, Error, TEXT("SkillComponent : Getting Owner Failed!"));
 
 	InitializeCoolTimeMap();
-
+	
 }
 
 void USkillComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -276,9 +277,10 @@ void USkillComponent::MulticastMaterialChange_Implementation()
 
 		}
 
-		CharacterOwner->SetShowRifleBone(true);
+		//CharacterOwner->HideWeaponBone(false, true);
 
 		UltimateEffectComponent->Activate();
+
 	}
 
 	if (CharacterOwner.IsValid() && CharacterOwner->HasAuthority())
@@ -325,6 +327,9 @@ void USkillComponent::SkillAnimFinished(const UWidgetAnimation* InWidgetAnimatio
 		else if (Str.Contains(*UEnum::GetDisplayValueAsText(ESkillAnimType::Maintain).ToString()))
 		{
 			OnSkillAnimStarted.Broadcast(ESkillAnimType::CoolTime, Index, S->SkillStat.CoolTime);
+
+			CharacterOwner->SetAnimState(EAnimState::Equipped);
+			CharacterOwner->SetDisableAiming(false);
 		}
 	}
 
@@ -463,6 +468,7 @@ void USkillComponent::Inflict()
 		Inflict_Belica();
 		break;
 	case ECharacterTypes::Murdock:
+		Inflict_Murdock();
 		break;
 	case ECharacterTypes::MAX:
 		break;
@@ -512,22 +518,57 @@ void USkillComponent::Inflict_Belica_FireBullet()
 	FTransform SpawnTo = FTransform(CharacterOwner->GetActorRotation(), CharacterOwner->GetActorLocation() + FVector(0.f, 0.f, 100.f));
 	FSkillManagementStruct* S = CoolTimeMap.Find(CurrentSkillIndex);
 
-	if (!BelicaPistol)
-	{
-		BelicaPistol = GetWorld()->SpawnActorDeferred<AProjectileWeapon>(S->SkillData.SpawnActorClass, SpawnTo);
-		BelicaPistol->SetOwner(CharacterOwner.Get());
-		BelicaPistol->SetInstigator(CharacterOwner.Get());
-		BelicaPistol->FinishSpawning(SpawnTo);
-	}
+
+	AProjectileWeapon* BelicaPistol = GetWorld()->SpawnActorDeferred<AProjectileWeapon>(S->SkillData.SpawnActorClass, SpawnTo);
+	BelicaPistol->SetOwner(CharacterOwner.Get());
+	BelicaPistol->SetInstigator(CharacterOwner.Get());
+	BelicaPistol->FinishSpawning(SpawnTo);
 
 	FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
 	BelicaPistol->AttachToComponent(CharacterOwner->GetMesh(), Rules, SOCKET_HAND_R);
 
 	BelicaPistol->Fire(CharacterOwner->GetHitTarget());
 
-	//FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-	//BelicaPistol->DetachFromActor(DetachRules);
-	//BelicaPistol->Destroy();
+	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	BelicaPistol->DetachFromActor(DetachRules);
+	BelicaPistol->Destroy();
+}
+
+void USkillComponent::Inflict_Murdock()
+{
+	switch (CurrentSkillIndex)
+	{
+	case 0:
+		Inflict_Murdock_SkillQ();
+		break;
+	case 1:
+		Inflict_Murdock_SkillW();
+		break;
+	case 2:
+
+		break;
+	default:
+		break;
+	}
+}
+
+void USkillComponent::Inflict_Murdock_SkillQ()
+{
+	if (!CharacterOwner->HasAuthority()) return;
+
+	CharacterOwner->AimButtonReleased(FInputActionValue());
+	CharacterOwner->SetDisableAiming(true);
+	CharacterOwner->SetAnimState(EAnimState::Shield);
+
+}
+
+void USkillComponent::Inflict_Murdock_SkillW()
+{
+	if (!CharacterOwner->HasAuthority()) return;
+	CharacterOwner->AimButtonReleased(FInputActionValue());
+	CharacterOwner->SetDisableAiming(true);
+	CharacterOwner->SetAnimState(EAnimState::SecondaryWeapon);
+
 }
 
 void USkillComponent::SpawnAttributeAssistantDetach(int32 InCurrentSkillIndex)
@@ -710,7 +751,7 @@ void USkillComponent::InitForWaiting()
 void USkillComponent::MulticastPlayMontage_Implementation(UAnimMontage* InMontage)
 {
 	CharacterOwner->GetMesh()->GetAnimInstance()->Montage_Play(InMontage);
-	CharacterOwner->SetShowPistolBone(true);
+	//CharacterOwner->HideWeaponBone(false, false);
 }
 
 void USkillComponent::MulticastUltimateCastFinished_Implementation()
@@ -718,8 +759,7 @@ void USkillComponent::MulticastUltimateCastFinished_Implementation()
 	//AB_SUBLOG(LogABDisplay, Warning, TEXT(""));
 	//CharacterOwner->GetMesh()->SetMaterial(WeaponMaterialIndex, TransparentMaterial);
 
-	CharacterOwner->SetShowRifleBone(false);
-
+	//CharacterOwner->HideWeaponBone(true, true);
 
 	UltimateEffectComponent->Deactivate();
 

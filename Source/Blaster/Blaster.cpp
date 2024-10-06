@@ -6,9 +6,25 @@
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/UserWidget.h"
 
+class FBlasterGameModule : public FDefaultGameModuleImpl
+{
+public:
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+};
+
+void FBlasterGameModule::StartupModule()
+{
+	FDefaultGameModuleImpl::StartupModule();
+}
+
+void FBlasterGameModule::ShutdownModule()
+{
+	FDefaultGameModuleImpl::ShutdownModule();
+}
 
 
-IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, Blaster, "Blaster");
+IMPLEMENT_PRIMARY_GAME_MODULE(FBlasterGameModule, Blaster, "Blaster");
 
 DEFINE_LOG_CATEGORY(LogABDisplay);
 DEFINE_LOG_CATEGORY(LogABBeginPlay);

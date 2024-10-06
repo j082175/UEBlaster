@@ -7,6 +7,8 @@ enum class EAnimState : uint8
 	UnEquipped UMETA(DisplayName = "UnEquipped"),
 	Equipped UMETA(DisplayName = "Equipped"),
 
+	Shield UMETA(DisplayName = "Shield"),
+	SecondaryWeapon UMETA(DisplayName = "SecondaryWeapon"),
 
 	MAX UMETA(DisplayName = "Default_MAX")
 };

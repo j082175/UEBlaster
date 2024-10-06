@@ -223,6 +223,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	bool bUseScatter = false;
+
+	UPROPERTY(EditAnywhere)
+	uint8 bIsTemporal : 1;
 protected:
 	// Trace end with scatter
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")

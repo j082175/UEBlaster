@@ -116,8 +116,10 @@ private:
 	void Inflict_Belica();
 	void Inflict_Belica_SkillQ();
 	void Inflict_Belica_FireBullet();
-	UPROPERTY()
-	TObjectPtr<class AProjectileWeapon> BelicaPistol;
+
+	void Inflict_Murdock();
+	void Inflict_Murdock_SkillQ();
+	void Inflict_Murdock_SkillW();
 
 
 	void SpawnAttributeAssistantDetach(int32 InCurrentSkillIndex);

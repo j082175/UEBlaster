@@ -42,7 +42,5 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	}
 	else
 	{
-		bShowPistolBone = BlasterCharacterOwner->GetShowPistolBone();
-		bShowRifleBone = BlasterCharacterOwner->GetShowRifleBone();
 	}
 }
