@@ -6,7 +6,7 @@
 #include "PlayerController/BlasterPlayerController.h"
 #include "Net/UnrealNetwork.h"
 #include "HUD/OverheadWidget.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 #include "HUD/OverheadWidgetComponent.h"
 #include "GameState/BlasterGameState.h"
 #include "Blueprint/UserWidget.h"

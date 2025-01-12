@@ -5,7 +5,7 @@
 #include "Characters/CharacterBase.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "Net/UnrealNetwork.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 UAttributeComponent::UAttributeComponent()
 {

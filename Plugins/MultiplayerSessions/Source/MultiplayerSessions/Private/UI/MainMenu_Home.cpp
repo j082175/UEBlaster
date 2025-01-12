@@ -146,7 +146,7 @@ void UMainMenu_Home::CreateButtonFinished(const FString& InServerName)
 		MultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddUniqueDynamic(this, &ThisClass::OnCreateSessionFinished);
 		MultiplayerSessionsSubsystem->CreateSession(MaxPlayer, *UEnum::GetDisplayValueAsText(CurrentMatchType).ToString(), SelectType(CurrentMatchType), InServerName);
 
-		ServerNameTextBox->RemoveFromViewport();
+		ServerNameTextBox->RemoveFromParent();
 	}
 }
 
@@ -174,7 +174,7 @@ void UMainMenu_Home::CreateSession()
 		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, *UEnum::GetDisplayValueAsText(EDefaultMaps::LobbyMap_SciFi_Dynamic).ToString());
 	}
 	UGameplayStatics::OpenLevel(this, *UEnum::GetDisplayValueAsText(EDefaultMaps::LobbyMap_SciFi_Dynamic).ToString(), true, TEXT("listen"));
-	LoadingWidget->RemoveFromViewport();
+	LoadingWidget->RemoveFromParent();
 }
 
 void UMainMenu_Home::SelectMap(bool IsRight)

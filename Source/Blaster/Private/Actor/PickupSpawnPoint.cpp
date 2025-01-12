@@ -2,14 +2,15 @@
 
 
 #include "Actor/PickupSpawnPoint.h"
-#include "Item/Pickups/Pickup.h"
+#include "Item/Item.h"
 #include "GameState/BlasterGameState.h"
 #include "Components/ObjectPoolComponent.h"
+#include "Item/Pickups/Pickup.h"
 
 // Sets default values
-APickupSpawnPoint::APickupSpawnPoint()
+APickupSpawnPoint::APickupSpawnPoint(): SpawnPickupTimeMin(0), SpawnPickupTimeMax(0)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = true;
@@ -40,7 +41,9 @@ void APickupSpawnPoint::SpawnPickup()
 
 		if (GetWorld() && GetWorld()->GetGameState<ABlasterGameState>())
 		{
-			SpawnedPickup = Cast<APickup>(GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->GetSpawnedObjectDeferred(GetActorTransform(), PickupClasses[Selection]));
+			SpawnedPickup = Cast<APickup>(
+				GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->
+				            GetSpawnedObjectDeferred(GetActorTransform(), PickupClasses[Selection]));
 		}
 
 
@@ -61,7 +64,8 @@ void APickupSpawnPoint::SpawnPickup()
 		}
 
 		//SpawnedPickup->FinishSpawning(GetActorTransform());
-		GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->FinishSpawning(GetActorTransform(), PickupClasses[Selection]);
+		GetWorld()->GetGameState<ABlasterGameState>()->GetComponentByClass<UObjectPoolComponent>()->FinishSpawning(
+			GetActorTransform(), PickupClasses[Selection]);
 	}
 }
 
@@ -79,6 +83,3 @@ void APickupSpawnPoint::StartSpawnPickupTimer(AActor* DestroyedActor)
 	const float SpawnTime = FMath::FRandRange(SpawnPickupTimeMin, SpawnPickupTimeMax);
 	GetWorldTimerManager().SetTimer(SpawnPickupTimer, this, &ThisClass::SpawnPickupTimerFinished, SpawnTime);
 }
-
-
-

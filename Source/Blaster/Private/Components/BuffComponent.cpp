@@ -7,7 +7,7 @@
 #include "Characters/CharacterBase.h"
 #include "PlayerController/BlasterPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 
 // Sets default values for this component's properties

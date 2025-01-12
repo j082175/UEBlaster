@@ -4,7 +4,7 @@
 #include "AnimNotify/AnimNotify_SkillCastingEnd.h"
 #include "Components/SkillComponent.h"
 
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 void UAnimNotify_SkillCastingEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {

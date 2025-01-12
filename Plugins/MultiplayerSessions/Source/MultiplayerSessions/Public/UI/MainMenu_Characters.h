@@ -19,6 +19,7 @@ class MULTIPLAYERSESSIONS_API UMainMenu_Characters : public UUserWidget
 public:
 	UMainMenu_Characters(const FObjectInitializer& ObjectInitializer);
 	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<class UGridPanel> Grid;
@@ -33,6 +34,8 @@ private:
 	void FillGrid();
 	void GetCharacterInfo();
 
+	void SetCharacterInfo(const FString& InStr);
+
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<class UDataTable> CharacterDT;
 
@@ -44,7 +47,7 @@ private:
 	TSubclassOf<class UCharactersItem> CharactersItemClass;
 
 	UPROPERTY()
-	TObjectPtr<class UCharactersItem> CharactersItem;
+	TArray<TObjectPtr<class UCharactersItem>> CharactersItemArr;
 
 	TMap<FName, FCharacterData> CharacterDataMap;
 };

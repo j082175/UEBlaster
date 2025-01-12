@@ -107,6 +107,20 @@ void AItem::Tick(float DeltaTime)
 	//Moving(DeltaTime);
 }
 
+void AItem::Destroyed()
+{
+	Super::Destroyed();
+
+	if (!OnSpawnedPickupDisabled.IsBound())
+	{
+		UE_LOG(LogTemp, Error, TEXT("OnSpawnedPickupDisabled is not bounded!!!"));
+	}
+	else
+	{
+		OnSpawnedPickupDisabled.ExecuteIfBound(this);
+	}
+}
+
 //// When this function called, it means that this class is going to be attached to another actor's mesh.
 //void AItem::ItemAttachToComponent(USceneComponent* SceneComponent, FAttachmentTransformRules& AttachmentRules, FName InSocketName)
 //{

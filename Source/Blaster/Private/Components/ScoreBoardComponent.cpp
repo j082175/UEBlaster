@@ -206,7 +206,7 @@ void UScoreBoardComponent::ClientRemoveScoreText_Implementation(const FString& I
 			{
 				if (ScoreBoardText->GetPlayerName() == InPlayerName)
 				{
-					ScoreBoardText->RemoveFromViewport();
+					ScoreBoardText->RemoveFromParent();
 				}
 			}
 
@@ -221,7 +221,7 @@ void UScoreBoardComponent::ClientRemoveScoreText_Implementation(const FString& I
 			{
 				if (ScoreBoardText->GetPlayerName() == InPlayerName)
 				{
-					ScoreBoardText->RemoveFromViewport();
+					ScoreBoardText->RemoveFromParent();
 				}
 			}
 

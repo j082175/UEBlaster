@@ -29,6 +29,16 @@ void UMainMenu_Characters::NativePreConstruct()
 	GetCharacterInfo();
 }
 
+void UMainMenu_Characters::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	for (const auto& i : CharactersItemArr)
+	{
+		i->OnCharacterChanged.BindUObject(this, &ThisClass::SetCharacterInfo);
+	}
+}
+
 void UMainMenu_Characters::FillGrid()
 {
 
@@ -48,7 +58,7 @@ void UMainMenu_Characters::FillGrid()
 
 	for (const auto& CharacterData : CharacterDataMap)
 	{
-		CharactersItem = CreateWidget<UCharactersItem>(this, CharactersItemClass);
+		UCharactersItem* CharactersItem = CreateWidget<UCharactersItem>(this, CharactersItemClass);
 		if (CharactersItem)
 		{
 			CharactersItem->SetCharacterData(CharacterData.Value);
@@ -61,10 +71,17 @@ void UMainMenu_Characters::FillGrid()
 			++CurrRow;
 			CurrColumn = 0;
 		}
+
+		CharactersItemArr.Add(CharactersItem);
 	}
 }
 
 void UMainMenu_Characters::GetCharacterInfo()
 {
 	//CharacterName_Text->SetText()
+}
+
+void UMainMenu_Characters::SetCharacterInfo(const FString& InStr)
+{
+	CharacterName_Text->SetText(FText::FromString(InStr));
 }

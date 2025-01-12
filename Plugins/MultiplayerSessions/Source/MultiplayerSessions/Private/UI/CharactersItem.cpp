@@ -6,6 +6,8 @@
 #include "Engine/Texture2D.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
+ECharacterTypes UCharactersItem::SelectedCharacterType(ECharacterTypes::Wraith);
+
 void UCharactersItem::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -28,10 +30,20 @@ void UCharactersItem::NativeConstruct()
 
 void UCharactersItem::ButtonClicked()
 {
+	if (CharacterData.DisplayName.ToString() == TEXT("Wraith"))
+	{
+		SelectedCharacterType = ECharacterTypes::Wraith;
+	}
+	else if (CharacterData.DisplayName.ToString() == TEXT("Lt.Belica"))
+	{
+		SelectedCharacterType = ECharacterTypes::Belica;
+	}
 
+	OnCharacterChanged.ExecuteIfBound(*UEnum::GetDisplayValueAsText(SelectedCharacterType).ToString());
+	UE_LOG(LogTemp, Display, TEXT("SelectedCharacter : %s"), *UEnum::GetDisplayValueAsText(SelectedCharacterType).ToString());
 }
 
 void UCharactersItem::ButtonHovered()
 {
-	
+	//UE_LOG(LogTemp, Display, TEXT("CharactersItem Hovering"));
 }

@@ -7,7 +7,6 @@
 #include "Item/Item.h"
 #include "Pickup.generated.h"
 
-DECLARE_DELEGATE_OneParam(FOnSpawnedPickupDisabledDelegate, AActor* /*DestroyedActor*/);
 
 
 UCLASS()
@@ -24,7 +23,7 @@ public:
 	virtual void Destroyed() override;
 
 
-	FOnSpawnedPickupDisabledDelegate OnSpawnedPickupDisabled;
+
 
 	//UFUNCTION()
 	//virtual void OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

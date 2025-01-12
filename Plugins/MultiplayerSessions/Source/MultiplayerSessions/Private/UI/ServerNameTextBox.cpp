@@ -39,7 +39,7 @@ void UServerNameTextBox::OnChatCommittedFunc(const FText& Text, ETextCommit::Typ
 	if (CommitMethod == ETextCommit::OnCleared || CommitMethod == ETextCommit::OnUserMovedFocus || Text.ToString() == TEXT(""))
 	{
 		UE_LOG(LogTemp, Display, TEXT("UServerNameTextBox Remove"));
-		RemoveFromViewport();
+		RemoveFromParent();
 		return;
 	}
 

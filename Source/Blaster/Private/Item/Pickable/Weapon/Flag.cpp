@@ -12,7 +12,7 @@
 #include "Components/WidgetComponent.h"
 
 #include "Net/UnrealNetwork.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 
 AFlag::AFlag()

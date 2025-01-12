@@ -3,7 +3,7 @@
 
 #include "Components/WeaponHUDComponent.h"
 #include "HUD/OverlayModules/WeaponStatus.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 #include "GameFramework/Character.h"
 
 UWeaponHUDComponent::UWeaponHUDComponent()

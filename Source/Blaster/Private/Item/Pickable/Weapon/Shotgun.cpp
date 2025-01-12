@@ -27,7 +27,7 @@
 #include "Characters/CharacterBase.h"
 #include "PlayerController/BlasterPlayerController.h"
 
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 //void AShotgun::Fire(const FVector& HitTarget)
 //{

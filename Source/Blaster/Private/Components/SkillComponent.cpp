@@ -18,7 +18,7 @@
 #include "Components/PoseableMeshComponent.h"
 #include "DamageType/DamageType_Rumbling.h"
 #include "Item/Pickable/Weapon/ProjectileWeapon.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 // Sets default values for this component's properties
 USkillComponent::USkillComponent()
@@ -45,8 +45,6 @@ void USkillComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	UE_LOG(LogTemp, Fatal, TEXT("『『『『 fewfwefwefwefwefwefwef 『『『"));
-
 
 	CharacterOwner = Cast<ABlasterCharacter>(GetOwner());
 

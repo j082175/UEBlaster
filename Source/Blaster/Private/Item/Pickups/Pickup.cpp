@@ -58,21 +58,13 @@ void APickup::Tick(float DeltaTime)
 
 void APickup::Destroyed()
 {
-	//Super::Destroyed();
+	Super::Destroyed();
 
 	//UE_LOG(LogTemp, Display, TEXT("Destroyed"));
 	if (PickupSound) UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());
 	if (PickupEffect)
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PickupEffect, GetActorLocation(), GetActorRotation());
 
-	if (!OnSpawnedPickupDisabled.IsBound())
-	{
-		UE_LOG(LogTemp, Error, TEXT("OnSpawnedPickupDisabled is not bounded!!!"));
-	}
-	else
-	{
-		OnSpawnedPickupDisabled.ExecuteIfBound(this);
-	}
 }
 
 void APickup::OnCapsuleBeginOverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

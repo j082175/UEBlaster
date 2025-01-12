@@ -19,7 +19,7 @@
 
 #include "Perception/AISense_Damage.h"
 #include "Perception/AISense_Hearing.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 void AHitScanWeapon::Fire(const FVector& HitTarget)
 {

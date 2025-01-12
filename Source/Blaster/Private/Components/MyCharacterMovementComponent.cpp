@@ -2,7 +2,7 @@
 
 
 #include "Components/MyCharacterMovementComponent.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 UMyCharacterMovementComponent::UMyCharacterMovementComponent()
 {

@@ -1478,19 +1478,19 @@ void ACharacterBase::EnableHitCapsulesCollision()
 {
 	HitCollisionCapsules[TEXT("weapon_r")]->SetGenerateOverlapEvents(true);
 	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Overlap);
 	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Overlap);
 
 	HitCollisionCapsules[TEXT("weapon_l")]->SetGenerateOverlapEvents(true);
 	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Overlap);
 	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Overlap);
 }
 
 void ACharacterBase::DisableHitCapsulesCollision()
 {
-	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Ignore);
-	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Ignore);
+	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Ignore);
 
 	HitCollisionCapsules[TEXT("weapon_r")]->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Ignore);
 	HitCollisionCapsules[TEXT("weapon_l")]->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Ignore);
@@ -2306,9 +2306,12 @@ void ACharacterBase::SpawnDefaultWeapon()
 	//UE_LOG(LogTemp, Display, TEXT("SpawnDefaultWeapon"));
 	BlasterGameMode = BlasterGameMode == nullptr ? Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this)) : BlasterGameMode;
 	UWorld* World = GetWorld();
-	if (BlasterGameMode && World && !bIsElimmed && DefaultWeaponClass)
+
+	if (BlasterGameMode && World && !bIsElimmed && DefaultWeaponClassArr.Num() > 0)
 	{
-		AWeapon* StartingWeapon = World->SpawnActorDeferred<AWeapon>(DefaultWeaponClass, GetTransform());
+		const int RandIndex = FMath::RandRange(0, DefaultWeaponClassArr.Num() - 1);
+
+		AWeapon* StartingWeapon = World->SpawnActorDeferred<AWeapon>(DefaultWeaponClassArr[RandIndex], GetTransform());
 
 		StartingWeapon->bDestroyWeapon = true;
 		StartingWeapon->SetOwner(this);

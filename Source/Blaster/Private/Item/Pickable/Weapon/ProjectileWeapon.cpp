@@ -12,7 +12,7 @@
 //#include "GameFramework/ProjectileMovementComponent.h"
 #include "Actor/Projectile/ProjectileBullet.h"
 
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 AProjectileWeapon::AProjectileWeapon()
 {
@@ -47,7 +47,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 		AProjectile* SpawnedProjectile = nullptr;
 		if (bUseServerSideRewind)
 		{
-			if (InstigatorPawn->HasAuthority()) // server
+			if (InstigatorPawn && InstigatorPawn->HasAuthority()) // server
 			{
 				if (InstigatorPawn->IsLocallyControlled()) // server, host - use replicated projectile
 				{

@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 //#include "Characters/BlasterCharacter.h"
 #include "Enums/CharacterTypes.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 // Sets default values
 AShieldBarrier::AShieldBarrier()

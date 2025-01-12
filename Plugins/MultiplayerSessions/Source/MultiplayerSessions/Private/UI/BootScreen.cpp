@@ -32,7 +32,7 @@ void UBootScreen::NativeConstruct()
 
 void UBootScreen::Travel()
 {
-	LoadingWidget->RemoveFromViewport();
+	LoadingWidget->RemoveFromParent();
 }
 
 void UBootScreen::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)

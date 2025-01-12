@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Enums/CharacterTypes.h"
 #include "CharacterData.h"
 #include "CharactersItem.generated.h"
+
+DECLARE_DELEGATE_OneParam(FOnCharacterChangedSignature, const FString& InStr);
 
 /**
  * 
@@ -29,4 +32,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	FCharacterData CharacterData;
+
+public:
+	static ECharacterTypes SelectedCharacterType;
+
+	FOnCharacterChangedSignature OnCharacterChanged;
 };

@@ -2,8 +2,6 @@
 
 
 #include "Characters/Enemy/Golem.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Components/CapsuleComponent.h"
 
 AGolem::AGolem()
 {

@@ -51,7 +51,7 @@ void ABasePlayerController::ShowPauseMenu()
 	WBP_PauseMenu = WBP_PauseMenu == nullptr ? CreateWidget<UUserWidget>(this, WBP_PauseMenuClass) : WBP_PauseMenu.Get();
 	if (WBP_PauseMenu->IsInViewport())
 	{
-		WBP_PauseMenu->RemoveFromViewport();
+		WBP_PauseMenu->RemoveFromParent();
 		FInputModeGameOnly InputModeGameOnly;
 		SetInputMode(InputModeGameOnly);
 		SetShowMouseCursor(false);

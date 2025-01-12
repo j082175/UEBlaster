@@ -16,8 +16,8 @@
 #include "Components/ScoreBoardComponent.h"
 #include "Characters/BlasterCharacter.h"
 #include "GameInstance/MyGameInstance.h"
-#include "Blaster.h"
-
+#include "Blaster/Blaster.h"
+#include "UI/CharactersItem.h"
 
 
 namespace MatchState
@@ -38,9 +38,18 @@ ABlasterGameMode::ABlasterGameMode()
 
 	//UE_LOG(LogTemp, Display, TEXT("ABlasterGameMode Constructor"));
 
-	//static ConstructorHelpers::FClassFinder<APawn> BlasterCharacterRef(TEXT("/Game/A_Blaster/Blueprints/Characters/BP_BlasterCharacter.BP_BlasterCharacter_C"));
-	//if (BlasterCharacterRef.Class)
-	//	DefaultPawnClass = BlasterCharacterRef.Class;
+	{
+		static ConstructorHelpers::FClassFinder<APawn> BlasterCharacterRef(TEXT("/Game/A_Blaster/Blueprints/Characters/Player/BP_BlasterCharacter0.BP_BlasterCharacter0_C"));
+		if (BlasterCharacterRef.Class)
+			DefaultPawnClassArr.Add(BlasterCharacterRef.Class);
+	}
+	{
+		static ConstructorHelpers::FClassFinder<APawn> BlasterCharacterRef(TEXT("/Game/A_Blaster/Blueprints/Characters/Player/BP_Belica.BP_Belica_C"));
+		if (BlasterCharacterRef.Class)
+			DefaultPawnClassArr.Add(BlasterCharacterRef.Class);
+	}
+
+
 }
 
 void ABlasterGameMode::PostLogin(APlayerController* PlayerController)
@@ -50,6 +59,24 @@ void ABlasterGameMode::PostLogin(APlayerController* PlayerController)
 
 	FInputModeGameOnly GameOnly;
 	PlayerController->SetInputMode(GameOnly);
+
+	ECharacterTypes CTypes = UCharactersItem::SelectedCharacterType;
+	switch (CTypes)
+	{
+	case ECharacterTypes::Wraith:
+		DefaultPawnClass = DefaultPawnClassArr[0];
+			break;
+	case ECharacterTypes::Belica:
+		DefaultPawnClass = DefaultPawnClassArr[1];
+		break;
+	case ECharacterTypes::Murdock:
+		break;
+	case ECharacterTypes::MAX:
+		break;
+	default:
+		break;
+	}
+
 
 	//DefaultPawnClass = 
 

@@ -3,34 +3,17 @@
 
 #include "Characters/Enemy/Minion_Lane_Super_Dusk.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/BoxComponent.h"
 //#include "BodySetupCore.h"
-#include "PhysicsEngine/BodySetup.h"
 #include "DrawDebugHelpers.h"
-#include "PhysicsEngine/PhysicsAsset.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Components/AttributeComponent.h"
 
 // FieldSystem
 #include "Field/FieldSystemComponent.h"
 
-#include "Particles/ParticleSystemComponent.h"
-
-#include "Sound/SoundCue.h"
-
-#include "Actor/Projectile/Projectile.h"
-
 #include "Actor/ParticleSpawner.h"
 
-#include "BehaviorTree/BlackboardComponent.h"
 #include "AIController/EnemyAIController.h"
-#include "BlasterTypes/BlackboardKeys.h"
-#include "Net/UnrealNetwork.h"
 #include "Blaster/Blaster.h"
-
-#include "Components/ObjectPoolComponent.h"
-#include "GameState/BlasterGameState.h"
 
 //#include "Interfaces/HitInterface.h"
 
@@ -40,7 +23,7 @@ AMinion_Lane_Super_Dusk::AMinion_Lane_Super_Dusk()
 	FieldSystemComponent->SetupAttachment(RootComponent);
 
 	Super::InitializeCollisionStates();
-	InitializeDefaults();
+	AMinion_Lane_Super_Dusk::InitializeDefaults();
 }
 
 void AMinion_Lane_Super_Dusk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

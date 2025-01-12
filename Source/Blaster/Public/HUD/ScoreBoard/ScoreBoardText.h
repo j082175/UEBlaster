@@ -42,7 +42,7 @@ public:
 	void SetPlayerName(const FString& InName);
 	void SetScore(int32 InScore);
 	void SetElims(int32 InElims);
-	void SetLatency(float InLatency);
+	//void SetLatency(float InLatency);
 
 	void SetBackgroundColor(FLinearColor InColor);
 
@@ -58,6 +58,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> ElimsText;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UTextBlock> LatencyText;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<class UTextBlock> LatencyText;
 };

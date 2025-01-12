@@ -12,7 +12,7 @@
 #include "HUD/OverheadWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Components/ScoreBoardComponent.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 ABlasterGameState::ABlasterGameState()
 {

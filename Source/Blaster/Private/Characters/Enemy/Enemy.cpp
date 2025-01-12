@@ -4,9 +4,7 @@
 #include "Characters/Enemy/Enemy.h"
 
 #include "Components/CapsuleComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "HUD/HpBarWidgetComponent.h"
 #include "Components/AttributeComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,24 +21,18 @@
 #include "Components/ObjectPoolComponent.h"
 #include "GameState/BlasterGameState.h"
 #include "Components/InventoryComponent.h"
-#include "Components/SphereComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 // AI
 #include "AIController.h"
 #include "AI/Navigation/NavigationTypes.h"
-#include "NavigationData.h"
 #include "Navigation/PathFollowingComponent.h"
-#include "NavigationSystem.h"
-#include "Perception/PawnSensingComponent.h"
 #include "AIController/BaseAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-#include "Actor/SplineActor.h"
 
 #include "Interfaces/OverlapItemInterface.h"
 
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -586,7 +578,7 @@ bool AEnemy::CheckParryFunc(AActor* OtherActor)
 	//UE_LOG(LogTemp, Display, TEXT("CheckParryFunc"));
 	//UE_LOG(LogTemp, Warning, TEXT("CheckParryFunc , this : %s, Other : %s"), *UEnum::GetDisplayValueAsText(GetLocalRole()).ToString(), *UEnum::GetDisplayValueAsText(OtherActor->GetLocalRole()).ToString());
 
-	if (GetActorForwardVector().Dot(OtherActor->GetActorForwardVector()) < -0.5f) // Àü¹æ ±âÁØ 45µµ ÀÌ³»ÀÏ¶§¸¸ ¹ßµ¿
+	if (GetActorForwardVector().Dot(OtherActor->GetActorForwardVector()) < -0.5f) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 45ï¿½ï¿½ ï¿½Ì³ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ßµï¿½
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Blocking"));
 		DisableHitCapsulesCollision();

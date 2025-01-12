@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "KismetAnimationLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 UReceiveDamageHUDComponent::UReceiveDamageHUDComponent()
 {

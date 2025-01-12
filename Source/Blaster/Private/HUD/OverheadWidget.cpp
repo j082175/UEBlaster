@@ -10,7 +10,7 @@
 #include "Interfaces/WidgetBindDelegateInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Characters/BlasterCharacter.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 
 UOverheadWidget::UOverheadWidget(const FObjectInitializer& ObjectInitializer)

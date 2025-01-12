@@ -534,7 +534,7 @@ public:
 
 protected:
 	void InitDashCurve();
-	//°¢°¢ Dash¸¦ ½ÃÀÛÇÒ ¶§, ³¡³¯ ¶§ »ç¿ëÇÒ ÇÔ¼ö ¸ñ·Ï
+	//ï¿½ï¿½ï¿½ï¿½ Dashï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½
 	UFUNCTION()
 	void DashStart(float Output);
 
@@ -554,7 +554,7 @@ protected:
 
 	FOnTimelineFloat DashTimeLineUpdateDelegate;
 	FOnTimelineEvent DashTimeLineFinishDelegate;
-	//Å¸ÀÓ¶óÀÎ
+	//Å¸ï¿½Ó¶ï¿½ï¿½ï¿½
 	FTimeline DashTimeline;
 
 	// Parry
@@ -708,7 +708,7 @@ protected:
 	void SpawnCharacter(FVector SpawnLocation);
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AWeapon> DefaultWeaponClass;
+	TArray<TSubclassOf<class AWeapon>> DefaultWeaponClassArr;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AActor> CharacterToSpawn;

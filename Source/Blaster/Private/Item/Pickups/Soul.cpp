@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkillComponent.h"
 #include "Interfaces/OverlapItemInterface.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 ASoul::ASoul()
 {

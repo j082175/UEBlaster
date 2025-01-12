@@ -4,7 +4,7 @@
 #include "HUD/OverheadWidgetComponent.h"
 #include "HUD/OverheadWidget.h"
 #include "Interfaces/TeamInterface.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameMode/TeamsGameMode.h"

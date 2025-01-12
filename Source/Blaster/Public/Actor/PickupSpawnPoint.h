@@ -25,10 +25,10 @@ protected:
 	void StartSpawnPickupTimer(AActor* DestroyedActor);
 
 	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<class APickup>> PickupClasses;
+	TArray<TSubclassOf<class AItem>> PickupClasses;
 
 	UPROPERTY()
-	TObjectPtr<APickup> SpawnedPickup;
+	TObjectPtr<AItem> SpawnedPickup;
 
 private:
 

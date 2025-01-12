@@ -2,7 +2,7 @@
 
 
 #include "GameData/DataSingleton.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 DEFINE_LOG_CATEGORY(LogABGameSingleton);
 

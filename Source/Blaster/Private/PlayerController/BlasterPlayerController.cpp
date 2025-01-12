@@ -801,7 +801,7 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 		OnScoreChanged.AddUObject(CO, &UCharacterOverlay::SetHUDScore);
 		OnDefeatsChanged.AddUObject(CO, &UCharacterOverlay::SetHUDDefeats);
 
-		OnCharacterOverlayRemoved.BindUObject(CO, &UCharacterOverlay::RemoveFromViewport);
+		OnCharacterOverlayRemoved.BindUObject(CO, &UCharacterOverlay::RemoveFromParent);
 		//OnTeamScoreChanged.BindUObject(CO, &UCharacterOverlay::)
 	}
 	else if (UScoreBoard* SB = Cast<UScoreBoard>(InUserWidget))
@@ -814,7 +814,7 @@ void ABlasterPlayerController::IBindWidget(UUserWidget* InUserWidget)
 	else if (UScoreBoardText* SBT = Cast<UScoreBoardText>(InUserWidget))
 	{
 		UE_LOG(LogTemp, Display, TEXT("UScoreBoardText"));
-		OnPingChanged.AddUObject(SBT, &UScoreBoardText::SetLatency);
+		//OnPingChanged.AddUObject(SBT, &UScoreBoardText::SetLatency);
 		OnScoreChanged.AddUObject(SBT, &UScoreBoardText::SetScore);
 		OnDefeatsChanged.AddUObject(SBT, &UScoreBoardText::SetElims);
 	}

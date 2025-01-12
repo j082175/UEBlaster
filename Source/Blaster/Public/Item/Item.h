@@ -7,6 +7,9 @@
 #include "Actor/PooledObject.h"
 #include "Item.generated.h"
 
+DECLARE_DELEGATE_OneParam(FOnSpawnedPickupDisabledDelegate, AActor* /*DestroyedActor*/);
+
+
 UENUM(BlueprintType)
 enum class EItemState : uint8
 {
@@ -26,6 +29,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void Destroyed() override;
 
 	//// When this function called, it means that this class is going to be attached to another actor's mesh.
 	//virtual void ItemAttachToComponent(USceneComponent* SceneComponent, FAttachmentTransformRules& AttachmentRules, FName InSocketName);
@@ -39,6 +43,8 @@ public:
 
 
 	void ShowPickupWidget(bool bShowWidget);
+
+	FOnSpawnedPickupDisabledDelegate OnSpawnedPickupDisabled;
 
 	// Initialize
 protected:

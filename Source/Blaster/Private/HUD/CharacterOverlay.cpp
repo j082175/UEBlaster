@@ -12,7 +12,7 @@
 #include "HUD/OverlayModules/WeaponStatus.h"
 #include "HUD/CoolTimeAnnouncement.h"
 #include "HUD/OverlayModules/PingStatus.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 //UCharacterOverlay::UCharacterOverlay(const FObjectInitializer& ObjectInitializer)
 //	:Super(ObjectInitializer)

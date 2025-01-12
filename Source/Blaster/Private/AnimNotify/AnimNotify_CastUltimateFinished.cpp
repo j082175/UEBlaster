@@ -3,7 +3,7 @@
 
 #include "AnimNotify/AnimNotify_CastUltimateFinished.h"
 #include "Components/SkillComponent.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 void UAnimNotify_CastUltimateFinished::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {

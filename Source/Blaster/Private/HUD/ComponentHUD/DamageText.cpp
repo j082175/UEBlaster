@@ -8,7 +8,7 @@ void UDamageText::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &ThisClass::RemoveFromViewport, DestroyTime, false);
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &ThisClass::RemoveFromParent, DestroyTime, false);
 }
 
 void UDamageText::SetDamageText(int32 InDamage, const FLinearColor& InColor)

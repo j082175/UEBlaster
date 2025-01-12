@@ -2,7 +2,6 @@
 
 
 #include "Characters/Enemy/EnemyRange.h"
-#include "Kismet/GameplayStatics.h"
 #include "Item/Pickable/Weapon/Weapon_Gun.h"
 #include "Components/CombatComponent.h"
 #include "AIController/BaseAIController.h"
@@ -14,8 +13,7 @@
 #include "HUD/OverheadWidget.h"
 #include "PlayerState/BlasterPlayerState.h"
 #include "Components/InventoryComponent.h"
-#include "Net/UnrealNetwork.h"
-#include "Blaster.h"
+#include "Blaster/Blaster.h"
 
 AEnemyRange::AEnemyRange()
 {
